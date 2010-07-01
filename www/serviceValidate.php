@@ -60,7 +60,7 @@ function returnResponse($value, $content = '', $attributes = array()) {
 			foreach ($attributelist as $attributevalue) {
 				// Don't use the urn:oid versions of the attributes
 				if (!preg_match('/urn:oid/',$attr)) {
-					$attributesxml .= "<cas:".$attr.">" . htmlentities($attributevalue ) . "</cas:$attr>\n";
+					$attributesxml .= "<cas:".$attr.">" . base64_encode(htmlentities($attributevalue )) . "</cas:$attr>\n";
 				}
 			}
 		}
