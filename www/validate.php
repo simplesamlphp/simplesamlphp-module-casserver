@@ -72,8 +72,7 @@ function storeTicket($ticket, $path, &$value ) {
 
 function retrieveTicket($ticket, $path) {
 
-	//PDJ
-	//if (!preg_match('/^_?[a-zA-Z0-9]+$/', $ticket)) throw new Exception('Invalid characters in ticket');
+	// if (!preg_match('/^_?[a-zA-Z0-9]+$/D', $ticket)) throw new Exception('Invalid characters in ticket');
 	if (!preg_match('/^ST-?[a-zA-Z0-9]+$/D', $ticket)) throw new Exception('Invalid characters in ticket');
 
 	if (!is_dir($path)) 

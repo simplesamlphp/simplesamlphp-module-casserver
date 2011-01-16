@@ -28,40 +28,42 @@ if (array_key_exists('renew', $_GET)) {
 
 
 try {
+  SimpleSAML_Logger::debug("PDJ: Starting TRY block");
 	/* Load simpleSAMLphp, configuration and metadata */
 	$casconfig = SimpleSAML_Configuration::getConfig('module_casserver.php');
+  SimpleSAML_Logger::debug("PDJ: Loaded module_casserver.php");
 	
 	
 	$path = $casconfig->resolvePath($casconfig->getValue('ticketcache', 'ticketcache'));
 	
 	$ticketcontent = retrieveTicket($ticket, $path);
+  SimpleSAML_Logger::debug("PDJ: loaded the ticket");
+  SimpleSAML_Logger::debug(print_r($ticketcontent, true));
 	
 	$usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
 	$dosendattributes = $casconfig->getValue('attributes', FALSE);;
 	
 	if (array_key_exists($usernamefield, $ticketcontent)) {
+    SimpleSAML_Logger::debug("PDJ: found usernamefield in ticket");
 		returnResponse('YES', $ticketcontent[$usernamefield][0], $dosendattributes ? $ticketcontent : array());
 	} else {
+    SimpleSAML_Logger::debug("PDJ: didn't find any usernamefield in ticket");
 		returnResponse('NO');
 	}
 
 } catch (Exception $e) {
+  SimpleSAML_Logger::debug("PDJ: Ran into an exception: ".$e->getMessage());
 
 	returnResponse('NO', $e->getMessage());
 }
 
-
 function returnResponse($value, $content = '', $attributes = array()) {
-
 	if ($value === 'YES') {
 		$attributesxml = "";
 		foreach ($attributes as $attributename => $attributelist) {
 			$attr = htmlentities($attributename);
 			foreach ($attributelist as $attributevalue) {
-				// Don't use the urn:oid versions of the attributes
-				if (!preg_match('/urn:oid/',$attr)) {
-					$attributesxml .= "<cas:".$attr.">" . base64_encode(htmlentities($attributevalue )) . "</cas:$attr>\n";
-				}
+				$attributesxml .= "<cas:$attr>" . htmlentities($attributevalue) . "</cas:$attr>\n";
 			}
 		}
 		if (sizeof($attributes)) $attributesxml = '<cas:attributes>' . $attributesxml . '</cas:attributes>';
@@ -96,11 +98,9 @@ function storeTicket($ticket, $path, &$value ) {
 
 function retrieveTicket($ticket, $path) {
 
-//	if (!preg_match('/^_?[a-zA-Z0-9]+$/', $ticket)) throw new Exception('Invalid characters in ticket');
-    // PMD:
-    if (!preg_match('/^ST-?[a-zA-Z0-9]+$/D', $ticket)) throw new Exception('Invalid characters in ticket');
-    // :PMD
-
+	// Zakomentirao Dubravko Voncina (to ga je mucilo)
+	// if (!preg_match('/^_?[a-zA-Z0-9]+$/D', $ticket)) throw new Exception('Invalid characters in ticket');
+	if (!preg_match('/^ST-?[a-zA-Z0-9]+$/D', $ticket)) throw new Exception('Invalid characters in ticket');
 
 	if (!is_dir($path)) 
 		throw new Exception('Directory for CAS Server ticket storage [' . $path . '] does not exists. ');

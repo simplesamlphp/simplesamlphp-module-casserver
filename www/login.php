@@ -30,9 +30,10 @@ if (array_key_exists('gateway', $_GET)) {
 
 
 /* Load simpleSAMLphp, configuration and metadata */
-$config = SimpleSAML_Configuration::getInstance();
+// $config = SimpleSAML_Configuration::getInstance();	// commented out by Dubravko Voncina
 $casconfig = SimpleSAML_Configuration::getConfig('module_casserver.php');
-$session = SimpleSAML_Session::getInstance();
+// $session = SimpleSAML_Session::getInstance();	// commented out by Dubravko Voncina
+$as = new SimpleSAML_Auth_Simple('default-sp');		// added by Dubravko Voncina
 
 
 $legal_service_urls = $casconfig->getValue('legal_service_urls');
@@ -43,25 +44,33 @@ $auth = $casconfig->getValue('auth', 'saml2');
 if (!in_array($auth, array('saml2', 'shib13')))
 	throw new Exception('CAS Service configured to use [auth] = ' . $auth . ' only [saml2,shib13] is legal.');
 
+// commented out by Dubravko Voncina
+/*
 if (!$session->isValid($auth) ) {
 	SimpleSAML_Utilities::redirect(
 		'/' . $config->getBaseURL() . $auth . '/sp/initSSO.php',
 		array('RelayState' => SimpleSAML_Utilities::selfURL() )
 	);
 }
-$attributes = $session->getAttributes();
+*/
+$as->requireAuth();	// added by Dubravko Voncina
+
+// $attributes = $session->getAttributes();	// commented out by Dubravko Voncina
+$attributes = $as->getAttributes();		// added by Dubravko Voncina
 
 $path = $casconfig->resolvePath($casconfig->getValue('ticketcache', 'ticketcache'));
-//PDJ
-//$ticket = SimpleSAML_Utilities::generateID();
+// modified by Dubravko Voncina
+// $ticket = SimpleSAML_Utilities::generateID();
 $ticket = str_replace( '_', 'ST-', SimpleSAML_Utilities::generateID() );
 storeTicket($ticket, $path, $attributes);
 
 // $test = retrieveTicket($ticket, $path);
 
+
 SimpleSAML_Utilities::redirect(
 	SimpleSAML_Utilities::addURLparameter($service,
-        array('ticket' => $ticket))
+		array('ticket' => $ticket)
+	)
 );
 
 
@@ -74,7 +83,7 @@ function storeTicket($ticket, $path, &$value ) {
 	if (!is_writable($path)) 
 		throw new Exception('Directory for CAS Server ticket storage [' . $path . '] is not writable. ');
 
-	$filename = $path . '/' . $ticket;
+	$filename =  $path . '/' . $ticket;
 	file_put_contents($filename, serialize($value));
 }
 
@@ -103,4 +112,3 @@ function checkServiceURL($service, array $legal_service_urls) {
 
 
 ?>
-
