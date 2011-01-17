@@ -12,14 +12,11 @@ $config = array (
 		'http://test.feide.no/cas2',
 	),
 
-	// Legal values: saml2, shib13
-	'auth' => 'saml2',
-	
+	'auth' => 'saml2', // Legal values: saml2, shib13
 	'ticketcache' => 'ticketcache',
+	'attrname' => 'mail', // 'eduPersonPrincipalName' (an attribute that CAS server returns to the CAS client to prove user is authenticated)
+	'attributes' => FALSE, // set to TRUE if you want to enable transfer of attributes
 
-	'attrname' => 'mail', // 'eduPersonPrincipalName',
-	#'attributes' => TRUE, // enable transfer of attributes
-	
 );
 
 ?>
