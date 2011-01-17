@@ -5,3 +5,12 @@
 	* All files are rewritten based on work by Dubravko Voncina. See Google
 	Groups discussion in this thread:
 	http://groups.google.com/group/simplesamlphp/browse_thread/thread/4c655d169532650a
+
+	* Creating release 2.1
+		The sbcasserver module now uses its own "namespace" instead of hickjacking
+		the casserver "namespace". Therefore the
+		config-templates/module_casserver.php har been renamed to
+		module_sbcasserver.php
+
+	* The files in www has all beed changed to use the new "namespace".
+
