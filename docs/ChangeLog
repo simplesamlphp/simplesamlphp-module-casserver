@@ -1,0 +1,7 @@
+2011-01-17  Per Møldrup-Dalum  <pdj@statsbiblioteket.dk>
+
+	* All PHP files are rewritten based on files from Dubravko Voncina. See
+	Google Groups discussion:
+	http://groups.google.com/group/simplesamlphp/browse_thread/thread/4c655d169532650a
+
+
