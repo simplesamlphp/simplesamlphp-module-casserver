@@ -1,0 +1,7 @@
+2011-01-17  Per Møldrup-Dalum  <pdj@statsbiblioteket.dk>
+
+	* Creating release 2.0
+
+	* All files are rewritten based on work by Dubravko Voncina. See Google
+	Groups discussion in this thread:
+	http://groups.google.com/group/simplesamlphp/browse_thread/thread/4c655d169532650a
