@@ -30,8 +30,8 @@ if (array_key_exists('renew', $_GET)) {
 try {
   SimpleSAML_Logger::debug("PDJ: Starting TRY block");
 	/* Load simpleSAMLphp, configuration and metadata */
-	$casconfig = SimpleSAML_Configuration::getConfig('module_casserver.php');
-  SimpleSAML_Logger::debug("PDJ: Loaded module_casserver.php");
+	$casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
+  SimpleSAML_Logger::debug("PDJ: Loaded module_sbcasserver.php");
 	
 	
 	$path = $casconfig->resolvePath($casconfig->getValue('ticketcache', 'ticketcache'));

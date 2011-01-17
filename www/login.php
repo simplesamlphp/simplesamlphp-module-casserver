@@ -31,7 +31,7 @@ if (array_key_exists('gateway', $_GET)) {
 
 /* Load simpleSAMLphp, configuration and metadata */
 // $config = SimpleSAML_Configuration::getInstance();	// commented out by Dubravko Voncina
-$casconfig = SimpleSAML_Configuration::getConfig('module_casserver.php');
+$casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 // $session = SimpleSAML_Session::getInstance();	// commented out by Dubravko Voncina
 $as = new SimpleSAML_Auth_Simple('default-sp');		// added by Dubravko Voncina
 
