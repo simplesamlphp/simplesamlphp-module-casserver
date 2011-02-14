@@ -33,7 +33,8 @@ if (array_key_exists('gateway', $_GET)) {
 // $config = SimpleSAML_Configuration::getInstance();	// commented out by Dubravko Voncina
 $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 // $session = SimpleSAML_Session::getInstance();	// commented out by Dubravko Voncina
-$as = new SimpleSAML_Auth_Simple('default-sp');		// added by Dubravko Voncina
+//$as = new SimpleSAML_Auth_Simple('default-sp');		// added by Dubravko Voncina
+$as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
 
 
 $legal_service_urls = $casconfig->getValue('legal_service_urls');
