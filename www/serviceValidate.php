@@ -33,6 +33,8 @@ try {
 	
 	
 	$path = $casconfig->resolvePath($casconfig->getValue('ticketcache', 'ticketcache'));
+  $base64encodeQ = $casconfig->getValue('base64attributes',false);
+  SimpleSAML_Logger::debug('PMD: $base64encodeQ: '.$base64encodeQ);
 	
 	$ticketcontent = retrieveTicket($ticket, $path);
 	
@@ -40,7 +42,7 @@ try {
 	$dosendattributes = $casconfig->getValue('attributes', FALSE);;
 	
 	if (array_key_exists($usernamefield, $ticketcontent)) {
-		returnResponse('YES', $ticketcontent[$usernamefield][0], $dosendattributes ? $ticketcontent : array());
+		returnResponse('YES', $ticketcontent[$usernamefield][0], $dosendattributes ? $ticketcontent : array(), $base64encodeQ);
 	} else {
 		returnResponse('NO');
 	}
@@ -49,13 +51,16 @@ try {
 	returnResponse('NO', $e->getMessage());
 }
 
-function returnResponse($value, $content = '', $attributes = array()) {
+function returnResponse($value, $content = '', $attributes = array(), $base64encodeQ = false) {
 	if ($value === 'YES') {
 		$attributesxml = "";
 		foreach ($attributes as $attributename => $attributelist) {
 			$attr = htmlentities($attributename);
 			foreach ($attributelist as $attributevalue) {
-				$attributesxml .= "<cas:$attr>" . htmlentities($attributevalue) . "</cas:$attr>\n";
+        if (!preg_match('/urn:oid/',$attr)) {
+          $attributesxml .= "<cas:".$attr.">" . ($base64encodeQ ? base64_encode(htmlentities($attributevalue )):htmlentities($attributevalue)) . "</cas:$attr>\n";
+				  //$attributesxml .= "<cas:$attr>" . htmlentities($attributevalue) . "</cas:$attr>\n";
+        }
 			}
 		}
 		if (sizeof($attributes)) $attributesxml = '<cas:attributes>' . $attributesxml . '</cas:attributes>';
@@ -113,3 +118,4 @@ function retrieveTicket($ticket, $path) {
 
 
 ?>
+
