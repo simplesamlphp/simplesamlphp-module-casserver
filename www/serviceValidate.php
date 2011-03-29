@@ -34,7 +34,6 @@ try {
 	
 	$path = $casconfig->resolvePath($casconfig->getValue('ticketcache', 'ticketcache'));
   $base64encodeQ = $casconfig->getValue('base64attributes',false);
-  SimpleSAML_Logger::debug('PMD: $base64encodeQ: '.$base64encodeQ);
 	
 	$ticketcontent = retrieveTicket($ticket, $path);
 	
