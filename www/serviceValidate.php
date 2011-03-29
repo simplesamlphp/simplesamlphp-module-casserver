@@ -28,32 +28,24 @@ if (array_key_exists('renew', $_GET)) {
 
 
 try {
-  SimpleSAML_Logger::debug("PDJ: Starting TRY block");
 	/* Load simpleSAMLphp, configuration and metadata */
 	$casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
-  SimpleSAML_Logger::debug("PDJ: Loaded module_sbcasserver.php");
 	
 	
 	$path = $casconfig->resolvePath($casconfig->getValue('ticketcache', 'ticketcache'));
 	
 	$ticketcontent = retrieveTicket($ticket, $path);
-  SimpleSAML_Logger::debug("PDJ: loaded the ticket");
-  SimpleSAML_Logger::debug(print_r($ticketcontent, true));
 	
 	$usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
 	$dosendattributes = $casconfig->getValue('attributes', FALSE);;
 	
 	if (array_key_exists($usernamefield, $ticketcontent)) {
-    SimpleSAML_Logger::debug("PDJ: found usernamefield in ticket");
 		returnResponse('YES', $ticketcontent[$usernamefield][0], $dosendattributes ? $ticketcontent : array());
 	} else {
-    SimpleSAML_Logger::debug("PDJ: didn't find any usernamefield in ticket");
 		returnResponse('NO');
 	}
 
 } catch (Exception $e) {
-  SimpleSAML_Logger::debug("PDJ: Ran into an exception: ".$e->getMessage());
-
 	returnResponse('NO', $e->getMessage());
 }
 
