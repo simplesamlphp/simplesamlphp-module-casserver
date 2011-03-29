@@ -25,10 +25,6 @@ if (array_key_exists('gateway', $_GET)) {
 	throw new Exception('CAS gateway to SAML IsPassive: Not yet implemented properly.');
 }
 
-
-
-
-
 /* Load simpleSAMLphp, configuration and metadata */
 // $config = SimpleSAML_Configuration::getInstance();	// commented out by Dubravko Voncina
 $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
@@ -106,10 +102,5 @@ function checkServiceURL($service, array $legal_service_urls) {
 	}
 	return FALSE;
 }
-
-
-
-
-
 
 ?>

@@ -1,3 +1,12 @@
+2011-03-29  Per Møldrup-Dalum  <pdj@statsbiblioteket.dk>
+
+	* Release 2.1
+
+	* Reintroduced ignore urn:oid attributes.
+	* Added configurable base 64 encoding of attribute values.
+	* Removed debug messages.
+	* Changed the casserver to use the configured auth source.
+
 2011-01-18  Per Møldrup-Dalum  <pdj@statsbiblioteket.dk>
 
 	* Changed default from disabled to enabled

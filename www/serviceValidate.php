@@ -56,15 +56,14 @@ function returnResponse($value, $content = '', $attributes = array(), $base64enc
 		foreach ($attributes as $attributename => $attributelist) {
 			$attr = htmlentities($attributename);
 			foreach ($attributelist as $attributevalue) {
-        if (!preg_match('/urn:oid/',$attr)) {
-          $attributesxml .= "<cas:".$attr.">" . ($base64encodeQ ? base64_encode(htmlentities($attributevalue )):htmlentities($attributevalue)) . "</cas:$attr>\n";
-				  //$attributesxml .= "<cas:$attr>" . htmlentities($attributevalue) . "</cas:$attr>\n";
-        }
+				if (!preg_match('/urn:oid/',$attr)) {
+					$attributesxml .= "<cas:".$attr.">" . ($base64encodeQ ? base64_encode(htmlentities($attributevalue )):htmlentities($attributevalue)) . "</cas:$attr>\n";
+				}
 			}
 		}
 		if (sizeof($attributes)) $attributesxml = '<cas:attributes>' . $attributesxml . '</cas:attributes>';
 		echo '<cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
-    <cas:authenticationSuccess>
+		<cas:authenticationSuccess>
 	<cas:user>' . htmlentities($content) . '</cas:user>' .
 	$attributesxml .
     '</cas:authenticationSuccess>
@@ -78,7 +77,6 @@ function returnResponse($value, $content = '', $attributes = array(), $base64enc
 </cas:serviceResponse>';
 	}
 }
-
 
 function storeTicket($ticket, $path, &$value ) {
 
@@ -105,16 +103,13 @@ function retrieveTicket($ticket, $path) {
 
 	if (!file_exists($filename))
 		throw new Exception('Could not find ticket');
-	
+
 	$content = file_get_contents($filename);
-	
+
 	unlink($filename);
-	
+
 	return unserialize($content);
 }
-
-
-
 
 ?>
 

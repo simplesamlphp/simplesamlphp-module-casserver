@@ -2,21 +2,26 @@
 /* 
  * Configuration for the module casserver.
  * 
- * $Id: $
  */
 
 $config = array (
 
 	'legal_service_urls' => array(
-		'http://test.feide.no/casclient',
-		'http://test.feide.no/cas2',
+		'http://devel01:9145/bruger/wayf/index.jsp',
+		'http://localhost:7070/kultur/login.jsp',
+		'http://localhost:8080/kultur/login.jsp',
 	),
 
-	'auth' => 'saml2', // Legal values: saml2, shib13
+	// Legal values: saml2, shib13
+	'auth' => 'saml2',
+	
 	'ticketcache' => 'ticketcache',
-	'attrname' => 'mail', // 'eduPersonPrincipalName' (an attribute that CAS server returns to the CAS client to prove user is authenticated)
-	'attributes' => FALSE, // set to TRUE if you want to enable transfer of attributes
 
+	'attrname' => 'mail', // 'eduPersonPrincipalName',
+	'attributes' => TRUE, // enable transfer of attributes
+
+	'authsource' => 'casserver',
+	'base64attributes' => true,
 );
 
 ?>
