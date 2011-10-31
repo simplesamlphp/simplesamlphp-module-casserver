@@ -1,3 +1,10 @@
+2011-10-31  Per Møldrup-Dalum  <pdj@statsbiblioteket.dk>
+
+	* Release 2.3
+
+	* Added a hack to keep compatibility with the eduPersonNIN attribute.
+
+
 2011-03-29  Per Møldrup-Dalum  <pdj@statsbiblioteket.dk>
 
 	* Release 2.2
