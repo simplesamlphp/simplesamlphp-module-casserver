@@ -58,6 +58,14 @@ function returnResponse($value, $content = '', $attributes = array(), $base64enc
 			foreach ($attributelist as $attributevalue) {
 				if (!preg_match('/urn:oid/',$attr)) {
 					$attributesxml .= "<cas:".$attr.">" . ($base64encodeQ ? base64_encode(htmlentities($attributevalue )):htmlentities($attributevalue)) . "</cas:$attr>\n";
+					if (preg_match('/schacPersonalUniqueID/',$attr)) {
+						# If we have CPR number in the "new" attribute, copy it into the "old" attribute, creating the old attribute
+						if (preg_match('/urn:mace:terena.org:schac:uniqueID:dk:CPR:([0-9]+)$/', $attributevalue, $matches)) {
+							$attributesxml .= "<cas:norEduPersonNIN>" . ($base64encodeQ ? base64_encode(htmlentities($matches[1])):htmlentities($matches[1])) . "</cas:norEduPersonNIN>\n";
+						} else {
+							SimpleSAML_Logger::warning("Encountered an schacPersonalUniqueID attribute with unknown format!");
+						}
+					}
 				}
 			}
 		}
