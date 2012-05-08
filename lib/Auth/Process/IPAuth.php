@@ -1,7 +1,7 @@
 <?php
 /**
  */
-class sspmod_sbdisco_Auth_Process_IPAuth extends SimpleSAML_Auth_ProcessingFilter {
+class sspmod_sbcasserver_Auth_Process_IPAuth extends SimpleSAML_Auth_ProcessingFilter {
 
 	/**
 	 * The URL of the IPAuth REST service

@@ -144,14 +144,14 @@ all.');
 </div>
 <!--div id="content">
 <div class="panel" style="display:none;">
-<p><?php echo $this->t('{sbdisco:discopage:moredescription}'); ?></p>
+<p><?php echo $this->t('{sbsbcasserver:discopage:moredescription}'); ?></p>
 </div-->
 
     <script type="text/javascript">
       goDanish();
     </script>
  
-<!--h2 class="flip"><?php echo $this->t('{sbdisco:discopage:moredescription_heading_show_more}')?></h2-->
+<!--h2 class="flip"><?php echo $this->t('{sbcasserver:discopage:moredescription_heading_show_more}')?></h2-->
  
 </div>
 		

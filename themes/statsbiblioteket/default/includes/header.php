@@ -44,17 +44,17 @@ if (array_key_exists('pageid', $this->data)) {
         $(document).ready(function() {
             $(".flip").click(function() {
                 $(".panel").slideToggle("slow");
-                if ($(".flip").html() == "<?php echo $this->t('{sbdisco:discopage:moredescription_heading_show_less}')?>") {
-                    $(".flip").html("<?php echo $this->t('{sbdisco:discopage:moredescription_heading_show_more}')?>");
+                if ($(".flip").html() == "<?php echo $this->t('{sbcasserver:discopage:moredescription_heading_show_less}')?>") {
+                    $(".flip").html("<?php echo $this->t('{sbcasserver:discopage:moredescription_heading_show_more}')?>");
                 } else {
-                    $(".flip").html("<?php echo $this->t('{sbdisco:discopage:moredescription_heading_show_less}')?>");
+                    $(".flip").html("<?php echo $this->t('{sbcasserver:discopage:moredescription_heading_show_less}')?>");
                 }
             });
         });
     </script>
     -->
 
-    <link rel="stylesheet" type="text/css" href="/<?php echo $this->data['baseurlpath']; ?>module.php/sbdisco/resources/default.css"/>
+    <link rel="stylesheet" type="text/css" href="/<?php echo $this->data['baseurlpath']; ?>module.php/sbcasserver/resources/default.css"/>
     <link rel="icon" type="image/icon" href="/<?php echo $this->data['baseurlpath']; ?>resources/icons/favicon.ico"/>
 
 <?php
@@ -127,7 +127,7 @@ if ($onLoad !== '') {
 <div id="wrap">
 
     <div id="header">
-        <h1> <img src="/<?php echo $this->data['baseurlpath']; ?>module.php/sbdisco/resources/logo1.gif"/> </h1>
+        <h1> <img src="/<?php echo $this->data['baseurlpath']; ?>module.php/sbcasserver/resources/logo1.gif"/> </h1>
     </div>
 
     <!----------------- TRANSLATED TEXTS GO HERE ----------------->
