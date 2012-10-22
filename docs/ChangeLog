@@ -1,3 +1,8 @@
+2012-10-22 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
+
+        * Added AttributeCollector auth filter for collecting attributes from
+	  the attribute store.
+
 2012-05-22  Per Møldrup-Dalum  <pdj@statsbiblioteket.dk>
 
 	* release 3.1
