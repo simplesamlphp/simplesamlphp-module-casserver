@@ -1,4 +1,5 @@
 <?php
+require 'tickets.php';
 
 /*
  * Incomming parameters:
@@ -25,15 +26,13 @@ if (array_key_exists('renew', $_GET)) {
 	$renew = TRUE;
 }
 
-
-
 try {
 	/* Load simpleSAMLphp, configuration and metadata */
 	$casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 	
 	
 	$path = $casconfig->resolvePath($casconfig->getValue('ticketcache', 'ticketcache'));
-  $base64encodeQ = $casconfig->getValue('base64attributes',false);
+        $base64encodeQ = $casconfig->getValue('base64attributes',false);
 	
 	$ticketcontent = retrieveTicket($ticket, $path);
 	
@@ -58,14 +57,6 @@ function returnResponse($value, $content = '', $attributes = array(), $base64enc
 			foreach ($attributelist as $attributevalue) {
 				if (!preg_match('/urn:oid/',$attr)) {
 					$attributesxml .= "<cas:".$attr.">" . ($base64encodeQ ? base64_encode(htmlentities($attributevalue )):htmlentities($attributevalue)) . "</cas:$attr>\n";
-					if (preg_match('/schacPersonalUniqueID/',$attr)) {
-						# If we have CPR number in the "new" attribute, copy it into the "old" attribute, creating the old attribute
-						if (preg_match('/urn:mace:terena.org:schac:uniqueID:dk:CPR:([0-9]+)$/', $attributevalue, $matches)) {
-							$attributesxml .= "<cas:norEduPersonNIN>" . ($base64encodeQ ? base64_encode(htmlentities($matches[1])):htmlentities($matches[1])) . "</cas:norEduPersonNIN>\n";
-						} else {
-							SimpleSAML_Logger::warning("Encountered an schacPersonalUniqueID attribute with unknown format!");
-						}
-					}
 				}
 			}
 		}
@@ -84,39 +75,6 @@ function returnResponse($value, $content = '', $attributes = array(), $base64enc
     </cas:authenticationFailure>
 </cas:serviceResponse>';
 	}
-}
-
-function storeTicket($ticket, $path, &$value ) {
-
-	if (!is_dir($path)) 
-		throw new Exception('Directory for CAS Server ticket storage [' . $path . '] does not exists. ');
-		
-	if (!is_writable($path)) 
-		throw new Exception('Directory for CAS Server ticket storage [' . $path . '] is not writable. ');
-
-	$filename = $path . '/' . $ticket;
-	file_put_contents($filename, serialize($value));
-}
-
-function retrieveTicket($ticket, $path) {
-
-	// Zakomentirao Dubravko Voncina (to ga je mucilo)
-	// if (!preg_match('/^_?[a-zA-Z0-9]+$/D', $ticket)) throw new Exception('Invalid characters in ticket');
-	if (!preg_match('/^ST-?[a-zA-Z0-9]+$/D', $ticket)) throw new Exception('Invalid characters in ticket');
-
-	if (!is_dir($path)) 
-		throw new Exception('Directory for CAS Server ticket storage [' . $path . '] does not exists. ');
-
-	$filename = $path . '/' . $ticket;
-
-	if (!file_exists($filename))
-		throw new Exception('Could not find ticket');
-
-	$content = file_get_contents($filename);
-
-	unlink($filename);
-
-	return unserialize($content);
 }
 
 ?>

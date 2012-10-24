@@ -1,6 +1,6 @@
 <?php
 
-class sspmod_attributestore_Auth_Process_AttributeCollector extends SimpleSAML_Auth_ProcessingFilter {
+class sspmod_sbcasserver_Auth_Process_AttributeCollector extends SimpleSAML_Auth_ProcessingFilter {
 
       private $attributeStoreUrl;
       

@@ -30,7 +30,7 @@ $config = array(
                                     'append.string' => '@ip.roles.statsbiblioteket.dk',
                                     'base64.encode' => false,),
                                     20 => array(
-                                    'class' => 'attributestore:AttributeCollector',
+                                    'class' => 'sbcasserver:AttributeCollector',
                                     'attributeStoreUrl' => 'http://devel06:9561/attributestore/services/json/store/',),
                                     ),
 

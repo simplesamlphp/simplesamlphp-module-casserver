@@ -1,7 +1,8 @@
-2012-10-22 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
+2012-10-24 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
 
         * Added AttributeCollector auth filter for collecting attributes from
 	  the attribute store.
+        * Added CAS logout
 
 2012-05-22  Per Møldrup-Dalum  <pdj@statsbiblioteket.dk>
 
