@@ -3,33 +3,31 @@
 class sspmod_sbcasserver_Auth_Process_AttributeCollector extends SimpleSAML_Auth_ProcessingFilter {
 
       private $attributeStoreUrl;
-      
+      private $attributeStorePrefix;
+ 
       public function __construct($config, $reserved) {
             parent::__construct($config, $reserved);
 
             $this->attributeStoreUrl = preg_replace('/\/$/','',$config['attributeStoreUrl']);
+            $this->attributeStorePrefix = $config['attributeStorePrefix'];
       }
 
       public function process(&$request) {
-            $idp = $this->getEntityIdFromMetaData($request['Source']);
-            $sp = $this->getEntityIdFromMetaData($request['Destination']);
-
-            SimpleSAML_Logger::debug('AttributeCollector: idp ' . var_export($idp, TRUE) . '.');
-            SimpleSAML_Logger::debug('AttributeCollector: sp ' . var_export($sp, TRUE) . '.');
-
             $userId = $this->getUserIdFromRequest($request);
 
             SimpleSAML_Logger::debug('AttributeCollector: user ' . var_export($userId, TRUE));
 
-            $attributes = $this->getAttributesFromAttributeStore($this->scopeKey($idp,$userId,$sp,'').'*');
+            $attributes = $this->getAttributesFromAttributeStore($this->scopeKey('').'*');
 
             SimpleSAML_Logger::debug('AttributeCollector: attribute scoped response ' . var_export($attributes, TRUE));
 
-            foreach($attributes as $i => &$attribute) {
-                  $name = $this->unscopeKey($idp,$userId,$sp,$attribute['key']);
-                  $value = $attribute['value'];
+            if(!is_null($attributes)) {
+                  foreach($attributes as $i => &$attribute) {
+                        $name = $this->unscopeKey($attribute['key']);
+                        $value = $attribute['value'];
                   
-                  $request['Attributes'][$name] = array($value);
+                        $request['Attributes'][$name] = array($value);
+                  }
             }
 
             SimpleSAML_Logger::debug('AttributeCollector: Attributes' . var_export($request['Attributes'], TRUE));
@@ -38,7 +36,7 @@ class sspmod_sbcasserver_Auth_Process_AttributeCollector extends SimpleSAML_Auth
 
             SimpleSAML_Logger::debug('AttributeCollector: lastLogin ' . var_export($lastLogin, TRUE));
 
-            $scopedLastLogin['key'] = $this->scopeKey($idp,$userId,$sp,$lastLogin['key']);
+            $scopedLastLogin['key'] = $this->scopeKey($lastLogin['key']);
             $scopedLastLogin['value'] = $lastLogin['value'];
 
             SimpleSAML_Logger::debug('AttributeCollector: scopedLastLogin ' . var_export($scopedLastLogin, TRUE));
@@ -46,16 +44,6 @@ class sspmod_sbcasserver_Auth_Process_AttributeCollector extends SimpleSAML_Auth
             $response = $this->createAttributeInAttributeStore($scopedLastLogin);
 
             SimpleSAML_Logger::debug('AttributeCollector: response ' . var_export($response, TRUE));
-      }
-
-      private function getEntityIdFromMetaData($metadata) {
-            foreach($metadata as $key => $value) {
-                  if(preg_match('/^entity/', $key)) {
-                        return $value;
-                  }
-            }
-
-            return "unknown";
       }
 
       private function getUserIdFromRequest($request) {
@@ -90,14 +78,13 @@ class sspmod_sbcasserver_Auth_Process_AttributeCollector extends SimpleSAML_Auth
             return array('key' => 'SBLastLoginTimestamp', 'value' => time());
       }
 
-      private function scopeKey($idp, $userId, $sp, $key) {
-            return urlencode($idp.'.'.$userId.'.'.$sp.'.'.$key);
+      private function scopeKey($key) {
+            return $this->attributeStorePrefix.'.'.urlencode($key);
       }
 
-      private function unscopeKey($idp, $userId, $sp, $key) {
-            $prefix = $idp.'.'.$userId.'.'.$sp.'.';
+      private function unscopeKey($key) {
 
-            return str_replace($prefix,'',urldecode($key));
+            return urldecode(str_replace($this->attributeStorePrefix.'.','',$key));
       }
 }
 ?>

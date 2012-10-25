@@ -31,7 +31,8 @@ $config = array(
                                     'base64.encode' => false,),
                                     20 => array(
                                     'class' => 'sbcasserver:AttributeCollector',
-                                    'attributeStoreUrl' => 'http://devel06:9561/attributestore/services/json/store/',),
+                                    'attributeStoreUrl' => 'http://devel06:9561/attributestore/services/json/store/',
+                                    'attributeStorePrefix' => 'mediestream'),
                                     ),
 
 	),
