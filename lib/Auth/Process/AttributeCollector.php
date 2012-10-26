@@ -79,12 +79,12 @@ class sspmod_sbcasserver_Auth_Process_AttributeCollector extends SimpleSAML_Auth
       }
 
       private function scopeKey($key) {
-            return $this->attributeStorePrefix.'.'.urlencode($key);
+            return urlencode($this->attributeStorePrefix.'.'.$key);
       }
 
       private function unscopeKey($key) {
 
-            return urldecode(str_replace($this->attributeStorePrefix.'.','',$key));
+            return str_replace($this->attributeStorePrefix.'.','',urldecode($key));
       }
 }
 ?>
