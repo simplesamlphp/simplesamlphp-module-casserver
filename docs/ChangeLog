@@ -1,10 +1,11 @@
 2012-10-31 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
-
+        * release 3.3.0
         * IPRoleMapper can now be configured to add its roles to any given attribute
           by setting the filter parameter 'targetAttributeName'.
 
 2012-10-24 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
 
+        * release 3.2
         * Added AttributeCollector auth filter for collecting attributes from
 	  the attribute store.
         * Added CAS logout
