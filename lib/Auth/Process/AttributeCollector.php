@@ -17,13 +17,13 @@ class sspmod_sbcasserver_Auth_Process_AttributeCollector extends SimpleSAML_Auth
 
             SimpleSAML_Logger::debug('AttributeCollector: user ' . var_export($userId, TRUE));
 
-            $attributes = $this->getAttributesFromAttributeStore($this->scopeKey('').'*');
+            $attributes = $this->getAttributesFromAttributeStore($this->scopeKey($userId,'').'*');
 
             SimpleSAML_Logger::debug('AttributeCollector: attribute scoped response ' . var_export($attributes, TRUE));
 
             if(!is_null($attributes)) {
                   foreach($attributes as $i => &$attribute) {
-                        $name = $this->unscopeKey($attribute['key']);
+                        $name = $this->unscopeKey($userId,$attribute['key']);
                         $value = $attribute['value'];
                   
                         $request['Attributes'][$name] = array($value);
@@ -36,7 +36,7 @@ class sspmod_sbcasserver_Auth_Process_AttributeCollector extends SimpleSAML_Auth
 
             SimpleSAML_Logger::debug('AttributeCollector: lastLogin ' . var_export($lastLogin, TRUE));
 
-            $scopedLastLogin['key'] = $this->scopeKey($lastLogin['key']);
+            $scopedLastLogin['key'] = $this->scopeKey($userId,$lastLogin['key']);
             $scopedLastLogin['value'] = $lastLogin['value'];
 
             SimpleSAML_Logger::debug('AttributeCollector: scopedLastLogin ' . var_export($scopedLastLogin, TRUE));
@@ -78,13 +78,12 @@ class sspmod_sbcasserver_Auth_Process_AttributeCollector extends SimpleSAML_Auth
             return array('key' => 'SBLastLoginTimestamp', 'value' => time());
       }
 
-      private function scopeKey($key) {
-            return urlencode($this->attributeStorePrefix.'.'.$key);
+      private function scopeKey($userId, $key) {
+            return urlencode($this->attributeStorePrefix.'.'.$userId.'.'.$key);
       }
 
-      private function unscopeKey($key) {
-
-            return str_replace($this->attributeStorePrefix.'.','',urldecode($key));
+      private function unscopeKey($userId, $key) {
+            return str_replace($this->attributeStorePrefix.'.'.$userId.'.','',urldecode($key));
       }
 }
 ?>
