@@ -17,7 +17,7 @@ $config = array (
 	
 	'ticketcache' => 'ticketcache',
 
-	'attrname' => 'mail', // 'eduPersonPrincipalName',
+	'attrname' => 'eduPersonPrincipalName', // 'eduPersonPrincipalName',
 	'attributes' => TRUE, // enable transfer of attributes
 
 	'authsource' => 'casserver',
