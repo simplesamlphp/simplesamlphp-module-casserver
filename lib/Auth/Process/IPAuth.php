@@ -9,6 +9,7 @@ class sspmod_sbcasserver_Auth_Process_IPAuth extends SimpleSAML_Auth_ProcessingF
 	private $restUrl = '';
 	private $appendString = "";
 	private $base64Encode = true;
+        private $targetAttributeName = 'eduPersonScopedAffiliation';
 
 	/**
 	 * Initialize this filter.
@@ -42,6 +43,10 @@ class sspmod_sbcasserver_Auth_Process_IPAuth extends SimpleSAML_Auth_ProcessingF
 			if($name == 'base64.encode') {
 				$this->base64Encode = $value;
 			}
+
+                        if($name == 'targetAttributeName') {
+                                $this->targetAttributeName = $value;
+                        }
 		}
 	}
 
@@ -119,17 +124,17 @@ class sspmod_sbcasserver_Auth_Process_IPAuth extends SimpleSAML_Auth_ProcessingF
 
 		if(!empty($ipRoles)) {
 			SimpleSAML_Logger::debug('We got some IP roles to append to the attributes set');
-			if (array_key_exists('eduPersonScopedAffiliation',$attributes)) {
-				SimpleSAML_Logger::debug("eduPersonScopedAffiliation already exists with the value "
-					.print_r($attributes['eduPersonScopedAffiliation'],true)
+			if (array_key_exists($this->targetAttributeName,$attributes)) {
+				SimpleSAML_Logger::debug(var_export($this->targetAttributeName, true).' already exists with the value '
+					.print_r($attributes[$this-targetAttributeName],true)
 					."Adding the IP role(s): "
 					.print_r($ipRoles,true));
 
-				$attributes['eduPersonScopedAffiliation'] = array_merge($attributes['eduPersonScopedAffiliation'], $ipRoles);
+				$attributes[$this->targetAttributeName] = array_merge($attributes[$this->targetAttributeName], $ipRoles);
 			} else {
-				SimpleSAML_Logger::debug("eduPersonScopedAffiliation do not exist yet. Adding it with the value(s):".print_r($ipRoles,true));
+				SimpleSAML_Logger::debug(var_export($this->targetAttributeName, true).' do not exist yet. Adding it with the value(s):'.print_r($ipRoles,true));
 
-				$attributes['eduPersonScopedAffiliation'] = $ipRoles;
+				$attributes[$this->targetAttributeName] = $ipRoles;
 			}
 		}
 	}

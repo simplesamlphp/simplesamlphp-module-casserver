@@ -28,7 +28,9 @@ $config = array(
                                     'class' => 'sbcasserver:IPAuth',
                                     'url' => 'http://alhena:7950/iprolemapping/getRoles/',
                                     'append.string' => '@ip.roles.statsbiblioteket.dk',
-                                    'base64.encode' => false,),
+                                    'base64.encode' => false,
+                                    'targetAttributeName' => 'SBIPRoleMapper',//defaults to 'eduPersonScopedAffiliation'
+                                    ),
                                     20 => array(
                                     'class' => 'sbcasserver:AttributeCollector',
                                     'attributeStoreUrl' => 'http://devel06:9561/attributestore/services/json/store/',
