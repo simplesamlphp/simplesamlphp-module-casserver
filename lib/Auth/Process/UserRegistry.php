@@ -93,13 +93,13 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
   }
 
   private function calculateSBAffiliation($borrowerType, $affiliationMapping) {
-    $affiliation = 'affiliate';
+    $affiliation = 'affiliate@statsbibliotektet.dk';
 
     foreach($affiliationMapping as $affiliationValue => $affiliationPattern) {
       SimpleSAML_Logger::debug('matching pattern "'.$affiliationPattern.'" against "'.$borrowerType.'"');
 
       if(preg_match($affiliationPattern,$borrowerType)) {
-	$affiliation = $affiliationValue;
+	$affiliation = $affiliationValue.'@statsbiblioteket.dk';
       }
     }
 
@@ -127,9 +127,9 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
   }
 
   private function addAttribute(&$attributes, $attributeName, $attributeValue) {
-    if(in_array($attributeName, $attributes)) {
-      if(!in_array($attributeValue, $attributes[$attributeName])) {
-	push_back($attributes[$attributeName], $attributeValue);
+    if(array_key_exists($attributeName, $attributes)) {
+      if(!array_key_exists($attributeValue, $attributes[$attributeName])) {
+        array_push($attributes[$attributeName], $attributeValue);
       }
     } else {
       $attributes[$attributeName] = array($attributeValue);
