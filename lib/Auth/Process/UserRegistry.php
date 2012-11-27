@@ -128,7 +128,7 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
 
   private function addAttribute(&$attributes, $attributeName, $attributeValue) {
     if(array_key_exists($attributeName, $attributes)) {
-      if(!array_key_exists($attributeValue, $attributes[$attributeName])) {
+      if(!in_array($attributeValue, $attributes[$attributeName])) {
         array_push($attributes[$attributeName], $attributeValue);
       }
     } else {
