@@ -4,6 +4,7 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
 
   private $soapClient;
   private $sbBorrowerIdAttribute;
+  private $sbPersonScopedAffiliationAttribute;
  
   public function __construct($config, $reserved) {
     parent::__construct($config, $reserved);
@@ -18,7 +19,17 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
 
     $this->soapClient = new SoapClient($wsuserregistry);
 
+    if(!is_string($config['sbBorrowerIdAttribute'])) {
+      throw new Exception('Missing or invalid sbBorrowerIdAttribute option in config.');
+    }
+
     $this->sbBorrowerIdAttribute = $config['sbBorrowerIdAttribute'];
+
+    if(!is_string($config['sbPersonScopedAffiliationAttribute'])) {
+      throw new Exception('Missing or invalid sbPersonScopedAffiliationAttribute option in config.');
+    }
+
+    $this->sbPersonScopedAffiliationAttribute = $config['sbPersonScopedAffiliationAttribute'];
   }
 
   public function process(&$request) {
@@ -35,6 +46,14 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
 
       $this->addAttribute($request['Attributes'], $this->sbBorrowerIdAttribute, $borrowerId);
 
+        $userRegistryAttributesResponse = $this->soapClient->lookupIdpInfo(array('borrowerId' =>$borrowerId));
+
+        if ($userRegistryAttributesResponse->serviceStatus == "IdPInfoRetrieved") {
+	  SimpleSAML_Logger::debug('SBUserRegistryAuth: look up of user ' . var_export($username, TRUE) . ' attributes succeeded');
+        } else {
+	  SimpleSAML_Logger::error('SBUserRegistryAuth: look up of user ' . var_export($username, TRUE) . ' attributes failed with status '.var_export($userRegistryAttributesResponse->serviceStatus).'.');
+	}
+	
     } else if($userRegistryResponse->serviceStatus == 'SystemError') {
       SimpleSAML_Logger::error('SBUserRegistry: look up of user ' . var_export($username, TRUE) . ' failed with status '.var_export($userRegistryResponse->serviceStatus).'.');
     }

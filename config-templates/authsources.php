@@ -42,6 +42,7 @@ $config = array(
                                     'userRegistryRemoteSystems' => array('ALEPH'),
                                     'activeUserRegistryStatuses' => array('RemoteSystemUpdated', 'RemoteSystemUpdatePending'),
 				    'sbBorrowerIdAttribute' => 'SBBorrowerId',
+				    'sbPersonScopedAffiliationAttribute' => 'SBPersonScopedAffiliation',
 				    ),
 
 			       ),
