@@ -36,6 +36,13 @@ $config = array(
                                     'attributeStoreUrl' => 'http://devel06:9561/attributestore/services/json/store/',
                                     'attributeStorePrefix' => 'mediestream'),
                                     ),
+                                    30 => array(
+                                    'class' => 'sbcasserver:UserRegistry',
+                                    'ws-userregistry' =>'http://devel06:9140/ws-userregistry/services/UserRegistryPort?wsdl',
+                                    'userRegistryRemoteSystems' => array('ALEPH'),
+                                    'activeUserRegistryStatuses' => array('RemoteSystemUpdated', 'RemoteSystemUpdatePending'),
+				    'sbBorrowerIdAttribute' => 'SBBorrowerId',
+				    ),
 
-	),
+			       ),
 );

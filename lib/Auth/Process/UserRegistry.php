@@ -5,6 +5,7 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
   private $soapClient;
   private $activeUserRegistryStatuses;
   private $userRegistryRemoteSystems;
+  private $sbBorrowerIdAttribute;
  
   public function __construct($config, $reserved) {
     parent::__construct($config, $reserved);
@@ -30,6 +31,12 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
     }
 
     $this->userRegistryRemoteSystems = $config['userRegistryRemoteSystems'];
+
+    if(!is_string($config['sbBorrowerIdAttribute'])) {
+      throw new Exception('Missing or sbBorrowerIdAttribute option in config.');
+    }
+
+    $this->sbBorrowerIdAttribute = $config['sbBorrowerIdAttribute'];
   }
 
   public function process(&$request) {
@@ -40,9 +47,24 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
     $userRegistryResponse = $this->soapClient->findUserAccount(array('accountId' => $username));
 
     if($userRegistryResponse->serviceStatus == 'AccountRetrieved') {
-      SimpleSAML_Logger::debug('SBUserRegistry: user has borrower id ' . var_export($userRegistryResponse->userAccount->borrowerId, TRUE) . '.');
+      $borrowerId = $userRegistryResponse->userAccount->borrowerId;
+
+      SimpleSAML_Logger::debug('SBUserRegistry: user has borrower id ' . var_export($borrowerId, TRUE) . '.');
+
+      $this->addAttribute($request['Attributes'], $this->sbBorrowerIdAttribute, $borrowerId);
+
     } else if($userRegistryResponse->serviceStatus == 'SystemError') {
       SimpleSAML_Logger::error('SBUserRegistry: look up of user ' . var_export($username, TRUE) . ' failed with status '.var_export($userRegistryResponse->serviceStatus).'.');
+    }
+  }
+
+  private function addAttribute(&$attributes, $attributeName, $attributeValue) {
+    if(in_array($attributeName, $attributes)) {
+      if(!in_array($attributeValue, $attributes[$attributeName])) {
+	push_back($attributes[$attributeName], $attributeValue);
+      }
+    } else {
+      $attributes[$attributeName] = array($attributeValue);
     }
   }
 
