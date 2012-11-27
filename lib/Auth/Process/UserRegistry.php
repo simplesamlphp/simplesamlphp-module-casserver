@@ -32,13 +32,13 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
       throw new Exception('Missing or invalid sbPersonPrimaryAffiliationAttribute option in config.');
     }
 
-    $this->sbPersonScopedAffiliationAttribute = $config['sbPersonPrimaryAffiliationAttribute'];
+    $this->sbPersonPrimaryAffiliationAttribute = $config['sbPersonPrimaryAffiliationAttribute'];
 
     if(is_null($config['sbPersonPrimaryAffiliationMapping'])) {
       throw new Exception('Missing or invalid sbPersonPrimaryAffiliationMapping option in config.');
     }
 
-    $this->sbPersonScopedAffiliationMapping = $config['sbPersonScopedAffiliationMapping'];
+    $this->sbPersonPrimaryAffiliationMapping = $config['sbPersonPrimaryAffiliationMapping'];
 
     if(!is_string($config['sbPersonScopedAffiliationAttribute'])) {
       throw new Exception('Missing or invalid sbPersonScopedAffiliationAttribute option in config.');
