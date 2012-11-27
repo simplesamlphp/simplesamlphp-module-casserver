@@ -73,10 +73,14 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
 	SimpleSAML_Logger::debug('SBUserRegistryAuth: look up of user ' . var_export($username, TRUE) . ' attributes succeeded');
 
         if(isset($userRegistryAttributesResponse->Info->organizationalRelation)) {
-	  $request['Attributes'][$this->sbPersonPrimaryAffiliationAttribute] = $this->calculateAffiliation($userRegistryAttributesResponse->Info->organizationalRelation, $this->sbPersonPrimaryAffiliationMapping);
-	  $request['Attributes'][$this->sbPersonScopedAffiliationAttribute] = $this->translateSBScopedAffiliation($userRegistryAttributesResponse->Info->organizationalRelation, $this->sbPersonScopedAffiliationMapping);
+	  $this->addAttribute($request['Attributes'],$this->sbPersonPrimaryAffiliationAttribute,
+			      $this->calculateSBAffiliation($userRegistryAttributesResponse->Info->organizationalRelation, $this->sbPersonPrimaryAffiliationMapping));
+	  
+	  foreach($this->translateSBScopedAffiliation($userRegistryAttributesResponse->Info->organizationalRelation, $this->sbPersonScopedAffiliationMapping) as $value) {
+	    $this->addAttribute($request['Attributes'],$this->sbPersonScopedAffiliationAttribute,$value);
+	  }
 	} else {
-	  $request['Attributes'][$this->sbPersonPrimaryAffiliationAttribute] = 'affiliate';
+	  $this->addAttribute($request['Attributes'],$this->sbPersonPrimaryAffiliationAttribute,'affiliate');
 	}
 
       } else {
@@ -89,20 +93,18 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
   }
 
   private function calculateSBAffiliation($borrowerType, $affiliationMapping) {
-    $affiliation = array('affiliate');
+    $affiliation = 'affiliate';
 
     foreach($affiliationMapping as $affiliationValue => $affiliationPattern) {
       SimpleSAML_Logger::debug('matching pattern "'.$affiliationPattern.'" against "'.$borrowerType.'"');
 
       if(preg_match($affiliationPattern,$borrowerType)) {
-	$affiliation = array($affiliationValue);
+	$affiliation = $affiliationValue;
       }
     }
 
-    foreach($affiliation as $a) {
-      SimpleSAML_Logger::debug('resulting affiliation "'.$a.'"');
-    }
-
+    SimpleSAML_Logger::debug('resulting affiliation "'.$affiliation.'"');
+ 
     return $affiliation;
   }
 
