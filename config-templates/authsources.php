@@ -42,6 +42,8 @@ $config = array(
                                     'userRegistryRemoteSystems' => array('ALEPH'),
                                     'activeUserRegistryStatuses' => array('RemoteSystemUpdated', 'RemoteSystemUpdatePending'),
 				    'sbBorrowerIdAttribute' => 'SBBorrowerId',
+				    'sbPersonPrimaryAffiliationAttribute' => 'SBPersonPrimaryAffiliation',
+				    'sbPersonPrimaryAffiliationMapping' => array('staff' => '/^ans@statsbiblioteket\.dk/'),
 				    'sbPersonScopedAffiliationAttribute' => 'SBPersonScopedAffiliation',
 				    'sbPersonScopedAffiliationMapping' => array('staff@' => '/^ans@/',
 										'student@'=>'/^stud@/',

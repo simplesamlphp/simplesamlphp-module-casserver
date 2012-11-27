@@ -6,6 +6,8 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
   private $sbBorrowerIdAttribute;
   private $sbPersonScopedAffiliationAttribute;
   private $sbPersonScopedAffiliationMapping;
+  private $sbPersonPrimaryAffiliationAttribute;
+  private $sbPersonPrimaryAffiliationMapping;
  
   public function __construct($config, $reserved) {
     parent::__construct($config, $reserved);
@@ -25,6 +27,18 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
     }
 
     $this->sbBorrowerIdAttribute = $config['sbBorrowerIdAttribute'];
+
+    if(!is_string($config['sbPersonPrimaryAffiliationAttribute'])) {
+      throw new Exception('Missing or invalid sbPersonPrimaryAffiliationAttribute option in config.');
+    }
+
+    $this->sbPersonScopedAffiliationAttribute = $config['sbPersonPrimaryAffiliationAttribute'];
+
+    if(is_null($config['sbPersonPrimaryAffiliationMapping'])) {
+      throw new Exception('Missing or invalid sbPersonPrimaryAffiliationMapping option in config.');
+    }
+
+    $this->sbPersonScopedAffiliationMapping = $config['sbPersonScopedAffiliationMapping'];
 
     if(!is_string($config['sbPersonScopedAffiliationAttribute'])) {
       throw new Exception('Missing or invalid sbPersonScopedAffiliationAttribute option in config.');
@@ -59,7 +73,10 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
 	SimpleSAML_Logger::debug('SBUserRegistryAuth: look up of user ' . var_export($username, TRUE) . ' attributes succeeded');
 
         if(isset($userRegistryAttributesResponse->Info->organizationalRelation)) {
-            $attributes[$this->sbPersonScopedAffiliationAttribute] = $this->translateScopedAffiliation($userRegistryAttributesResponse->Info->organizationalRelation, $this->sbPersonScopedAffiliationMapping);
+	  $request['Attributes'][$this->sbPersonPrimaryAffiliationAttribute] = $this->calculateAffiliation($userRegistryAttributesResponse->Info->organizationalRelation, $this->sbPersonPrimaryAffiliationMapping);
+	  $request['Attributes'][$this->sbPersonScopedAffiliationAttribute] = $this->translateSBScopedAffiliation($userRegistryAttributesResponse->Info->organizationalRelation, $this->sbPersonScopedAffiliationMapping);
+	} else {
+	  $request['Attributes'][$this->sbPersonPrimaryAffiliationAttribute] = 'affiliate';
 	}
 
       } else {
@@ -71,8 +88,26 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
     }
   }
 
-  private function translateScopedAffiliation($borrowerType, $affiliationTranslation) {
-    $scopedAffiliation = array('affiliate@statsbiblioteket.dk');
+  private function calculateSBAffiliation($borrowerType, $affiliationMapping) {
+    $affiliation = array('affiliate');
+
+    foreach($affiliationMapping as $affiliationValue => $affiliationPattern) {
+      SimpleSAML_Logger::debug('matching pattern "'.$affiliationPattern.'" against "'.$borrowerType.'"');
+
+      if(preg_match($affiliationPattern,$borrowerType)) {
+	$affiliation = array($affiliationValue);
+      }
+    }
+
+    foreach($affiliation as $a) {
+      SimpleSAML_Logger::debug('resulting affiliation "'.$a.'"');
+    }
+
+    return $affiliation;
+  }
+
+  private function translateSBScopedAffiliation($borrowerType, $affiliationTranslation) {
+    $scopedAffiliation = array();
 
     foreach($affiliationTranslation as $affiliationValue => $affiliationPattern) {
       SimpleSAML_Logger::debug('matching pattern "'.$affiliationPattern.'" against "'.$borrowerType.'"');
