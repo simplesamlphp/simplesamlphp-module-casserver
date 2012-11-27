@@ -43,6 +43,9 @@ $config = array(
                                     'activeUserRegistryStatuses' => array('RemoteSystemUpdated', 'RemoteSystemUpdatePending'),
 				    'sbBorrowerIdAttribute' => 'SBBorrowerId',
 				    'sbPersonScopedAffiliationAttribute' => 'SBPersonScopedAffiliation',
+				    'sbPersonScopedAffiliationMapping' => array('staff@' => '/^ans@/',
+										'student@'=>'/^stud@/',
+										'affiliate@'=>'/^emeritus@/'),
 				    ),
 
 			       ),

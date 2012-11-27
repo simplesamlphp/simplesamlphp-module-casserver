@@ -5,6 +5,7 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
   private $soapClient;
   private $sbBorrowerIdAttribute;
   private $sbPersonScopedAffiliationAttribute;
+  private $sbPersonScopedAffiliationMapping;
  
   public function __construct($config, $reserved) {
     parent::__construct($config, $reserved);
@@ -30,6 +31,12 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
     }
 
     $this->sbPersonScopedAffiliationAttribute = $config['sbPersonScopedAffiliationAttribute'];
+
+    if(is_null($config['sbPersonScopedAffiliationMapping'])) {
+      throw new Exception('Missing or invalid sbPersonScopedAffiliationMapping option in config.');
+    }
+
+    $this->sbPersonScopedAffiliationMapping = $config['sbPersonScopedAffiliationMapping'];
   }
 
   public function process(&$request) {
@@ -46,17 +53,40 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
 
       $this->addAttribute($request['Attributes'], $this->sbBorrowerIdAttribute, $borrowerId);
 
-        $userRegistryAttributesResponse = $this->soapClient->lookupIdpInfo(array('borrowerId' =>$borrowerId));
+      $userRegistryAttributesResponse = $this->soapClient->lookupIdpInfo(array('borrowerId' =>$borrowerId));
 
-        if ($userRegistryAttributesResponse->serviceStatus == "IdPInfoRetrieved") {
-	  SimpleSAML_Logger::debug('SBUserRegistryAuth: look up of user ' . var_export($username, TRUE) . ' attributes succeeded');
-        } else {
-	  SimpleSAML_Logger::error('SBUserRegistryAuth: look up of user ' . var_export($username, TRUE) . ' attributes failed with status '.var_export($userRegistryAttributesResponse->serviceStatus).'.');
+      if ($userRegistryAttributesResponse->serviceStatus == "IdPInfoRetrieved") {
+	SimpleSAML_Logger::debug('SBUserRegistryAuth: look up of user ' . var_export($username, TRUE) . ' attributes succeeded');
+
+        if(isset($userRegistryAttributesResponse->Info->organizationalRelation)) {
+            $attributes[$this->sbPersonScopedAffiliationAttribute] = $this->translateScopedAffiliation($userRegistryAttributesResponse->Info->organizationalRelation, $this->sbPersonScopedAffiliationMapping);
 	}
+
+      } else {
+	SimpleSAML_Logger::error('SBUserRegistryAuth: look up of user ' . var_export($username, TRUE) . ' attributes failed with status '.var_export($userRegistryAttributesResponse->serviceStatus).'.');
+      }
 	
     } else if($userRegistryResponse->serviceStatus == 'SystemError') {
       SimpleSAML_Logger::error('SBUserRegistry: look up of user ' . var_export($username, TRUE) . ' failed with status '.var_export($userRegistryResponse->serviceStatus).'.');
     }
+  }
+
+  private function translateScopedAffiliation($borrowerType, $affiliationTranslation) {
+    $scopedAffiliation = array('affiliate@statsbiblioteket.dk');
+
+    foreach($affiliationTranslation as $affiliationValue => $affiliationPattern) {
+      SimpleSAML_Logger::debug('matching pattern "'.$affiliationPattern.'" against "'.$borrowerType.'"');
+
+      if(preg_match($affiliationPattern,$borrowerType)) {
+	array_push($scopedAffiliation , preg_replace(array($affiliationPattern), array($affiliationValue), $borrowerType));
+      }
+    }
+
+    foreach($scopedAffiliation as $sa) {
+      SimpleSAML_Logger::debug('resulting scopedAffiliation "'.$sa.'"');
+    }
+
+    return $scopedAffiliation;
   }
 
   private function addAttribute(&$attributes, $attributeName, $attributeValue) {
