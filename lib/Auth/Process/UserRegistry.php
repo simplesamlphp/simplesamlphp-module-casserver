@@ -19,7 +19,16 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
 
     $this->soapClient = new SoapClient($wsuserregistry);
 
+    if(!is_string($config['activeUserRegistryStatuses'])) {
+      throw new Exception('Missing or activeUserRegistryStatuses option in config.');
+    }
+
     $this->activeUserRegistryStatuses = $config['activeUserRegistryStatuses'];
+
+    if(!is_string($config['userRegistryRemoteSystems'])) {
+      throw new Exception('Missing or userRegistryRemoteSystems option in config.');
+    }
+
     $this->userRegistryRemoteSystems = $config['userRegistryRemoteSystems'];
   }
 
