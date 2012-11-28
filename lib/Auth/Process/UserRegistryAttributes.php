@@ -1,6 +1,6 @@
 <?php
 
-class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_ProcessingFilter {
+class sspmod_sbcasserver_Auth_Process_UserRegistryAttributes extends SimpleSAML_Auth_ProcessingFilter {
 
   private $soapClient;
   private $sbBorrowerIdAttribute;
@@ -18,7 +18,7 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
 
     $wsuserregistry = $config['ws-userregistry'];
 
-    SimpleSAML_Logger::debug('SBUserRegistry: ws-userregistry url ' . var_export($wsuserregistry, TRUE) . '.');
+    SimpleSAML_Logger::debug('UserRegistryAttributes: ws-userregistry url ' . var_export($wsuserregistry, TRUE) . '.');
 
     $this->soapClient = new SoapClient($wsuserregistry);
 
@@ -61,7 +61,7 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
       $userRegistryAttributesResponse = $this->soapClient->lookupIdpInfo(array('borrowerId' =>$borrowerId));
 
       if ($userRegistryAttributesResponse->serviceStatus == "IdPInfoRetrieved") {
-	SimpleSAML_Logger::debug('SBUserRegistryAuth: look up of user ' . var_export($borrowerId, TRUE) . ' attributes succeeded');
+	SimpleSAML_Logger::debug('UserRegistryAttributes: look up of user ' . var_export($borrowerId, TRUE) . ' attributes succeeded');
 
         if(isset($userRegistryAttributesResponse->Info->organizationalRelation)) {
 	  $this->addAttribute($request['Attributes'],$this->sbPersonPrimaryAffiliationAttribute,
@@ -75,11 +75,11 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
 	}
 
       } else {
-	SimpleSAML_Logger::error('SBUserRegistryAuth: look up of user ' . var_export($username, TRUE) . ' attributes failed with status '.var_export($userRegistryAttributesResponse->serviceStatus).'.');
+	SimpleSAML_Logger::error('UserRegistryAttributes: look up of user ' . var_export($username, TRUE) . ' attributes failed with status '.var_export($userRegistryAttributesResponse->serviceStatus).'.');
       }
 	
     } else if($userRegistryResponse->serviceStatus == 'SystemError') {
-      SimpleSAML_Logger::error('SBUserRegistry: look up of user ' . var_export($username, TRUE) . ' failed with status '.var_export($userRegistryResponse->serviceStatus).'.');
+      SimpleSAML_Logger::error('UserRegistryAttributes: look up of user ' . var_export($username, TRUE) . ' failed with status '.var_export($userRegistryResponse->serviceStatus).'.');
     }
   }
 
@@ -87,14 +87,14 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
     $affiliation = 'affiliate@statsbibliotektet.dk';
 
     foreach($affiliationMapping as $affiliationValue => $affiliationPattern) {
-      SimpleSAML_Logger::debug('matching pattern "'.$affiliationPattern.'" against "'.$borrowerType.'"');
+      SimpleSAML_Logger::debug('UserRegistryAttributes: matching pattern "'.$affiliationPattern.'" against "'.$borrowerType.'"');
 
       if(preg_match($affiliationPattern,$borrowerType)) {
 	$affiliation = $affiliationValue.'@statsbiblioteket.dk';
       }
     }
 
-    SimpleSAML_Logger::debug('resulting affiliation "'.$affiliation.'"');
+    SimpleSAML_Logger::debug('UserRegistryAttributes: resulting affiliation "'.$affiliation.'"');
  
     return $affiliation;
   }
@@ -103,7 +103,7 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
     $scopedAffiliation = array();
 
     foreach($affiliationTranslation as $affiliationValue => $affiliationPattern) {
-      SimpleSAML_Logger::debug('matching pattern "'.$affiliationPattern.'" against "'.$borrowerType.'"');
+      SimpleSAML_Logger::debug('UserRegistryAttributes: matching pattern "'.$affiliationPattern.'" against "'.$borrowerType.'"');
 
       if(preg_match($affiliationPattern,$borrowerType)) {
 	array_push($scopedAffiliation , preg_replace(array($affiliationPattern), array($affiliationValue), $borrowerType));
@@ -111,7 +111,7 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
     }
 
     foreach($scopedAffiliation as $sa) {
-      SimpleSAML_Logger::debug('resulting scopedAffiliation "'.$sa.'"');
+      SimpleSAML_Logger::debug('UserRegistryAttributes: resulting scopedAffiliation "'.$sa.'"');
     }
 
     return $scopedAffiliation;

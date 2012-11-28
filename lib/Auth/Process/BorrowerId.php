@@ -14,7 +14,7 @@ class sspmod_sbcasserver_Auth_Process_BorrowerId extends SimpleSAML_Auth_Process
 
     $wsuserregistry = $config['ws-userregistry'];
 
-    SimpleSAML_Logger::debug('SBUserRegistry: ws-userregistry url ' . var_export($wsuserregistry, TRUE) . '.');
+    SimpleSAML_Logger::debug('BorrowerId: ws-userregistry url ' . var_export($wsuserregistry, TRUE) . '.');
 
     $this->soapClient = new SoapClient($wsuserregistry);
 
@@ -28,18 +28,18 @@ class sspmod_sbcasserver_Auth_Process_BorrowerId extends SimpleSAML_Auth_Process
   public function process(&$request) {
     $username = $this->getUserIdFromRequest($request);
 
-    SimpleSAML_Logger::debug('SBUserRegistry: looking up user ' . var_export($username, TRUE) . '.');
+    SimpleSAML_Logger::debug('BorrowerId: looking up user ' . var_export($username, TRUE) . '.');
 
     $userRegistryResponse = $this->soapClient->findUserAccount(array('accountId' => $username));
 
     if($userRegistryResponse->serviceStatus == 'AccountRetrieved') {
       $borrowerId = $userRegistryResponse->userAccount->borrowerId;
 
-      SimpleSAML_Logger::debug('SBUserRegistry: user has borrower id ' . var_export($borrowerId, TRUE) . '.');
+      SimpleSAML_Logger::debug('BorrowerId: user has borrower id ' . var_export($borrowerId, TRUE) . '.');
 
       $this->addAttribute($request['Attributes'], $this->sbBorrowerIdAttribute, $borrowerId);
     } else if($userRegistryResponse->serviceStatus == 'SystemError') {
-      SimpleSAML_Logger::error('SBUserRegistry: look up of user ' . var_export($username, TRUE) . ' failed with status '.var_export($userRegistryResponse->serviceStatus).'.');
+      SimpleSAML_Logger::error('BorrowerId: look up of user ' . var_export($username, TRUE) . ' failed with status '.var_export($userRegistryResponse->serviceStatus).'.');
     }
   }
 
