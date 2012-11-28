@@ -58,14 +58,10 @@ class sspmod_sbcasserver_Auth_Process_UserRegistry extends SimpleSAML_Auth_Proce
     if(array_key_exists($this->sbBorrowerIdAttribute, $request['Attributes'])) {
       $borrowerId = $request['Attributes'][$this->sbBorrowerIdAttribute][0];
 
-      SimpleSAML_Logger::debug('SBUserRegistry: user has borrower id ' . var_export($borrowerId, TRUE) . '.');
-
-      $this->addAttribute($request['Attributes'], $this->sbBorrowerIdAttribute, $borrowerId);
-
       $userRegistryAttributesResponse = $this->soapClient->lookupIdpInfo(array('borrowerId' =>$borrowerId));
 
       if ($userRegistryAttributesResponse->serviceStatus == "IdPInfoRetrieved") {
-	SimpleSAML_Logger::debug('SBUserRegistryAuth: look up of user ' . var_export($username, TRUE) . ' attributes succeeded');
+	SimpleSAML_Logger::debug('SBUserRegistryAuth: look up of user ' . var_export($borrowerId, TRUE) . ' attributes succeeded');
 
         if(isset($userRegistryAttributesResponse->Info->organizationalRelation)) {
 	  $this->addAttribute($request['Attributes'],$this->sbPersonPrimaryAffiliationAttribute,
