@@ -32,10 +32,13 @@ try {
 	/* Load simpleSAMLphp, configuration and metadata */
 	$casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 	
+	/* Instantiate ticket store */
+	$ticketStoreConfig = $casconfig->getValue('ticketstore');
+	$ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'],'Cas_TicketStore');
+	$ticketStore = new $ticketStoreClass($casconfig);
 	
-	$path = $casconfig->resolvePath($casconfig->getValue('ticketcache', 'ticketcache'));
-	
-	$ticketcontent = retrieveTicket($ticket, $path);
+	$ticketcontent = $ticketStore->getTicket($ticket);
+	$ticketStore->deleteTicket($ticket);
 	
 	$usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
 	
