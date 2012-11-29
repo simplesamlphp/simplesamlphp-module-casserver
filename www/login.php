@@ -47,8 +47,7 @@ $as->requireAuth();	// added by Dubravko Voncina
 
 $attributes = $as->getAttributes();		// added by Dubravko Voncina
 
-$ticket = str_replace( '_', 'ST-', SimpleSAML_Utilities::generateID() );
-$ticketStore->createTicket($ticket, $attributes);
+$ticket = $ticketStore->createTicket($attributes);
 
 SimpleSAML_Logger::debug('sbcasserver logout url'.$as->getLogoutURL());
 

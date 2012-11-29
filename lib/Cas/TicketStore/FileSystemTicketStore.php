@@ -22,10 +22,13 @@ class sspmod_sbcasserver_Cas_TicketStore_FileSystemTicketStore {
     $this->pathToTicketDirectory = preg_replace('/\/$/','',$path);
   }
 
-  public function createTicket($ticket, $value ) {
+  public function createTicket($value) {
+    $ticket = str_replace( '_', 'ST-', SimpleSAML_Utilities::generateID() );
 
     $filename = $this->pathToTicketDirectory . '/' . $ticket;
     file_put_contents($filename, serialize($value));
+
+    return $ticket;
   }
 
   public function getTicket($ticket) {
