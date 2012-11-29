@@ -31,7 +31,7 @@ $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 /* Instantiate ticket store */
 $ticketStoreConfig = $casconfig->getValue('ticketstore');
 $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'],'Cas_TicketStore');
-$ticketstore = new $ticketStoreClass($casconfig);
+$ticketStore = new $ticketStoreClass($casconfig);
 
 $as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
 
