@@ -19,12 +19,12 @@ class sspmod_sbcasserver_Cas_TicketStore_FileSystemTicketStore {
     if (!is_writable($path)) 
       throw new Exception('Directory for CAS Server ticket storage [' . $path . '] is not writable. ');
 
-    $pathToTicketDirectory = preg_replace('/\/$/','',$path);
+    $this->pathToTicketDirectory = preg_replace('/\/$/','',$path);
   }
 
   public function createTicket($ticket, $value ) {
 
-    $filename = $pathToTicketDirectory . '/' . $ticket;
+    $filename = $this->pathToTicketDirectory . '/' . $ticket;
     file_put_contents($filename, serialize($value));
   }
 
@@ -32,7 +32,7 @@ class sspmod_sbcasserver_Cas_TicketStore_FileSystemTicketStore {
 
     if (!preg_match('/^(ST|PT|PGT)-?[a-zA-Z0-9]+$/D', $ticket)) throw new Exception('Invalid characters in ticket');
 
-    $filename = $pathToTicketDirectory . '/' . $ticket;
+    $filename = $this->pathToTicketDirectory . '/' . $ticket;
 
     if (!file_exists($filename))
       throw new Exception('Could not find ticket');
@@ -45,7 +45,7 @@ class sspmod_sbcasserver_Cas_TicketStore_FileSystemTicketStore {
   public function deleteTicket($ticket) {
     if (!preg_match('/^(ST|PT|PGT)-?[a-zA-Z0-9]+$/D', $ticket)) throw new Exception('Invalid characters in ticket');
 
-    $filename = $pathToTicketDirectory . '/' . $ticket;
+    $filename = $this->pathToTicketDirectory . '/' . $ticket;
 
     if (file_exists($filename)) {
       unlink($filename);
