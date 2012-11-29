@@ -9,6 +9,7 @@ require 'tickets.php';
  *  
  */
 
+$ticketStore = SimpleSAML_Module::resolveClass('sbcasserver::FileSystemTicketStore','Cas_Ticket');
 
 if (!array_key_exists('service', $_GET))
 	throw new Exception('Required URL query parameter [service] not provided. (CAS Server)');
