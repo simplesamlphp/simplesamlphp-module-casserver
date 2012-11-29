@@ -28,10 +28,9 @@ if (array_key_exists('gateway', $_GET)) {
 /* Load simpleSAMLphp, configuration and metadata */
 $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 
+/* Instantiate ticket store */
 $ticketStoreConfig = $casconfig->getValue('ticketstore');
-
 $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'],'Cas_TicketStore');
-
 $ticketstore = new $ticketStoreClass($casconfig);
 
 $as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
@@ -48,9 +47,8 @@ $as->requireAuth();	// added by Dubravko Voncina
 
 $attributes = $as->getAttributes();		// added by Dubravko Voncina
 
-$path = $casconfig->resolvePath($casconfig->getValue('ticketcache', 'ticketcache'));
 $ticket = str_replace( '_', 'ST-', SimpleSAML_Utilities::generateID() );
-storeTicket($ticket, $path, $attributes);
+$ticketStore->createTicket($ticket, $attributes);
 
 SimpleSAML_Logger::debug('sbcasserver logout url'.$as->getLogoutURL());
 
