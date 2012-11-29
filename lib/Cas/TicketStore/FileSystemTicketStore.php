@@ -2,7 +2,7 @@
 
 class sspmod_sbcasserver_Cas_TicketStore_FileSystemTicketStore {
 
-  public function __construct() {
+  public function __construct($storeConfig) {
   }
 
   public function storeTicket($ticket, $path, $value ) {

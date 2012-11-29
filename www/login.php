@@ -28,7 +28,11 @@ if (array_key_exists('gateway', $_GET)) {
 /* Load simpleSAMLphp, configuration and metadata */
 $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 
-$ticketStore = SimpleSAML_Module::resolveClass($casconfig->getValue('ticketstore')['class'],'Cas_TicketStore');
+$ticketStoreConfig = $casconfig->getValue('ticketstore');
+
+$ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'],'Cas_TicketStore');
+
+$ticketstore = new $ticketStoreClass($ticketStoreConfig);
 
 $as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
 
