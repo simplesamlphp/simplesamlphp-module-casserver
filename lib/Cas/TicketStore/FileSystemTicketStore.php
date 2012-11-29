@@ -5,11 +5,13 @@ class sspmod_sbcasserver_Cas_TicketStore_FileSystemTicketStore {
   private $pathToTicketDirectory;
 
   public function __construct($config) {
-    if(!is_string($config['directory'])) {
+    $storeConfig = $config['ticketstore'];
+
+    if(!is_string($storeConfig['directory'])) {
       throw new Exception('Missing or invalid directory option in config.');
     }
 
-    $path = $config->resolvePath($config['directory']);
+    $path = $config->resolvePath($storeConfig['directory']);
 
     if (!is_dir($path)) 
       throw new Exception('Directory for CAS Server ticket storage [' . $path . '] does not exists. ');
