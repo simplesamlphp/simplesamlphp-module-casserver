@@ -4,18 +4,20 @@ class sspmod_sbcasserver_Cas_TicketStore_FileSystemTicketStore {
 
   private $pathToTicketDirectory;
 
-  public function __construct($storeConfig) {
+  public function __construct($config) {
     if(!is_string($config['directory'])) {
       throw new Exception('Missing or invalid directory option in config.');
     }
 
-    if (!is_dir($config['directory'])) 
-      throw new Exception('Directory for CAS Server ticket storage [' . $config['directory'] . '] does not exists. ');
-		
-    if (!is_writable($config['directory'])) 
-      throw new Exception('Directory for CAS Server ticket storage [' . $config['directory'] . '] is not writable. ');
+    $path = $config->resolvePath($config['directory']);
 
-    $pathToTicketDirectory = preg_replace('/\/$/','',$config['directory']);
+    if (!is_dir($path)) 
+      throw new Exception('Directory for CAS Server ticket storage [' . $path . '] does not exists. ');
+		
+    if (!is_writable($path)) 
+      throw new Exception('Directory for CAS Server ticket storage [' . $path . '] is not writable. ');
+
+    $pathToTicketDirectory = preg_replace('/\/$/','',$path);
   }
 
   public function createTicket($ticket, $value ) {
