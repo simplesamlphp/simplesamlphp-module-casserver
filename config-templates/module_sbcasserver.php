@@ -15,7 +15,11 @@ $config = array (
 	// Legal values: saml2, shib13
 	'auth' => 'saml2',
 	
-	'class' => 'sbcasserver:IPAuth'
+        'ticketstore' => array(
+			       'class' => 'sbcasserver:FileSystemTicketStore',
+			       'ticketDirectory' => 'ticketcache',
+			       ),
+
 	'ticketcache' => 'ticketcache',
 
 	'attrname' => 'eduPersonPrincipalName', // 'eduPersonPrincipalName',
