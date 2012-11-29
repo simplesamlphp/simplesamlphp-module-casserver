@@ -12,19 +12,21 @@ if (!array_key_exists('url', $_GET))
 	throw new Exception('Required URL query parameter [url] not provided. (CAS Server)');
 
 $url = $_GET['url'];
-/*
+
 if (!array_key_exists('ticket', $_GET))
-	throw new Exception('Required URL query parameter [ticket] not provided. (CAS Server)');
+        throw new Exception('Required URL query parameter [ticket] not provided. (CAS Server)');
 
 $ticket = $_GET['ticket'];
-*/
 
 /* Load simpleSAMLphp, configuration and metadata */
 $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');	
 
-$path = $casconfig->resolvePath($casconfig->getValue('ticketcache', 'ticketcache'));
-	
-//$ticketcontent = retrieveTicket($ticket, $path);
+/* Instantiate ticket store */
+$ticketStoreConfig = $casconfig->getValue('ticketstore');
+$ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'],'Cas_TicketStore');
+$ticketStore = new $ticketStoreClass($casconfig);
+
+$ticketStore->deleteTicket($ticket);
 
 $auth = $casconfig->getValue('auth', 'saml2');
 
