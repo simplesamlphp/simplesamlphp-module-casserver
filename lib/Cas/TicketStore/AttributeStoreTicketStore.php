@@ -70,14 +70,14 @@ class sspmod_sbcasserver_Cas_TicketStore_AttributeStoreTicketStore extends sspmo
     if(!is_null($response)) {
       $attribute = json_decode($response, true);
 
-      return urldecode($attribute['value']);
+      return json_decode($attribute['value']);
     } else {
       return null;
     }
   }
 
   private function addTicketToAttributeStore($scopedTicketId, $content) {
-    $attribute = array('key' => $scopedTicketId, 'value' => urlencode($content));
+    $attribute = array('key' => $scopedTicketId, 'value' => json_encode($content));
 
     SimpleSAML_Logger::debug('AttributeStoreTicketStore: adding ticket: ' . var_export($scopedTicketId, TRUE) . ' with content: '. var_export($content, TRUE));
 
