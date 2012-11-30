@@ -26,7 +26,7 @@ class sspmod_sbcasserver_Cas_TicketStore_FileSystemTicketStore extends sspmod_sb
     return str_replace( '_', 'ST-', SimpleSAML_Utilities::generateID() );
   }
 
-  protected function validateTicketId() {
+  protected function validateTicketId($ticket) {
     if (!preg_match('/^(ST|PT|PGT)-?[a-zA-Z0-9]+$/D', $ticket)) throw new Exception('Invalid characters in ticket');
   }
 

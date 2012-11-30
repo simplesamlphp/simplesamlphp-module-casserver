@@ -14,13 +14,13 @@ abstract class sspmod_sbcasserver_Cas_TicketStore_TicketStore {
 
   public function getTicket($ticket) {
 
-    $this->validateTicketId();
+    $this->validateTicketId($ticket);
 
     return $this->retrieveTicket($ticket);
   }
 
   public function removeTicket($ticket) {
-    $this->validateTicketId();
+    $this->validateTicketId($ticket);
 
     $this->deleteTicket($ticket);
   }
