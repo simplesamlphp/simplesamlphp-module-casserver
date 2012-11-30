@@ -1,0 +1,99 @@
+<?php
+
+class sspmod_sbcasserver_Cas_TicketStore_AttributeStoreTicketStore extends sspmod_sbcasserver_Cas_TicketStore_TicketStore {
+
+  private $attributeStoreUrl;
+  private $attributeStorePrefix;
+
+  public function __construct($config) {
+    parent::__construct($config);
+
+    $storeConfig = $config->getValue('ticketstore');
+
+    if(!is_string($storeConfig['attributeStoreUrl'])) {
+      throw new Exception('Missing or invalid attributeStoreUrl option in config.');
+    }
+
+    if(!is_string($storeConfig['attributeStorePrefix'])) {
+      throw new Exception('Missing or invalid attributeStorePrefix option in config.');
+    }
+
+    $this->attributeStoreUrl = preg_replace('/\/$/','',$storeConfig['attributeStoreUrl']);
+    $this->attributeStorePrefix = $storeConfig['attributeStorePrefix'];
+  }
+
+  protected function generateTicketId() {
+    return str_replace( '_', 'ST-', SimpleSAML_Utilities::generateID() );
+  }
+
+  protected function validateTicketId($ticket) {
+    if (!preg_match('/^(ST|PT|PGT)-?[a-zA-Z0-9]+$/D', $ticket)) throw new Exception('Invalid characters in ticket');
+  }
+
+  protected function retrieveTicket($ticket) {
+
+    $scopedTicketId = $this->scopeTicketId($ticket);
+
+    $content = $this->getTicketFromAttributeStore($scopedTicketId);
+
+    if (is_null($content)) {
+      throw new Exception('Could not find ticket');
+    } else {
+      return $content['value'];
+    }
+  }
+
+  protected function storeTicket($ticket, $value) {
+    $scopedTicketId = $this->scopeTicketId($ticket);
+
+    $this->addTicketToAttributeStore($scopedTicketId, $value);
+  }
+
+  protected function deleteTicket($ticket) {
+    /*    $filename = $this->pathToTicketDirectory . '/' . $ticket;
+
+    if (file_exists($filename)) {
+      unlink($filename);
+    }
+    */
+  }
+
+  private function getTicketFromAttributeStore($scopedTicketId) {
+    $getParameters = array('http' => array('method' => 'GET', 'header' => array('Content-Type: application/json'),
+                                           'ignore_errors' => true));
+
+    $getUrl = $this->attributeStoreUrl.'/'.urlencode($scopedTicketId);
+
+    $context = stream_context_create($getParameters);
+    $response = file_get_contents($getUrl, false, $context);
+
+    if(!is_null($response)) {
+      $attribute = json_decode($response, true);
+
+      return $attribute['value'];
+    } else {
+      return null;
+    }
+  }
+
+  private function addTicketToAttributeStore($scopedTicketId, $content) {
+    $attribute = array('key' => $scopedTicketId, 'value' => $content);
+
+    $postParameters = array('http' => array('method' => 'POST', 'header' => array('Content-Type: application/json'),
+                                            'content' => json_encode($attribute),'ignore_errors' => true));
+
+    $context = stream_context_create($postParameters);
+    $response = file_get_contents($this->attributeStoreUrl, false, $context);
+
+    return $response;
+  }
+
+  private function scopeTicketId($ticketId) {
+    return urlencode($this->attributeStorePrefix.'.'.$key);
+  }
+
+  private function unscopeTicketId($ticketId) {
+    return str_replace($this->attributeStorePrefix.'.','',urldecode($key));
+  }
+  }
+?>
