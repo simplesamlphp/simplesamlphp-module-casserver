@@ -16,11 +16,12 @@ $config = array (
 	'auth' => 'saml2',
 	
         'ticketstore' => array(
-			       'class' => 'sbcasserver:FileSystemTicketStore',
-			       'ticketDirectory' => 'ticketcache',
+			       //			       'class' => 'sbcasserver:FileSystemTicketStore',
+			       //			       'ticketDirectory' => 'ticketcache',
+                                'class' => 'sbcasserver:AttributeStoreTicketStore',
+                                'attributeStoreUrl' => 'http://devel06:9561/attributestore/services/json/store/',
+                                'attributeStorePrefix' => 'sbmobile.cas',
 			       ),
-
-	'ticketcache' => 'ticketcache',
 
 	'attrname' => 'eduPersonPrincipalName', // 'eduPersonPrincipalName',
 	'attributes' => TRUE, // enable transfer of attributes

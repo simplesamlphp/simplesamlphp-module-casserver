@@ -79,21 +79,27 @@ class sspmod_sbcasserver_Cas_TicketStore_AttributeStoreTicketStore extends sspmo
   private function addTicketToAttributeStore($scopedTicketId, $content) {
     $attribute = array('key' => $scopedTicketId, 'value' => $content);
 
+    SimpleSAML_Logger::debug('AttributeStoreTicketStore: adding ticket: ' . var_export($scopedTicketId, TRUE) . ' with content: '. var_export($content, TRUE));
+
     $postParameters = array('http' => array('method' => 'POST', 'header' => array('Content-Type: application/json'),
                                             'content' => json_encode($attribute),'ignore_errors' => true));
 
+    SimpleSAML_Logger::debug('AttributeStoreTicketStore: posting: ' . var_export($postParameters, TRUE));
+
     $context = stream_context_create($postParameters);
     $response = file_get_contents($this->attributeStoreUrl, false, $context);
+
+    SimpleSAML_Logger::debug('AttributeStoreTicketStore: response: ' . var_export($response, TRUE));
 
     return $response;
   }
 
   private function scopeTicketId($ticketId) {
-    return urlencode($this->attributeStorePrefix.'.'.$key);
+    return urlencode($this->attributeStorePrefix.'.'.$ticketId);
   }
 
   private function unscopeTicketId($ticketId) {
-    return str_replace($this->attributeStorePrefix.'.','',urldecode($key));
+    return str_replace($this->attributeStorePrefix.'.','',urldecode($ticketId));
   }
   }
 ?>
