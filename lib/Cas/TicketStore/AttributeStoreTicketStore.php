@@ -39,7 +39,7 @@ class sspmod_sbcasserver_Cas_TicketStore_AttributeStoreTicketStore extends sspmo
     if (is_null($content)) {
       throw new Exception('Could not find ticket');
     } else {
-      return $content['value'];
+      return $content;
     }
   }
 
@@ -76,7 +76,9 @@ class sspmod_sbcasserver_Cas_TicketStore_AttributeStoreTicketStore extends sspmo
     if(!is_null($response && $response != '')) {
       $attribute = json_decode($response, true);
 
-      return json_decode($attribute['value']);
+      SimpleSAML_Logger::debug('AttributeStoreTicketStore: content: ' . var_export($attribute[0], TRUE));
+
+      return json_decode($attribute[0]['value']);
     } else {
       return null;
     }
