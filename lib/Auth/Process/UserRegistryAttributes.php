@@ -77,9 +77,8 @@ class sspmod_sbcasserver_Auth_Process_UserRegistryAttributes extends SimpleSAML_
       } else {
 	SimpleSAML_Logger::error('UserRegistryAttributes: look up of user ' . var_export($username, TRUE) . ' attributes failed with status '.var_export($userRegistryAttributesResponse->serviceStatus).'.');
       }
-	
-    } else if($userRegistryAttributeResponse->serviceStatus == 'SystemError') {
-      SimpleSAML_Logger::error('UserRegistryAttributes: look up of user ' . var_export($username, TRUE) . ' failed with status '.var_export($userRegistryAttributeResponse->serviceStatus).'.');
+    } else {
+      SimpleSAML_Logger::debug('UserRegistryAttributes: no borrower id to perform lookup');
     }
   }
 
