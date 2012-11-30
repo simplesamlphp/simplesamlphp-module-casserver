@@ -22,18 +22,15 @@ class sspmod_sbcasserver_Cas_TicketStore_FileSystemTicketStore extends sspmod_sb
     $this->pathToTicketDirectory = preg_replace('/\/$/','',$path);
   }
 
-  public function createTicket($value) {
-    $ticket = str_replace( '_', 'ST-', SimpleSAML_Utilities::generateID() );
-
-    $filename = $this->pathToTicketDirectory . '/' . $ticket;
-    file_put_contents($filename, serialize($value));
-
-    return $ticket;
+  protected function generateTicketId() {
+    return str_replace( '_', 'ST-', SimpleSAML_Utilities::generateID() );
   }
 
-  public function getTicket($ticket) {
-
+  protected function validateTicketId() {
     if (!preg_match('/^(ST|PT|PGT)-?[a-zA-Z0-9]+$/D', $ticket)) throw new Exception('Invalid characters in ticket');
+  }
+
+  protected function retrieveTicket($ticket) {
 
     $filename = $this->pathToTicketDirectory . '/' . $ticket;
 
@@ -45,9 +42,12 @@ class sspmod_sbcasserver_Cas_TicketStore_FileSystemTicketStore extends sspmod_sb
     return unserialize($content);
   }
 
-  public function deleteTicket($ticket) {
-    if (!preg_match('/^(ST|PT|PGT)-?[a-zA-Z0-9]+$/D', $ticket)) throw new Exception('Invalid characters in ticket');
+  protected function storeTicket($ticket, $value) {
+    $filename = $this->pathToTicketDirectory . '/' . $ticket;
+    file_put_contents($filename, serialize($value));
+  }
 
+  protected function deleteTicket($ticket) {
     $filename = $this->pathToTicketDirectory . '/' . $ticket;
 
     if (file_exists($filename)) {

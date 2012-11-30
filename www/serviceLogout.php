@@ -24,7 +24,7 @@ $ticketStoreConfig = $casconfig->getValue('ticketstore');
 $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'],'Cas_TicketStore');
 $ticketStore = new $ticketStoreClass($casconfig);
 
-$ticketStore->deleteTicket($ticket);
+$ticketStore->removeTicket($ticket);
 
 $auth = $casconfig->getValue('auth', 'saml2');
 

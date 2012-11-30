@@ -35,7 +35,7 @@ try {
   $base64encodeQ = $casconfig->getValue('base64attributes',false);
 	
   $ticketcontent = $ticketStore->getTicket($ticket);
-  $ticketStore->deleteTicket($ticket);
+  $ticketStore->removeTicket($ticket);
 	
   $usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
   $dosendattributes = $casconfig->getValue('attributes', FALSE);;

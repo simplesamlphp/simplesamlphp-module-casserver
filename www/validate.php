@@ -33,7 +33,7 @@ try {
   $ticketStore = new $ticketStoreClass($casconfig);
 	
   $ticketcontent = $ticketStore->getTicket($ticket);
-  $ticketStore->deleteTicket($ticket);
+  $ticketStore->removeTicket($ticket);
 	
   $usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
 	
