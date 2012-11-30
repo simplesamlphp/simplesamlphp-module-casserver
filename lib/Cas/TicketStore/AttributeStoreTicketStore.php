@@ -62,12 +62,18 @@ class sspmod_sbcasserver_Cas_TicketStore_AttributeStoreTicketStore extends sspmo
     $getParameters = array('http' => array('method' => 'GET', 'header' => array('Content-Type: application/json'),
                                            'ignore_errors' => true));
 
+    SimpleSAML_Logger::debug('AttributeStoreTicketStore: looking up ticket: ' . var_export($scopedTicketId, TRUE));
+
     $getUrl = $this->attributeStoreUrl.'/'.urlencode($scopedTicketId);
+
+    SimpleSAML_Logger::debug('AttributeStoreTicketStore: get url: ' . var_export($getUrl, TRUE));
 
     $context = stream_context_create($getParameters);
     $response = file_get_contents($getUrl, false, $context);
 
-    if(!is_null($response)) {
+    SimpleSAML_Logger::debug('AttributeStoreTicketStore: response: ' . var_export($response, TRUE));
+
+    if(!is_null($response && $response != '')) {
       $attribute = json_decode($response, true);
 
       return json_decode($attribute['value']);
