@@ -1,6 +1,6 @@
 <?php
 
-class sspmod_sbcasserver_Cas_TicketStore_FileSystemTicketStore {
+class sspmod_sbcasserver_Cas_TicketStore_FileSystemTicketStore extends sspmod_sbcasserver_Cas_TicketStore_TicketStore {
 
   private $pathToTicketDirectory;
 
