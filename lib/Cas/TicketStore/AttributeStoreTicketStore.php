@@ -3,6 +3,7 @@
 class sspmod_sbcasserver_Cas_TicketStore_AttributeStoreTicketStore extends sspmod_sbcasserver_Cas_TicketStore_TicketStore {
 
   private $attributeStoreUrl;
+  private $attributeStoreDeleteUrl;
   private $attributeStorePrefix;
 
   public function __construct($config) {
@@ -19,6 +20,7 @@ class sspmod_sbcasserver_Cas_TicketStore_AttributeStoreTicketStore extends sspmo
     }
 
     $this->attributeStoreUrl = preg_replace('/\/$/','',$storeConfig['attributeStoreUrl']);
+    $this->attributeStoreDeleteUrl = preg_replace('/\/$/','',$storeConfig['attributeStoreDeleteUrl']);
     $this->attributeStorePrefix = $storeConfig['attributeStorePrefix'];
   }
 
@@ -50,7 +52,9 @@ class sspmod_sbcasserver_Cas_TicketStore_AttributeStoreTicketStore extends sspmo
   }
 
   protected function deleteTicket($ticket) {
-    $this->removeTicketFromAttributeStore($ticket);
+    $scopedTicketId = $this->scopeTicketId($ticket);
+
+    $this->removeTicketFromAttributeStore($scopedTicketId);
   }
 
   private function getTicketFromAttributeStore($scopedTicketId) {
@@ -103,7 +107,7 @@ class sspmod_sbcasserver_Cas_TicketStore_AttributeStoreTicketStore extends sspmo
 
     SimpleSAML_Logger::debug('AttributeStoreTicketStore: remove ticket: ' . var_export($scopedTicketId, TRUE));
 
-    $deleteUrl = $this->attributeStoreUrl.'/'.urlencode($scopedTicketId);
+    $deleteUrl = $this->attributeStoreDeleteUrl.'/'.urlencode($scopedTicketId);
 
     SimpleSAML_Logger::debug('AttributeStoreTicketStore: delete url: ' . var_export($deleteUrl, TRUE));
 

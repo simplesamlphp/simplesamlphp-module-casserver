@@ -7,7 +7,6 @@
 $config = array (
 
 	'legal_service_urls' => array(
-		'http://devel01:9145/bruger/wayf/index.jsp',
 		'http://localhost:7070/kultur/login.jsp',
 		'http://localhost:8080/kultur/login.jsp',
 	),
@@ -20,6 +19,7 @@ $config = array (
 			       //			       'ticketDirectory' => 'ticketcache',
                                 'class' => 'sbcasserver:AttributeStoreTicketStore',
                                 'attributeStoreUrl' => 'http://devel06:9561/attributestore/services/json/store/',
+                                'attributeStoreDeleteUrl' => 'http://devel06:9561/attributestore/services/store/',
                                 'attributeStorePrefix' => 'sbmobile.cas',
 			       ),
 
