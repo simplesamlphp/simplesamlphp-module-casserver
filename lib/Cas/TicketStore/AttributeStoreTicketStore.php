@@ -89,7 +89,7 @@ class sspmod_sbcasserver_Cas_TicketStore_AttributeStoreTicketStore extends sspmo
   }
 
   private function addTicketToAttributeStore($scopedTicketId, $content) {
-    $attribute = array('key' => $scopedTicketId, 'value' => json_encode($content), $this->expireInMinutes);
+    $attribute = array('key' => $scopedTicketId, 'value' => json_encode($content), 'expireInMinutes' => $this->expireInMinutes);
 
     SimpleSAML_Logger::debug('AttributeStoreTicketStore: adding ticket: ' . var_export($scopedTicketId, TRUE) . ' with content: '. var_export($content, TRUE));
 
