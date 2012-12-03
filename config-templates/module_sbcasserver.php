@@ -15,13 +15,13 @@ $config = array (
 	'auth' => 'saml2',
 	
         'ticketstore' => array(
-			       //			       'class' => 'sbcasserver:FileSystemTicketStore',
-			       //			       'ticketDirectory' => 'ticketcache',
-                                'class' => 'sbcasserver:AttributeStoreTicketStore',
-                                'attributeStoreUrl' => 'http://devel06:9561/attributestore/services/json/store/',
-                                'attributeStoreDeleteUrl' => 'http://devel06:9561/attributestore/services/store/',
-                                'attributeStorePrefix' => 'sbmobile.cas',
-                                'expireInMinutes' => 2,
+			       'class' => 'sbcasserver:FileSystemTicketStore',
+			       'ticketDirectory' => 'ticketcache',
+                               //'class' => 'sbcasserver:AttributeStoreTicketStore',
+                               //'attributeStoreUrl' => 'http://devel06:9561/attributestore/services/json/store/',
+                               //'attributeStoreDeleteUrl' => 'http://devel06:9561/attributestore/services/store/',
+                               //'attributeStorePrefix' => 'sbmobile.cas',
+                               //'expireInMinutes' => 1, //default 1 minute
 			       ),
 
 	'attrname' => 'eduPersonPrincipalName', // 'eduPersonPrincipalName',
