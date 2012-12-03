@@ -78,7 +78,7 @@ class sspmod_sbcasserver_Cas_TicketStore_AttributeStoreTicketStore extends sspmo
 
       SimpleSAML_Logger::debug('AttributeStoreTicketStore: content: ' . var_export($attribute[0], TRUE));
 
-      return json_decode($attribute[0]['value']);
+      return json_decode($attribute[0]['value'], true);
     } else {
       return null;
     }
