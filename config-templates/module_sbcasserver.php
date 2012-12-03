@@ -16,7 +16,7 @@ $config = array (
 	
         'ticketstore' => array(
 			       'class' => 'sbcasserver:FileSystemTicketStore',
-			       'ticketDirectory' => 'ticketcache',
+			       'directory' => 'ticketcache',
                                //'class' => 'sbcasserver:AttributeStoreTicketStore',
                                //'attributeStoreUrl' => 'http://devel06:9561/attributestore/services/json/store/',
                                //'attributeStoreDeleteUrl' => 'http://devel06:9561/attributestore/services/store/',
