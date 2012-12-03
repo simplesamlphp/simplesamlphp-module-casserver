@@ -24,7 +24,7 @@ class sspmod_sbcasserver_Cas_TicketStore_AttributeStoreTicketStore extends sspmo
     $this->attributeStoreDeleteUrl = preg_replace('/\/$/','',$storeConfig['attributeStoreDeleteUrl']);
     $this->attributeStorePrefix = $storeConfig['attributeStorePrefix'];
     
-    if(array_key_exists($storeConfig,'expireInMinutes')) {
+    if(array_key_exists('expireInMinutes', $storeConfig)) {
       $this->expireInMinutes = $storeConfig['expireInMinutes'];
     }
   }
