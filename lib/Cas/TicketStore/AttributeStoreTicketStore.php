@@ -50,12 +50,7 @@ class sspmod_sbcasserver_Cas_TicketStore_AttributeStoreTicketStore extends sspmo
   }
 
   protected function deleteTicket($ticket) {
-    /*    $filename = $this->pathToTicketDirectory . '/' . $ticket;
-
-    if (file_exists($filename)) {
-      unlink($filename);
-    }
-    */
+    $this->removeTicketFromAttributeStore($ticket);
   }
 
   private function getTicketFromAttributeStore($scopedTicketId) {
@@ -100,6 +95,22 @@ class sspmod_sbcasserver_Cas_TicketStore_AttributeStoreTicketStore extends sspmo
     SimpleSAML_Logger::debug('AttributeStoreTicketStore: response: ' . var_export($response, TRUE));
 
     return $response;
+  }
+
+  private function removeTicketFromAttributeStore($scopedTicketId) {
+    $deleteParameters = array('http' => array('method' => 'DELETE', 'header' => array('Content-Type: application/json'),
+                                           'ignore_errors' => true));
+
+    SimpleSAML_Logger::debug('AttributeStoreTicketStore: remove ticket: ' . var_export($scopedTicketId, TRUE));
+
+    $deleteUrl = $this->attributeStoreUrl.'/'.urlencode($scopedTicketId);
+
+    SimpleSAML_Logger::debug('AttributeStoreTicketStore: delete url: ' . var_export($deleteUrl, TRUE));
+
+    $context = stream_context_create($deleteParameters);
+    $response = file_get_contents($deleteUrl, false, $context);
+
+    SimpleSAML_Logger::debug('AttributeStoreTicketStore: response: ' . var_export($response, TRUE));
   }
 
   private function scopeTicketId($ticketId) {
