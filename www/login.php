@@ -26,11 +26,6 @@ if (array_key_exists('gateway', $_GET)) {
 /* Load simpleSAMLphp, configuration and metadata */
 $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 
-/* Instantiate ticket store */
-$ticketStoreConfig = $casconfig->getValue('ticketstore');
-$ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'],'Cas_TicketStore');
-$ticketStore = new $ticketStoreClass($casconfig);
-
 $as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
 
 $legal_service_urls = $casconfig->getValue('legal_service_urls');
@@ -40,6 +35,11 @@ if (!checkServiceURL($service, $legal_service_urls))
 $auth = $casconfig->getValue('auth', 'saml2');
 if (!in_array($auth, array('saml2', 'shib13')))
   throw new Exception('CAS Service configured to use [auth] = ' . $auth . ' only [saml2,shib13] is legal.');
+
+/* Instantiate ticket store */
+$ticketStoreConfig = $casconfig->getValue('ticketstore');
+$ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'],'Cas_TicketStore');
+$ticketStore = new $ticketStoreClass($casconfig);
 
 $as->requireAuth();	// added by Dubravko Voncina
 
