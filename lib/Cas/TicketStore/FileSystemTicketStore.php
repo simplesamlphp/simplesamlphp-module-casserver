@@ -24,19 +24,8 @@ class sspmod_sbcasserver_Cas_TicketStore_FileSystemTicketStore extends sspmod_sb
         $this->pathToTicketDirectory = preg_replace('/\/$/', '', $path);
     }
 
-    protected function generateTicketId()
-    {
-        return str_replace('_', 'ST-', SimpleSAML_Utilities::generateID());
-    }
-
-    protected function validateTicketId($ticket)
-    {
-        if (!preg_match('/^(ST|PT|PGT)-?[a-zA-Z0-9]+$/D', $ticket)) throw new Exception('Invalid characters in ticket');
-    }
-
     protected function retrieveTicket($ticket)
     {
-
         $filename = $this->pathToTicketDirectory . '/' . $ticket;
 
         if (!file_exists($filename))

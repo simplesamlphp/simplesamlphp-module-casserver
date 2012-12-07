@@ -10,28 +10,40 @@ abstract class sspmod_sbcasserver_Cas_TicketStore_TicketStore
     {
         $ticket = $this->generateTicketId();
 
-        $this->storeTicket($ticket, $value);
+        if ($this->validateTicketId($ticket)) {
+            $this->storeTicket($ticket, $value);
 
-        return $ticket;
+            return $ticket;
+        } else {
+            throw new Exception('Cas ticket id generator is creating invalid ids: ' . $ticket);
+        }
     }
 
     public function getTicket($ticket)
     {
-        $this->validateTicketId($ticket);
-
-        return $this->retrieveTicket($ticket);
+        if ($this->validateTicketId($ticket)) {
+            return $this->retrieveTicket($ticket);
+        } else {
+            return null;
+        }
     }
 
     public function removeTicket($ticket)
     {
-        $this->validateTicketId($ticket);
-
-        $this->deleteTicket($ticket);
+        if ($this->validateTicketId($ticket)) {
+            $this->deleteTicket($ticket);
+        }
     }
 
-    abstract protected function validateTicketId($ticket);
+    protected function generateTicketId()
+    {
+        return str_replace('_', 'ST-', SimpleSAML_Utilities::generateID());
+    }
 
-    abstract protected function generateTicketId();
+    protected function validateTicketId($ticket)
+    {
+        return preg_match('/^(ST|PT|PGT)-?[a-zA-Z0-9]+$/D', $ticket);
+    }
 
     abstract protected function retrieveTicket($ticket);
 

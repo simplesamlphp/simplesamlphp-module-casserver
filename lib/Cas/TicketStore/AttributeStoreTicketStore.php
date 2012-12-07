@@ -31,19 +31,8 @@ class sspmod_sbcasserver_Cas_TicketStore_AttributeStoreTicketStore extends sspmo
         }
     }
 
-    protected function generateTicketId()
-    {
-        return str_replace('_', 'ST-', SimpleSAML_Utilities::generateID());
-    }
-
-    protected function validateTicketId($ticket)
-    {
-        if (!preg_match('/^(ST|PT|PGT)-?[a-zA-Z0-9]+$/D', $ticket)) throw new Exception('Invalid characters in ticket');
-    }
-
     protected function retrieveTicket($ticket)
     {
-
         $scopedTicketId = $this->scopeTicketId($ticket);
 
         $content = $this->getTicketFromAttributeStore($scopedTicketId);

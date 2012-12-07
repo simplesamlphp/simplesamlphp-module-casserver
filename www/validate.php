@@ -33,25 +33,32 @@ try {
     $ticketStore = new $ticketStoreClass($casconfig);
 
     $ticketcontent = $ticketStore->getTicket($ticket);
-    $ticketStore->removeTicket($ticket);
 
-    $usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
+    if (!is_null($ticketcontent)) {
+        $ticketStore->removeTicket($ticket);
 
-    if (array_key_exists($usernamefield, $ticketcontent)) {
-        echo generateCas10SuccessContent('yes', $ticketcontent[$usernamefield][0]);
+        $usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
+
+        if (array_key_exists($usernamefield, $ticketcontent)) {
+            echo generateCas10SuccessContent('yes', $ticketcontent[$usernamefield][0]);
+        } else {
+            echo generateCas10FailureContent();
+        }
     } else {
         echo generateCas10FailureContent();
     }
-
 } catch (Exception $e) {
     echo generateCas10FailureContent();
 }
 
-function generateCas10SuccessContent($username) {
-    return "yes\n".$username."\n";
+function generateCas10SuccessContent($username)
+{
+    return "yes\n" . $username . "\n";
 }
 
-function generateCas10FailureContent() {
+function generateCas10FailureContent()
+{
     return "no\n";
 }
+
 ?>

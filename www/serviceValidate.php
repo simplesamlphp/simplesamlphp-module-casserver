@@ -35,16 +35,20 @@ try {
     $base64encodeQ = $casconfig->getValue('base64attributes', false);
 
     $ticketcontent = $ticketStore->getTicket($ticket);
-    $ticketStore->removeTicket($ticket);
 
-    $usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
-    $dosendattributes = $casconfig->getValue('attributes', FALSE);
-    ;
+    if (!is_null($ticketcontent)) {
+        $ticketStore->removeTicket($ticket);
 
-    if (array_key_exists($usernamefield, $ticketcontent)) {
-        echo workAroundForBuggyJasigXmlParser(generateCas20SuccessContent($ticketcontent[$usernamefield][0], $dosendattributes ? $ticketcontent : array(), $base64encodeQ)->saveXML());
+        $usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
+        $dosendattributes = $casconfig->getValue('attributes', FALSE);
+
+        if (array_key_exists($usernamefield, $ticketcontent)) {
+            echo workAroundForBuggyJasigXmlParser(generateCas20SuccessContent($ticketcontent[$usernamefield][0], $dosendattributes ? $ticketcontent : array(), $base64encodeQ)->saveXML());
+        } else {
+            echo workAroundForBuggyJasigXmlParser(generateCas20FailureContent('INTERNAL_ERROR', 'Missing user name, attribute: ' . $usernamefield . ' not found.')->saveXML());
+        }
     } else {
-        echo workAroundForBuggyJasigXmlParser(generateCas20FailureContent('INTERNAL_ERROR', 'Missing user name, attribute: ' . $usernamefield . ' not found.')->saveXML());
+        echo workAroundForBuggyJasigXmlParser(generateCas20FailureContent('INVALID_TICKET', 'ticket: ' . $ticket . ' not recognized')->saveXML());
     }
 } catch (Exception $e) {
     echo workAroundForBuggyJasigXmlParser(generateCas20FailureContent('INTERNAL_ERROR', $e->getMessage())->saveXML());
