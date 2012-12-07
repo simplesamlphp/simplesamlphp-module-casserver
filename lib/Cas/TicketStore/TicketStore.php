@@ -29,6 +29,8 @@ abstract class sspmod_sbcasserver_Cas_TicketStore_TicketStore
         $this->deleteTicket($ticket);
     }
 
+    abstract protected function validateTicketId($ticket);
+
     abstract protected function generateTicketId();
 
     abstract protected function retrieveTicket($ticket);
