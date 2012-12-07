@@ -1,3 +1,11 @@
+2012-12-07 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
+        * Fixed a bug in IPAuth which cause IP role mapping filter to fail when adding roles to a new attribute.
+        * Added a user registry auth filter to add roles retrieved from the user registry given a borrowerId attribute.
+        * Added a borrower id auth filter to add a borrower id attribute, if the borrower can be found in the user registry.
+        * Added an abstract cas ticket store with concrete subclasses to store tickets locally or in the attribute store.
+        * Changed cas 2.0 response generation from hand coded to using php dom document.
+        * Fixed a bug in cas 1.0 response generation, where yes/no was returned in upper case.
+
 2012-10-31 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
         * release 3.3.0
         * IPRoleMapper can now be configured to add its roles to any given attribute
@@ -7,7 +15,7 @@
 
         * release 3.2
         * Added AttributeCollector auth filter for collecting attributes from
-	  the attribute store.
+	      the attribute store.
         * Added CAS logout
 
 2012-05-22  Per Møldrup-Dalum  <pdj@statsbiblioteket.dk>
