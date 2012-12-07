@@ -1,36 +1,41 @@
 <?php
-abstract class sspmod_sbcasserver_Cas_TicketStore_TicketStore {
+abstract class sspmod_sbcasserver_Cas_TicketStore_TicketStore
+{
 
-  public function __construct($config) {
-  }
+    public function __construct($config)
+    {
+    }
 
-  public function createTicket($value) {
-    $ticket = $this->generateTicketId();
+    public function createTicket($value)
+    {
+        $ticket = $this->generateTicketId();
 
-    $this->storeTicket($ticket,$value);
+        $this->storeTicket($ticket, $value);
 
-    return $ticket;
-  }
+        return $ticket;
+    }
 
-  public function getTicket($ticket) {
+    public function getTicket($ticket)
+    {
+        $this->validateTicketId($ticket);
 
-    $this->validateTicketId($ticket);
+        return $this->retrieveTicket($ticket);
+    }
 
-    return $this->retrieveTicket($ticket);
-  }
+    public function removeTicket($ticket)
+    {
+        $this->validateTicketId($ticket);
 
-  public function removeTicket($ticket) {
-    $this->validateTicketId($ticket);
+        $this->deleteTicket($ticket);
+    }
 
-    $this->deleteTicket($ticket);
-  }
+    abstract protected function generateTicketId();
 
-  abstract protected function generateTicketId();
+    abstract protected function retrieveTicket($ticket);
 
-  abstract protected function retrieveTicket($ticket);
+    abstract protected function storeTicket($ticket, $content);
 
-  abstract protected function storeTicket($ticket, $content);
+    abstract protected function deleteTicket($ticket);
+}
 
-  abstract protected function deleteTicket($ticket);
-  }
 ?>
