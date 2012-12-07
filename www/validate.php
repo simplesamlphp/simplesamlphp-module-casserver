@@ -38,21 +38,21 @@ try {
   $usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
 	
   if (array_key_exists($usernamefield, $ticketcontent)) {
-    returnResponse('YES', $ticketcontent[$usernamefield][0]);
+    returnResponse('yes', $ticketcontent[$usernamefield][0]);
   } else {
-    returnResponse('NO');
+    returnResponse('no');
   }
 
 } catch (Exception $e) {
 
-  returnResponse('NO');
+  returnResponse('no');
   }
 
 function returnResponse($value, $username = '') {
-  if ($value === 'YES') {
-    echo 'YES' . "\n" . $username;
+  if ($value === 'yes') {
+    echo 'yes' . "\n" . $username."\n";
   } else {
-    echo 'NO' . "\n";
+    echo 'no' . "\n";
   }
 }
 
