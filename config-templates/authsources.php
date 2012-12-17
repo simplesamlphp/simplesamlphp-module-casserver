@@ -31,13 +31,13 @@ $config = array(
             'base64.encode' => false,
             'targetAttributeName' => 'SBRoles', //defaults to 'eduPersonScopedAffiliation'
         ),
-            15 => array(
-                'class' => 'sbcasserver:LastLogin',
+            20 => array(
+                'class' => 'sbcasserver:AttributeCollector',
                 'attributeStoreUrl' => 'http://devel06:9561/attributestore/services/json/store/',
                 'attributeStorePrefix' => 'aarhusstadsarkiv',
             ),
-            20 => array(
-                'class' => 'sbcasserver:AttributeCollector',
+            25 => array(
+                'class' => 'sbcasserver:LastLogin',
                 'attributeStoreUrl' => 'http://devel06:9561/attributestore/services/json/store/',
                 'attributeStorePrefix' => 'aarhusstadsarkiv',
             ),

@@ -5,6 +5,7 @@ class sspmod_sbcasserver_Auth_Process_LastLogin extends SimpleSAML_Auth_Processi
 
     private $attributeStoreUrl;
     private $attributeStorePrefix;
+    private $userIdAttribute;
 
     public function __construct($config, $reserved)
     {
@@ -12,27 +13,28 @@ class sspmod_sbcasserver_Auth_Process_LastLogin extends SimpleSAML_Auth_Processi
 
         $this->attributeStoreUrl = preg_replace('/\/$/', '', $config['attributeStoreUrl']);
         $this->attributeStorePrefix = $config['attributeStorePrefix'];
+        $this->attributeStorePrefix = $config['attributeStorePrefix'];
     }
 
     public function process(&$request)
     {
         $userId = $this->getUserIdFromRequest($request);
 
-        SimpleSAML_Logger::debug('AttributeCollector: user ' . var_export($userId, TRUE));
+        SimpleSAML_Logger::debug('LastLogin: user ' . var_export($userId, TRUE));
 
         if (is_string($userId)) {
             $lastLogin = $this->getTimeStampObject();
 
-            SimpleSAML_Logger::debug('AttributeCollector: lastLogin ' . var_export($lastLogin, TRUE));
+            SimpleSAML_Logger::debug('LastLogin: time ' . var_export($lastLogin, TRUE));
 
             $scopedLastLogin['key'] = $this->scopeKey($userId, $lastLogin['key']);
             $scopedLastLogin['value'] = $lastLogin['value'];
 
-            SimpleSAML_Logger::debug('AttributeCollector: scopedLastLogin ' . var_export($scopedLastLogin, TRUE));
+            SimpleSAML_Logger::debug('LastLogin: scopedLastLogin ' . var_export($scopedLastLogin, TRUE));
 
             $response = $this->createAttributeInAttributeStore($scopedLastLogin);
 
-            SimpleSAML_Logger::debug('AttributeCollector: response ' . var_export($response, TRUE));
+            SimpleSAML_Logger::debug('LastLogin: response ' . var_export($response, TRUE));
         }
     }
 
