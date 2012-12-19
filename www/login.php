@@ -10,18 +10,13 @@
 if (!array_key_exists('service', $_GET))
     throw new Exception('Required URL query parameter [service] not provided. (CAS Server)');
 
-$service = $_GET['service'];
-$renew = FALSE;
-$gateway = FALSE;
-
-if (array_key_exists('renew', $_GET)) {
-    $renew = TRUE;
-}
-
 if (array_key_exists('gateway', $_GET)) {
-    $gateway = TRUE;
     throw new Exception('CAS gateway to SAML IsPassive: Not yet implemented properly.');
 }
+
+$service = $_GET['service'];
+$forceAuthn =isset($_GET['renew']) && $_GET['renew'];
+$isPassive = isset($_GET['gateway']) && $_GET['gateway'];
 
 /* Load simpleSAMLphp, configuration and metadata */
 $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
@@ -45,7 +40,12 @@ $as->requireAuth(); // added by Dubravko Voncina
 
 $attributes = $as->getAttributes(); // added by Dubravko Voncina
 
-$ticket = $ticketStore->createTicket($attributes);
+$ticket = $ticketStore->createTicket(array('service' => $service,
+        'forceAuthn' => $forceAuthn,
+        'attributes' => $attributes,
+        'proxies' => array(),
+        'validbefore' => time() + 5)
+);
 
 SimpleSAML_Logger::debug('sbcasserver logout url' . $as->getLogoutURL());
 

@@ -42,8 +42,9 @@ try {
         $usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
         $dosendattributes = $casconfig->getValue('attributes', FALSE);
 
-        if (array_key_exists($usernamefield, $ticketcontent)) {
-            echo workAroundForBuggyJasigXmlParser(generateCas20SuccessContent($ticketcontent[$usernamefield][0], $dosendattributes ? $ticketcontent : array(), $base64encodeQ)->saveXML());
+        if (array_key_exists($usernamefield, $ticketcontent['attributes'])) {
+            echo workAroundForBuggyJasigXmlParser(generateCas20SuccessContent($ticketcontent[$usernamefield][0],
+                $dosendattributes ? $ticketcontent['attributes'] : array(), $base64encodeQ)->saveXML());
         } else {
             echo workAroundForBuggyJasigXmlParser(generateCas20FailureContent('INTERNAL_ERROR', 'Missing user name, attribute: ' . $usernamefield . ' not found.')->saveXML());
         }
