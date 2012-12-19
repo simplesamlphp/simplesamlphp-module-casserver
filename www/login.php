@@ -36,7 +36,13 @@ $ticketStoreConfig = $casconfig->getValue('ticketstore');
 $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_TicketStore');
 $ticketStore = new $ticketStoreClass($casconfig);
 
-$as->requireAuth();
+if (!$as->isAuthenticated()) {
+        $params = array(
+                'ForceAuthn' => $forceAuthn,
+                'isPassive' => $isPassive,
+        );
+        $as->requireAuth($params);
+}
 
 $attributes = $as->getAttributes();
 

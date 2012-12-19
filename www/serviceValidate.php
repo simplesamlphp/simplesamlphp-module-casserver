@@ -41,7 +41,7 @@ try {
         if ($ticketcontent['service'] == $service && $ticketcontent['forceAuthn'] == $forceAuthn &&
             array_key_exists($usernamefield, $ticketcontent['attributes'])
         ) {
-            echo workAroundForBuggyJasigXmlParser(generateCas20SuccessContent($ticketcontent[$usernamefield][0],
+            echo workAroundForBuggyJasigXmlParser(generateCas20SuccessContent($ticketcontent['attributes'][$usernamefield][0],
                 $dosendattributes ? $ticketcontent['attributes'] : array(), $base64encodeQ)->saveXML());
         } else {
             if ($ticketcontent['service'] != $service) {

@@ -17,11 +17,8 @@ if (!array_key_exists('ticket', $_GET))
 
 $ticket = $_GET['ticket'];
 
-$renew = FALSE;
+$forceAuthn = isset($_GET['renew']) && $_GET['renew'];
 
-if (array_key_exists('renew', $_GET)) {
-    $renew = TRUE;
-}
 
 try {
     /* Load simpleSAMLphp, configuration and metadata */
@@ -39,7 +36,7 @@ try {
 
         $usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
 
-        if (array_key_exists($usernamefield, $ticketcontent['attributes'])) {
+        if ($ticketcontent['service'] == $service && $ticketcontent['forceAuthn'] == $forceAuthn && array_key_exists($usernamefield, $ticketcontent['attributes'])) {
             echo generateCas10SuccessContent($ticketcontent['attributes'][$usernamefield][0]);
         } else {
             echo generateCas10FailureContent();
