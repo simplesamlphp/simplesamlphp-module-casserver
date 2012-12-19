@@ -17,11 +17,7 @@ if (!array_key_exists('ticket', $_GET))
 
 $ticket = $_GET['ticket'];
 
-$renew = FALSE;
-
-if (array_key_exists('renew', $_GET)) {
-    $renew = TRUE;
-}
+$forceAuthn = isset($_GET['renew']) && $_GET['renew'];
 
 try {
     /* Load simpleSAMLphp, configuration and metadata */
@@ -42,11 +38,22 @@ try {
         $usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
         $dosendattributes = $casconfig->getValue('attributes', FALSE);
 
-        if (array_key_exists($usernamefield, $ticketcontent['attributes'])) {
+        if ($ticketcontent['service'] == $service && $ticketcontent['forceAuthn'] == $forceAuthn &&
+            array_key_exists($usernamefield, $ticketcontent['attributes'])
+        ) {
             echo workAroundForBuggyJasigXmlParser(generateCas20SuccessContent($ticketcontent[$usernamefield][0],
                 $dosendattributes ? $ticketcontent['attributes'] : array(), $base64encodeQ)->saveXML());
         } else {
-            echo workAroundForBuggyJasigXmlParser(generateCas20FailureContent('INTERNAL_ERROR', 'Missing user name, attribute: ' . $usernamefield . ' not found.')->saveXML());
+            if ($ticketcontent['service'] != $service) {
+                echo workAroundForBuggyJasigXmlParser(generateCas20FailureContent('INVALID_SERVICE', 'Expected: ' .
+                    $ticketcontent['service'] . ' was: ' . $service)->saveXML());
+            } else if ($ticketcontent['forceAuthn'] == $forceAuthn) {
+                echo workAroundForBuggyJasigXmlParser(generateCas20FailureContent('INVALID_TICKET', 'Mismatching renew. Expected: ' .
+                    $ticketcontent['forceAuthn'] . ' was: ' . $forceAuthn)->saveXML());
+            } else {
+                echo workAroundForBuggyJasigXmlParser(generateCas20FailureContent('INTERNAL_ERROR', 'Missing user name, attribute: ' .
+                    $usernamefield . ' not found.')->saveXML());
+            }
         }
     } else {
         echo workAroundForBuggyJasigXmlParser(generateCas20FailureContent('INVALID_TICKET', 'ticket: ' . $ticket . ' not recognized')->saveXML());

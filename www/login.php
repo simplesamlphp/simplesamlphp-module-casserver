@@ -15,7 +15,7 @@ if (array_key_exists('gateway', $_GET)) {
 }
 
 $service = $_GET['service'];
-$forceAuthn =isset($_GET['renew']) && $_GET['renew'];
+$forceAuthn = isset($_GET['renew']) && $_GET['renew'];
 $isPassive = isset($_GET['gateway']) && $_GET['gateway'];
 
 /* Load simpleSAMLphp, configuration and metadata */
@@ -36,9 +36,9 @@ $ticketStoreConfig = $casconfig->getValue('ticketstore');
 $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_TicketStore');
 $ticketStore = new $ticketStoreClass($casconfig);
 
-$as->requireAuth(); // added by Dubravko Voncina
+$as->requireAuth();
 
-$attributes = $as->getAttributes(); // added by Dubravko Voncina
+$attributes = $as->getAttributes();
 
 $ticket = $ticketStore->createTicket(array('service' => $service,
         'forceAuthn' => $forceAuthn,

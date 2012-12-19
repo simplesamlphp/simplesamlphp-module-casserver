@@ -39,8 +39,8 @@ try {
 
         $usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
 
-        if (array_key_exists($usernamefield, $ticketcontent)) {
-            echo generateCas10SuccessContent('yes', $ticketcontent['attributes'][$usernamefield][0]);
+        if (array_key_exists($usernamefield, $ticketcontent['attributes'])) {
+            echo generateCas10SuccessContent($ticketcontent['attributes'][$usernamefield][0]);
         } else {
             echo generateCas10FailureContent();
         }
