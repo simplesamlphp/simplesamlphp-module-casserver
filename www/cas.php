@@ -1,6 +1,6 @@
 <?php
 /*
-* Frontend for login.php, validate.php, serviceValidate.php and serviceLogout.php. It allows them to be called
+* Frontend for login.php, validate.php, serviceValidate.php and logout.php. It allows them to be called
 * as cas.php/login, cas.php/validate, cas.php/serviceValidate and cas.php/logout and is meant for clients
 * like phpCAS which expects one configured prefix which it appends login, validate, serviceValidate and logout to.
 *
@@ -12,7 +12,7 @@ $validFunctions = array(
     'login' => 'login',
     'validate' => 'validate',
     'serviceValidate' => 'serviceValidate',
-    'logout' => 'serviceLogout',
+    'logout' => 'logout',
 );
 
 $function = substr($_SERVER['PATH_INFO'], 1);
