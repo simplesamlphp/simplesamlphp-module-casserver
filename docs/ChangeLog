@@ -1,13 +1,9 @@
 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
+
+2013-01-29 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
+        * Release 4.0.0
         * Moved all filters to a dedicated project.
-
-2013-01-25 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
         * Moved theme related code into the sbthemes project.
-
-2012-12-07 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
-        * Fixed a bug in IPAuth which cause IP role mapping filter to fail when adding roles to a new attribute.
-        * Added a user registry auth filter to add roles retrieved from the user registry given a borrowerId attribute.
-        * Added a borrower id auth filter to add a borrower id attribute, if the borrower can be found in the user registry.
         * Added an abstract cas ticket store with concrete subclasses to store tickets locally or in the attribute store.
         * Changed cas 2.0 response generation from hand coded to using php dom document.
         * Fixed a bug in cas 1.0 response generation, where yes/no was returned in upper case.
