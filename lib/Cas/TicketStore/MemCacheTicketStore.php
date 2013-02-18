@@ -4,6 +4,7 @@ class sspmod_sbcasserver_Cas_TicketStore_MemCacheTicketStore extends sspmod_sbca
 {
 
     private $expireSeconds = 5;
+    private $prefix = '';
 
     public function __construct($config)
     {
@@ -13,6 +14,10 @@ class sspmod_sbcasserver_Cas_TicketStore_MemCacheTicketStore extends sspmod_sbca
 
         if (array_key_exists('expireInSeconds', $storeConfig)) {
             $this->expireSeconds = $storeConfig['expireInSeconds'];
+        }
+
+        if (array_key_exists('prefix', $storeConfig)) {
+            $this->prefix = $storeConfig['prefix'];
         }
     }
 
