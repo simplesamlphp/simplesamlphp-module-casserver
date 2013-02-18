@@ -21,6 +21,6 @@ if (!isset($validFunctions[$function])) {
     throw new SimpleSAML_Error_NotFound('Not a valid function for cas.php.');
 }
 
-include(dirname(__FILE__).'/'.$validFunctions[$function] . '.php');
+include(dirname(__FILE__) . '/' . $validFunctions[$function] . '.php');
 
 ?>
