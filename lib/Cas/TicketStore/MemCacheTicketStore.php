@@ -50,7 +50,7 @@ class sspmod_sbcasserver_Cas_TicketStore_MemCacheTicketStore extends sspmod_sbca
 
     private function scopeTicketId($ticketId)
     {
-        return urlencode($this->attributeStorePrefix . '.' . $ticketId);
+        return $this->attributeStorePrefix . '.' . $ticketId;
     }
 }
 
