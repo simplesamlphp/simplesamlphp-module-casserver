@@ -9,7 +9,7 @@
  */
 
 if (array_key_exists('service', $_GET)) {
-    $service = $_GET['service'];
+    $service = preg_replace('/;jsessionid=.*/','',$_GET['service']);
     $ticket = $_GET['ticket'];
     $forceAuthn = isset($_GET['renew']) && $_GET['renew'];
 } else {
