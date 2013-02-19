@@ -54,4 +54,13 @@ SimpleSAML_Utilities::redirect(
 	)
 );
 
+function checkServiceURL($service, array $legal_service_urls)
+{
+    foreach ($legal_service_urls AS $legalurl) {
+        if (strpos($service, $legalurl) === 0) return TRUE;
+    }
+
+    return FALSE;
+}
+
 ?>
