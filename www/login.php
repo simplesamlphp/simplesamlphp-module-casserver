@@ -23,9 +23,7 @@ $legal_service_urls = $casconfig->getValue('legal_service_urls');
 if (!checkServiceURL($service, $legal_service_urls))
 	throw new Exception('Service parameter provided to CAS server is not listed as a legal service: [service] = ' . $service);
 
-$auth = $casconfig->getValue('authsource', 'saml2');
-
-$as = new SimpleSAML_Auth_Simple($auth);
+$as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
 
 if (!$as->isAuthenticated()) {
 	$params = array(
@@ -45,14 +43,9 @@ $ticket = $ticketStore->createTicket(array('service' => $service,
         'forceAuthn' => $forceAuthn,
         'attributes' => $attributes,
         'proxies' => array(),
-        'validbefore' => time() + 5)
-);
+        'validbefore' => time() + 5));
 
-SimpleSAML_Utilities::redirect(
-	SimpleSAML_Utilities::addURLparameter($service,
-		array('ticket' => $ticket)
-	)
-);
+SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter($service, array('ticket' => $ticket)));
 
 function checkServiceURL($service, array $legal_service_urls)
 {
