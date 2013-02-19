@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Incomming parameters:
  *  service
@@ -7,28 +8,21 @@
  *
  */
 
-if (!array_key_exists('service', $_GET))
+if (array_key_exists('service', $_GET)) {
+    $service = $_GET['service'];
+    $ticket = $_GET['ticket'];
+    $forceAuthn = isset($_GET['renew']) && $_GET['renew'];
+} else {
     throw new Exception('Required URL query parameter [service] not provided. (CAS Server)');
-
-$service = $_GET['service'];
-
-if (!array_key_exists('ticket', $_GET))
-    throw new Exception('Required URL query parameter [ticket] not provided. (CAS Server)');
-
-$ticket = $_GET['ticket'];
-
-$forceAuthn = isset($_GET['renew']) && $_GET['renew'];
+}
 
 try {
     /* Load simpleSAMLphp, configuration and metadata */
     $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 
-    /* Instantiate ticket store */
     $ticketStoreConfig = $casconfig->getValue('ticketstore');
     $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_TicketStore');
     $ticketStore = new $ticketStoreClass($casconfig);
-
-    $base64encodeQ = $casconfig->getValue('base64attributes', false);
 
     $ticketcontent = $ticketStore->getTicket($ticket);
 
@@ -38,11 +32,32 @@ try {
         $usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
         $dosendattributes = $casconfig->getValue('attributes', FALSE);
 
-        if ($ticketcontent['service'] == $service && $ticketcontent['forceAuthn'] == $forceAuthn &&
-            array_key_exists($usernamefield, $ticketcontent['attributes'])
-        ) {
-            echo workAroundForBuggyJasigXmlParser(generateCas20SuccessContent($ticketcontent['attributes'][$usernamefield][0],
-                $dosendattributes ? $ticketcontent['attributes'] : array(), $base64encodeQ)->saveXML());
+        $attributes = $ticketcontent['attributes'];
+
+        if ($ticketcontent['service'] == $service && $ticketcontent['forceAuthn'] == $forceAuthn && array_key_exists($usernamefield, $attributes)) {
+            $base64encodeQ = $casconfig->getValue('base64attributes', false);
+
+            if (isset($_GET['pgtUrl'])) {
+                $pgtUrl = $_GET['pgtUrl'];
+
+                $proxyGrantingTicket = array(
+                    'attributes' => $attributes,
+                    'forceAuthn' => false,
+                    'proxies' => array_merge(array($service), $ticketcontent['proxies']),
+                    'validbefore' => time() + 60);
+
+                $proxyGrantingTicketId = $ticketStore->createProxyGrantingTicket($proxyGrantingTicket);
+
+                try {
+                    SimpleSAML_Utilities::fetch($pgtUrl . '?pgtIou=' . $proxyGrantingTicketId['iou'] . '&pgtId=' . $proxyGrantingTicketId['id']);
+                } catch (Exception $e) {
+                    $ticketStore->removeTicket($proxyGrantingTicketId['id']);
+                }
+            }
+
+            echo workAroundForBuggyJasigXmlParser(generateCas20SuccessContent($attributes[$usernamefield][0],
+                isset($proxyGrantingTicketId) ? $proxyGrantingTicketId['iou'] : null,
+                $dosendattributes ? $attributes : array(), $base64encodeQ)->saveXML());
         } else {
             if ($ticketcontent['service'] != $service) {
                 echo workAroundForBuggyJasigXmlParser(generateCas20FailureContent('INVALID_SERVICE', 'Expected: ' .
@@ -58,6 +73,7 @@ try {
     } else {
         echo workAroundForBuggyJasigXmlParser(generateCas20FailureContent('INVALID_TICKET', 'ticket: ' . $ticket . ' not recognized')->saveXML());
     }
+
 } catch (Exception $e) {
     echo workAroundForBuggyJasigXmlParser(generateCas20FailureContent('INTERNAL_ERROR', $e->getMessage())->saveXML());
 }
@@ -72,7 +88,7 @@ function generateCas20Attribute($xmlDocument, $attributeName, $attributeValue, $
     return $xmlDocument->createElement('cas:' . $attributeName, $base64encode ? base64_encode($attributeValue) : $attributeValue);
 }
 
-function generateCas20SuccessContent($userName, $attributes, $base64encode)
+function generateCas20SuccessContent($userName, $proxyGrantingTicketIOU, $attributes, $base64encode)
 {
     $xmlDocument = new DOMDocument("1.0");
 
@@ -83,6 +99,10 @@ function generateCas20SuccessContent($userName, $attributes, $base64encode)
 
     $casSuccess = $xmlDocument->createElement('cas:authenticationSuccess');
     $casSuccess->appendChild($casUser);
+
+    if (is_string($proxyGrantingTicketIOU)) {
+        $casSuccess->appendChild($xmlDocument->createElement("cas:proxyGrantingTicket", $proxyGrantingTicketIOU));
+    }
 
     if (count($attributes) > 0) {
         $casAttributes = $xmlDocument->createElement('cas:attributes');
@@ -123,6 +143,4 @@ function generateCas20FailureContent($errorCode, $explanation)
 
     return $xmlDocument;
 }
-
 ?>
-
