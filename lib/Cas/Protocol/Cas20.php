@@ -2,20 +2,15 @@
 
 class sspmod_sbcasserver_Cas_Protocol_Cas20
 {
-    private $sendAttributes = false;
-    private $base64EncodeAttributes = false;
+    private $sendAttributes;
+    private $base64EncodeAttributes;
     private $attributes = array();
     private $proxyGrantingTicketIOU = null;
 
     public function __construct($config)
     {
-        if (array_key_exists('base64attributes', $config)) {
-            $this->base64EncodeAttributes = $config['base64attributes'];
-        }
-
-        if (array_key_exists('attributes', $config)) {
-            $this->sendAttributes = $config['attributes'];
-        }
+        $this->sendAttributes = $config->getValue('attributes',false);
+        $this->base64EncodeAttributes = $config->getValue('base64attributes',false);
     }
 
     public function setAttributes($attributes)
