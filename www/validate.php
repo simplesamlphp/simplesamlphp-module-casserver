@@ -21,10 +21,14 @@ $ticket = sanitize($_GET['ticket']);
 
 $forceAuthn = isset($_GET['renew']) && sanitize($_GET['renew']);
 
-try {
-    /* Load simpleSAMLphp, configuration and metadata */
-    $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
+/* Load simpleSAMLphp, configuration and metadata */
+$casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 
+/* Instantiate protocol handler */
+$protocolClass = SimpleSAML_Module::resolveClass('Cas10', 'Cas_Protocol');
+$protocol = new $protocolClass($casconfig);
+
+try {
     /* Instantiate ticket store */
     $ticketStoreConfig = $casconfig->getValue('ticketstore');
     $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_TicketStore');
@@ -38,25 +42,14 @@ try {
         $usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
 
         if ($ticketcontent['service'] == $service && $ticketcontent['forceAuthn'] == $forceAuthn && array_key_exists($usernamefield, $ticketcontent['attributes'])) {
-            echo generateCas10SuccessContent($ticketcontent['attributes'][$usernamefield][0]);
+            echo $protocol->getSuccessResponse($ticketcontent['attributes'][$usernamefield][0]);
         } else {
-            echo generateCas10FailureContent();
+            echo $protocol->getFailureResponse();
         }
     } else {
-        echo generateCas10FailureContent();
+        echo $protocol->getFailureResponse();
     }
 } catch (Exception $e) {
-    echo generateCas10FailureContent();
+    echo $protocol->getFailureResponse();
 }
-
-function generateCas10SuccessContent($username)
-{
-    return "yes\n" . $username . "\n";
-}
-
-function generateCas10FailureContent()
-{
-    return "no\n";
-}
-
 ?>
