@@ -8,10 +8,12 @@
  *
  */
 
+require_once 'urlUtils.php';
+
 if (array_key_exists('service', $_GET)) {
-    $service = preg_replace('/;jsessionid=.*/','',$_GET['service']);
-    $ticket = $_GET['ticket'];
-    $forceAuthn = isset($_GET['renew']) && $_GET['renew'];
+    $service = sanitize($_GET['service']);
+    $ticket = sanitize($_GET['ticket']);
+    $forceAuthn = isset($_GET['renew']) && sanitize($_GET['renew']);
 } else {
     throw new Exception('Required URL query parameter [service] not provided. (CAS Server)');
 }
@@ -38,7 +40,7 @@ try {
             $base64encodeQ = $casconfig->getValue('base64attributes', false);
 
             if (isset($_GET['pgtUrl'])) {
-                $pgtUrl = $_GET['pgtUrl'];
+                $pgtUrl = sanitize($_GET['pgtUrl']);
 
                 $proxyGrantingTicket = array(
                     'attributes' => $attributes,
@@ -143,4 +145,5 @@ function generateCas20FailureContent($errorCode, $explanation)
 
     return $xmlDocument;
 }
+
 ?>

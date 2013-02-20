@@ -7,18 +7,19 @@
 *
 */
 
+require_once 'urlUtils.php';
+
 if (!array_key_exists('service', $_GET))
     throw new Exception('Required URL query parameter [service] not provided. (CAS Server)');
 
-$service = $_GET['service'];
+$service = sanitize($_GET['service']);
 
 if (!array_key_exists('ticket', $_GET))
     throw new Exception('Required URL query parameter [ticket] not provided. (CAS Server)');
 
-$ticket = $_GET['ticket'];
+$ticket = sanitize($_GET['ticket']);
 
-$forceAuthn = isset($_GET['renew']) && $_GET['renew'];
-
+$forceAuthn = isset($_GET['renew']) && sanitize($_GET['renew']);
 
 try {
     /* Load simpleSAMLphp, configuration and metadata */

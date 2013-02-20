@@ -11,9 +11,6 @@ $config = array(
         'http://localhost:8080/kultur/login.jsp',
     ),
 
-    // Legal values: saml2, shib13
-    'auth' => 'saml2',
-
     'ticketstore' => array(
         'class' => 'sbcasserver:FileSystemTicketStore',
         'directory' => 'ticketcache',
