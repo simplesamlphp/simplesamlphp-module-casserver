@@ -8,7 +8,7 @@
  *
  */
 
-require_once 'urlUtils.php';
+require_once 'utility/urlUtils.php';
 
 if (array_key_exists('service', $_GET)) {
     $service = sanitize($_GET['service']);

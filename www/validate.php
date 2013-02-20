@@ -7,7 +7,7 @@
 *
 */
 
-require_once 'urlUtils.php';
+require_once 'utility/urlUtils.php';
 
 if (!array_key_exists('service', $_GET))
     throw new Exception('Required URL query parameter [service] not provided. (CAS Server)');
