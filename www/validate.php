@@ -25,7 +25,7 @@ $forceAuthn = isset($_GET['renew']) && sanitize($_GET['renew']);
 $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 
 /* Instantiate protocol handler */
-$protocolClass = SimpleSAML_Module::resolveClass('Cas10', 'Cas_Protocol');
+$protocolClass = SimpleSAML_Module::resolveClass('sbcasserver:Cas10', 'Cas_Protocol');
 $protocol = new $protocolClass($casconfig);
 
 try {
