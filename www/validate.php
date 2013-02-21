@@ -30,7 +30,7 @@ $protocol = new $protocolClass($casconfig);
 
 try {
     /* Instantiate ticket store */
-    $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore', 'directory' => 'ticketcache'));
+    $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore'));
     $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_TicketStore');
     $ticketStore = new $ticketStoreClass($casconfig);
 

@@ -7,10 +7,10 @@ class sspmod_sbcasserver_Cas_TicketStore_FileSystemTicketStore extends sspmod_sb
 
     public function __construct($config)
     {
-        $storeConfig = $config->getValue('ticketstore');
+        $storeConfig = $config->getValue('ticketstore', array('directory' => 'ticketcache'));
 
         if (!is_string($storeConfig['directory'])) {
-            throw new Exception('Missing or invalid directory option in config.');
+            throw new Exception('Invalid directory option in config.');
         }
 
         $path = $config->resolvePath($storeConfig['directory']);

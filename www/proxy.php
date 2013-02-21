@@ -21,7 +21,7 @@ $legal_service_urls = $casconfig->getValue('legal_service_urls');
 if (!checkServiceURL($targetService, $legal_service_urls))
     throw new Exception('Service parameter provided to CAS server is not listed as a legal service: [service] = ' . $targetService);
 
-$ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore', 'directory' => 'ticketcache'));
+$ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore'));
 $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_TicketStore');
 $ticketStore = new $ticketStoreClass($casconfig);
 
