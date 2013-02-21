@@ -36,7 +36,7 @@ if (!$as->isAuthenticated()) {
 
 $attributes = $as->getAttributes();
 
-$ticketStoreConfig = $casconfig->getValue('ticketstore');
+$ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore', 'directory' => 'ticketcache'));
 $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_TicketStore');
 $ticketStore = new $ticketStoreClass($casconfig);
 

@@ -26,7 +26,7 @@ $protocolClass = SimpleSAML_Module::resolveClass('sbcasserver:Cas20', 'Cas_Proto
 $protocol = new $protocolClass($casconfig);
 
 try {
-    $ticketStoreConfig = $casconfig->getValue('ticketstore');
+    $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore', 'directory' => 'ticketcache'));
     $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_TicketStore');
     $ticketStore = new $ticketStoreClass($casconfig);
 
@@ -65,7 +65,7 @@ try {
             echo $protocol->getSuccessResponse($attributes[$usernamefield][0]);
         } else {
             if ($ticketcontent['service'] != $service) {
-                echo $protocol->getFailureResponse('INVALID_SERVICE', 'Expected: ' .$ticketcontent['service'] . ' was: ' . $service);
+                echo $protocol->getFailureResponse('INVALID_SERVICE', 'Expected: ' . $ticketcontent['service'] . ' was: ' . $service);
             } else if ($ticketcontent['forceAuthn'] == $forceAuthn) {
                 echo $protocol->getFailureResponse('INVALID_TICKET', 'Mismatching renew. Expected: ' . $ticketcontent['forceAuthn'] . ' was: ' . $forceAuthn);
             } else {
