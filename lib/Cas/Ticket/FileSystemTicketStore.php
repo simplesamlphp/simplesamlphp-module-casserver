@@ -42,7 +42,7 @@ class sspmod_sbcasserver_Cas_Ticket_FileSystemTicketStore extends sspmod_sbcasse
         file_put_contents($filename, serialize($ticket));
     }
 
-    public function removeTicket($ticketId)
+    public function deleteTicket($ticketId)
     {
         $filename = $this->pathToTicketDirectory . '/' . $ticketId;
 

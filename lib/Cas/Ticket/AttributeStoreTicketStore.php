@@ -51,7 +51,7 @@ class sspmod_sbcasserver_Cas_Ticket_AttributeStoreTicketStore extends sspmod_sbc
         $this->addTicketToAttributeStore($scopedTicketId, $ticket);
     }
 
-    public function removeTicket($ticketId)
+    public function deleteTicket($ticketId)
     {
         $scopedTicketId = $this->scopeTicketId($ticketId);
 

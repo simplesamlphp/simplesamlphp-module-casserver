@@ -41,7 +41,7 @@ class sspmod_sbcasserver_Cas_Ticket_MemCacheTicketStore extends sspmod_sbcasserv
         SimpleSAML_Memcache::set($scopedTicketId, $ticket, $this->expireSeconds);
     }
 
-    public function removeTicket($ticketId)
+    public function deleteTicket($ticketId)
     {
         $scopedTicketId = $this->scopeTicketId($ticketId);
 
