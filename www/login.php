@@ -37,7 +37,7 @@ if (!$as->isAuthenticated()) {
 $attributes = $as->getAttributes();
 
 $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore'));
-$ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_TicketStore');
+$ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
 $ticketStore = new $ticketStoreClass($casconfig);
 
 $ticket = $ticketStore->createTicket(array('service' => $service,
