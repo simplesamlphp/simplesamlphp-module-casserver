@@ -17,7 +17,7 @@ $service = sanitize($_GET['service']);
 if (!array_key_exists('ticket', $_GET))
     throw new Exception('Required URL query parameter [ticket] not provided. (CAS Server)');
 
-$ticket = sanitize($_GET['ticket']);
+$ticketId = sanitize($_GET['ticket']);
 
 $forceAuthn = isset($_GET['renew']) && sanitize($_GET['renew']);
 
@@ -34,15 +34,21 @@ try {
     $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
     $ticketStore = new $ticketStoreClass($casconfig);
 
-    $ticketcontent = $ticketStore->getTicket($ticket);
+    $ticket = $ticketStore->getTicket($ticketId);
 
-    if (!is_null($ticketcontent)) {
-        $ticketStore->deleteTicket($ticket);
+    if (!is_null($ticket)) {
+        $ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
+        $ticketFactory = new $ticketFactoryClass($casconfig);
+
+        $valid = $ticketFactory->validateServiceTicket($ticket);
+
+        $ticketStore->deleteTicket($ticketId);
 
         $usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
 
-        if ($ticketcontent['service'] == $service && $ticketcontent['forceAuthn'] == $forceAuthn && array_key_exists($usernamefield, $ticketcontent['attributes'])) {
-            echo $protocol->getSuccessResponse($ticketcontent['attributes'][$usernamefield][0]);
+        if ($valid['valid'] && $ticket['service'] == $service && $ticket['forceAuthn'] == $forceAuthn &&
+            array_key_exists($usernamefield, $ticket['attributes'])) {
+            echo $protocol->getSuccessResponse($ticket['attributes'][$usernamefield][0]);
         } else {
             echo $protocol->getFailureResponse();
         }

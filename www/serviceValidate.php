@@ -12,7 +12,7 @@ require_once 'utility/urlUtils.php';
 
 if (array_key_exists('service', $_GET)) {
     $service = sanitize($_GET['service']);
-    $ticket = sanitize($_GET['ticket']);
+    $ticketId = sanitize($_GET['ticket']);
     $forceAuthn = isset($_GET['renew']) && sanitize($_GET['renew']);
 } else {
     throw new Exception('Required URL query parameter [service] not provided. (CAS Server)');
@@ -30,50 +30,56 @@ try {
     $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
     $ticketStore = new $ticketStoreClass($casconfig);
 
-    $ticketcontent = $ticketStore->getTicket($ticket);
+    $ticket = $ticketStore->getTicket($ticketId);
 
-    if (!is_null($ticketcontent)) {
-        $ticketStore->deleteTicket($ticket);
+    if (!is_null($ticket)) {
+        $ticketStore->deleteTicket($ticketId);
 
-        $usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
+        $usernameField = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
 
-        $attributes = $ticketcontent['attributes'];
+        $attributes = $ticket['attributes'];
 
-        if ($ticketcontent['service'] == $service && $ticketcontent['forceAuthn'] == $forceAuthn && array_key_exists($usernamefield, $attributes)) {
+        $ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
+        $ticketFactory = new $ticketFactoryClass($casconfig);
+
+        $valid = $ticketFactory->validateServiceTicket($ticket);
+
+        if ($valid['valid'] && $ticket['service'] == $service && $ticket['forceAuthn'] == $forceAuthn &&
+            array_key_exists($usernameField, $attributes)
+        ) {
             $protocol->setAttributes($attributes);
 
             if (isset($_GET['pgtUrl'])) {
                 $pgtUrl = sanitize($_GET['pgtUrl']);
 
-                $proxyGrantingTicket = array(
-                    'attributes' => $attributes,
-                    'forceAuthn' => false,
-                    'proxies' => array_merge(array($service), $ticketcontent['proxies']),
-                    'validBefore' => time() + 60);
-
-                $proxyGrantingTicketId = $ticketStore->createProxyGrantingTicket($proxyGrantingTicket);
+                $proxyGrantingTicket = $ticketFactory->createProxyGrantingTicket(array(
+                                    'attributes' => $attributes, 'forceAuthn' => false,
+                                    'proxies' => array_merge(array($service), $ticket['proxies'])));
 
                 try {
-                    SimpleSAML_Utilities::fetch($pgtUrl . '?pgtIou=' . $proxyGrantingTicketId['iou'] . '&pgtId=' . $proxyGrantingTicketId['id']);
+                    SimpleSAML_Utilities::fetch($pgtUrl . '?pgtIou=' . $proxyGrantingTicket['iou'] . '&pgtId=' . $proxyGrantingTicket['id']);
 
-                    $protocol->setProxyGrantingTicketIOU($proxyGrantingTicketId['iou']);
+                    $protocol->setProxyGrantingTicketIOU($proxyGrantingTicket['iou']);
+
+                    $ticketStore->addTicket($proxyGrantingTicket);
                 } catch (Exception $e) {
-                    $ticketStore->removeTicket($proxyGrantingTicketId['id']);
                 }
             }
 
-            echo $protocol->getSuccessResponse($attributes[$usernamefield][0]);
+            echo $protocol->getSuccessResponse($attributes[$usernameField][0]);
         } else {
-            if ($ticketcontent['service'] != $service) {
-                echo $protocol->getFailureResponse('INVALID_SERVICE', 'Expected: ' . $ticketcontent['service'] . ' was: ' . $service);
-            } else if ($ticketcontent['forceAuthn'] == $forceAuthn) {
-                echo $protocol->getFailureResponse('INVALID_TICKET', 'Mismatching renew. Expected: ' . $ticketcontent['forceAuthn'] . ' was: ' . $forceAuthn);
+            if (!$valid['valid']) {
+                echo $protocol->getFailureResponse('INVALID_TICKET', $valid['reason']);
+            } else if ($ticket['service'] != $service) {
+                echo $protocol->getFailureResponse('INVALID_SERVICE', 'Expected: ' . $ticket['service'] . ' was: ' . $service);
+            } else if ($ticket['forceAuthn'] == $forceAuthn) {
+                echo $protocol->getFailureResponse('INVALID_TICKET', 'Mismatching renew. Expected: ' . $ticket['forceAuthn'] . ' was: ' . $forceAuthn);
             } else {
-                echo $protocol->getFailureResponse('INTERNAL_ERROR', 'Missing user name, attribute: ' . $usernamefield . ' not found.');
+                echo $protocol->getFailureResponse('INTERNAL_ERROR', 'Missing user name, attribute: ' . $usernameField . ' not found.');
             }
         }
     } else {
-        echo $protocol->getFailureResponse('INVALID_TICKET', 'ticket: ' . $ticket . ' not recognized');
+        echo $protocol->getFailureResponse('INVALID_TICKET', 'ticket: ' . $ticketId . ' not recognized');
     }
 
 } catch (Exception $e) {

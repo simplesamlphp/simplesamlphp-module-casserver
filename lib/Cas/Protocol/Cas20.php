@@ -9,8 +9,8 @@ class sspmod_sbcasserver_Cas_Protocol_Cas20
 
     public function __construct($config)
     {
-        $this->sendAttributes = $config->getValue('attributes',false);
-        $this->base64EncodeAttributes = $config->getValue('base64attributes',false);
+        $this->sendAttributes = $config->getValue('attributes', false);
+        $this->base64EncodeAttributes = $config->getValue('base64attributes', false);
     }
 
     public function setAttributes($attributes)
