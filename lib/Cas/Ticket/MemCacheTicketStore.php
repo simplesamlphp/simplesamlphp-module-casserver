@@ -1,6 +1,6 @@
 <?php
 
-class sspmod_sbcasserver_Cas_TicketStore_MemCacheTicketStore extends sspmod_sbcasserver_Cas_TicketStore_TicketStore
+class sspmod_sbcasserver_Cas_Ticket_MemCacheTicketStore extends sspmod_sbcasserver_Cas_Ticket_TicketStore
 {
 
     private $expireSeconds = 5;

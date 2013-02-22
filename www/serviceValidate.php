@@ -49,7 +49,7 @@ try {
                     'attributes' => $attributes,
                     'forceAuthn' => false,
                     'proxies' => array_merge(array($service), $ticketcontent['proxies']),
-                    'validbefore' => time() + 60);
+                    'validBefore' => time() + 60);
 
                 $proxyGrantingTicketId = $ticketStore->createProxyGrantingTicket($proxyGrantingTicket);
 

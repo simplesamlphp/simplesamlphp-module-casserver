@@ -27,14 +27,14 @@ $ticketStore = new $ticketStoreClass($casconfig);
 
 $proxyGrantingTicketContent = $ticketStore->getTicket($pgt);
 
-if (is_array($proxyGrantingTicketContent) && $proxyGrantingTicketContent['validbefore'] > time()) {
+if (is_array($proxyGrantingTicketContent) && $proxyGrantingTicketContent['validBefore'] > time()) {
 
     $proxyTicketContent = array(
         'service' => $targetService,
         'forceAuthn' => false,
         'attributes' => $proxyGrantingTicketContent['attributes'],
         'proxies' => $proxyGrantingTicketContent['proxies'],
-        'validbefore' => time() + 5);
+        'validBefore' => time() + 5);
 
     $pt = $ticketStore->createProxyTicket($proxyTicketContent);
 

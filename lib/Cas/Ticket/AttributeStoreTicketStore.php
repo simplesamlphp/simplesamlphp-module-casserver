@@ -1,6 +1,6 @@
 <?php
 
-class sspmod_sbcasserver_Cas_TicketStore_AttributeStoreTicketStore extends sspmod_sbcasserver_Cas_TicketStore_TicketStore
+class sspmod_sbcasserver_Cas_Ticket_AttributeStoreTicketStore extends sspmod_sbcasserver_Cas_Ticket_TicketStore
 {
 
     private $attributeStoreUrl;

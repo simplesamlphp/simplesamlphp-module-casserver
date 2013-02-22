@@ -1,5 +1,5 @@
 <?php
-abstract class sspmod_sbcasserver_Cas_TicketStore_TicketStore
+abstract class sspmod_sbcasserver_Cas_Ticket_TicketStore
 {
 
     public function __construct($config)

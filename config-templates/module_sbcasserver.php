@@ -11,7 +11,7 @@ $config = array(
         'http://localhost:8080/kultur/login.jsp',
     ),
 
-    'ticketstore' => array(
+    'ticketstore' => array( //defaults to filesystem ticket store using the directory 'ticketcache'
         'class' => 'sbcasserver:FileSystemTicketStore',
         'directory' => 'ticketcache',
         //'class' => 'sbcasserver:MemCacheTicketStore',
@@ -29,6 +29,8 @@ $config = array(
 
     'authsource' => 'casserver',
     'base64attributes' => true,
+    'serviceTicketExpireTime' => 5, //how many seconds service tickets are valid for
+    'proxyTicketExpireTime' => 5, //how many seconds proxy tickets are valid for
 );
 
 ?>
