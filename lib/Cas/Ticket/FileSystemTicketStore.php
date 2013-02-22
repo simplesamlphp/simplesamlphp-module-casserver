@@ -24,9 +24,9 @@ class sspmod_sbcasserver_Cas_Ticket_FileSystemTicketStore extends sspmod_sbcasse
         $this->pathToTicketDirectory = preg_replace('/\/$/', '', $path);
     }
 
-    protected function retrieveTicket($ticket)
+    public function getTicket($ticketIdId)
     {
-        $filename = $this->pathToTicketDirectory . '/' . $ticket;
+        $filename = $this->pathToTicketDirectory . '/' . $ticketIdId;
 
         if (!file_exists($filename))
             throw new Exception('Could not find ticket');
@@ -36,15 +36,15 @@ class sspmod_sbcasserver_Cas_Ticket_FileSystemTicketStore extends sspmod_sbcasse
         return unserialize($content);
     }
 
-    protected function storeTicket($ticket, $value)
+    public function addTicket($ticket)
     {
-        $filename = $this->pathToTicketDirectory . '/' . $ticket;
-        file_put_contents($filename, serialize($value));
+        $filename = $this->pathToTicketDirectory . '/' . $ticket['id'];
+        file_put_contents($filename, serialize($ticket));
     }
 
-    protected function deleteTicket($ticket)
+    public function removeTicket($ticketId)
     {
-        $filename = $this->pathToTicketDirectory . '/' . $ticket;
+        $filename = $this->pathToTicketDirectory . '/' . $ticketId;
 
         if (file_exists($filename)) {
             unlink($filename);

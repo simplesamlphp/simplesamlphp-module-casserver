@@ -21,9 +21,9 @@ class sspmod_sbcasserver_Cas_Ticket_MemCacheTicketStore extends sspmod_sbcasserv
         }
     }
 
-    protected function retrieveTicket($ticket)
+    public function getTicket($ticketId)
     {
-        $scopedTicketId = $this->scopeTicketId($ticket);
+        $scopedTicketId = $this->scopeTicketId($ticketId);
 
         $content = SimpleSAML_Memcache::get($scopedTicketId);
 
@@ -34,16 +34,16 @@ class sspmod_sbcasserver_Cas_Ticket_MemCacheTicketStore extends sspmod_sbcasserv
         }
     }
 
-    protected function storeTicket($ticket, $value)
+    public function addTicket($ticket)
     {
-        $scopedTicketId = $this->scopeTicketId($ticket);
+        $scopedTicketId = $this->scopeTicketId($ticket['id']);
 
-        SimpleSAML_Memcache::set($scopedTicketId, $value, $this->expireSeconds);
+        SimpleSAML_Memcache::set($scopedTicketId, $ticket, $this->expireSeconds);
     }
 
-    protected function deleteTicket($ticket)
+    public function removeTicket($ticketId)
     {
-        $scopedTicketId = $this->scopeTicketId($ticket);
+        $scopedTicketId = $this->scopeTicketId($ticketId);
 
         SimpleSAML_Memcache::delete($scopedTicketId);
     }

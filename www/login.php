@@ -48,6 +48,8 @@ $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcas
 $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
 $ticketStore = new $ticketStoreClass($casconfig);
 
+$ticketStore->addTicket($ticket);
+
 SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter($_GET['service'], array('ticket' => $ticket['id'])));
 
 ?>
