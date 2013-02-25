@@ -39,17 +39,23 @@ $attributes = $as->getAttributes();
 $ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
 $ticketFactory = new $ticketFactoryClass($casconfig);
 
-$ticket = $ticketFactory->createServiceTicket(array('service' => $service,
+$session = SimpleSAML_Session::getInstance();
+
+$sessionTicket = $ticketFactory->createSessionTicket($session->getSessionId(), $session->remainingTime());
+
+$serviceTicket = $ticketFactory->createServiceTicket(array('service' => $service,
     'forceAuthn' => $forceAuthn,
     'attributes' => $attributes,
-    'proxies' => array()));
+    'proxies' => array(),
+    'sessionId' => $sessionTicket['id']));
 
 $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore'));
 $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
 $ticketStore = new $ticketStoreClass($casconfig);
 
-$ticketStore->addTicket($ticket);
+$ticketStore->addTicket($sessionTicket);
+$ticketStore->addTicket($serviceTicket);
 
-SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter($_GET['service'], array('ticket' => $ticket['id'])));
+SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter($_GET['service'], array('ticket' => $serviceTicket['id'])));
 
 ?>

@@ -53,8 +53,8 @@ try {
                 $pgtUrl = sanitize($_GET['pgtUrl']);
 
                 $proxyGrantingTicket = $ticketFactory->createProxyGrantingTicket(array(
-                                    'attributes' => $attributes, 'forceAuthn' => false,
-                                    'proxies' => array_merge(array($service), $ticket['proxies'])));
+                    'attributes' => $attributes, 'forceAuthn' => false,
+                    'proxies' => array_merge(array($service), $ticket['proxies'])));
 
                 try {
                     SimpleSAML_Utilities::fetch($pgtUrl . '?pgtIou=' . $proxyGrantingTicket['iou'] . '&pgtId=' . $proxyGrantingTicket['id']);

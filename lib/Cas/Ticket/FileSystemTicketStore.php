@@ -24,9 +24,9 @@ class sspmod_sbcasserver_Cas_Ticket_FileSystemTicketStore extends sspmod_sbcasse
         $this->pathToTicketDirectory = preg_replace('/\/$/', '', $path);
     }
 
-    public function getTicket($ticketIdId)
+    public function getTicket($ticketId)
     {
-        $filename = $this->pathToTicketDirectory . '/' . $ticketIdId;
+        $filename = $this->pathToTicketDirectory . '/' . $ticketId;
 
         if (!file_exists($filename))
             throw new Exception('Could not find ticket');

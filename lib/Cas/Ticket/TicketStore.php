@@ -6,11 +6,11 @@ abstract class sspmod_sbcasserver_Cas_Ticket_TicketStore
     {
     }
 
-    abstract public function getTicket($ticketIdIdIdId);
+    abstract public function getTicket($ticketId);
 
     abstract public function addTicket($ticket);
 
-    abstract public function deleteTicket($ticketIdId);
+    abstract public function deleteTicket($ticketId);
 }
 
 ?>

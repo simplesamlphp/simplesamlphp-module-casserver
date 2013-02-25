@@ -10,6 +10,13 @@ class sspmod_sbcasserver_Cas_Ticket_TicketFactory
         $this->proxyTicketExpireTime = $config->getValue('proxyTicketExpireTime', 5);
     }
 
+    public function createSessionTicket($sessionId, $expireTime)
+    {
+        $expiresAt = time() + $expireTime;
+
+        return array('id' => $sessionId, 'validBefore' => $expiresAt);
+    }
+
     public function createServiceTicket($content)
     {
         $id = str_replace('_', 'ST-', SimpleSAML_Utilities::generateID());

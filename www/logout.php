@@ -18,6 +18,16 @@ $as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
 
 SimpleSAML_Logger::debug('sbcasserver config' . var_export($as, TRUE));
 
+$session = SimpleSAML_Session::getInstance();
+
+if (!is_null($session)) {
+    $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore'));
+    $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
+    $ticketStore = new $ticketStoreClass($casconfig);
+
+    $ticketStore->deleteTicket($session);
+}
+
 if ($as->isAuthenticated()) {
     SimpleSAML_Logger::debug('sbcasserver logged out: real logout');
 

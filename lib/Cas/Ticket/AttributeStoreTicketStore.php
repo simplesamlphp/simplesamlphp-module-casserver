@@ -31,9 +31,9 @@ class sspmod_sbcasserver_Cas_Ticket_AttributeStoreTicketStore extends sspmod_sbc
         }
     }
 
-    public function getTicket($ticketIdIdId)
+    public function getTicket($ticketId)
     {
-        $scopedTicketId = $this->scopeTicketId($ticketIdIdId);
+        $scopedTicketId = $this->scopeTicketId($ticketId);
 
         $content = $this->getTicketFromAttributeStore($scopedTicketId);
 
@@ -124,11 +124,6 @@ class sspmod_sbcasserver_Cas_Ticket_AttributeStoreTicketStore extends sspmod_sbc
     private function scopeTicketId($ticketId)
     {
         return urlencode($this->attributeStorePrefix . '.' . $ticketId);
-    }
-
-    private function unscopeTicketId($ticketId)
-    {
-        return str_replace($this->attributeStorePrefix . '.', '', urldecode($ticketId));
     }
 }
 
