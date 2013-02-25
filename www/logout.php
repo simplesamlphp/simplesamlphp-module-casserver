@@ -25,7 +25,7 @@ if (!is_null($session)) {
     $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
     $ticketStore = new $ticketStoreClass($casconfig);
 
-    $ticketStore->deleteTicket($session);
+    $ticketStore->deleteTicket($session->getSessionId());
 }
 
 if ($as->isAuthenticated()) {
