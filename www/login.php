@@ -32,15 +32,19 @@ $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcas
 $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
 $ticketStore = new $ticketStoreClass($casconfig);
 
-$sessionTicket = $ticketStore->getTicket($session->getSessionId());
+try {
+    $sessionTicket = $ticketStore->getTicket($session->getSessionId());
+    $sessionRenewId = isset($sessionTicket['renewId']) ? $sessionTicket['renewId'] : NULL;
+} catch (Exception $e) {
+    $sessionRenewId = NULL;
+}
 
-$sessionRenewId = $sessionTicket && isset($sessionTicket['renewId']) ? $sessionTicket['renewId'] : NULL;
 $requestRenewId = isset($_REQUEST['renewId']) ? $_REQUEST['renewId'] : NULL;
 
 if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId && $requestRenewId && $sessionRenewId != $requestRenewId)) {
     $query = array();
 
-    if ($sessionTicket && $forceAuthn) {
+    if (isset($sessionTicket) && $forceAuthn) {
         $renewId = SimpleSAML_Utilities::generateID();
 
         $query['renewId'] = $renewId;
