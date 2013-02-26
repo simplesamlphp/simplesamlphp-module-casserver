@@ -28,18 +28,26 @@ $as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
 
 $session = SimpleSAML_Session::getInstance();
 
-$sessionRenewId = $session ? $session->getAttribute('renewId') : NULL;
+$ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore'));
+$ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
+$ticketStore = new $ticketStoreClass($casconfig);
+
+$sessionTicket = $ticketStore->getTicket($session->getSessionId());
+
+$sessionRenewId = $sessionTicket && isset($sessionTicket['renewId']) ? $sessionTicket['renewId'] : NULL;
 $requestRenewId = isset($_REQUEST['renewId']) ? $_REQUEST['renewId'] : NULL;
 
-if (!$as->isAuthenticated()) {
+if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId && $requestRenewId && $sessionRenewId != $requestRenewId)) {
     $query = array();
 
-    if ($forceAuthn) {
+    if ($sessionTicket && $forceAuthn) {
         $renewId = SimpleSAML_Utilities::generateID();
 
-        $session->setAttribute('renewId', array($renewId));
-
         $query['renewId'] = $renewId;
+
+        $sessionTicket['renewId'] = $renewId;
+
+        $ticketStore->addTicket($sessionTicket);
     }
 
     if (isset($_REQUEST['service'])) {
@@ -71,8 +79,6 @@ $attributes = $as->getAttributes();
 $ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
 $ticketFactory = new $ticketFactoryClass($casconfig);
 
-$session = SimpleSAML_Session::getInstance();
-
 $sessionTicket = $ticketFactory->createSessionTicket($session->getSessionId(), $session->remainingTime());
 
 $serviceTicket = $ticketFactory->createServiceTicket(array('service' => $service,
@@ -80,10 +86,6 @@ $serviceTicket = $ticketFactory->createServiceTicket(array('service' => $service
     'attributes' => $attributes,
     'proxies' => array(),
     'sessionId' => $sessionTicket['id']));
-
-$ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore'));
-$ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
-$ticketStore = new $ticketStoreClass($casconfig);
 
 $ticketStore->addTicket($sessionTicket);
 $ticketStore->addTicket($serviceTicket);
