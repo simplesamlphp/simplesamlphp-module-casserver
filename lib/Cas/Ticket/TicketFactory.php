@@ -14,7 +14,7 @@ class sspmod_sbcasserver_Cas_Ticket_TicketFactory
     {
         $expiresAt = time() + $expireTime;
 
-        return array('id' => $sessionId, 'validBefore' => $expiresAt);
+        return array('id' => $sessionId, 'validBefore' => $expiresAt, 'renewId' => SimpleSAML_Utilities::generateID());
     }
 
     public function createServiceTicket($content)

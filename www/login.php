@@ -34,24 +34,18 @@ $ticketStore = new $ticketStoreClass($casconfig);
 
 try {
     $sessionTicket = $ticketStore->getTicket($session->getSessionId());
-    $sessionRenewId = isset($sessionTicket['renewId']) ? $sessionTicket['renewId'] : NULL;
+    $sessionRenewId = $sessionTicket['renewId'];
 } catch (Exception $e) {
     $sessionRenewId = NULL;
 }
 
 $requestRenewId = isset($_REQUEST['renewId']) ? $_REQUEST['renewId'] : NULL;
 
-if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId && $requestRenewId && $sessionRenewId != $requestRenewId)) {
+if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewId)) {
     $query = array();
 
-    if (isset($sessionTicket) && $forceAuthn) {
-        $renewId = SimpleSAML_Utilities::generateID();
-
-        $query['renewId'] = $renewId;
-
-        $sessionTicket['renewId'] = $renewId;
-
-        $ticketStore->addTicket($sessionTicket);
+    if ($sessionRenewId && $forceAuthn) {
+        $query['renewId'] = $sessionRenewId;
     }
 
     if (isset($_REQUEST['service'])) {
