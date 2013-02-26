@@ -26,10 +26,42 @@ if (!checkServiceURL($service, $legal_service_urls))
 
 $as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
 
-if (!$as->isAuthenticated()) {
+$session = SimpleSAML_Session::getInstance();
+
+$reAuthDone = $session && $session->isValid() && $session->getAttribute('renewId') && isset($_REQUEST['renewId']) &&
+    $session->getAttribute('renewId') == $_REQUEST['renewId'][0];
+
+if (!$as->isAuthenticated() || ($forceAuthn && !$reAuthDone)) {
+    $query = array();
+
+    if ($forceAuthn && !$reAuthDone) {
+        $renewId = SimpleSAML_Utilities::generateID();
+
+        $session->setAttribute('renewId', array($renewId));
+
+        $query['renewId'] = $renewId;
+    }
+
+    if (isset($_REQUEST['service'])) {
+        $query['service'] = $_REQUEST['service'];
+    }
+
+    if (isset($_REQUEST['renew'])) {
+        $query['renew'] = $_REQUEST['renew'];
+    }
+
+    if (isset($_REQUEST['gateway'])) {
+        $query['gateway'] = $_REQUEST['gateway'];
+    }
+
+    $returnUrl = SimpleSAML_Utilities::selfURLNoQuery() . '?' . http_build_query($query);
+
+    SimpleSAML_Logger::debug('sbcasserver: return url: ' . var_export($returnUrl, TRUE));
+
     $params = array(
         'ForceAuthn' => $forceAuthn,
         'isPassive' => $isPassive,
+        'ReturnTo' => $returnUrl,
     );
     $as->login($params);
 }
