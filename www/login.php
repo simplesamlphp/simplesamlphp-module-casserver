@@ -28,13 +28,13 @@ $as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
 
 $session = SimpleSAML_Session::getInstance();
 
-$reAuthDone = $session && $session->isValid() && $session->getAttribute('renewId') && isset($_REQUEST['renewId']) &&
-    $session->getAttribute('renewId') == $_REQUEST['renewId'][0];
+$sessionRenewId = $session ? $session->getAttribute('renewId') : NULL;
+$requestRenewId = isset($_REQUEST['renewId']) ? $_REQUEST['renewId'] : NULL;
 
-if (!$as->isAuthenticated() || ($forceAuthn && !$reAuthDone)) {
+if (!$as->isAuthenticated()) {
     $query = array();
 
-    if ($forceAuthn && !$reAuthDone) {
+    if ($forceAuthn) {
         $renewId = SimpleSAML_Utilities::generateID();
 
         $session->setAttribute('renewId', array($renewId));
