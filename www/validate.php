@@ -46,7 +46,7 @@ try {
 
         $usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
 
-        if ($valid['valid'] && $ticket['service'] == $service && $ticket['forceAuthn'] == $forceAuthn &&
+        if ($valid['valid'] && $ticket['service'] == $service && (!$forceAuthn || $ticket['forceAuthn'] == $forceAuthn) &&
             array_key_exists($usernamefield, $ticket['attributes'])
         ) {
             echo $protocol->getSuccessResponse($ticket['attributes'][$usernamefield][0]);

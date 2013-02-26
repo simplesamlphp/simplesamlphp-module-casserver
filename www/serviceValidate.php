@@ -44,7 +44,7 @@ try {
 
         $valid = $ticketFactory->validateServiceTicket($ticket);
 
-        if ($valid['valid'] && $ticket['service'] == $service && $ticket['forceAuthn'] == $forceAuthn &&
+        if ($valid['valid'] && $ticket['service'] == $service && (!$forceAuthn || $ticket['forceAuthn'] == $forceAuthn) &&
             array_key_exists($usernameField, $attributes)
         ) {
             $protocol->setAttributes($attributes);
@@ -72,7 +72,7 @@ try {
                 echo $protocol->getFailureResponse('INVALID_TICKET', $valid['reason']);
             } else if ($ticket['service'] != $service) {
                 echo $protocol->getFailureResponse('INVALID_SERVICE', 'Expected: ' . $ticket['service'] . ' was: ' . $service);
-            } else if ($ticket['forceAuthn'] == $forceAuthn) {
+            } else if ($ticket['forceAuthn'] != $forceAuthn) {
                 echo $protocol->getFailureResponse('INVALID_TICKET', 'Mismatching renew. Expected: ' . $ticket['forceAuthn'] . ' was: ' . $forceAuthn);
             } else {
                 echo $protocol->getFailureResponse('INTERNAL_ERROR', 'Missing user name, attribute: ' . $usernameField . ' not found.');
