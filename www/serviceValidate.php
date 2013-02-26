@@ -73,7 +73,7 @@ try {
             } else if ($ticket['service'] != $service) {
                 echo $protocol->getFailureResponse('INVALID_SERVICE', 'Expected: ' . $ticket['service'] . ' was: ' . $service);
             } else if ($ticket['forceAuthn'] != $forceAuthn) {
-                echo $protocol->getFailureResponse('INVALID_TICKET', 'Mismatching renew. Expected: ' . $ticket['forceAuthn'] . ' was: ' . $forceAuthn);
+                echo $protocol->getFailureResponse('INVALID_TICKET', 'Service was issue from single sign on sesion: ');
             } else {
                 echo $protocol->getFailureResponse('INTERNAL_ERROR', 'Missing user name, attribute: ' . $usernameField . ' not found.');
             }
