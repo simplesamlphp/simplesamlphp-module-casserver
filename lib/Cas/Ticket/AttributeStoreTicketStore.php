@@ -35,13 +35,7 @@ class sspmod_sbcasserver_Cas_Ticket_AttributeStoreTicketStore extends sspmod_sbc
     {
         $scopedTicketId = $this->scopeTicketId($ticketId);
 
-        $content = $this->getTicketFromAttributeStore($scopedTicketId);
-
-        if (is_null($content)) {
-            throw new Exception('Could not find ticket');
-        } else {
-            return $content;
-        }
+        return $this->getTicketFromAttributeStore($scopedTicketId);
     }
 
     public function addTicket($ticket)

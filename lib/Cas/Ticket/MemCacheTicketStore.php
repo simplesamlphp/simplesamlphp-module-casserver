@@ -25,13 +25,7 @@ class sspmod_sbcasserver_Cas_Ticket_MemCacheTicketStore extends sspmod_sbcasserv
     {
         $scopedTicketId = $this->scopeTicketId($ticketId);
 
-        $content = SimpleSAML_Memcache::get($scopedTicketId);
-
-        if (is_null($content)) {
-            throw new Exception('Could not find ticket');
-        } else {
-            return $content;
-        }
+        return SimpleSAML_Memcache::get($scopedTicketId);
     }
 
     public function addTicket($ticket)

@@ -28,12 +28,13 @@ class sspmod_sbcasserver_Cas_Ticket_FileSystemTicketStore extends sspmod_sbcasse
     {
         $filename = $this->pathToTicketDirectory . '/' . $ticketId;
 
-        if (!file_exists($filename))
-            throw new Exception('Could not find ticket');
+        if (file_exists($filename)) {
+            $content = file_get_contents($filename);
 
-        $content = file_get_contents($filename);
-
-        return unserialize($content);
+            return unserialize($content);
+        } else {
+            return null;
+        }
     }
 
     public function addTicket($ticket)
