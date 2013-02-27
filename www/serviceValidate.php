@@ -51,7 +51,8 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                     $pgtUrl = sanitize($_GET['pgtUrl']);
 
                     $proxyGrantingTicket = $ticketFactory->createProxyGrantingTicket(array(
-                        'attributes' => $attributes, 'forceAuthn' => false,
+                        'attributes' => $attributes,
+                        'forceAuthn' => false,
                         'proxies' => array_merge(array($service), $serviceTicket['proxies']),
                         'sessionId' => $serviceTicket['sessionId']));
 
@@ -94,6 +95,5 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
     echo $protocol->getValidateFailureResponse('INVALID_REQUEST', 'Missing service request parameter');
 } else {
     echo $protocol->getValidateFailureResponse('INVALID_REQUEST', 'Missing ticket request parameter');
-
 }
 ?>

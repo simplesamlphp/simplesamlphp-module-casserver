@@ -89,6 +89,44 @@ class sspmod_sbcasserver_Cas_Protocol_Cas20
         return $this->workAroundForBuggyJasigXmlParser($xmlDocument->saveXML());
     }
 
+    public function getProxySuccessResponse($proxyTicketId)
+    {
+        $xmlDocument = new DOMDocument("1.0");
+
+        $root = $xmlDocument->createElement("cas:serviceResponse");
+        $root->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:cas', 'http://www.yale.edu/tp/cas');
+
+        $casProxyTicketId = $xmlDocument->createElement('cas:proxyTicket', $proxyTicketId);
+
+        $casProxySuccess = $xmlDocument->createElement('cas:proxySuccess');
+        $casProxySuccess->appendChild($casProxyTicketId);
+
+        $root->appendChild($casProxySuccess);
+        $xmlDocument->appendChild($root);
+
+        return $this->workAroundForBuggyJasigXmlParser($xmlDocument->saveXML());
+    }
+
+    public function getProxyFailureResponse($errorCode, $explanation)
+    {
+        $xmlDocument = new DOMDocument("1.0");
+
+        $root = $xmlDocument->createElement("cas:serviceResponse");
+        $root->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:cas', 'http://www.yale.edu/tp/cas');
+
+        $casFailureCode = $xmlDocument->createAttribute('code');
+        $casFailureCode->value = $errorCode;
+
+        $casFailure = $xmlDocument->createElement('cas:proxyFailure', $explanation);
+        $casFailure->appendChild($casFailureCode);
+
+        $root->appendChild($casFailure);
+
+        $xmlDocument->appendChild($root);
+
+        return $this->workAroundForBuggyJasigXmlParser($xmlDocument->saveXML());
+    }
+
     private function workAroundForBuggyJasigXmlParser($xmlString)
     { // when will people stop hand coding xml handling....?
         return str_replace('><', '>' . PHP_EOL . '<', str_replace(PHP_EOL, '', $xmlString));

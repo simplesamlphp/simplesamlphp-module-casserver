@@ -3,56 +3,54 @@
 /*
  * Incomming parameters:
  *  targetService
- *  ptg
+ *  pgt
  *  
  */
 
-if (array_key_exists('targetService', $_GET)) {
-    $targetService = $_GET['targetService'];
-    $pgt = $_GET['pgt'];
-} else {
-    throw new Exception('Required URL query parameter [targetService] not provided. (CAS Server)');
-}
+require_once 'utility/urlUtils.php';
 
 $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 
-$legal_service_urls = $casconfig->getValue('legal_service_urls');
+/* Instantiate protocol handler */
+$protocolClass = SimpleSAML_Module::resolveClass('sbcasserver:Cas20', 'Cas_Protocol');
+$protocol = new $protocolClass($casconfig);
 
-if (!checkServiceURL($targetService, $legal_service_urls))
-    throw new Exception('Service parameter provided to CAS server is not listed as a legal service: [service] = ' . $targetService);
+if (array_key_exists('targetService', $_GET) && array_key_exists('pgt', $_GET)) {
+    $proxyGrantingTicketId = sanitize($_GET['pgt']);
+    $targetService = sanitize($_GET['targetService']);
 
-$ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore'));
-$ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
-$ticketStore = new $ticketStoreClass($casconfig);
+    $legal_service_urls = $casconfig->getValue('legal_service_urls');
 
-$proxyGrantingTicketContent = $ticketStore->getTicket($pgt);
+    if (!checkServiceURL($targetService, $legal_service_urls))
+        throw new Exception('Service parameter provided to CAS server is not listed as a legal service: [targetService] = ' . $targetService);
 
-if (is_array($proxyGrantingTicketContent) && $proxyGrantingTicketContent['validBefore'] > time()) {
+    $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore'));
+    $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
+    $ticketStore = new $ticketStoreClass($casconfig);
 
-    $proxyTicketContent = array(
-        'service' => $targetService,
-        'forceAuthn' => false,
-        'attributes' => $proxyGrantingTicketContent['attributes'],
-        'proxies' => $proxyGrantingTicketContent['proxies'],
-        'validBefore' => time() + 5);
+    $proxyGrantingTicket = $ticketStore->getTicket($proxyGrantingTicketId);
 
-    $pt = $ticketStore->createProxyTicket($proxyTicketContent);
+    if (!is_null($proxyGrantingTicket)) {
+        $ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
+        $ticketFactory = new $ticketFactoryClass($casconfig);
 
-    print <<<eox
-<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>
-    <cas:proxySuccess>
-        <cas:proxyTicket>$pt</cas:proxyTicket>
-    </cas:proxySuccess>
-</cas:serviceResponse>
-eox;
+        if ($ticketFactory->validateProxyGrantingTicket($proxyGrantingTicket)) {
+            $proxyTicket = $ticketFactory->createProxyTicket(array('service' => $targetService,
+                'forceAuthn' => $proxyGrantingTicket['forceAuthn'],
+                'attributes' => $proxyGrantingTicket['attributes'],
+                'proxies' => $proxyGrantingTicket['proxies'],
+                'sessionId' => $proxyGrantingTicket['sessionId']));
+
+            $ticketStore->addTicket($proxyTicket);
+
+            echo $protocol->getProxySuccessResponse($proxyTicket['id']);
+        }
+    } else {
+        echo $protocol->getProxyFailureResponse('BAD_PGT', 'ticket: ' . $proxyGrantingTicketId . ' not recognized');
+    }
+} else if (!array_key_exists('targetService', $_GET)) {
+    echo $protocol->getProxyFailureResponse('INVALID_REQUEST', 'Missing targetService request parameter');
 } else {
-    print <<<eox
-<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>
-    <cas:proxyFailure code="INVALID_REQUEST">
-        Proxygranting ticket to old - ssp casserver only supports shortlived (30 secs) pgts.
-    </cas:proxyFailure>
-</cas:serviceResponse>
-eox;
+    echo $protocol->getProxyFailureResponse('INVALID_REQUEST', 'Missing pgt request parameter');
 }
-
 ?>
