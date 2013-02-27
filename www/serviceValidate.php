@@ -30,21 +30,21 @@ try {
     $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
     $ticketStore = new $ticketStoreClass($casconfig);
 
-    $ticket = $ticketStore->getTicket($ticketId);
+    $sessionTicket = $ticketStore->getTicket($ticketId);
 
-    if (!is_null($ticket)) {
+    if (!is_null($sessionTicket)) {
         $ticketStore->deleteTicket($ticketId);
 
         $usernameField = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
 
-        $attributes = $ticket['attributes'];
+        $attributes = $sessionTicket['attributes'];
 
         $ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
         $ticketFactory = new $ticketFactoryClass($casconfig);
 
-        $valid = $ticketFactory->validateServiceTicket($ticket);
+        $valid = $ticketFactory->validateServiceTicket($sessionTicket);
 
-        if ($valid['valid'] && $ticket['service'] == $service && (!$forceAuthn || $ticket['forceAuthn'] == $forceAuthn) &&
+        if ($valid['valid'] && $sessionTicket['service'] == $service && (!$forceAuthn || $sessionTicket['forceAuthn']) &&
             array_key_exists($usernameField, $attributes)
         ) {
             $protocol->setAttributes($attributes);
@@ -54,7 +54,7 @@ try {
 
                 $proxyGrantingTicket = $ticketFactory->createProxyGrantingTicket(array(
                     'attributes' => $attributes, 'forceAuthn' => false,
-                    'proxies' => array_merge(array($service), $ticket['proxies'])));
+                    'proxies' => array_merge(array($service), $sessionTicket['proxies'])));
 
                 try {
                     SimpleSAML_Utilities::fetch($pgtUrl . '?pgtIou=' . $proxyGrantingTicket['iou'] . '&pgtId=' . $proxyGrantingTicket['id']);
@@ -70,9 +70,9 @@ try {
         } else {
             if (!$valid['valid']) {
                 echo $protocol->getFailureResponse('INVALID_TICKET', $valid['reason']);
-            } else if ($ticket['service'] != $service) {
-                echo $protocol->getFailureResponse('INVALID_SERVICE', 'Expected: ' . $ticket['service'] . ' was: ' . $service);
-            } else if ($ticket['forceAuthn'] != $forceAuthn) {
+            } else if ($sessionTicket['service'] != $service) {
+                echo $protocol->getFailureResponse('INVALID_SERVICE', 'Expected: ' . $sessionTicket['service'] . ' was: ' . $service);
+            } else if ($sessionTicket['forceAuthn'] != $forceAuthn) {
                 echo $protocol->getFailureResponse('INVALID_TICKET', 'Service was issue from single sign on sesion: ');
             } else {
                 echo $protocol->getFailureResponse('INTERNAL_ERROR', 'Missing user name, attribute: ' . $usernameField . ' not found.');

@@ -34,22 +34,22 @@ try {
     $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
     $ticketStore = new $ticketStoreClass($casconfig);
 
-    $ticket = $ticketStore->getTicket($ticketId);
+    $serviceTicket = $ticketStore->getTicket($ticketId);
 
-    if (!is_null($ticket)) {
+    if (!is_null($serviceTicket)) {
         $ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
         $ticketFactory = new $ticketFactoryClass($casconfig);
 
-        $valid = $ticketFactory->validateServiceTicket($ticket);
+        $valid = $ticketFactory->validateServiceTicket($serviceTicket);
 
         $ticketStore->deleteTicket($ticketId);
 
         $usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
 
-        if ($valid['valid'] && $ticket['service'] == $service && (!$forceAuthn || $ticket['forceAuthn'] == $forceAuthn) &&
-            array_key_exists($usernamefield, $ticket['attributes'])
+        if ($valid['valid'] && $serviceTicket['service'] == $service && (!$forceAuthn || $serviceTicket['forceAuthn']) &&
+            array_key_exists($usernamefield, $serviceTicket['attributes'])
         ) {
-            echo $protocol->getSuccessResponse($ticket['attributes'][$usernamefield][0]);
+            echo $protocol->getSuccessResponse($serviceTicket['attributes'][$usernamefield][0]);
         } else {
             echo $protocol->getFailureResponse();
         }
