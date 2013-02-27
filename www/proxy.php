@@ -15,14 +15,11 @@ $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 $protocolClass = SimpleSAML_Module::resolveClass('sbcasserver:Cas20', 'Cas_Protocol');
 $protocol = new $protocolClass($casconfig);
 
-if (array_key_exists('targetService', $_GET) && array_key_exists('pgt', $_GET)) {
+$legal_service_urls = $casconfig->getValue('legal_service_urls');
+
+if (array_key_exists('targetService', $_GET) && checkServiceURL($targetService, $legal_service_urls) && array_key_exists('pgt', $_GET)) {
     $proxyGrantingTicketId = sanitize($_GET['pgt']);
     $targetService = sanitize($_GET['targetService']);
-
-    $legal_service_urls = $casconfig->getValue('legal_service_urls');
-
-    if (!checkServiceURL($targetService, $legal_service_urls))
-        throw new Exception('Service parameter provided to CAS server is not listed as a legal service: [targetService] = ' . $targetService);
 
     $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore'));
     $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
@@ -55,8 +52,10 @@ if (array_key_exists('targetService', $_GET) && array_key_exists('pgt', $_GET)) 
         echo $protocol->getProxyFailureResponse('BAD_PGT', 'Ticket: ' . $proxyGrantingTicketId . ' not recognized');
     }
 } else if (!array_key_exists('targetService', $_GET)) {
-    echo $protocol->getProxyFailureResponse('INVALID_REQUEST', 'Missing targetService request parameter');
+    echo $protocol->getProxyFailureResponse('INVALID_REQUEST', 'Missing target service parameter [targetService]');
+} else if(!checkServiceURL($targetService, $legal_service_urls)) {
+    echo $protocol->getProxyFailureResponse('INVALID_REQUEST', 'Target service parameter not listed as a legal service: [targetService] = ' . $targetService);
 } else {
-    echo $protocol->getProxyFailureResponse('INVALID_REQUEST', 'Missing pgt request parameter');
+    echo $protocol->getProxyFailureResponse('INVALID_REQUEST', 'Missing proxy granting ticket parameter: [pgt]');
 }
 ?>

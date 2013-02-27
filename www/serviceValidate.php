@@ -92,8 +92,8 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
         echo $protocol->getValidateFailureResponse('INTERNAL_ERROR', $e->getMessage());
     }
 } else if (!array_key_exists('service', $_GET)) {
-    echo $protocol->getValidateFailureResponse('INVALID_REQUEST', 'Missing service request parameter');
+    echo $protocol->getValidateFailureResponse('INVALID_REQUEST', 'Missing service parameter: [service]');
 } else {
-    echo $protocol->getValidateFailureResponse('INVALID_REQUEST', 'Missing ticket request parameter');
+    echo $protocol->getValidateFailureResponse('INVALID_REQUEST', 'Missing ticket parameter: [ticket]');
 }
 ?>
