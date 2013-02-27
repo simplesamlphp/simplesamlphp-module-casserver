@@ -33,7 +33,7 @@ class sspmod_sbcasserver_Cas_Protocol_Cas20
         return $this->proxyGrantingTicketIOU;
     }
 
-    public function getSuccessResponse($username)
+    public function getValidateSuccessResponse($username)
     {
         $xmlDocument = new DOMDocument("1.0");
 
@@ -69,7 +69,7 @@ class sspmod_sbcasserver_Cas_Protocol_Cas20
         return $this->workAroundForBuggyJasigXmlParser($xmlDocument->saveXML());
     }
 
-    public function getFailureResponse($errorCode, $explanation)
+    public function getValidateFailureResponse($errorCode, $explanation)
     {
         $xmlDocument = new DOMDocument("1.0");
 

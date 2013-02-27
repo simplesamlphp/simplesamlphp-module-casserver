@@ -43,24 +43,24 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
             if ($valid['valid'] && $serviceTicket['service'] == $service && (!$forceAuthn || $serviceTicket['forceAuthn']) &&
                 array_key_exists($usernameField, $serviceTicket['attributes'])
             ) {
-                echo $protocol->getSuccessResponse($serviceTicket['attributes'][$usernameField][0]);
+                echo $protocol->getValidateSuccessResponse($serviceTicket['attributes'][$usernameField][0]);
             } else if (!array_key_exists($usernameField, $serviceTicket['attributes'])) {
                 SimpleSAML_Logger::debug('sbcasserver:validate: internal server error. Missing user name attribute: ' .
                     var_export($usernameField, TRUE));
 
-                echo $protocol->getFailureResponse();
+                echo $protocol->getValidateFailureResponse();
             } else {
-                echo $protocol->getFailureResponse();
+                echo $protocol->getValidateFailureResponse();
             }
         } else {
-            echo $protocol->getFailureResponse();
+            echo $protocol->getValidateFailureResponse();
         }
     } catch (Exception $e) {
         SimpleSAML_Logger::debug('sbcasserver:validate: internal server error. ' . var_export($e->getMessage(), TRUE));
 
-        echo $protocol->getFailureResponse();
+        echo $protocol->getValidateFailureResponse();
     }
 } else {
-    echo $protocol->getFailureResponse();
+    echo $protocol->getValidateFailureResponse();
 }
 ?>

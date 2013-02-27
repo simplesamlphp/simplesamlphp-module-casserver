@@ -14,9 +14,11 @@ $config = array(
     'ticketstore' => array( //defaults to filesystem ticket store using the directory 'ticketcache'
         'class' => 'sbcasserver:FileSystemTicketStore',
         'directory' => 'ticketcache',
+
         //'class' => 'sbcasserver:MemCacheTicketStore',
         //'prefix' => 'bibsys',
         //'expireInSeconds' => 5,
+
         //'class' => 'sbcasserver:AttributeStoreTicketStore',
         //'attributeStoreUrl' => 'http://devel06:9561/attributestore/services/json/store/',
         //'attributeStoreDeleteUrl' => 'http://devel06:9561/attributestore/services/store/',
