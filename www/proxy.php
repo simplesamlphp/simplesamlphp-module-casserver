@@ -48,7 +48,7 @@ if (array_key_exists('targetService', $_GET) && array_key_exists('pgt', $_GET)) 
 
                 echo $protocol->getProxySuccessResponse($proxyTicket['id']);
             } else {
-                echo $protocol->getProxyFailureResponse('BAD_PGT', 'Ticket: ' . $proxyGrantingTicketId . ' expired');
+                echo $protocol->getProxyFailureResponse('BAD_PGT', 'Ticket: ' . $proxyGrantingTicketId . ' has expired');
             }
         } else {
             echo $protocol->getProxyFailureResponse('BAD_PGT', 'Not a valid proxy granting ticket id: ' . $proxyGrantingTicketId);
