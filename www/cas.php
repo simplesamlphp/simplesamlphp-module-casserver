@@ -13,6 +13,7 @@ $validFunctions = array(
     'validate' => 'validate',
     'serviceValidate' => 'serviceValidate',
     'logout' => 'logout',
+    'proxy' => 'proxy',
 );
 
 $function = substr($_SERVER['PATH_INFO'], 1);

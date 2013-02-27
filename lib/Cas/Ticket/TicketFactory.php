@@ -60,6 +60,11 @@ class sspmod_sbcasserver_Cas_Ticket_TicketFactory
         return $result;
     }
 
+    public function validateSessionTicket($ticket)
+    {
+        return preg_match('/^?[a-zA-Z0-9]+$/D', $ticket['id']) && array_key_exists('validBefore', $ticket) && $ticket['validBefore'] > time();
+    }
+
     public function validateProxyGrantingTicket($ticket)
     {
         return preg_match('/^PGT-?[a-zA-Z0-9]+$/D', $ticket['id']);

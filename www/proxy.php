@@ -35,18 +35,26 @@ if (array_key_exists('targetService', $_GET) && array_key_exists('pgt', $_GET)) 
         $ticketFactory = new $ticketFactoryClass($casconfig);
 
         if ($ticketFactory->validateProxyGrantingTicket($proxyGrantingTicket)) {
-            $proxyTicket = $ticketFactory->createProxyTicket(array('service' => $targetService,
-                'forceAuthn' => $proxyGrantingTicket['forceAuthn'],
-                'attributes' => $proxyGrantingTicket['attributes'],
-                'proxies' => $proxyGrantingTicket['proxies'],
-                'sessionId' => $proxyGrantingTicket['sessionId']));
+            $sessionTicket = $ticketStore->getTicket($proxyGrantingTicket['sessionId']);
 
-            $ticketStore->addTicket($proxyTicket);
+            if (!is_null($sessionTicket) && $ticketFactory->validateSessionTicket($sessionTicket)) {
+                $proxyTicket = $ticketFactory->createProxyTicket(array('service' => $targetService,
+                    'forceAuthn' => $proxyGrantingTicket['forceAuthn'],
+                    'attributes' => $proxyGrantingTicket['attributes'],
+                    'proxies' => $proxyGrantingTicket['proxies'],
+                    'sessionId' => $proxyGrantingTicket['sessionId']));
 
-            echo $protocol->getProxySuccessResponse($proxyTicket['id']);
+                $ticketStore->addTicket($proxyTicket);
+
+                echo $protocol->getProxySuccessResponse($proxyTicket['id']);
+            } else {
+                echo $protocol->getProxyFailureResponse('BAD_PGT', 'Ticket: ' . $proxyGrantingTicketId . ' expired');
+            }
+        } else {
+            echo $protocol->getProxyFailureResponse('BAD_PGT', 'Not a valid proxy granting ticket id: ' . $proxyGrantingTicketId);
         }
     } else {
-        echo $protocol->getProxyFailureResponse('BAD_PGT', 'ticket: ' . $proxyGrantingTicketId . ' not recognized');
+        echo $protocol->getProxyFailureResponse('BAD_PGT', 'Ticket: ' . $proxyGrantingTicketId . ' not recognized');
     }
 } else if (!array_key_exists('targetService', $_GET)) {
     echo $protocol->getProxyFailureResponse('INVALID_REQUEST', 'Missing targetService request parameter');
