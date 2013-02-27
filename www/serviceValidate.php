@@ -28,21 +28,19 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
         $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
         $ticketStore = new $ticketStoreClass($casconfig);
 
+        $ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
+        $ticketFactory = new $ticketFactoryClass($casconfig);
+
         $serviceTicket = $ticketStore->getTicket($ticketId);
 
-        if (!is_null($serviceTicket)) {
+        if (!is_null($serviceTicket) && $ticketFactory->isServiceTicket($serviceTicket)) {
             $ticketStore->deleteTicket($ticketId);
 
             $usernameField = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
 
             $attributes = $serviceTicket['attributes'];
 
-            $ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
-            $ticketFactory = new $ticketFactoryClass($casconfig);
-
-            $valid = $ticketFactory->validateServiceTicket($serviceTicket);
-
-            if ($valid['valid'] && $serviceTicket['service'] == $service && (!$forceAuthn || $serviceTicket['forceAuthn']) &&
+            if (!$ticketFactory->isExpired($serviceTicket) && $serviceTicket['service'] == $service && (!$forceAuthn || $serviceTicket['forceAuthn']) &&
                 array_key_exists($usernameField, $attributes)
             ) {
                 $protocol->setAttributes($attributes);
@@ -68,8 +66,8 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
 
                 echo $protocol->getValidateSuccessResponse($attributes[$usernameField][0]);
             } else {
-                if (!$valid['valid']) {
-                    echo $protocol->getValidateFailureResponse('INVALID_TICKET', $valid['reason']);
+                if ($ticketFactory->isExpired($serviceTicket)) {
+                    echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'Ticket: '.$ticketId.' expired');
                 } else if ($serviceTicket['service'] != $service) {
                     echo $protocol->getValidateFailureResponse('INVALID_SERVICE', 'Expected: ' . $serviceTicket['service'] . ' was: ' . $service);
                 } else if ($serviceTicket['forceAuthn'] != $forceAuthn) {
@@ -81,8 +79,10 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                     echo $protocol->getValidateFailureResponse('INTERNAL_ERROR', 'Missing user name attribute: ' . $usernameField . ' not found.');
                 }
             }
-        } else {
+        } else if(is_null($serviceTicket)) {
             echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'ticket: ' . $ticketId . ' not recognized');
+        } else {
+            echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'ticket: ' . $ticketId . ' is not a service ticket');
         }
 
     } catch (Exception $e) {

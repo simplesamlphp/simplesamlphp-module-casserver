@@ -28,31 +28,29 @@ if (array_key_exists('targetService', $_GET) && array_key_exists('pgt', $_GET)) 
     $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
     $ticketStore = new $ticketStoreClass($casconfig);
 
+    $ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
+    $ticketFactory = new $ticketFactoryClass($casconfig);
+
     $proxyGrantingTicket = $ticketStore->getTicket($proxyGrantingTicketId);
 
-    if (!is_null($proxyGrantingTicket)) {
-        $ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
-        $ticketFactory = new $ticketFactoryClass($casconfig);
+    if (!is_null($proxyGrantingTicket) && $ticketFactory->isProxyGrantingTicket($proxyGrantingTicket)) {
+        $sessionTicket = $ticketStore->getTicket($proxyGrantingTicket['sessionId']);
 
-        if ($ticketFactory->validateProxyGrantingTicket($proxyGrantingTicket)) {
-            $sessionTicket = $ticketStore->getTicket($proxyGrantingTicket['sessionId']);
+        if (!is_null($sessionTicket) && $ticketFactory->isSessionTicket($sessionTicket) && !$ticketFactory->isExpired($sessionTicket)) {
+            $proxyTicket = $ticketFactory->createProxyTicket(array('service' => $targetService,
+                'forceAuthn' => $proxyGrantingTicket['forceAuthn'],
+                'attributes' => $proxyGrantingTicket['attributes'],
+                'proxies' => $proxyGrantingTicket['proxies'],
+                'sessionId' => $proxyGrantingTicket['sessionId']));
 
-            if (!is_null($sessionTicket) && $ticketFactory->validateSessionTicket($sessionTicket)) {
-                $proxyTicket = $ticketFactory->createProxyTicket(array('service' => $targetService,
-                    'forceAuthn' => $proxyGrantingTicket['forceAuthn'],
-                    'attributes' => $proxyGrantingTicket['attributes'],
-                    'proxies' => $proxyGrantingTicket['proxies'],
-                    'sessionId' => $proxyGrantingTicket['sessionId']));
+            $ticketStore->addTicket($proxyTicket);
 
-                $ticketStore->addTicket($proxyTicket);
-
-                echo $protocol->getProxySuccessResponse($proxyTicket['id']);
-            } else {
-                echo $protocol->getProxyFailureResponse('BAD_PGT', 'Ticket: ' . $proxyGrantingTicketId . ' has expired');
-            }
+            echo $protocol->getProxySuccessResponse($proxyTicket['id']);
         } else {
-            echo $protocol->getProxyFailureResponse('BAD_PGT', 'Not a valid proxy granting ticket id: ' . $proxyGrantingTicketId);
+            echo $protocol->getProxyFailureResponse('BAD_PGT', 'Ticket: ' . $proxyGrantingTicketId . ' has expired');
         }
+    } else if (!$ticketFactory->isProxyGrantingTicket($proxyGrantingTicket)) {
+        echo $protocol->getProxyFailureResponse('BAD_PGT', 'Not a valid proxy granting ticket id: ' . $proxyGrantingTicketId);
     } else {
         echo $protocol->getProxyFailureResponse('BAD_PGT', 'Ticket: ' . $proxyGrantingTicketId . ' not recognized');
     }

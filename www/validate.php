@@ -28,13 +28,12 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
         $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
         $ticketStore = new $ticketStoreClass($casconfig);
 
+        $ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
+        $ticketFactory = new $ticketFactoryClass($casconfig);
+
         $serviceTicket = $ticketStore->getTicket($ticketId);
 
-        if (!is_null($serviceTicket)) {
-            $ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
-            $ticketFactory = new $ticketFactoryClass($casconfig);
-
-            $valid = $ticketFactory->validateServiceTicket($serviceTicket);
+        if (!is_null($serviceTicket) && $ticketFactory->isServiceTicket($serviceTicket)) {
 
             $ticketStore->deleteTicket($ticketId);
 

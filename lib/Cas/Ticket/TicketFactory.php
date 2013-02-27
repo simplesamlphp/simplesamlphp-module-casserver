@@ -41,38 +41,28 @@ class sspmod_sbcasserver_Cas_Ticket_TicketFactory
         return array_merge(array('id' => $id, 'validBefore' => $expiresAt), $content);
     }
 
-    public function validateServiceTicket($ticket)
+    public function isSessionTicket($ticket)
     {
-        $result = array();
-
-        if (preg_match('/^ST-?[a-zA-Z0-9]+$/D', $ticket['id'])) {
-            if (array_key_exists('validBefore', $ticket) && $ticket['validBefore'] > time()) {
-                $result['valid'] = true;
-            } else {
-                $result['valid'] = false;
-                $result['reason'] = 'ticket expired';
-            }
-        } else {
-            $result['valid'] = false;
-            $result['reason'] = 'not a valid service ticket id: ' . $ticket['id'];
-        }
-
-        return $result;
+        return preg_match('/^[a-zA-Z0-9]+$/D', $ticket['id']);
     }
 
-    public function validateSessionTicket($ticket)
+    public function isServiceTicket($ticket)
     {
-        return preg_match('/^[a-zA-Z0-9]+$/D', $ticket['id']) && array_key_exists('validBefore', $ticket) && $ticket['validBefore'] > time();
+        return preg_match('/^ST-?[a-zA-Z0-9]+$/D', $ticket['id']);
     }
 
-    public function validateProxyGrantingTicket($ticket)
+    public function isProxyGrantingTicket($ticket)
     {
         return preg_match('/^PGT-?[a-zA-Z0-9]+$/D', $ticket['id']);
     }
 
-    public function validateProxyTicket($ticket)
+    public function isProxyTicket($ticket)
     {
-        return preg_match('/^(PT|ST)-?[a-zA-Z0-9]+$/D', $ticket['id']) && array_key_exists('validBefore', $ticket) && $ticket['validBefore'] > time();
+        return preg_match('/^(PT|ST)-?[a-zA-Z0-9]+$/D', $ticket['id']);
+    }
+
+    public function isExpired($ticket) {
+        return array_key_exists('validBefore', $ticket) && $ticket['validBefore'] > time();
     }
 }
 
