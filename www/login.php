@@ -62,13 +62,12 @@ if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewI
 
     $returnUrl = SimpleSAML_Utilities::selfURLNoQuery() . '?' . http_build_query($query);
 
-    SimpleSAML_Logger::debug('sbcasserver: return url: ' . var_export($returnUrl, TRUE));
-
     $params = array(
         'ForceAuthn' => $forceAuthn,
         'isPassive' => $isPassive,
         'ReturnTo' => $returnUrl,
     );
+
     $as->login($params);
 }
 

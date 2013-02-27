@@ -67,7 +67,7 @@ class sspmod_sbcasserver_Cas_Ticket_TicketFactory
 
     public function validateProxyTicket($ticket)
     {
-        return preg_match('/^PT-?[a-zA-Z0-9]+$/D', $ticket['id']) && array_key_exists('validBefore', $ticket) && $ticket['validBefore'] > time();
+        return preg_match('/^(PT|ST)-?[a-zA-Z0-9]+$/D', $ticket['id']) && array_key_exists('validBefore', $ticket) && $ticket['validBefore'] > time();
     }
 }
 

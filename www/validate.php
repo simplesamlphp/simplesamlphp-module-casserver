@@ -9,18 +9,6 @@
 
 require_once 'utility/urlUtils.php';
 
-if (!array_key_exists('service', $_GET))
-    throw new Exception('Required URL query parameter [service] not provided. (CAS Server)');
-
-$service = sanitize($_GET['service']);
-
-if (!array_key_exists('ticket', $_GET))
-    throw new Exception('Required URL query parameter [ticket] not provided. (CAS Server)');
-
-$ticketId = sanitize($_GET['ticket']);
-
-$forceAuthn = isset($_GET['renew']) && sanitize($_GET['renew']);
-
 /* Load simpleSAMLphp, configuration and metadata */
 $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 
@@ -28,35 +16,51 @@ $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 $protocolClass = SimpleSAML_Module::resolveClass('sbcasserver:Cas10', 'Cas_Protocol');
 $protocol = new $protocolClass($casconfig);
 
-try {
-    /* Instantiate ticket store */
-    $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore'));
-    $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
-    $ticketStore = new $ticketStoreClass($casconfig);
+if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
+    $ticketId = sanitize($_GET['ticket']);
+    $service = sanitize($_GET['service']);
 
-    $serviceTicket = $ticketStore->getTicket($ticketId);
+    $forceAuthn = isset($_GET['renew']) && sanitize($_GET['renew']);
 
-    if (!is_null($serviceTicket)) {
-        $ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
-        $ticketFactory = new $ticketFactoryClass($casconfig);
+    try {
+        /* Instantiate ticket store */
+        $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore'));
+        $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
+        $ticketStore = new $ticketStoreClass($casconfig);
 
-        $valid = $ticketFactory->validateServiceTicket($serviceTicket);
+        $serviceTicket = $ticketStore->getTicket($ticketId);
 
-        $ticketStore->deleteTicket($ticketId);
+        if (!is_null($serviceTicket)) {
+            $ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
+            $ticketFactory = new $ticketFactoryClass($casconfig);
 
-        $usernamefield = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
+            $valid = $ticketFactory->validateServiceTicket($serviceTicket);
 
-        if ($valid['valid'] && $serviceTicket['service'] == $service && (!$forceAuthn || $serviceTicket['forceAuthn']) &&
-            array_key_exists($usernamefield, $serviceTicket['attributes'])
-        ) {
-            echo $protocol->getSuccessResponse($serviceTicket['attributes'][$usernamefield][0]);
+            $ticketStore->deleteTicket($ticketId);
+
+            $usernameField = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
+
+            if ($valid['valid'] && $serviceTicket['service'] == $service && (!$forceAuthn || $serviceTicket['forceAuthn']) &&
+                array_key_exists($usernameField, $serviceTicket['attributes'])
+            ) {
+                echo $protocol->getSuccessResponse($serviceTicket['attributes'][$usernameField][0]);
+            } else if (!array_key_exists($usernameField, $serviceTicket['attributes'])) {
+                SimpleSAML_Logger::debug('sbcasserver:validate: internal server error. Missing user name attribute: ' .
+                    var_export($usernameField, TRUE));
+
+                echo $protocol->getFailureResponse();
+            } else {
+                echo $protocol->getFailureResponse();
+            }
         } else {
             echo $protocol->getFailureResponse();
         }
-    } else {
+    } catch (Exception $e) {
+        SimpleSAML_Logger::debug('sbcasserver:validate: internal server error. ' . var_export($e->getMessage(), TRUE));
+
         echo $protocol->getFailureResponse();
     }
-} catch (Exception $e) {
+} else {
     echo $protocol->getFailureResponse();
 }
 ?>
