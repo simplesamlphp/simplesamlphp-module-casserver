@@ -2,11 +2,13 @@
 class sspmod_sbcasserver_Cas_Ticket_TicketFactory
 {
     private $serviceTicketExpireTime;
+    private $proxyGrantingTicketExpireTime;
     private $proxyTicketExpireTime;
 
     public function __construct($config)
     {
         $this->serviceTicketExpireTime = $config->getValue('serviceTicketExpireTime', 5);
+        $this->proxyGrantingTicketExpireTime = $config->getValue('proxyGrantingTicketExpireTime', 3600);
         $this->proxyTicketExpireTime = $config->getValue('proxyTicketExpireTime', 5);
     }
 
@@ -28,7 +30,10 @@ class sspmod_sbcasserver_Cas_Ticket_TicketFactory
         $id = str_replace('_', 'PGT-', SimpleSAML_Utilities::generateID());
         $iou = str_replace('_', 'PGTIOU-', SimpleSAML_Utilities::generateID());
 
-        return array_merge(array('id' => $id, 'iou' => $iou, 'validBefore' => $expiresAt), $content);
+        $upperBound = time() + $this->proxyGrantingTicketExpireTime;
+
+        return array_merge(array('id' => $id, 'iou' => $iou,
+            'validBefore' => $expiresAt < $upperBound ? $expiresAt : $upperBound), $content);
     }
 
     public function createProxyTicket($content)
@@ -59,7 +64,8 @@ class sspmod_sbcasserver_Cas_Ticket_TicketFactory
         return preg_match('/^(PT|ST)-?[a-zA-Z0-9]+$/D', $ticket['id']);
     }
 
-    public function isExpired($ticket) {
+    public function isExpired($ticket)
+    {
         return array_key_exists('validBefore', $ticket) && $ticket['validBefore'] > time();
     }
 }
