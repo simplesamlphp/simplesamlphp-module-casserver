@@ -2,11 +2,9 @@
 
 class sspmod_sbcasserver_Cas_Ticket_AttributeStoreTicketStore extends sspmod_sbcasserver_Cas_Ticket_TicketStore
 {
-
     private $attributeStoreUrl;
     private $attributeStoreDeleteUrl;
     private $attributeStorePrefix;
-    private $expireInMinutes = 1;
 
     public function __construct($config)
     {
@@ -25,10 +23,6 @@ class sspmod_sbcasserver_Cas_Ticket_AttributeStoreTicketStore extends sspmod_sbc
         $this->attributeStoreUrl = preg_replace('/\/$/', '', $storeConfig['attributeStoreUrl']);
         $this->attributeStoreDeleteUrl = preg_replace('/\/$/', '', $storeConfig['attributeStoreDeleteUrl']);
         $this->attributeStorePrefix = $storeConfig['attributeStorePrefix'];
-
-        if (array_key_exists('expireInMinutes', $storeConfig)) {
-            $this->expireInMinutes = $storeConfig['expireInMinutes'];
-        }
     }
 
     public function getTicket($ticketId)
@@ -81,7 +75,9 @@ class sspmod_sbcasserver_Cas_Ticket_AttributeStoreTicketStore extends sspmod_sbc
 
     private function addTicketToAttributeStore($scopedTicketId, $content)
     {
-        $attribute = array('key' => $scopedTicketId, 'value' => json_encode($content), 'expireInMinutes' => $this->expireInMinutes);
+        $expireInMinutes = ($content['validBefore'] - time()) % 60 + 1;
+
+        $attribute = array('key' => $scopedTicketId, 'value' => json_encode($content), 'expireInMinutes' => $expireInMinutes);
 
         SimpleSAML_Logger::debug('AttributeStoreTicketStore: adding ticket: ' . var_export($scopedTicketId, TRUE) . ' with content: ' . var_export($content, TRUE));
 

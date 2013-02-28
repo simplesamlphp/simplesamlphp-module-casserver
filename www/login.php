@@ -33,7 +33,7 @@ $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'],
 $ticketStore = new $ticketStoreClass($casconfig);
 
 $sessionTicket = $ticketStore->getTicket($session->getSessionId());
-$sessionRenewId = $sessionTicket ? $sessionTicket['renewId']: NULL;
+$sessionRenewId = $sessionTicket ? $sessionTicket['renewId'] : NULL;
 $requestRenewId = isset($_REQUEST['renewId']) ? $_REQUEST['renewId'] : NULL;
 
 if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewId)) {

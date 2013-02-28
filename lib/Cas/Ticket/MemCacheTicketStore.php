@@ -2,8 +2,6 @@
 
 class sspmod_sbcasserver_Cas_Ticket_MemCacheTicketStore extends sspmod_sbcasserver_Cas_Ticket_TicketStore
 {
-
-    private $expireSeconds = 5;
     private $prefix = '';
 
     public function __construct($config)
@@ -11,10 +9,6 @@ class sspmod_sbcasserver_Cas_Ticket_MemCacheTicketStore extends sspmod_sbcasserv
         parent::__construct($config);
 
         $storeConfig = $config->getValue('ticketstore');
-
-        if (array_key_exists('expireInSeconds', $storeConfig)) {
-            $this->expireSeconds = $storeConfig['expireInSeconds'];
-        }
 
         if (array_key_exists('prefix', $storeConfig)) {
             $this->prefix = $storeConfig['prefix'];
@@ -32,7 +26,7 @@ class sspmod_sbcasserver_Cas_Ticket_MemCacheTicketStore extends sspmod_sbcasserv
     {
         $scopedTicketId = $this->scopeTicketId($ticket['id']);
 
-        SimpleSAML_Memcache::set($scopedTicketId, $ticket, $this->expireSeconds);
+        SimpleSAML_Memcache::set($scopedTicketId, $ticket, $ticket['validBefore']);
     }
 
     public function deleteTicket($ticketId)

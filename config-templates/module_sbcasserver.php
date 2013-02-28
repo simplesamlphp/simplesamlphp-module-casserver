@@ -17,13 +17,11 @@ $config = array(
 
         //'class' => 'sbcasserver:MemCacheTicketStore',
         //'prefix' => 'bibsys',
-        //'expireInSeconds' => 5,
 
         //'class' => 'sbcasserver:AttributeStoreTicketStore',
         //'attributeStoreUrl' => 'http://devel06:9561/attributestore/services/json/store/',
         //'attributeStoreDeleteUrl' => 'http://devel06:9561/attributestore/services/store/',
         //'attributeStorePrefix' => 'sbmobile.cas',
-        //'expireInMinutes' => 1, //default 1 minute
     ),
 
     'attrname' => 'eduPersonPrincipalName', // 'eduPersonPrincipalName',
@@ -31,6 +29,7 @@ $config = array(
 
     'authsource' => 'casserver',
     'base64attributes' => true,
+
     'serviceTicketExpireTime' => 5, //how many seconds service tickets are valid for
     'proxyGrantingTicketExpireTime' => 600, //how many seconds proxy granting tickets are valid for at most
     'proxyTicketExpireTime' => 5, //how many seconds proxy tickets are valid for
