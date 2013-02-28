@@ -10,10 +10,8 @@ class sspmod_sbcasserver_Cas_Ticket_TicketFactory
         $this->proxyTicketExpireTime = $config->getValue('proxyTicketExpireTime', 5);
     }
 
-    public function createSessionTicket($sessionId, $expireTime)
+    public function createSessionTicket($sessionId, $expiresAt)
     {
-        $expiresAt = time() + $expireTime;
-
         return array('id' => $sessionId, 'validBefore' => $expiresAt, 'renewId' => SimpleSAML_Utilities::generateID());
     }
 
@@ -25,12 +23,12 @@ class sspmod_sbcasserver_Cas_Ticket_TicketFactory
         return array_merge(array('id' => $id, 'validBefore' => $expiresAt), $content);
     }
 
-    public function createProxyGrantingTicket($content)
+    public function createProxyGrantingTicket($content, $expiresAt)
     {
         $id = str_replace('_', 'PGT-', SimpleSAML_Utilities::generateID());
         $iou = str_replace('_', 'PGTIOU-', SimpleSAML_Utilities::generateID());
 
-        return array_merge(array('id' => $id, 'iou' => $iou), $content);
+        return array_merge(array('id' => $id, 'iou' => $iou, 'validBefore' => $expiresAt), $content);
     }
 
     public function createProxyTicket($content)

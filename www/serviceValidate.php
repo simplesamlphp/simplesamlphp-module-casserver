@@ -46,28 +46,31 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                 $protocol->setAttributes($attributes);
 
                 if (isset($_GET['pgtUrl'])) {
+                    $sessionTicket = $ticketStore->getTicket($serviceTicket['sessionId']);
+
                     $pgtUrl = sanitize($_GET['pgtUrl']);
 
-                    $proxyGrantingTicket = $ticketFactory->createProxyGrantingTicket(array(
-                        'attributes' => $attributes,
-                        'forceAuthn' => false,
-                        'proxies' => array_merge(array($service), $serviceTicket['proxies']),
-                        'sessionId' => $serviceTicket['sessionId']));
+                    if (!is_null($sessionTicket) && $ticketFactory->isSessionTicket($sessionTicket) && !$ticketFactory->isExpired($sessionTicket)) {
+                        $proxyGrantingTicket = $ticketFactory->createProxyGrantingTicket(array(
+                            'attributes' => $attributes,
+                            'forceAuthn' => false,
+                            'proxies' => array_merge(array($service), $serviceTicket['proxies']),
+                            'sessionId' => $serviceTicket['sessionId']), $sessionTicket['validBefore']);
+                        try {
+                            SimpleSAML_Utilities::fetch($pgtUrl . '?pgtIou=' . $proxyGrantingTicket['iou'] . '&pgtId=' . $proxyGrantingTicket['id']);
 
-                    try {
-                        SimpleSAML_Utilities::fetch($pgtUrl . '?pgtIou=' . $proxyGrantingTicket['iou'] . '&pgtId=' . $proxyGrantingTicket['id']);
+                            $protocol->setProxyGrantingTicketIOU($proxyGrantingTicket['iou']);
 
-                        $protocol->setProxyGrantingTicketIOU($proxyGrantingTicket['iou']);
-
-                        $ticketStore->addTicket($proxyGrantingTicket);
-                    } catch (Exception $e) {
+                            $ticketStore->addTicket($proxyGrantingTicket);
+                        } catch (Exception $e) {
+                        }
                     }
                 }
 
                 echo $protocol->getValidateSuccessResponse($attributes[$usernameField][0]);
             } else {
                 if ($ticketFactory->isExpired($serviceTicket)) {
-                    echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'Ticket: '.$ticketId.' expired');
+                    echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'Ticket: ' . $ticketId . ' expired');
                 } else if ($serviceTicket['service'] != $service) {
                     echo $protocol->getValidateFailureResponse('INVALID_SERVICE', 'Expected: ' . $serviceTicket['service'] . ' was: ' . $service);
                 } else if ($serviceTicket['forceAuthn'] != $forceAuthn) {
@@ -79,7 +82,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                     echo $protocol->getValidateFailureResponse('INTERNAL_ERROR', 'Missing user name attribute: ' . $usernameField . ' not found.');
                 }
             }
-        } else if(is_null($serviceTicket)) {
+        } else if (is_null($serviceTicket)) {
             echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'ticket: ' . $ticketId . ' not recognized');
         } else {
             echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'ticket: ' . $ticketId . ' is not a service ticket');

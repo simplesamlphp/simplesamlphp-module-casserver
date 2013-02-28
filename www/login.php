@@ -71,7 +71,7 @@ $attributes = $as->getAttributes();
 $ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
 $ticketFactory = new $ticketFactoryClass($casconfig);
 
-$sessionTicket = $ticketFactory->createSessionTicket($session->getSessionId(), $session->remainingTime());
+$sessionTicket = $ticketFactory->createSessionTicket($session->getSessionId(), time() + $session->remainingTime());
 
 $serviceTicket = $ticketFactory->createServiceTicket(array('service' => $service,
     'forceAuthn' => $forceAuthn,
