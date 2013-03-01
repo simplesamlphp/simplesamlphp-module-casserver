@@ -17,7 +17,7 @@ $protocol = new $protocolClass($casconfig);
 
 $legal_service_urls = $casconfig->getValue('legal_service_urls');
 
-if (array_key_exists('targetService', $_GET) && checkServiceURL($targetService, $legal_service_urls) && array_key_exists('pgt', $_GET)) {
+if (array_key_exists('targetService', $_GET) && checkServiceURL($_GET['targetService'], $legal_service_urls) && array_key_exists('pgt', $_GET)) {
     $proxyGrantingTicketId = sanitize($_GET['pgt']);
     $targetService = sanitize($_GET['targetService']);
 
