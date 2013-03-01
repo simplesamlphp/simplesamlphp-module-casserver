@@ -61,7 +61,7 @@ class sspmod_sbcasserver_Cas_Ticket_TicketFactory
 
     public function isProxyTicket($ticket)
     {
-        return preg_match('/^(PT|ST)-?[a-zA-Z0-9]+$/D', $ticket['id']);
+        return preg_match('/^PT-?[a-zA-Z0-9]+$/D', $ticket['id']);
     }
 
     public function isExpired($ticket)

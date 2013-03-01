@@ -1,10 +1,8 @@
 <?php
 /*
-* Frontend for login.php, validate.php, serviceValidate.php and logout.php. It allows them to be called
-* as cas.php/login, cas.php/validate, cas.php/serviceValidate and cas.php/logout and is meant for clients
-* like phpCAS which expects one configured prefix which it appends login, validate, serviceValidate and logout to.
-*
-* ServiceTickets (ST) now have a 5 secs ttl.
+* Frontend for login.php, validate.php, serviceValidate.php, logout.php, proxy and proxyValidate. It allows them to be
+* called as cas.php/login, cas.php/validate, cas.php/serviceValidate, cas.php/logout, cas.php/proxy and cas.php/proxyValidate
+* and is meant for clients like phpCAS which expects one configured prefix which it appends login, validate, serviceValidate and logout to.
 *
 */
 
@@ -14,6 +12,7 @@ $validFunctions = array(
     'serviceValidate' => 'serviceValidate',
     'logout' => 'logout',
     'proxy' => 'proxy',
+    'proxyValidate' => 'serviceValidate',
 );
 
 $function = substr($_SERVER['PATH_INFO'], 1);

@@ -8,7 +8,7 @@
  *  pgtUrl
  */
 
-$method = 'serviceValidate';
+$method = 'proxyValidate';
 
 require_once 'utility/validate.php';
 
