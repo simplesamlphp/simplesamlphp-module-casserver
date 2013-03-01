@@ -66,7 +66,7 @@ class sspmod_sbcasserver_Cas_Ticket_TicketFactory
 
     public function isExpired($ticket)
     {
-        return array_key_exists('validBefore', $ticket) && $ticket['validBefore'] > time();
+        return !array_key_exists('validBefore', $ticket) || $ticket['validBefore'] < time();
     }
 }
 
