@@ -39,7 +39,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
 
             $usernameField = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
 
-            if ($valid['valid'] && $serviceTicket['service'] == $service && (!$forceAuthn || $serviceTicket['forceAuthn']) &&
+            if (!$ticketFactory->isExpired($serviceTicket) && $serviceTicket['service'] == $service && (!$forceAuthn || $serviceTicket['forceAuthn']) &&
                 array_key_exists($usernameField, $serviceTicket['attributes'])
             ) {
                 echo $protocol->getValidateSuccessResponse($serviceTicket['attributes'][$usernameField][0]);
