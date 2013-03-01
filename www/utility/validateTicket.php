@@ -72,9 +72,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
 
                 echo $protocol->getValidateSuccessResponse($attributes[$usernameField][0]);
             } else {
-                if ($ticketFactory->isProxyTicket($serviceTicket) && $method == 'serviceValidate') {
-                    echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'Ticket: ' . $ticketId . ' is a proxy ticket. Use proxyValidate instead.');
-                } else if ($ticketFactory->isExpired($serviceTicket)) {
+                if ($ticketFactory->isExpired($serviceTicket)) {
                     echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'Ticket: ' . $ticketId . ' expired');
                 } else if ($serviceTicket['service'] != $service) {
                     echo $protocol->getValidateFailureResponse('INVALID_SERVICE', 'Expected: ' . $serviceTicket['service'] . ' was: ' . $service);
@@ -89,13 +87,17 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
             }
         } else if (is_null($serviceTicket)) {
             echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'ticket: ' . $ticketId . ' not recognized');
+        } else if ($ticketFactory->isProxyTicket($serviceTicket) && $method == 'serviceValidate') {
+            echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'Ticket: ' . $ticketId . ' is a proxy ticket. Use proxyValidate instead.');
         } else {
+            SimpleSAML_Logger::debug('sbcasserver:serviceValidate: internal server error. ' .
+                var_export($e->getMessage(), TRUE));
+
             echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'ticket: ' . $ticketId . ' is not a service ticket');
         }
 
     } catch (Exception $e) {
-        SimpleSAML_Logger::debug('sbcasserver:serviceValidate: internal server error. ' .
-            var_export($e->getMessage(), TRUE));
+        SimpleSAML_Logger::debug('sbcasserver:serviceValidate: internal server error. ' . var_export($e->getMessage(), TRUE));
 
         echo $protocol->getValidateFailureResponse('INTERNAL_ERROR', $e->getMessage());
     }

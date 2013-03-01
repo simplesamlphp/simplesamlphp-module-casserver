@@ -53,8 +53,8 @@ if (array_key_exists('targetService', $_GET) && checkServiceURL($_GET['targetSer
     }
 } else if (!array_key_exists('targetService', $_GET)) {
     echo $protocol->getProxyFailureResponse('INVALID_REQUEST', 'Missing target service parameter [targetService]');
-} else if (!checkServiceURL($targetService, $legal_service_urls)) {
-    echo $protocol->getProxyFailureResponse('INVALID_REQUEST', 'Target service parameter not listed as a legal service: [targetService] = ' . $targetService);
+} else if (!checkServiceURL($_GET['targetService'], $legal_service_urls)) {
+    echo $protocol->getProxyFailureResponse('INVALID_REQUEST', 'Target service parameter not listed as a legal service: [targetService] = ' . $_GET['targetService']);
 } else {
     echo $protocol->getProxyFailureResponse('INVALID_REQUEST', 'Missing proxy granting ticket parameter: [pgt]');
 }
