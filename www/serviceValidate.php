@@ -10,6 +10,6 @@
 
 $method = 'serviceValidate';
 
-require_once 'utility/validate.php';
+require_once 'utility/validateTicket.php';
 
 ?>

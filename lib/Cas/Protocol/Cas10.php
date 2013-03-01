@@ -11,7 +11,7 @@ class sspmod_sbcasserver_Cas_Protocol_Cas10
         return "yes\n" . $username . "\n";
     }
 
-    public function getValidateFailureResponse($errorCode, $explanation)
+    public function getValidateFailureResponse()
     {
         return "no\n";
     }
