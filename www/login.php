@@ -32,6 +32,9 @@ $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcas
 $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
 $ticketStore = new $ticketStoreClass($casconfig);
 
+$ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
+$ticketFactory = new $ticketFactoryClass($casconfig);
+
 $sessionTicket = $ticketStore->getTicket($session->getSessionId());
 $sessionRenewId = $sessionTicket ? $sessionTicket['renewId'] : NULL;
 $requestRenewId = isset($_REQUEST['renewId']) ? $_REQUEST['renewId'] : NULL;
@@ -64,14 +67,13 @@ if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewI
     );
 
     $as->login($params);
+
+    $sessionTicket = $ticketFactory->createSessionTicket($session->getSessionId(), time() + $session->remainingTime());
+
+    $ticketStore->addTicket($sessionTicket);
 }
 
 $attributes = $as->getAttributes();
-
-$ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
-$ticketFactory = new $ticketFactoryClass($casconfig);
-
-$sessionTicket = $ticketFactory->createSessionTicket($session->getSessionId(), time() + $session->remainingTime());
 
 $serviceTicket = $ticketFactory->createServiceTicket(array('service' => $service,
     'forceAuthn' => $forceAuthn,
@@ -79,7 +81,6 @@ $serviceTicket = $ticketFactory->createServiceTicket(array('service' => $service
     'proxies' => array(),
     'sessionId' => $sessionTicket['id']));
 
-$ticketStore->addTicket($sessionTicket);
 $ticketStore->addTicket($serviceTicket);
 
 SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter($_GET['service'], array('ticket' => $serviceTicket['id'])));

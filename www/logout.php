@@ -14,9 +14,13 @@ $url = $_GET['url'];
 /* Load simpleSAMLphp, configuration and metadata */
 $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 
-$as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
+if(!$casconfig->getValue('logoutEnabled', false)) {
+    SimpleSAML_Logger::debug('sbcasserver:logout: logout disabled in module_sbcasserver.php');
 
-SimpleSAML_Logger::debug('sbcasserver config' . var_export($as, TRUE));
+    throw new Exception('Logout not allowed');
+}
+
+$as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
 
 $session = SimpleSAML_Session::getInstance();
 
@@ -29,11 +33,11 @@ if (!is_null($session)) {
 }
 
 if ($as->isAuthenticated()) {
-    SimpleSAML_Logger::debug('sbcasserver logged out: real logout');
+    SimpleSAML_Logger::debug('sbcasserver:logout: performed a real logout');
 
     $as->logout($url);
 } else {
-    SimpleSAML_Logger::debug('sbcasserver logged out: redirected');
+    SimpleSAML_Logger::debug('sbcasserver:logout: no session to log out of, performing redirect');
 
     SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter($url, array()));
 }
