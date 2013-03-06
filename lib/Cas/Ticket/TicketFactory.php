@@ -25,15 +25,14 @@ class sspmod_sbcasserver_Cas_Ticket_TicketFactory
         return array_merge(array('id' => $id, 'validBefore' => $expiresAt), $content);
     }
 
-    public function createProxyGrantingTicket($content, $expiresAt)
+    public function createProxyGrantingTicket($content)
     {
         $id = str_replace('_', 'PGT-', SimpleSAML_Utilities::generateID());
         $iou = str_replace('_', 'PGTIOU-', SimpleSAML_Utilities::generateID());
 
-        $upperBound = time() + $this->proxyGrantingTicketExpireTime;
+        $expireAt = time() + $this->proxyGrantingTicketExpireTime;
 
-        return array_merge(array('id' => $id, 'iou' => $iou,
-            'validBefore' => $expiresAt < $upperBound ? $expiresAt : $upperBound), $content);
+        return array_merge(array('id' => $id, 'iou' => $iou, 'validBefore' => $expireAt), $content);
     }
 
     public function createProxyTicket($content)
