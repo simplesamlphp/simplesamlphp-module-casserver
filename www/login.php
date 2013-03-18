@@ -39,7 +39,7 @@ $sessionTicket = $ticketStore->getTicket($session->getSessionId());
 $sessionRenewId = $sessionTicket ? $sessionTicket['renewId'] : NULL;
 $requestRenewId = isset($_REQUEST['renewId']) ? $_REQUEST['renewId'] : NULL;
 
-if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewId)) {
+if (!$as->isAuthenticated() || !is_array($sessionTicket) || ($forceAuthn && $sessionRenewId != $requestRenewId)) {
     $query = array();
 
     if ($sessionRenewId && $forceAuthn) {
