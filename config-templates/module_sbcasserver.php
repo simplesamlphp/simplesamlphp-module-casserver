@@ -11,6 +11,11 @@ $config = array(
         'http://localhost:8080/kultur/login.jsp',
     ),
 
+    'legal_target_service_urls' => array(
+        'http://localhost:7070/kultur/login.jsp',
+        'http://localhost:8080/kultur/login.jsp',
+    ),
+
     'ticketstore' => array( //defaults to filesystem ticket store using the directory 'ticketcache'
         'class' => 'sbcasserver:FileSystemTicketStore',
         'directory' => 'ticketcache',

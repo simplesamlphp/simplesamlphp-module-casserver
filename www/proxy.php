@@ -15,9 +15,9 @@ $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 $protocolClass = SimpleSAML_Module::resolveClass('sbcasserver:Cas20', 'Cas_Protocol');
 $protocol = new $protocolClass($casconfig);
 
-$legal_service_urls = $casconfig->getValue('legal_service_urls');
+$legal_target_service_urls = $casconfig->getValue('legal_target_service_urls', array());
 
-if (array_key_exists('targetService', $_GET) && checkServiceURL($_GET['targetService'], $legal_service_urls) && array_key_exists('pgt', $_GET)) {
+if (array_key_exists('targetService', $_GET) && checkServiceURL($_GET['targetService'], $legal_target_service_urls) && array_key_exists('pgt', $_GET)) {
     $proxyGrantingTicketId = sanitize($_GET['pgt']);
     $targetService = sanitize($_GET['targetService']);
 
@@ -53,7 +53,7 @@ if (array_key_exists('targetService', $_GET) && checkServiceURL($_GET['targetSer
     }
 } else if (!array_key_exists('targetService', $_GET)) {
     echo $protocol->getProxyFailureResponse('INVALID_REQUEST', 'Missing target service parameter [targetService]');
-} else if (!checkServiceURL($_GET['targetService'], $legal_service_urls)) {
+} else if (!checkServiceURL($_GET['targetService'], $legal_target_service_urls)) {
     echo $protocol->getProxyFailureResponse('INVALID_REQUEST', 'Target service parameter not listed as a legal service: [targetService] = ' . $_GET['targetService']);
 } else {
     echo $protocol->getProxyFailureResponse('INVALID_REQUEST', 'Missing proxy granting ticket parameter: [pgt]');
