@@ -14,7 +14,7 @@ $url = $_GET['url'];
 /* Load simpleSAMLphp, configuration and metadata */
 $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 
-if(!$casconfig->getValue('logoutEnabled', false)) {
+if(!$casconfig->getValue('enableLogout', false)) {
     SimpleSAML_Logger::debug('sbcasserver:logout: logout disabled in module_sbcasserver.php');
 
     throw new Exception('Logout not allowed');

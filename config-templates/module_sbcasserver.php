@@ -29,7 +29,7 @@ $config = array(
 
     'authsource' => 'casserver',
     'base64attributes' => true,
-    'logoutEnabled' => true,
+    'enableLogout' => true,
 
     'serviceTicketExpireTime' => 5, //how many seconds service tickets are valid for
     'proxyGrantingTicketExpireTime' => 600, //how many seconds proxy granting tickets are valid for at most
