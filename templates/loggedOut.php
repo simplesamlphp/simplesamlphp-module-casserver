@@ -14,7 +14,7 @@ $this->includeAtTemplateBase('includes/header.php');
     </p>
 
     <p>
-        <a href=<?php echo($this->data["url"]) ?>><?php $this->t('{sbcasserver:sbcasserver:continue_header}') ?></a>
+        <a href="<?php echo($this->data["url"]) ?>"><?php echo($this->t('{sbcasserver:sbcasserver:continue_heading}'))?></a>
     </p>
 
 <?php
