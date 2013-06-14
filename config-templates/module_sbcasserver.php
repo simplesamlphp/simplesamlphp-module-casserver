@@ -34,11 +34,12 @@ $config = array(
 
     'authsource' => 'casserver',
     'base64attributes' => true,
-    'enableLogout' => true,
+    'enable_logout' => true,
+    'skip_logout_page' => true, //perform a redirect instead of showing a logout page with a link to the location given in the url parameter
 
-    'serviceTicketExpireTime' => 5, //how many seconds service tickets are valid for
-    'proxyGrantingTicketExpireTime' => 600, //how many seconds proxy granting tickets are valid for at most
-    'proxyTicketExpireTime' => 5, //how many seconds proxy tickets are valid for
+    'service_ticket_expire_time' => 5, //how many seconds service tickets are valid for
+    'proxy_granting_ticket_expire_time' => 600, //how many seconds proxy granting tickets are valid for at most
+    'proxy_ticket_expire_time' => 5, //how many seconds proxy tickets are valid for
 );
 
 ?>

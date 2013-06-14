@@ -7,9 +7,9 @@ class sspmod_sbcasserver_Cas_Ticket_TicketFactory
 
     public function __construct($config)
     {
-        $this->serviceTicketExpireTime = $config->getValue('serviceTicketExpireTime', 5);
-        $this->proxyGrantingTicketExpireTime = $config->getValue('proxyGrantingTicketExpireTime', 3600);
-        $this->proxyTicketExpireTime = $config->getValue('proxyTicketExpireTime', 5);
+        $this->serviceTicketExpireTime = $config->getValue('service_ticket_expire_time', 5);
+        $this->proxyGrantingTicketExpireTime = $config->getValue('proxy_granting_ticket_expire_time', 3600);
+        $this->proxyTicketExpireTime = $config->getValue('proxy_ticket_expire_time', 5);
     }
 
     public function createSessionTicket($sessionId, $expiresAt)
