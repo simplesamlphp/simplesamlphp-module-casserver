@@ -1,14 +1,11 @@
 {
     "loggedout_header": {
-        "en": "Logged out",
-        "da": "Logged out"
+        "da": "Du er logget ud"
     },
     "loggedout_description": {
-        "en": "You are now logged out",
-        "da": "Du er nu logged out"
+        "da": "Du er logget ud. Tak for fordi du brugte denne tjeneste."
     },
     "continue_heading": {
-        "en": "Click to continue",
-        "da": "Click for at fortsætte"
+        "da": "Tilbage til tjenesten"
     }
 }

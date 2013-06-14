@@ -3,9 +3,9 @@
         "en": "Logged out"
     },
     "loggedout_description": {
-        "en": "You are now logged out"
+        "en": "You have been logged out. Thank you for using this service."
     },
     "continue_heading": {
-        "en": "Click to continue"
+        "en": "Go back to the service"
     }
 }
