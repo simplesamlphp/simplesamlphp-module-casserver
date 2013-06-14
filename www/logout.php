@@ -38,7 +38,7 @@ if ($as->isAuthenticated()) {
     if ($casconfig->getValue('skip_logout_page', false)) {
         $as->logout($url);
     } else {
-        $as->logout($url); //replace with logged out page
+        $as->logout(SimpleSAML_Utilities::addURLparameter(SimpleSAML_Module::getModuleURL('sbcasserver/loggedOut.php'), array('url' => $url)));
     }
 } else {
     SimpleSAML_Logger::debug('sbcasserver:logout: no session to log out of, performing redirect');
@@ -46,7 +46,7 @@ if ($as->isAuthenticated()) {
     if ($casconfig->getValue('skip_logout_page', false)) {
         SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter($url, array()));
     } else {
-        SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter($url, array())); //replace with logged out page
+        SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter(SimpleSAML_Module::getModuleURL('sbcasserver/loggedOut.php'), array('url' => $url)));
     }
 }
 ?>
