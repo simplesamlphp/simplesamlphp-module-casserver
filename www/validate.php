@@ -45,7 +45,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                 echo $protocol->getValidateSuccessResponse($serviceTicket['attributes'][$usernameField][0]);
             } else if (!array_key_exists($usernameField, $serviceTicket['attributes'])) {
                 SimpleSAML_Logger::debug('sbcasserver:validate: internal server error. Missing user name attribute: ' .
-                    var_export($usernameField, TRUE));
+                var_export($usernameField, TRUE));
 
                 echo $protocol->getValidateFailureResponse();
             } else {

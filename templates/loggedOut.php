@@ -11,6 +11,11 @@ $this->includeAtTemplateBase('includes/header.php');
         <?php
         echo $this->t('{sbcasserver:sbcasserver:loggedout_description}')
         ?>
+    </p>
+
+    <p>
+        <a href=<?php echo($this->data["url"]) ?>><?php $this->t('{sbcasserver:sbcasserver:continue_header}') ?></a>
+    </p>
 
 <?php
 

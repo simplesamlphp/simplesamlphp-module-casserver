@@ -35,7 +35,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
         $serviceTicket = $ticketStore->getTicket($ticketId);
 
         if (!is_null($serviceTicket) && ($ticketFactory->isServiceTicket($serviceTicket) ||
-            ($ticketFactory->isProxyTicket($serviceTicket) && $method == 'proxyValidate'))
+                ($ticketFactory->isProxyTicket($serviceTicket) && $method == 'proxyValidate'))
         ) {
             $ticketStore->deleteTicket($ticketId);
 
@@ -80,7 +80,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                     echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'Service was issue from single sign on sesion: ');
                 } else {
                     SimpleSAML_Logger::debug('sbcasserver:' . $method . ': internal server error. Missing user name attribute: ' .
-                        var_export($usernameField, TRUE));
+                    var_export($usernameField, TRUE));
 
                     echo $protocol->getValidateFailureResponse('INTERNAL_ERROR', 'Missing user name attribute: ' . $usernameField . ' not found.');
                 }
@@ -91,7 +91,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
             echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'Ticket: ' . $ticketId . ' is a proxy ticket. Use proxyValidate instead.');
         } else {
             SimpleSAML_Logger::debug('sbcasserver:serviceValidate: internal server error. ' .
-                var_export($e->getMessage(), TRUE));
+            var_export($e->getMessage(), TRUE));
 
             echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'ticket: ' . $ticketId . ' is not a service ticket');
         }

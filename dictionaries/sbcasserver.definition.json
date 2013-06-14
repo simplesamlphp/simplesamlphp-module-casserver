@@ -4,4 +4,8 @@
     },
     "loggedout_description": {
         "en": "You are now logged out"
-    }}
+    },
+    "continue_heading": {
+        "en": "Click to continue"
+    }
+}

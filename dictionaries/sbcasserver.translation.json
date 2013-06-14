@@ -6,5 +6,9 @@
     "loggedout_description": {
         "en": "You are now logged out",
         "da": "Du er nu logged out"
+    },
+    "continue_heading": {
+        "en": "Click to continue",
+        "da": "Click for at komme viddere"
     }
 }
