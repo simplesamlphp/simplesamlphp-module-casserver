@@ -1,0 +1,10 @@
+{
+    "loggedout_header": {
+        "en": "Logged out",
+        "da": "Logged out"
+    },
+    "loggedout_description": {
+        "en": "You are now logged out",
+        "da": "Du er nu logged out"
+    }
+}

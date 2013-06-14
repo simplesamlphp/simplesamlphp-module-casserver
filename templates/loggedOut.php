@@ -2,14 +2,14 @@
 
 assert('is_string($this->data["url"])');
 
-$this->data['header'] = $this->t('{sbcasserver:loggedout:loggedout_header}');
+$this->data['header'] = $this->t('{sbcasserver:sbcasserver:loggedout_header}');
 
 $this->includeAtTemplateBase('includes/header.php');
 ?>
 
     <p>
         <?php
-        echo $this->t('{sbcasserver:loggedout:loggedout_description}')
+        echo $this->t('{sbcasserver:sbcasserver:loggedout_description}')
         ?>
 
 <?php
