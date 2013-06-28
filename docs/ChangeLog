@@ -2,7 +2,6 @@ Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
 
 ?2013-06-25 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
         * Release 4.1.0
-        * Changed CAS 2.0 response generation to use PHP DOM library.
         * Added support for storing tickets in memcached.
         * Added support for proxy tickets.
         * Added support for renewing login.
