@@ -21,8 +21,9 @@
 
 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
 
-?2013-06-25 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
-        * Release 4.1.0
+?2013-07-02 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
+        * Release 5.0.0
+        * Removed support for storing tickets in proprietary key-value store AttributeStore.
         * Added support for storing tickets in memcached.
         * Added support for proxy tickets.
         * Added support for renewing login.

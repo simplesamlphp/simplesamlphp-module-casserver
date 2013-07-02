@@ -22,11 +22,6 @@ $config = array(
 
         //'class' => 'sbcasserver:MemCacheTicketStore',
         //'prefix' => 'bibsys',
-
-        //'class' => 'sbcasserver:AttributeStoreTicketStore',
-        //'attributeStoreUrl' => 'http://devel06:9561/attributestore/services/json/store/',
-        //'attributeStoreDeleteUrl' => 'http://devel06:9561/attributestore/services/store/',
-        //'attributeStorePrefix' => 'sbmobile.cas',
     ),
 
     'attrname' => 'eduPersonPrincipalName', // 'eduPersonPrincipalName',
