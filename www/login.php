@@ -84,7 +84,7 @@ if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewI
         'ReturnTo' => $returnUrl,
     );
 
-    if(isset($_GET['entityId'])) {
+    if (isset($_GET['entityId'])) {
         $params['saml:idp'] = $_GET['entityId'];
     }
 
