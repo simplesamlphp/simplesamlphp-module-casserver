@@ -22,7 +22,8 @@
 *  service
 *  renew
 *  gateway
-*
+*  entityId
+ * language
 */
 
 require_once 'utility/urlUtils.php';
@@ -121,9 +122,9 @@ $ticketStore->addTicket($serviceTicket);
 
 $parameters = array('ticket' => $serviceTicket['id']);
 
-$language = $session->getData('string','language');
+$language = $session->getData('string', 'language');
 
-if(isset($language)) {
+if (isset($language)) {
     $parameters['language'] = $language;
 }
 

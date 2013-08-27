@@ -29,6 +29,7 @@ Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
         * Added support for renewing login.
         * Added an optional logged out landing page with a return url.
         * Added support for specifying an idp during login thus skipping the disco step.
+        * Added support for specifying a language hint during login.
 
 2013-01-29 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
         * Release 4.0.0
