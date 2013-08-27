@@ -46,6 +46,18 @@ $as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
 
 $session = SimpleSAML_Session::getInstance();
 
+if (array_key_exists('language', $_GET)) {
+    $oldLanguagePreferred = SimpleSAML_XHTML_Template::getLanguageCookie();
+
+    if (!isset($oldLanguagePreferred)) {
+        SimpleSAML_XHTML_Template::setLanguageCookie($_GET['language']);
+
+        $session->setData('string', 'language', $_GET['language']);
+    } else {
+        $session->setData('string', 'language', $oldLanguagePreferred);
+    }
+}
+
 $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore'));
 $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
 $ticketStore = new $ticketStoreClass($casconfig);
@@ -107,6 +119,13 @@ $serviceTicket = $ticketFactory->createServiceTicket(array('service' => $service
 
 $ticketStore->addTicket($serviceTicket);
 
-SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter($_GET['service'], array('ticket' => $serviceTicket['id'])));
+$parameters = array('ticket' => $serviceTicket['id']);
 
+$language = $session->getData('string','language');
+
+if(isset($language)) {
+    $parameters['language'] = $language;
+}
+
+SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter($_GET['service'], $parameters));
 ?>
