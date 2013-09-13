@@ -60,13 +60,18 @@ class sspmod_sbcasserver_Cas_Protocol_Cas20
         $root = $xmlDocument->createElement("cas:serviceResponse");
         $root->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:cas', 'http://www.yale.edu/tp/cas');
 
-        $casUser = $xmlDocument->createElement('cas:user', $username);
+        $usernameNode = $xmlDocument->createTextNode($username);
+        $casUser = $xmlDocument->createElement('cas:user');
+        $casUser->appendChild($usernameNode);
 
         $casSuccess = $xmlDocument->createElement('cas:authenticationSuccess');
         $casSuccess->appendChild($casUser);
 
         if (is_string($this->proxyGrantingTicketIOU)) {
-            $casSuccess->appendChild($xmlDocument->createElement("cas:proxyGrantingTicket", $this->proxyGrantingTicketIOU));
+            $iouNode = $xmlDocument->createTextNode($this->proxyGrantingTicketIOU);
+            $iouElement = $xmlDocument->createElement("cas:proxyGrantingTicket");
+            $iouElement->appendChild($iouNode);
+            $casSuccess->appendChild($iouElement);
         }
 
         if ($this->sendAttributes && count($this->attributes) > 0) {
@@ -99,7 +104,9 @@ class sspmod_sbcasserver_Cas_Protocol_Cas20
         $casFailureCode = $xmlDocument->createAttribute('code');
         $casFailureCode->value = $errorCode;
 
-        $casFailure = $xmlDocument->createElement('cas:authenticationFailure', $explanation);
+        $casFailureNode = $xmlDocument->createTextNode($explanation);
+        $casFailure = $xmlDocument->createElement('cas:authenticationFailure');
+        $casFailure->appendChild($casFailureNode);
         $casFailure->appendChild($casFailureCode);
 
         $root->appendChild($casFailure);
@@ -116,7 +123,9 @@ class sspmod_sbcasserver_Cas_Protocol_Cas20
         $root = $xmlDocument->createElement("cas:serviceResponse");
         $root->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:cas', 'http://www.yale.edu/tp/cas');
 
-        $casProxyTicketId = $xmlDocument->createElement('cas:proxyTicket', $proxyTicketId);
+        $casProxyTicketIdNode = $xmlDocument->createTextNode($proxyTicketId);
+        $casProxyTicketId = $xmlDocument->createElement('cas:proxyTicket');
+        $casProxyTicketId->appendChild($casProxyTicketIdNode);
 
         $casProxySuccess = $xmlDocument->createElement('cas:proxySuccess');
         $casProxySuccess->appendChild($casProxyTicketId);
@@ -137,7 +146,9 @@ class sspmod_sbcasserver_Cas_Protocol_Cas20
         $casFailureCode = $xmlDocument->createAttribute('code');
         $casFailureCode->value = $errorCode;
 
-        $casFailure = $xmlDocument->createElement('cas:proxyFailure', $explanation);
+        $casFailureNode = $xmlDocument->createTextNode($explanation);
+        $casFailure = $xmlDocument->createElement('cas:proxyFailure');
+        $casFailure->appendChild($casFailureNode);
         $casFailure->appendChild($casFailureCode);
 
         $root->appendChild($casFailure);
