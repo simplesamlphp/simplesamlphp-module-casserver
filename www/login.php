@@ -53,9 +53,9 @@ if (array_key_exists('language', $_GET)) {
     if (!isset($oldLanguagePreferred)) {
         SimpleSAML_XHTML_Template::setLanguageCookie($_GET['language']);
 
-        $session->setData('string', 'language', $_GET['language']);
+        $language = $_GET['language'];
     } else {
-        $session->setData('string', 'language', $oldLanguagePreferred);
+        $language = $oldLanguagePreferred;
     }
 }
 
@@ -87,6 +87,10 @@ if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewI
 
     if (isset($_REQUEST['gateway'])) {
         $query['gateway'] = $_REQUEST['gateway'];
+    }
+
+    if (isset($language)) {
+        $query['language'] = $language;
     }
 
     $returnUrl = SimpleSAML_Utilities::selfURLNoQuery() . '?' . http_build_query($query);
@@ -121,8 +125,6 @@ $serviceTicket = $ticketFactory->createServiceTicket(array('service' => $service
 $ticketStore->addTicket($serviceTicket);
 
 $parameters = array('ticket' => $serviceTicket['id']);
-
-$language = $session->getData('string', 'language');
 
 if (isset($language)) {
     $parameters['language'] = $language;
