@@ -47,16 +47,8 @@ $as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
 
 $session = SimpleSAML_Session::getInstance();
 
-if (array_key_exists('language', $_GET)) {
-    $oldLanguagePreferred = SimpleSAML_XHTML_Template::getLanguageCookie();
-
-    if (!isset($oldLanguagePreferred)) {
-        SimpleSAML_XHTML_Template::setLanguageCookie($_GET['language']);
-
-        $language = $_GET['language'];
-    } else {
-        $language = $oldLanguagePreferred;
-    }
+if (array_key_exists('language', $_GET) && is_string($_GET['language'])) {
+    SimpleSAML_XHTML_Template::setLanguageCookie($_GET['language']);
 }
 
 $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore'));
@@ -89,8 +81,8 @@ if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewI
         $query['gateway'] = $_REQUEST['gateway'];
     }
 
-    if (isset($language)) {
-        $query['language'] = $language;
+    if (array_key_exists('language', $_GET)) {
+        $query['language'] = is_string($_GET['language']) ? $_GET['language'] : NULL;
     }
 
     $returnUrl = SimpleSAML_Utilities::selfURLNoQuery() . '?' . http_build_query($query);
@@ -126,8 +118,16 @@ $ticketStore->addTicket($serviceTicket);
 
 $parameters = array('ticket' => $serviceTicket['id']);
 
-if (isset($language)) {
-    $parameters['language'] = $language;
+if (array_key_exists('language', $_GET)) {
+    $oldLanguagePreferred = SimpleSAML_XHTML_Template::getLanguageCookie();
+
+    if (isset($oldLanguagePreferred)) {
+        $parameters['language'] = $oldLanguagePreferred;
+    } else {
+        if (is_string($_GET['language'])) {
+            $parameters['language'] = $_GET['language'];
+        }
+    }
 }
 
 SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter($_GET['service'], $parameters));
