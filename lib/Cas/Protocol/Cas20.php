@@ -165,8 +165,14 @@ class sspmod_sbcasserver_Cas_Protocol_Cas20
 
     private function generateCas20Attribute($xmlDocument, $attributeName, $attributeValue)
     {
-        return $xmlDocument->createElement('cas:' . $attributeName, $this->base64EncodeAttributes ?
+        $attributeValueNode = $xmlDocument->createTextNode($this->base64EncodeAttributes ?
             base64_encode($attributeValue) : $attributeValue);
+
+        $attributeElement = $xmlDocument->createElement('cas:' . $attributeName);
+
+        $attributeElement->appendChild($attributeValueNode);
+
+        return $attributeElement;
     }
 }
 
