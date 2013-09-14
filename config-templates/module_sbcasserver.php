@@ -17,7 +17,7 @@ $config = array(
     ),
 
     'ticketstore' => array( //defaults to filesystem ticket store using the directory 'ticketcache'
-        'class' => 'sbcasserver:FileSystemTicketStore',
+        'class' => 'sbcasserver:FileSystemTicketStore', //Not intended for production
         'directory' => 'ticketcache',
 
         //'class' => 'sbcasserver:MemCacheTicketStore',
