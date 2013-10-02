@@ -24,11 +24,12 @@ Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
 ?2013-07-02 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
         * Release 5.0.0
         * Removed support for storing tickets in proprietary key-value store AttributeStore.
+        * Added support for storing tickets in a SQL database.
         * Added support for storing tickets in memcached.
         * Added support for proxy tickets.
         * Added support for renewing login.
         * Added an optional logged out landing page with a return url.
-        * Added support for specifying an idp during login thus skipping the disco step.
+        * Added support for specifying an idp during login thus skipping the wayf step.
         * Added support for specifying a language hint during login.
 
 2013-01-29 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
