@@ -22,6 +22,12 @@ $config = array(
 
         //'class' => 'sbcasserver:MemCacheTicketStore',
         //'prefix' => 'some_prefix',
+
+        //'class' => 'sbcasserver:SQLTicketStore',
+        //'dsn' => 'pgsql:host=localhost;port=5432;dbname=sbcasserver',
+        //'username' => 'username',
+        //'password' => 'password',
+        //'prefix' => 'some_prefix',
     ),
 
     'attrname' => 'eduPersonPrincipalName', // 'eduPersonPrincipalName',
