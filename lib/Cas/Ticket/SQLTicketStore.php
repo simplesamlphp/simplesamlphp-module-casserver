@@ -96,7 +96,6 @@ class sspmod_sbcasserver_Cas_Ticket_SQLTicketStore extends sspmod_sbcasserver_Ca
 
     private function initKVTable()
     {
-
         if ($this->getTableVersion('kvstore') === 1) {
             /* Table initialized. */
             return;
@@ -165,7 +164,7 @@ class sspmod_sbcasserver_Cas_Ticket_SQLTicketStore extends sspmod_sbcasserver_Ca
                 case '23505': /* PostgreSQL */
                     break;
                 default:
-                    SimpleSAML_Logger::error('Error while saving data: ' . $e->getMessage());
+                    SimpleSAML_Logger::error('sbcasserver: Error while saving data: ' . $e->getMessage());
                     throw $e;
             }
         }
@@ -191,9 +190,6 @@ class sspmod_sbcasserver_Cas_Ticket_SQLTicketStore extends sspmod_sbcasserver_Ca
 
     private function cleanKVStore()
     {
-
-        SimpleSAML_Logger::debug('store.sql: Cleaning key-value store.');
-
         $query = 'DELETE FROM ' . $this->prefix . '_kvstore WHERE _expire < :now';
         $params = array('now' => gmdate('Y-m-d H:i:s'));
 
