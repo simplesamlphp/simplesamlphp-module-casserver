@@ -21,7 +21,7 @@
 
 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
 
-?2013-07-02 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
+2013-11-04 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
         * Release 5.0.0
         * Removed support for storing tickets in proprietary key-value store AttributeStore.
         * Added support for storing tickets in a SQL database.
