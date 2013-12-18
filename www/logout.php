@@ -19,15 +19,9 @@
 *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 *
 * Incoming parameters:
-*  url
 *  ticket
-*
+*  url     - optional if a logout page is displayed
 */
-
-if (!array_key_exists('url', $_GET))
-    throw new Exception('Required URL query parameter [url] not provided. (CAS Server)');
-
-$url = $_GET['url'];
 
 /* Load simpleSAMLphp, configuration and metadata */
 $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
@@ -37,6 +31,13 @@ if (!$casconfig->getValue('enable_logout', false)) {
 
     throw new Exception('Logout not allowed');
 }
+
+$skipLogoutPage = $casconfig->getValue('skip_logout_page', false);
+
+if ($skipLogoutPage && !array_key_exists('url', $_GET))
+    throw new Exception('Required URL query parameter [url] not provided. (CAS Server)');
+
+/* Load simpleSAMLphp metadata */
 
 $as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
 
@@ -54,17 +55,19 @@ if ($as->isAuthenticated()) {
     SimpleSAML_Logger::debug('sbcasserver:logout: performing a real logout');
 
     if ($casconfig->getValue('skip_logout_page', false)) {
-        $as->logout($url);
+        $as->logout($_GET['url']);
     } else {
-        $as->logout(SimpleSAML_Utilities::addURLparameter(SimpleSAML_Module::getModuleURL('sbcasserver/loggedOut.php'), array('url' => $url)));
+        $as->logout(SimpleSAML_Utilities::addURLparameter(SimpleSAML_Module::getModuleURL('sbcasserver/loggedOut.php'),
+            array_key_exists('url', $_GET) ? array('url' => $_GET['url']) : array()));
     }
 } else {
     SimpleSAML_Logger::debug('sbcasserver:logout: no session to log out of, performing redirect');
 
     if ($casconfig->getValue('skip_logout_page', false)) {
-        SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter($url, array()));
+        SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter($_GET['url'], array()));
     } else {
-        SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter(SimpleSAML_Module::getModuleURL('sbcasserver/loggedOut.php'), array('url' => $url)));
+        SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter(SimpleSAML_Module::getModuleURL('sbcasserver/loggedOut.php'),
+            array_key_exists('url', $_GET) ? array('url' => $_GET['url']) : array()));
     }
 }
 ?>

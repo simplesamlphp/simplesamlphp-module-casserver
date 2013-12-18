@@ -20,8 +20,6 @@
 *
 */
 
-assert('is_string($this->data["url"])');
-
 $this->data['header'] = $this->t('{sbcasserver:sbcasserver:loggedout_header}');
 
 $this->includeAtTemplateBase('includes/header.php');
@@ -33,9 +31,11 @@ $this->includeAtTemplateBase('includes/header.php');
         ?>
     </p>
 
-    <p>
-        <a href="<?php echo($this->data["url"]) ?>"><?php echo($this->t('{sbcasserver:sbcasserver:continue_heading}')) ?></a>
-    </p>
+<?php
+if (isset($this->data['url'])) {
+    echo('<p><a href="' . $this->data["url"] . '">' . $this->t('{sbcasserver:sbcasserver:continue_heading}') . '</a>');
+}
+?>
 
 <?php
 
