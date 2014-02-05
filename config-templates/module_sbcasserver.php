@@ -34,6 +34,7 @@ $config = array(
 
     'attrname' => 'eduPersonPrincipalName', // 'eduPersonPrincipalName',
     'attributes' => true, // enable transfer of attributes
+    'attributes_to_transfer' => array('eduPersonPrincipalName'), // set of attributes to transfer, defaults to all
 
     'base64attributes' => true,
     'enable_logout' => true,

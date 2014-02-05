@@ -25,7 +25,8 @@ Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
         * Release 5.0.1
         * Fixed a bug where the 'url' parameter was required even when displaying a logged out page.
         * Fixed a bug where attributes were always transferred regardless of the 'attributes' value in
-         module_sbcasserver.php.
+          module_sbcasserver.php.
+        * Added support for specifying which attributes to transfer by listing them in 'attributes_to_transfer'.
 
 2013-11-04 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
         * Release 5.0.0

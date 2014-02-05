@@ -113,7 +113,19 @@ $casUsernameAttribute = $casconfig->getValue('attrname', 'eduPersonPrincipalName
 $userName = $attributes[$casUsernameAttribute][0];
 
 if ($casconfig->getValue('attributes', true)) {
-    $casAttributes = $attributes;
+    $attributesToTransfer = $casconfig->getValue('attributes_to_transfer', array());
+
+    if (sizeof($attributesToTransfer) > 0) {
+        $casAttributes = array();
+
+        foreach ($attributesToTransfer as $key) {
+            if (array_key_exists($key, $attributes)) {
+                $casAttributes[$key] = $attributes[$key];
+            }
+        }
+    } else {
+        $casAttributes = $attributes;
+    }
 } else {
     $casAttributes = array();
 }
