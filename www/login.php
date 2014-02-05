@@ -108,9 +108,20 @@ if (!is_array($sessionTicket) || $forceAuthn) {
 
 $attributes = $as->getAttributes();
 
+$casUsernameAttribute = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
+
+$userName = $attributes[$casUsernameAttribute][0];
+
+if ($casconfig->getValue('attributes', true)) {
+    $casAttributes = $attributes;
+} else {
+    $casAttributes = array();
+}
+
 $serviceTicket = $ticketFactory->createServiceTicket(array('service' => $service,
     'forceAuthn' => $forceAuthn,
-    'attributes' => $attributes,
+    'userName' => $userName,
+    'attributes' => $casAttributes,
     'proxies' => array(),
     'sessionId' => $sessionTicket['id']));
 

@@ -6,6 +6,8 @@
 
 $config = array(
 
+    'authsource' => 'casserver',
+
     'legal_service_urls' => array( //Any service url string matching any of the following prefixes is accepted
         'http://host1.domain:1234/path1',
         'https://host2.domain:5678/path2/path3',
@@ -31,9 +33,8 @@ $config = array(
     ),
 
     'attrname' => 'eduPersonPrincipalName', // 'eduPersonPrincipalName',
-    'attributes' => TRUE, // enable transfer of attributes
+    'attributes' => true, // enable transfer of attributes
 
-    'authsource' => 'casserver',
     'base64attributes' => true,
     'enable_logout' => true,
     'skip_logout_page' => true, //perform a redirect instead of showing a logout page with a link to the location given in the url parameter

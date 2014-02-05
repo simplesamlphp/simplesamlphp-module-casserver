@@ -56,13 +56,9 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
         ) {
             $ticketStore->deleteTicket($ticketId);
 
-            $usernameField = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
-
             $attributes = $serviceTicket['attributes'];
 
-            if (!$ticketFactory->isExpired($serviceTicket) && $serviceTicket['service'] == $service && (!$forceAuthn || $serviceTicket['forceAuthn']) &&
-                array_key_exists($usernameField, $attributes)
-            ) {
+            if (!$ticketFactory->isExpired($serviceTicket) && $serviceTicket['service'] == $service && (!$forceAuthn || $serviceTicket['forceAuthn'])) {
                 $protocol->setAttributes($attributes);
 
                 if (isset($_GET['pgtUrl'])) {
@@ -72,6 +68,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
 
                     if (!is_null($sessionTicket) && $ticketFactory->isSessionTicket($sessionTicket) && !$ticketFactory->isExpired($sessionTicket)) {
                         $proxyGrantingTicket = $ticketFactory->createProxyGrantingTicket(array(
+                            'userName' => $serviceTicket['userName'],
                             'attributes' => $attributes,
                             'forceAuthn' => false,
                             'proxies' => array_merge(array($service), $serviceTicket['proxies']),
@@ -87,7 +84,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                     }
                 }
 
-                echo $protocol->getValidateSuccessResponse($attributes[$usernameField][0]);
+                echo $protocol->getValidateSuccessResponse($serviceTicket['userName']);
             } else {
                 if ($ticketFactory->isExpired($serviceTicket)) {
                     echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'Ticket: ' . $ticketId . ' expired');
@@ -96,10 +93,9 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                 } else if ($serviceTicket['forceAuthn'] != $forceAuthn) {
                     echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'Service was issue from single sign on sesion: ');
                 } else {
-                    SimpleSAML_Logger::debug('sbcasserver:' . $method . ': internal server error. Missing user name attribute: ' .
-                    var_export($usernameField, TRUE));
+                    SimpleSAML_Logger::debug('sbcasserver:' . $method . ': internal server error.');
 
-                    echo $protocol->getValidateFailureResponse('INTERNAL_ERROR', 'Missing user name attribute: ' . $usernameField . ' not found.');
+                    echo $protocol->getValidateFailureResponse('INTERNAL_ERROR', 'Unknown internal error');
                 }
             }
         } else if (is_null($serviceTicket)) {
