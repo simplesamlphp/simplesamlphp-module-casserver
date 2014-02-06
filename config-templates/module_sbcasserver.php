@@ -8,6 +8,12 @@ $config = array(
 
     'authsource' => 'casserver',
 
+    /* Scopes are named sets of entityIDs to be used for scoping. If a named scope is provided during login, then the
+       IdPs listed by the disco service will be restricted to entityIDs in the specified set. */
+    'scopes' => array('mobile' => array('https://idp-dbc-library-samldev.statsbiblioteket.dk/saml2/idp/metadata.php',
+        'https://facebook-idp-samldev.statsbiblioteket.dk/saml2/idp/metadata.php',
+        'https://bibzoom-email-idp-samldev.statsbiblioteket.dk/saml2/idp/metadata.php')),
+
     'legal_service_urls' => array( //Any service url string matching any of the following prefixes is accepted
         'http://host1.domain:1234/path1',
         'https://host2.domain:5678/path2/path3',

@@ -27,6 +27,8 @@ Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
         * Fixed a bug where attributes were always transferred regardless of the 'attributes' value in
           module_sbcasserver.php.
         * Added support for specifying which attributes to transfer by listing them in 'attributes_to_transfer'.
+        * Added support for specifying a named subset of IdPs allowing clients to restrict the list of IdPs in the
+          wayf step.
 
 2013-11-04 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
         * Release 5.0.0

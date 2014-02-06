@@ -23,7 +23,8 @@
 *  renew
 *  gateway
 *  entityId
- * language
+*  scope
+*  language
 */
 
 require_once 'utility/urlUtils.php';
@@ -46,6 +47,16 @@ if (!checkServiceURL($service, $legal_service_urls))
 $as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
 
 $session = SimpleSAML_Session::getInstance();
+
+if (array_key_exists('scope', $_GET) && is_string($_GET['scope'])) {
+    $scopes = $casconfig->getValue('scopes', array());
+
+    if (array_key_exists($_GET['scope'], $scopes)) {
+        $idpList = $scopes[$_GET['scope']];
+    } else {
+        throw new Exception('Scope parameter provided to CAS server is not listed as legal scope: [scope] = ' . $_GET['scope']);
+    }
+}
 
 if (array_key_exists('language', $_GET) && is_string($_GET['language'])) {
     SimpleSAML_XHTML_Template::setLanguageCookie($_GET['language']);
@@ -95,6 +106,10 @@ if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewI
 
     if (isset($_GET['entityId'])) {
         $params['saml:idp'] = $_GET['entityId'];
+    }
+
+    if (isset($idpList)) {
+        $params['saml:IDPList'] = $idpList;
     }
 
     $as->login($params);
