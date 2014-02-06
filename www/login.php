@@ -109,7 +109,11 @@ if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewI
     }
 
     if (isset($idpList)) {
-        $params['saml:IDPList'] = $idpList;
+        if (sizeof($idpList) > 1) {
+            $params['saml:IDPList'] = $idpList;
+        } else {
+            $params['saml:idp'] = $idpList[0];
+        }
     }
 
     $as->login($params);
