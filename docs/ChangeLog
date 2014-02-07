@@ -22,7 +22,7 @@
 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
 
 ????-??-?? Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
-        * Release 5.0.1
+        * Release 5.1.0
         * Fixed a bug where the 'url' parameter was required even when displaying a logged out page.
         * Fixed a bug where attribute transfer could not be disabled.
         * Added support for specifying which attributes to transfer.
