@@ -78,10 +78,8 @@ class sspmod_sbcasserver_Cas_Protocol_Cas20
             $casAttributes = $xmlDocument->createElement('cas:attributes');
 
             foreach ($this->attributes as $name => $values) {
-                if (!preg_match('/urn:oid/', $name)) {
-                    foreach ($values as $value) {
-                        $casAttributes->appendChild($this->generateCas20Attribute($xmlDocument, $name, $value));
-                    }
+                foreach ($values as $value) {
+                    $casAttributes->appendChild($this->generateCas20Attribute($xmlDocument, $name, $value));
                 }
             }
 
