@@ -29,10 +29,9 @@
 
 require_once 'utility/urlUtils.php';
 
-if (!array_key_exists('service', $_GET))
-    throw new Exception('Required URL query parameter [service] not provided. (CAS Server)');
-
-$service = sanitize($_GET['service']);
+if (isset($_GET['service'])) {
+    $service = sanitize($_GET['service']);
+}
 
 $forceAuthn = isset($_GET['renew']) && sanitize($_GET['renew']);
 $isPassive = isset($_GET['gateway']) && sanitize($_GET['gateway']);
@@ -41,7 +40,7 @@ $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 
 $legal_service_urls = $casconfig->getValue('legal_service_urls');
 
-if (!checkServiceURL($service, $legal_service_urls))
+if (isset($service) && !checkServiceURL($service, $legal_service_urls))
     throw new Exception('Service parameter provided to CAS server is not listed as a legal service: [service] = ' . $service);
 
 $as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
@@ -125,40 +124,7 @@ if (!is_array($sessionTicket) || $forceAuthn) {
     $ticketStore->addTicket($sessionTicket);
 }
 
-$attributes = $as->getAttributes();
-
-$casUsernameAttribute = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
-
-$userName = $attributes[$casUsernameAttribute][0];
-
-if ($casconfig->getValue('attributes', true)) {
-    $attributesToTransfer = $casconfig->getValue('attributes_to_transfer', array());
-
-    if (sizeof($attributesToTransfer) > 0) {
-        $casAttributes = array();
-
-        foreach ($attributesToTransfer as $key) {
-            if (array_key_exists($key, $attributes)) {
-                $casAttributes[$key] = $attributes[$key];
-            }
-        }
-    } else {
-        $casAttributes = $attributes;
-    }
-} else {
-    $casAttributes = array();
-}
-
-$serviceTicket = $ticketFactory->createServiceTicket(array('service' => $service,
-    'forceAuthn' => $forceAuthn,
-    'userName' => $userName,
-    'attributes' => $casAttributes,
-    'proxies' => array(),
-    'sessionId' => $sessionTicket['id']));
-
-$ticketStore->addTicket($serviceTicket);
-
-$parameters = array('ticket' => $serviceTicket['id']);
+$parameters = array();
 
 if (array_key_exists('language', $_GET)) {
     $oldLanguagePreferred = SimpleSAML_XHTML_Template::getLanguageCookie();
@@ -172,5 +138,44 @@ if (array_key_exists('language', $_GET)) {
     }
 }
 
-SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter($_GET['service'], $parameters));
+if (isset($service)) {
+    $attributes = $as->getAttributes();
+
+    $casUsernameAttribute = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
+
+    $userName = $attributes[$casUsernameAttribute][0];
+
+    if ($casconfig->getValue('attributes', true)) {
+        $attributesToTransfer = $casconfig->getValue('attributes_to_transfer', array());
+
+        if (sizeof($attributesToTransfer) > 0) {
+            $casAttributes = array();
+
+            foreach ($attributesToTransfer as $key) {
+                if (array_key_exists($key, $attributes)) {
+                    $casAttributes[$key] = $attributes[$key];
+                }
+            }
+        } else {
+            $casAttributes = $attributes;
+        }
+    } else {
+        $casAttributes = array();
+    }
+
+    $serviceTicket = $ticketFactory->createServiceTicket(array('service' => $service,
+        'forceAuthn' => $forceAuthn,
+        'userName' => $userName,
+        'attributes' => $casAttributes,
+        'proxies' => array(),
+        'sessionId' => $sessionTicket['id']));
+
+    $ticketStore->addTicket($serviceTicket);
+
+    $parameters['ticket'] = $serviceTicket['id'];
+
+    SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter($_GET['service'], $parameters));
+} else {
+    SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter(SimpleSAML_Module::getModuleURL('sbcasserver/loggedIn.php'), $parameters));
+}
 ?>

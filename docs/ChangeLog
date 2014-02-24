@@ -21,6 +21,11 @@
 
 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
 
+????-??-?? Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
+        * Release 5.2.0
+        * Removed hardcoded removal of attributes starting with urn:oid.
+        * Added a logged in landing page in case the client does not provide a service url.
+
 2014-02-07 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
         * Release 5.1.0
         * Fixed a bug where the 'url' parameter was required even when displaying a logged out page.
