@@ -24,6 +24,7 @@ class sspmod_sbcasserver_Cas_Protocol_Cas20
 {
     private $sendAttributes;
     private $base64EncodeAttributes;
+    private $base64IndicatorAttribute;
     private $attributes = array();
     private $proxyGrantingTicketIOU = null;
 
@@ -31,6 +32,7 @@ class sspmod_sbcasserver_Cas_Protocol_Cas20
     {
         $this->sendAttributes = $config->getValue('attributes', false);
         $this->base64EncodeAttributes = $config->getValue('base64attributes', false);
+        $this->base64IndicatorAttribute = $config->getValue('base64_attributes_indicator_attribute', NULL);
     }
 
     public function setAttributes($attributes)
@@ -81,6 +83,11 @@ class sspmod_sbcasserver_Cas_Protocol_Cas20
                 foreach ($values as $value) {
                     $casAttributes->appendChild($this->generateCas20Attribute($xmlDocument, $name, $value));
                 }
+            }
+
+            if (!is_null($this->base64IndicatorAttribute)) {
+                $casAttributes->appendChild($this->generateCas20Attribute($xmlDocument, $this->base64IndicatorAttribute,
+                    $this->base64EncodeAttributes ? "true" : "false"));
             }
 
             $casSuccess->appendChild($casAttributes);

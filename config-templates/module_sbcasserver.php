@@ -43,6 +43,10 @@ $config = array(
     'attributes_to_transfer' => array('eduPersonPrincipalName'), // set of attributes to transfer, defaults to all
 
     'base64attributes' => true, //base64 encode transferred attributes, defaults to false
+    'base64_attributes_indicator_attribute' => 'base64Attributes', /*add an attribute with the value of the base64attributes
+                                                                     configuration parameter to the set of transferred attributes.
+                                                                     Defaults to not adding an indicator attribute. */
+
     'enable_logout' => true, //enable CAS logout, defaults to false
     'skip_logout_page' => true, /*perform a redirect instead of showing a logout page with a link to the location
                                   given in the url parameter, defaults to false. Skipping the logout page makes the
