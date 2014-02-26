@@ -81,7 +81,7 @@ class sspmod_sbcasserver_Cas_Protocol_Cas20
 
             foreach ($this->attributes as $name => $values) {
                 foreach ($values as $value) {
-                    $casAttributes->appendChild($this->generateCas20Attribute($xmlDocument, $name, $value));
+                    $casAttributes->appendChild($this->generateCas20Attribute($xmlDocument, str_replace(':', '_', $name), $value));
                 }
             }
 

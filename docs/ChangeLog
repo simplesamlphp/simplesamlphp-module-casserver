@@ -21,6 +21,10 @@
 
 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
 
+????-??-?? Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
+        * Release 5.2.1
+        * Fixed a bug where attributes containing colons in their names caused serviceValidate to return invalid xml.
+
 2014-02-25 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
         * Release 5.2.0
         * Removed hardcoded removal of attributes starting with urn:oid.
