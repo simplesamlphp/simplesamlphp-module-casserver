@@ -276,5 +276,3 @@ class sspmod_sbcasserver_Cas_Ticket_SQLTicketStore extends sspmod_sbcasserver_Ca
         $query->execute($data);
     }
 }
-
-?>

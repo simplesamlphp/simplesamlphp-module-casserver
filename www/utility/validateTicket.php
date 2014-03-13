@@ -122,4 +122,3 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
 } else {
     echo $protocol->getValidateFailureResponse('INVALID_REQUEST', 'Missing ticket parameter: [ticket]');
 }
-?>

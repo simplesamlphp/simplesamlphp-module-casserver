@@ -33,5 +33,3 @@ abstract class sspmod_sbcasserver_Cas_Ticket_TicketStore
 
     abstract public function deleteTicket($ticketId);
 }
-
-?>

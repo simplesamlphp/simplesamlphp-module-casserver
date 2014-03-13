@@ -180,5 +180,3 @@ class sspmod_sbcasserver_Cas_Protocol_Cas20
         return $attributeElement;
     }
 }
-
-?>

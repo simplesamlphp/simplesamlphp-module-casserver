@@ -40,5 +40,3 @@ if (!isset($validFunctions[$function])) {
 }
 
 include(dirname(__FILE__) . '/' . $validFunctions[$function] . '.php');
-
-?>

@@ -33,5 +33,3 @@ function sanitize($parameter)
 {
     return preg_replace('/;jsessionid=.*/', '', $parameter);
 }
-
-?>

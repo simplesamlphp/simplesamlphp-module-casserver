@@ -69,5 +69,3 @@ if ($as->isAuthenticated()) {
             array_key_exists('url', $_GET) ? array('url' => $_GET['url']) : array()));
     }
 }
-?>
-

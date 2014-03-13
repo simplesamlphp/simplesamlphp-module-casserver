@@ -77,4 +77,3 @@ if (array_key_exists('targetService', $_GET) &&
 } else {
     echo $protocol->getProxyFailureResponse('INVALID_REQUEST', 'Missing proxy granting ticket parameter: [pgt]');
 }
-?>

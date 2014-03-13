@@ -174,4 +174,3 @@ if (isset($_GET['service'])) {
 } else {
     SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter(SimpleSAML_Module::getModuleURL('sbcasserver/loggedIn.php'), $parameters));
 }
-?>

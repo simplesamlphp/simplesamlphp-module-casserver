@@ -61,5 +61,3 @@ class sspmod_sbcasserver_Cas_Ticket_MemCacheTicketStore extends sspmod_sbcasserv
         return $this->prefix . '.' . $ticketId;
     }
 }
-
-?>

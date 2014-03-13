@@ -72,5 +72,3 @@ class sspmod_sbcasserver_Cas_Ticket_FileSystemTicketStore extends sspmod_sbcasse
         }
     }
 }
-
-?>

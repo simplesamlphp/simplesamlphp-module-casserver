@@ -89,5 +89,3 @@ class sspmod_sbcasserver_Cas_Ticket_TicketFactory
         return !array_key_exists('validBefore', $ticket) || $ticket['validBefore'] < time();
     }
 }
-
-?>

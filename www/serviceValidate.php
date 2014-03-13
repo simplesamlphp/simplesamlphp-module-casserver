@@ -28,5 +28,3 @@
 $method = 'serviceValidate';
 
 require_once 'utility/validateTicket.php';
-
-?>

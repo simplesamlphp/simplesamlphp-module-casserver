@@ -36,5 +36,3 @@ class sspmod_sbcasserver_Cas_Protocol_Cas10
         return "no\n";
     }
 }
-
-?>
