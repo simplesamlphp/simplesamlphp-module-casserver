@@ -21,6 +21,11 @@
 
 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
 
+
+????-??-?? Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
+        * Release 5.2.2
+        * Fixed a bug where the sanitized forms of url parameters were used for more than validation.
+
 2014-02-27 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
         * Release 5.2.1
         * Fixed a bug where attributes containing colons in their names caused serviceValidate to return invalid xml.
