@@ -36,10 +36,7 @@ $protocolClass = SimpleSAML_Module::resolveClass('sbcasserver:Cas20', 'Cas_Proto
 $protocol = new $protocolClass($casconfig);
 
 if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
-    $ticketId = sanitize($_GET['ticket']);
-    $service = sanitize($_GET['service']);
-
-    $forceAuthn = isset($_GET['renew']) && sanitize($_GET['renew']);
+    $forceAuthn = isset($_GET['renew']) && $_GET['renew'];
 
     try {
         $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore'));
@@ -49,29 +46,35 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
         $ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
         $ticketFactory = new $ticketFactoryClass($casconfig);
 
-        $serviceTicket = $ticketStore->getTicket($ticketId);
+        $serviceTicket = $ticketStore->getTicket($_GET['ticket']);
 
         if (!is_null($serviceTicket) && ($ticketFactory->isServiceTicket($serviceTicket) ||
                 ($ticketFactory->isProxyTicket($serviceTicket) && $method == 'proxyValidate'))
         ) {
-            $ticketStore->deleteTicket($ticketId);
+            $ticketStore->deleteTicket($_GET['ticket']);
 
             $attributes = $serviceTicket['attributes'];
 
-            if (!$ticketFactory->isExpired($serviceTicket) && $serviceTicket['service'] == $service && (!$forceAuthn || $serviceTicket['forceAuthn'])) {
+            if (!$ticketFactory->isExpired($serviceTicket) &&
+                sanitize($serviceTicket['service']) == sanitize($_GET['service']) &&
+                (!$forceAuthn || $serviceTicket['forceAuthn'])
+            ) {
+
                 $protocol->setAttributes($attributes);
 
                 if (isset($_GET['pgtUrl'])) {
                     $sessionTicket = $ticketStore->getTicket($serviceTicket['sessionId']);
 
-                    $pgtUrl = sanitize($_GET['pgtUrl']);
+                    $pgtUrl = $_GET['pgtUrl'];
 
-                    if (!is_null($sessionTicket) && $ticketFactory->isSessionTicket($sessionTicket) && !$ticketFactory->isExpired($sessionTicket)) {
+                    if (!is_null($sessionTicket) && $ticketFactory->isSessionTicket($sessionTicket) &&
+                        !$ticketFactory->isExpired($sessionTicket)
+                    ) {
                         $proxyGrantingTicket = $ticketFactory->createProxyGrantingTicket(array(
                             'userName' => $serviceTicket['userName'],
                             'attributes' => $attributes,
                             'forceAuthn' => false,
-                            'proxies' => array_merge(array($service), $serviceTicket['proxies']),
+                            'proxies' => array_merge(array($_GET['service']), $serviceTicket['proxies']),
                             'sessionId' => $serviceTicket['sessionId']));
                         try {
                             SimpleSAML_Utilities::fetch($pgtUrl . '?pgtIou=' . $proxyGrantingTicket['iou'] . '&pgtId=' . $proxyGrantingTicket['id']);
@@ -87,9 +90,9 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                 echo $protocol->getValidateSuccessResponse($serviceTicket['userName']);
             } else {
                 if ($ticketFactory->isExpired($serviceTicket)) {
-                    echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'Ticket: ' . $ticketId . ' expired');
-                } else if ($serviceTicket['service'] != $service) {
-                    echo $protocol->getValidateFailureResponse('INVALID_SERVICE', 'Expected: ' . $serviceTicket['service'] . ' was: ' . $service);
+                    echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'Ticket: ' . $_GET['ticket'] . ' expired');
+                } else if (sanitize($serviceTicket['service']) != sanitize($_GET['service'])) {
+                    echo $protocol->getValidateFailureResponse('INVALID_SERVICE', 'Expected: ' . $serviceTicket['service'] . ' was: ' . $_GET['service']);
                 } else if ($serviceTicket['forceAuthn'] != $forceAuthn) {
                     echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'Service was issue from single sign on sesion: ');
                 } else {
@@ -99,14 +102,14 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                 }
             }
         } else if (is_null($serviceTicket)) {
-            echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'ticket: ' . $ticketId . ' not recognized');
+            echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'ticket: ' . $_GET['ticket'] . ' not recognized');
         } else if ($ticketFactory->isProxyTicket($serviceTicket) && $method == 'serviceValidate') {
-            echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'Ticket: ' . $ticketId . ' is a proxy ticket. Use proxyValidate instead.');
+            echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'Ticket: ' . $_GET['ticket'] . ' is a proxy ticket. Use proxyValidate instead.');
         } else {
             SimpleSAML_Logger::debug('sbcasserver:serviceValidate: internal server error. ' .
             var_export($e->getMessage(), TRUE));
 
-            echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'ticket: ' . $ticketId . ' is not a service ticket');
+            echo $protocol->getValidateFailureResponse('INVALID_TICKET', 'ticket: ' . $_GET['ticket'] . ' is not a service ticket');
         }
 
     } catch (Exception $e) {

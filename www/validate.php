@@ -35,10 +35,7 @@ $protocolClass = SimpleSAML_Module::resolveClass('sbcasserver:Cas10', 'Cas_Proto
 $protocol = new $protocolClass($casconfig);
 
 if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
-    $ticketId = sanitize($_GET['ticket']);
-    $service = sanitize($_GET['service']);
-
-    $forceAuthn = isset($_GET['renew']) && sanitize($_GET['renew']);
+    $forceAuthn = isset($_GET['renew']) && $_GET['renew'];
 
     try {
         /* Instantiate ticket store */
@@ -49,15 +46,17 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
         $ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
         $ticketFactory = new $ticketFactoryClass($casconfig);
 
-        $serviceTicket = $ticketStore->getTicket($ticketId);
+        $serviceTicket = $ticketStore->getTicket($_GET['ticket']);
 
         if (!is_null($serviceTicket) && $ticketFactory->isServiceTicket($serviceTicket)) {
 
-            $ticketStore->deleteTicket($ticketId);
+            $ticketStore->deleteTicket($_GET['ticket']);
 
             $usernameField = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
 
-            if (!$ticketFactory->isExpired($serviceTicket) && $serviceTicket['service'] == $service && (!$forceAuthn || $serviceTicket['forceAuthn']) &&
+            if (!$ticketFactory->isExpired($serviceTicket) &&
+                sanitize($serviceTicket['service']) == sanitize($_GET['service']) &&
+                (!$forceAuthn || $serviceTicket['forceAuthn']) &&
                 array_key_exists($usernameField, $serviceTicket['attributes'])
             ) {
                 echo $protocol->getValidateSuccessResponse($serviceTicket['attributes'][$usernameField][0]);

@@ -29,19 +29,15 @@
 
 require_once 'utility/urlUtils.php';
 
-if (isset($_GET['service'])) {
-    $service = sanitize($_GET['service']);
-}
-
-$forceAuthn = isset($_GET['renew']) && sanitize($_GET['renew']);
-$isPassive = isset($_GET['gateway']) && sanitize($_GET['gateway']);
+$forceAuthn = isset($_GET['renew']) && $_GET['renew'];
+$isPassive = isset($_GET['gateway']) && $_GET['gateway'];
 
 $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 
 $legal_service_urls = $casconfig->getValue('legal_service_urls');
 
-if (isset($service) && !checkServiceURL($service, $legal_service_urls))
-    throw new Exception('Service parameter provided to CAS server is not listed as a legal service: [service] = ' . $service);
+if (isset($_GET['service']) && !checkServiceURL(sanitize($_GET['service']), $legal_service_urls))
+    throw new Exception('Service parameter provided to CAS server is not listed as a legal service: [service] = ' . $_GET['service']);
 
 $as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
 
@@ -138,7 +134,7 @@ if (array_key_exists('language', $_GET)) {
     }
 }
 
-if (isset($service)) {
+if (isset($_GET['service'])) {
     $attributes = $as->getAttributes();
 
     $casUsernameAttribute = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
@@ -163,7 +159,7 @@ if (isset($service)) {
         $casAttributes = array();
     }
 
-    $serviceTicket = $ticketFactory->createServiceTicket(array('service' => $service,
+    $serviceTicket = $ticketFactory->createServiceTicket(array('service' => $_GET['service'],
         'forceAuthn' => $forceAuthn,
         'userName' => $userName,
         'attributes' => $casAttributes,
