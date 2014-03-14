@@ -36,7 +36,11 @@ $validFunctions = array(
 $function = substr($_SERVER['PATH_INFO'], 1);
 
 if (!isset($validFunctions[$function])) {
-    throw new SimpleSAML_Error_NotFound('Not a valid function for cas.php.');
+    $message = 'Not a valid function for cas.php.';
+
+    SimpleSAML_Logger::debug('sbcasserver:' . $message);
+
+    throw new Exception($message);
 }
 
 include(dirname(__FILE__) . '/' . $validFunctions[$function] . '.php');

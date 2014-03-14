@@ -63,17 +63,41 @@ if (array_key_exists('targetService', $_GET) &&
 
             echo $protocol->getProxySuccessResponse($proxyTicket['id']);
         } else {
-            echo $protocol->getProxyFailureResponse('BAD_PGT', 'Ticket: ' . $_GET['pgt'] . ' has expired');
+            $message = 'Ticket ' . var_export($_GET['pgt'], true) . ' has expired';
+
+            SimpleSAML_Logger::debug('sbcasserver:' . $message);
+
+            echo $protocol->getProxyFailureResponse('BAD_PGT', $message);
         }
     } else if (!$ticketFactory->isProxyGrantingTicket($proxyGrantingTicket)) {
-        echo $protocol->getProxyFailureResponse('BAD_PGT', 'Not a valid proxy granting ticket id: ' . $_GET['pgt']);
+        $message = 'Not a valid proxy granting ticket id: ' . var_export($_GET['pgt'], true);
+
+        SimpleSAML_Logger::debug('sbcasserver:' . $message);
+
+        echo $protocol->getProxyFailureResponse('BAD_PGT', $message);
     } else {
-        echo $protocol->getProxyFailureResponse('BAD_PGT', 'Ticket: ' . $_GET['pgt'] . ' not recognized');
+        $message = 'Ticket ' . var_export($_GET['pgt'], true) . ' not recognized';
+
+        SimpleSAML_Logger::debug('sbcasserver:' . $message);
+
+        echo $protocol->getProxyFailureResponse('BAD_PGT', $message);
     }
 } else if (!array_key_exists('targetService', $_GET)) {
-    echo $protocol->getProxyFailureResponse('INVALID_REQUEST', 'Missing target service parameter [targetService]');
+    $message = 'Missing target service parameter [targetService]';
+
+    SimpleSAML_Logger::debug('sbcasserver:' . $message);
+
+    echo $protocol->getProxyFailureResponse('INVALID_REQUEST', $message);
 } else if (!checkServiceURL(sanitize($_GET['targetService']), $legal_target_service_urls)) {
-    echo $protocol->getProxyFailureResponse('INVALID_REQUEST', 'Target service parameter not listed as a legal service: [targetService] = ' . $_GET['targetService']);
+    $message = 'Target service parameter not listed as a legal service: [targetService] = ' . var_export($_GET['targetService'], true);
+
+    SimpleSAML_Logger::debug('sbcasserver:' . $message);
+
+    echo $protocol->getProxyFailureResponse('INVALID_REQUEST', $message);
 } else {
-    echo $protocol->getProxyFailureResponse('INVALID_REQUEST', 'Missing proxy granting ticket parameter: [pgt]');
+    $message = 'Missing proxy granting ticket parameter: [pgt]';
+
+    SimpleSAML_Logger::debug('sbcasserver:' . $message);
+
+    echo $protocol->getProxyFailureResponse('INVALID_REQUEST', $message);
 }

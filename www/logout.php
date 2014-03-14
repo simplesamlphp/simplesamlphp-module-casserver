@@ -26,16 +26,22 @@
 $casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
 
 if (!$casconfig->getValue('enable_logout', false)) {
-    SimpleSAML_Logger::debug('sbcasserver:logout: logout disabled in module_sbcasserver.php');
+    $message = 'Logout not allowed';
 
-    throw new Exception('Logout not allowed');
+    SimpleSAML_Logger::debug('sbcasserver:' . $message);
+
+    throw new Exception($message);
 }
 
 $skipLogoutPage = $casconfig->getValue('skip_logout_page', false);
 
-if ($skipLogoutPage && !array_key_exists('url', $_GET))
-    throw new Exception('Required URL query parameter [url] not provided. (CAS Server)');
+if ($skipLogoutPage && !array_key_exists('url', $_GET)) {
+    $message = 'Required URL query parameter [url] not provided. (CAS Server)';
 
+    SimpleSAML_Logger::debug('sbcasserver:' . $message);
+
+    throw new Exception($message);
+}
 /* Load simpleSAMLphp metadata */
 
 $as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
@@ -51,7 +57,7 @@ if (!is_null($session)) {
 }
 
 if ($as->isAuthenticated()) {
-    SimpleSAML_Logger::debug('sbcasserver:logout: performing a real logout');
+    SimpleSAML_Logger::debug('sbcasserver: performing a real logout');
 
     if ($casconfig->getValue('skip_logout_page', false)) {
         $as->logout($_GET['url']);
@@ -60,7 +66,7 @@ if ($as->isAuthenticated()) {
             array_key_exists('url', $_GET) ? array('url' => $_GET['url']) : array()));
     }
 } else {
-    SimpleSAML_Logger::debug('sbcasserver:logout: no session to log out of, performing redirect');
+    SimpleSAML_Logger::debug('sbcasserver: no session to log out of, performing redirect');
 
     if ($casconfig->getValue('skip_logout_page', false)) {
         SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter($_GET['url'], array()));

@@ -61,21 +61,47 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
             ) {
                 echo $protocol->getValidateSuccessResponse($serviceTicket['attributes'][$usernameField][0]);
             } else if (!array_key_exists($usernameField, $serviceTicket['attributes'])) {
-                SimpleSAML_Logger::debug('sbcasserver:validate: internal server error. Missing user name attribute: ' .
+                SimpleSAML_Logger::error('sbcasserver:validate: internal server error. Missing user name attribute: ' .
                 var_export($usernameField, TRUE));
 
                 echo $protocol->getValidateFailureResponse();
             } else {
+                if ($ticketFactory->isExpired($serviceTicket)) {
+                    $message = 'Ticket has ' . var_export($_GET['ticket'], true) . ' expired';
+                } else if (sanitize($serviceTicket['service']) == sanitize($_GET['service'])) {
+                    $message = 'Mismatching service parameters: expected ' . var_export($serviceTicket['service'], true) .
+                        ' but was: ' . var_export($_GET['service'], true);
+                } else {
+                    $message = 'Ticket was issue from single sign on session';
+                }
+                SimpleSAML_Logger::debug('sbcasserver:' . $message);
+
                 echo $protocol->getValidateFailureResponse();
             }
         } else {
+            if (is_null($serviceTicket)) {
+                $message = 'ticket: ' . var_export($_GET['ticket'], true) . ' not recognized';
+            } else {
+                $message = 'ticket: ' . var_export($_GET['ticket'], true) . ' is not a service ticket';
+            }
+
+            SimpleSAML_Logger::debug('sbcasserver:' . $message);
+
             echo $protocol->getValidateFailureResponse();
         }
     } catch (Exception $e) {
-        SimpleSAML_Logger::debug('sbcasserver:validate: internal server error. ' . var_export($e->getMessage(), TRUE));
+        SimpleSAML_Logger::error('sbcasserver:validate: internal server error. ' . var_export($e->getMessage(), TRUE));
 
         echo $protocol->getValidateFailureResponse();
     }
 } else {
+    if (!array_key_exists('service', $_GET)) {
+        $message = 'Missing service parameter: [service]';
+    } else {
+        $message = 'Missing ticket parameter: [ticket]';
+    }
+
+    SimpleSAML_Logger::debug('sbcasserver:' . $message);
+
     echo $protocol->getValidateFailureResponse();
 }
