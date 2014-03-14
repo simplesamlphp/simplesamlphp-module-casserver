@@ -31,5 +31,5 @@ function checkServiceURL($service, array $legal_service_urls)
 
 function sanitize($parameter)
 {
-    return preg_replace('/;jsessionid=.*/', '', $parameter);
+    return preg_replace('/;jsessionid=.*[^?].*$/', '', preg_replace('/;jsessionid=.*[?]/', '?', $parameter));
 }

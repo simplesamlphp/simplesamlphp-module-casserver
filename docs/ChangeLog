@@ -25,6 +25,7 @@ Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
 ????-??-?? Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
         * Release 5.2.2
         * Fixed a bug where the sanitized forms of url parameters were used for more than validation.
+        * Fixed a bug in the sanitizer logic to remove ';jsessionid' from urls.
 
 2014-02-27 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
         * Release 5.2.1
