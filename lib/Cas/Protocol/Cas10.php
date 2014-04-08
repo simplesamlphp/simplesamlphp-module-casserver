@@ -33,6 +33,6 @@ class sspmod_sbcasserver_Cas_Protocol_Cas10
 
     public function getValidateFailureResponse()
     {
-        return "no\n";
+        return "no\n\n";
     }
 }
