@@ -22,7 +22,8 @@
 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
 
 
-????-??-?? Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
+2014-10-15 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
+        * Release 5.2.3
         * Added a missing linefeed character in the CAS 1.0 ticket validation failure response.
 
 2014-03-17 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
