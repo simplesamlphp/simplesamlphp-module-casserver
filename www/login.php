@@ -179,7 +179,7 @@ if (isset($_GET['service'])) {
 
     $parameters['ticket'] = $serviceTicket['id'];
 
-    SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter($_GET['service'], $parameters));
+    SimpleSAML_Utilities::redirectTrustedURL(SimpleSAML_Utilities::addURLparameter($_GET['service'], $parameters));
 } else {
-    SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter(SimpleSAML_Module::getModuleURL('casserver/loggedIn.php'), $parameters));
+    SimpleSAML_Utilities::redirectTrustedURL(SimpleSAML_Utilities::addURLparameter(SimpleSAML_Module::getModuleURL('casserver/loggedIn.php'), $parameters));
 }
