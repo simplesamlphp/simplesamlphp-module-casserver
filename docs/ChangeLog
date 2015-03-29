@@ -1,5 +1,5 @@
 /*
-*    simpleSAMLphp-sbcasserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
+*    simpleSAMLphp-casserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
 *
 *    Copyright (C) 2013  Bjorn R. Jensen
 *
@@ -19,8 +19,9 @@
 *
 */
 
-Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
-
+2015-03-29 Bjorn Rohde Jensen
+		* Release 6.x.x
+		* Renamed module from sbcasserver to casserver
 
 2014-10-15 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
         * Release 5.2.3

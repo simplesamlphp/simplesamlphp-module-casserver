@@ -1,6 +1,6 @@
 <?php
 /*
-*    simpleSAMLphp-sbcasserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
+*    simpleSAMLphp-casserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
 *
 *    Copyright (C) 2013  Bjorn R. Jensen
 *
@@ -38,7 +38,7 @@ $function = substr($_SERVER['PATH_INFO'], 1);
 if (!isset($validFunctions[$function])) {
     $message = 'Not a valid function for cas.php.';
 
-    SimpleSAML_Logger::debug('sbcasserver:' . $message);
+    SimpleSAML_Logger::debug('casserver:' . $message);
 
     throw new Exception($message);
 }

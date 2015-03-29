@@ -1,6 +1,6 @@
 <?php
 /*
-*    simpleSAMLphp-sbcasserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
+*    simpleSAMLphp-casserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
 *
 *    Copyright (C) 2013  Bjorn R. Jensen
 *
@@ -26,10 +26,10 @@
 
 require_once 'utility/urlUtils.php';
 
-$casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
+$casconfig = SimpleSAML_Configuration::getConfig('module_casserver.php');
 
 /* Instantiate protocol handler */
-$protocolClass = SimpleSAML_Module::resolveClass('sbcasserver:Cas20', 'Cas_Protocol');
+$protocolClass = SimpleSAML_Module::resolveClass('casserver:Cas20', 'Cas_Protocol');
 $protocol = new $protocolClass($casconfig);
 
 $legal_target_service_urls = $casconfig->getValue('legal_target_service_urls', array());
@@ -38,11 +38,11 @@ if (array_key_exists('targetService', $_GET) &&
     checkServiceURL(sanitize($_GET['targetService']), $legal_target_service_urls) && array_key_exists('pgt', $_GET)
 ) {
 
-    $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore'));
+    $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'casserver:FileSystemTicketStore'));
     $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
     $ticketStore = new $ticketStoreClass($casconfig);
 
-    $ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
+    $ticketFactoryClass = SimpleSAML_Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
     $ticketFactory = new $ticketFactoryClass($casconfig);
 
     $proxyGrantingTicket = $ticketStore->getTicket($_GET['pgt']);
@@ -65,39 +65,39 @@ if (array_key_exists('targetService', $_GET) &&
         } else {
             $message = 'Ticket ' . var_export($_GET['pgt'], true) . ' has expired';
 
-            SimpleSAML_Logger::debug('sbcasserver:' . $message);
+            SimpleSAML_Logger::debug('casserver:' . $message);
 
             echo $protocol->getProxyFailureResponse('BAD_PGT', $message);
         }
     } else if (!$ticketFactory->isProxyGrantingTicket($proxyGrantingTicket)) {
         $message = 'Not a valid proxy granting ticket id: ' . var_export($_GET['pgt'], true);
 
-        SimpleSAML_Logger::debug('sbcasserver:' . $message);
+        SimpleSAML_Logger::debug('casserver:' . $message);
 
         echo $protocol->getProxyFailureResponse('BAD_PGT', $message);
     } else {
         $message = 'Ticket ' . var_export($_GET['pgt'], true) . ' not recognized';
 
-        SimpleSAML_Logger::debug('sbcasserver:' . $message);
+        SimpleSAML_Logger::debug('casserver:' . $message);
 
         echo $protocol->getProxyFailureResponse('BAD_PGT', $message);
     }
 } else if (!array_key_exists('targetService', $_GET)) {
     $message = 'Missing target service parameter [targetService]';
 
-    SimpleSAML_Logger::debug('sbcasserver:' . $message);
+    SimpleSAML_Logger::debug('casserver:' . $message);
 
     echo $protocol->getProxyFailureResponse('INVALID_REQUEST', $message);
 } else if (!checkServiceURL(sanitize($_GET['targetService']), $legal_target_service_urls)) {
     $message = 'Target service parameter not listed as a legal service: [targetService] = ' . var_export($_GET['targetService'], true);
 
-    SimpleSAML_Logger::debug('sbcasserver:' . $message);
+    SimpleSAML_Logger::debug('casserver:' . $message);
 
     echo $protocol->getProxyFailureResponse('INVALID_REQUEST', $message);
 } else {
     $message = 'Missing proxy granting ticket parameter: [pgt]';
 
-    SimpleSAML_Logger::debug('sbcasserver:' . $message);
+    SimpleSAML_Logger::debug('casserver:' . $message);
 
     echo $protocol->getProxyFailureResponse('INVALID_REQUEST', $message);
 }

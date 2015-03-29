@@ -1,6 +1,6 @@
 <?php
 /*
-*    simpleSAMLphp-sbcasserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
+*    simpleSAMLphp-casserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
 *
 *    Copyright (C) 2013  Bjorn R. Jensen
 *
@@ -20,7 +20,7 @@
 *
 */
 
-class sspmod_sbcasserver_Cas_Ticket_SQLTicketStore extends sspmod_sbcasserver_Cas_Ticket_TicketStore
+class sspmod_casserver_Cas_Ticket_SQLTicketStore extends sspmod_casserver_Cas_Ticket_TicketStore
 {
     public $pdo;
     public $driver;
@@ -164,7 +164,7 @@ class sspmod_sbcasserver_Cas_Ticket_SQLTicketStore extends sspmod_sbcasserver_Ca
                 case '23505': /* PostgreSQL */
                     break;
                 default:
-                    SimpleSAML_Logger::error('sbcasserver: Error while saving data: ' . $e->getMessage());
+                    SimpleSAML_Logger::error('casserver: Error while saving data: ' . $e->getMessage());
                     throw $e;
             }
         }

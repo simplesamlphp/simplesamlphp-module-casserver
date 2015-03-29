@@ -1,6 +1,6 @@
 <?php
 /*
-*    simpleSAMLphp-sbcasserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
+*    simpleSAMLphp-casserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
 *
 *    Copyright (C) 2013  Bjorn R. Jensen
 *
@@ -24,7 +24,7 @@ session_cache_limiter('nocache');
 
 $globalConfig = SimpleSAML_Configuration::getInstance();
 
-$t = new SimpleSAML_XHTML_Template($globalConfig, 'sbcasserver:loggedOut.php');
+$t = new SimpleSAML_XHTML_Template($globalConfig, 'casserver:loggedOut.php');
 
 if (array_key_exists('url', $_GET)) {
     $t->data['url'] = $_GET['url'];

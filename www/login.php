@@ -1,6 +1,6 @@
 <?php
 /*
-*    simpleSAMLphp-sbcasserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
+*    simpleSAMLphp-casserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
 *
 *    Copyright (C) 2013  Bjorn R. Jensen
 *
@@ -32,14 +32,14 @@ require_once 'utility/urlUtils.php';
 $forceAuthn = isset($_GET['renew']) && $_GET['renew'];
 $isPassive = isset($_GET['gateway']) && $_GET['gateway'];
 
-$casconfig = SimpleSAML_Configuration::getConfig('module_sbcasserver.php');
+$casconfig = SimpleSAML_Configuration::getConfig('module_casserver.php');
 
 $legal_service_urls = $casconfig->getValue('legal_service_urls');
 
 if (isset($_GET['service']) && !checkServiceURL(sanitize($_GET['service']), $legal_service_urls)) {
     $message = 'Service parameter provided to CAS server is not listed as a legal service: [service] = ' . var_export($_GET['service'], true);
 
-    SimpleSAML_Logger::debug('sbcasserver:' . $message);
+    SimpleSAML_Logger::debug('casserver:' . $message);
 
     throw new Exception($message);
 }
@@ -56,7 +56,7 @@ if (array_key_exists('scope', $_GET) && is_string($_GET['scope'])) {
     } else {
         $message = 'Scope parameter provided to CAS server is not listed as legal scope: [scope] = ' . var_export($_GET['scope'], true);
 
-        SimpleSAML_Logger::debug('sbcasserver:' . $message);
+        SimpleSAML_Logger::debug('casserver:' . $message);
 
         throw new Exception($message);
     }
@@ -66,11 +66,11 @@ if (array_key_exists('language', $_GET) && is_string($_GET['language'])) {
     SimpleSAML_XHTML_Template::setLanguageCookie($_GET['language']);
 }
 
-$ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'sbcasserver:FileSystemTicketStore'));
+$ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'casserver:FileSystemTicketStore'));
 $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
 $ticketStore = new $ticketStoreClass($casconfig);
 
-$ticketFactoryClass = SimpleSAML_Module::resolveClass('sbcasserver:TicketFactory', 'Cas_Ticket');
+$ticketFactoryClass = SimpleSAML_Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
 $ticketFactory = new $ticketFactoryClass($casconfig);
 
 $sessionTicket = $ticketStore->getTicket($session->getSessionId());
@@ -181,5 +181,5 @@ if (isset($_GET['service'])) {
 
     SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter($_GET['service'], $parameters));
 } else {
-    SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter(SimpleSAML_Module::getModuleURL('sbcasserver/loggedIn.php'), $parameters));
+    SimpleSAML_Utilities::redirect(SimpleSAML_Utilities::addURLparameter(SimpleSAML_Module::getModuleURL('casserver/loggedIn.php'), $parameters));
 }

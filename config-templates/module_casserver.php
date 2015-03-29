@@ -1,6 +1,6 @@
 <?php
 /* 
- * Configuration for the module sbcasserver.
+ * Configuration for the module casserver.
  * 
  */
 
@@ -25,14 +25,14 @@ $config = array(
     ),
 
     'ticketstore' => array( //defaults to filesystem ticket store using the directory 'ticketcache'
-        'class' => 'sbcasserver:FileSystemTicketStore', //Not intended for production
+        'class' => 'casserver:FileSystemTicketStore', //Not intended for production
         'directory' => 'ticketcache',
 
-        //'class' => 'sbcasserver:MemCacheTicketStore',
+        //'class' => 'casserver:MemCacheTicketStore',
         //'prefix' => 'some_prefix',
 
-        //'class' => 'sbcasserver:SQLTicketStore',
-        //'dsn' => 'pgsql:host=localhost;port=5432;dbname=sbcasserver',
+        //'class' => 'casserver:SQLTicketStore',
+        //'dsn' => 'pgsql:host=localhost;port=5432;dbname=casserver',
         //'username' => 'username',
         //'password' => 'password',
         //'prefix' => 'some_prefix',

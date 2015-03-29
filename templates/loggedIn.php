@@ -1,6 +1,6 @@
 <?php
 /*
-*    simpleSAMLphp-sbcasserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
+*    simpleSAMLphp-casserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
 *
 *    Copyright (C) 2013  Bjorn R. Jensen
 *
@@ -20,14 +20,14 @@
 *
 */
 
-$this->data['header'] = $this->t('{sbcasserver:sbcasserver:loggedin_header}');
+$this->data['header'] = $this->t('{casserver:casserver:loggedin_header}');
 
 $this->includeAtTemplateBase('includes/header.php');
 ?>
 
     <p>
         <?php
-        echo $this->t('{sbcasserver:sbcasserver:loggedin_description}')
+        echo $this->t('{casserver:casserver:loggedin_description}')
         ?>
     </p>
 
