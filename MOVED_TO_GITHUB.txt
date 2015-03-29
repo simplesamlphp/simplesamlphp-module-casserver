@@ -1,1 +1,0 @@
-project has been moved to to github under the name: simpleSAMLphp-sbcasserver
