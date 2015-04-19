@@ -1,8 +1,8 @@
 {
-    "name": "shamus13/simplesamlphp-module-casserver",
+    "name": "simplesamlphp/simplesamlphp-module-casserver",
     "description": "CAS 1.0 and 2.0 compliant CAS server module for simpleSAMLphp",
     "keywords": [ "cas", "server", "cas 1.0","cas 2.0" ],
-    "homepage": "https://github.com/shamus13/simplesamlphp-module-casserver",
+    "homepage": "https://github.com/simplesamlphp/simplesamlphp-module-casserver",
     "license": "LGPL-2.1",
     "type": "simplesamlphp-module",
     "require": {
