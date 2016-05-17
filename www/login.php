@@ -37,8 +37,8 @@ $casconfig = SimpleSAML_Configuration::getConfig('module_casserver.php');
 $legal_service_urls = $casconfig->getValue('legal_service_urls');
 
 if (isset($_GET['service']) && !checkServiceURL(sanitize($_GET['service']), $legal_service_urls)) {
-    $message = 'Service parameter provided to CAS server is not listed as a legal service: [service] = ' . var_export($_GET['service'], true);
-
+    $message = 'Service parameter provided to CAS server is not listed as a legal service: [service] = '
+        . var_export($_GET['service'], true);
     SimpleSAML_Logger::debug('casserver:' . $message);
 
     throw new Exception($message);
@@ -54,8 +54,8 @@ if (array_key_exists('scope', $_GET) && is_string($_GET['scope'])) {
     if (array_key_exists($_GET['scope'], $scopes)) {
         $idpList = $scopes[$_GET['scope']];
     } else {
-        $message = 'Scope parameter provided to CAS server is not listed as legal scope: [scope] = ' . var_export($_GET['scope'], true);
-
+        $message = 'Scope parameter provided to CAS server is not listed as legal scope: [scope] = '
+            . var_export($_GET['scope'], true);
         SimpleSAML_Logger::debug('casserver:' . $message);
 
         throw new Exception($message);
@@ -74,8 +74,8 @@ $ticketFactoryClass = SimpleSAML_Module::resolveClass('casserver:TicketFactory',
 $ticketFactory = new $ticketFactoryClass($casconfig);
 
 $sessionTicket = $ticketStore->getTicket($session->getSessionId());
-$sessionRenewId = $sessionTicket ? $sessionTicket['renewId'] : NULL;
-$requestRenewId = isset($_REQUEST['renewId']) ? $_REQUEST['renewId'] : NULL;
+$sessionRenewId = $sessionTicket ? $sessionTicket['renewId'] : null;
+$requestRenewId = isset($_REQUEST['renewId']) ? $_REQUEST['renewId'] : null;
 
 if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewId)) {
     $query = array();
@@ -97,7 +97,7 @@ if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewI
     }
 
     if (array_key_exists('language', $_GET)) {
-        $query['language'] = is_string($_GET['language']) ? $_GET['language'] : NULL;
+        $query['language'] = is_string($_GET['language']) ? $_GET['language'] : null;
     }
 
     $returnUrl = SimpleSAML_Utilities::selfURLNoQuery() . '?' . http_build_query($query);
@@ -168,12 +168,14 @@ if (isset($_GET['service'])) {
         $casAttributes = array();
     }
 
-    $serviceTicket = $ticketFactory->createServiceTicket(array('service' => $_GET['service'],
+    $serviceTicket = $ticketFactory->createServiceTicket(array(
+        'service' => $_GET['service'],
         'forceAuthn' => $forceAuthn,
         'userName' => $userName,
         'attributes' => $casAttributes,
         'proxies' => array(),
-        'sessionId' => $sessionTicket['id']));
+        'sessionId' => $sessionTicket['id']
+    ));
 
     $ticketStore->addTicket($serviceTicket);
 
@@ -181,5 +183,7 @@ if (isset($_GET['service'])) {
 
     SimpleSAML_Utilities::redirectTrustedURL(SimpleSAML_Utilities::addURLparameter($_GET['service'], $parameters));
 } else {
-    SimpleSAML_Utilities::redirectTrustedURL(SimpleSAML_Utilities::addURLparameter(SimpleSAML_Module::getModuleURL('casserver/loggedIn.php'), $parameters));
+    SimpleSAML_Utilities::redirectTrustedURL(
+        SimpleSAML_Utilities::addURLparameter(SimpleSAML_Module::getModuleURL('casserver/loggedIn.php'), $parameters)
+    );
 }

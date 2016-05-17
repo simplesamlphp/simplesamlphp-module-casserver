@@ -35,11 +35,13 @@ class sspmod_casserver_Cas_Ticket_FileSystemTicketStore extends sspmod_casserver
 
         $path = $config->resolvePath($storeConfig['directory']);
 
-        if (!is_dir($path))
+        if (!is_dir($path)) {
             throw new Exception('Directory for CAS Server ticket storage [' . $path . '] does not exists. ');
+        }
 
-        if (!is_writable($path))
+        if (!is_writable($path)) {
             throw new Exception('Directory for CAS Server ticket storage [' . $path . '] is not writable. ');
+        }
 
         $this->pathToTicketDirectory = preg_replace('/\/$/', '', $path);
     }

@@ -60,23 +60,28 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                 array_key_exists($usernameField, $serviceTicket['attributes'])
             ) {
                 echo $protocol->getValidateSuccessResponse($serviceTicket['attributes'][$usernameField][0]);
-            } else if (!array_key_exists($usernameField, $serviceTicket['attributes'])) {
-                SimpleSAML_Logger::error('casserver:validate: internal server error. Missing user name attribute: ' .
-                var_export($usernameField, TRUE));
-
-                echo $protocol->getValidateFailureResponse();
             } else {
-                if ($ticketFactory->isExpired($serviceTicket)) {
-                    $message = 'Ticket has ' . var_export($_GET['ticket'], true) . ' expired';
-                } else if (sanitize($serviceTicket['service']) == sanitize($_GET['service'])) {
-                    $message = 'Mismatching service parameters: expected ' . var_export($serviceTicket['service'], true) .
-                        ' but was: ' . var_export($_GET['service'], true);
-                } else {
-                    $message = 'Ticket was issue from single sign on session';
-                }
-                SimpleSAML_Logger::debug('casserver:' . $message);
+                if (!array_key_exists($usernameField, $serviceTicket['attributes'])) {
+                    SimpleSAML_Logger::error('casserver:validate: internal server error. Missing user name attribute: '
+                        . var_export($usernameField, true));
 
-                echo $protocol->getValidateFailureResponse();
+                    echo $protocol->getValidateFailureResponse();
+                } else {
+                    if ($ticketFactory->isExpired($serviceTicket)) {
+                        $message = 'Ticket has ' . var_export($_GET['ticket'], true) . ' expired';
+                    } else {
+                        if (sanitize($serviceTicket['service']) == sanitize($_GET['service'])) {
+                            $message = 'Mismatching service parameters: expected '
+                                . var_export($serviceTicket['service'], true)
+                                . ' but was: ' . var_export($_GET['service'], true);
+                        } else {
+                            $message = 'Ticket was issue from single sign on session';
+                        }
+                    }
+                    SimpleSAML_Logger::debug('casserver:' . $message);
+
+                    echo $protocol->getValidateFailureResponse();
+                }
             }
         } else {
             if (is_null($serviceTicket)) {
@@ -90,7 +95,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
             echo $protocol->getValidateFailureResponse();
         }
     } catch (Exception $e) {
-        SimpleSAML_Logger::error('casserver:validate: internal server error. ' . var_export($e->getMessage(), TRUE));
+        SimpleSAML_Logger::error('casserver:validate: internal server error. ' . var_export($e->getMessage(), true));
 
         echo $protocol->getValidateFailureResponse();
     }
