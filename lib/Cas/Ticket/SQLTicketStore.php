@@ -1,4 +1,5 @@
 <?php
+
 /*
 *    simpleSAMLphp-casserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
 *
@@ -85,11 +86,12 @@ class sspmod_casserver_Cas_Ticket_SQLTicketStore extends sspmod_casserver_Cas_Ti
         try {
             $fetchTableVersion = $this->pdo->query('SELECT _name, _version FROM ' . $this->prefix . '_tableVersion');
         } catch (PDOException $e) {
-            $this->pdo->exec('CREATE TABLE ' . $this->prefix . '_tableVersion (_name VARCHAR(30) NOT NULL UNIQUE, _version INTEGER NOT NULL)');
+            $this->pdo->exec('CREATE TABLE ' . $this->prefix
+                . '_tableVersion (_name VARCHAR(30) NOT NULL UNIQUE, _version INTEGER NOT NULL)');
             return;
         }
 
-        while (($row = $fetchTableVersion->fetch(PDO::FETCH_ASSOC)) !== FALSE) {
+        while (($row = $fetchTableVersion->fetch(PDO::FETCH_ASSOC)) !== false) {
             $this->tableVersions[$row['_name']] = (int)$row['_version'];
         }
     }
@@ -101,7 +103,8 @@ class sspmod_casserver_Cas_Ticket_SQLTicketStore extends sspmod_casserver_Cas_Ti
             return;
         }
 
-        $query = 'CREATE TABLE ' . $this->prefix . '_kvstore (_key VARCHAR(50) NOT NULL, _value TEXT NOT NULL, _expire TIMESTAMP, PRIMARY KEY (_key))';
+        $query = 'CREATE TABLE ' . $this->prefix
+            . '_kvstore (_key VARCHAR(50) NOT NULL, _value TEXT NOT NULL, _expire TIMESTAMP, PRIMARY KEY (_key))';
         $this->pdo->exec($query);
 
         $query = 'CREATE INDEX ' . $this->prefix . '_kvstore_expire ON ' . $this->prefix . '_kvstore (_expire)';
@@ -126,8 +129,14 @@ class sspmod_casserver_Cas_Ticket_SQLTicketStore extends sspmod_casserver_Cas_Ti
         assert('is_string($name)');
         assert('is_int($version)');
 
-        $this->insertOrUpdate($this->prefix . '_tableVersion', array('_name'),
-            array('_name' => $name, '_version' => $version));
+        $this->insertOrUpdate(
+            $this->prefix . '_tableVersion',
+            array('_name'),
+            array(
+                '_name' => $name,
+                '_version' => $version
+            )
+        );
         $this->tableVersions[$name] = $version;
     }
 
@@ -176,14 +185,15 @@ class sspmod_casserver_Cas_Ticket_SQLTicketStore extends sspmod_casserver_Cas_Ti
 
             $tmp = $col . ' = :' . $col;
 
-            if (in_array($col, $keys, TRUE)) {
+            if (in_array($col, $keys, true)) {
                 $condCols[] = $tmp;
             } else {
                 $updateCols[] = $tmp;
             }
         }
 
-        $updateQuery = 'UPDATE ' . $table . ' SET ' . implode(',', $updateCols) . ' WHERE ' . implode(' AND ', $condCols);
+        $updateQuery = 'UPDATE ' . $table . ' SET ' . implode(',', $updateCols) . ' WHERE '
+            . implode(' AND ', $condCols);
         $updateQuery = $this->pdo->prepare($updateQuery);
         $updateQuery->execute($data);
     }
@@ -205,15 +215,16 @@ class sspmod_casserver_Cas_Ticket_SQLTicketStore extends sspmod_casserver_Cas_Ti
             $key = sha1($key);
         }
 
-        $query = 'SELECT _value FROM ' . $this->prefix . '_kvstore WHERE _key = :key AND (_expire IS NULL OR _expire > :now)';
+        $query = 'SELECT _value FROM ' . $this->prefix
+            . '_kvstore WHERE _key = :key AND (_expire IS NULL OR _expire > :now)';
         $params = array('key' => $key, 'now' => gmdate('Y-m-d H:i:s'));
 
         $query = $this->pdo->prepare($query);
         $query->execute($params);
 
         $row = $query->fetch(PDO::FETCH_ASSOC);
-        if ($row === FALSE) {
-            return NULL;
+        if ($row === false) {
+            return null;
         }
 
         $value = $row['_value'];
@@ -223,14 +234,14 @@ class sspmod_casserver_Cas_Ticket_SQLTicketStore extends sspmod_casserver_Cas_Ti
         $value = urldecode($value);
         $value = unserialize($value);
 
-        if ($value === FALSE) {
-            return NULL;
+        if ($value === false) {
+            return null;
         }
 
         return $value;
     }
 
-    private function set($key, $value, $expire = NULL)
+    private function set($key, $value, $expire = null)
     {
         assert('is_string($key)');
         assert('is_null($expire) || (is_int($expire) && $expire > 2592000)');
@@ -243,7 +254,7 @@ class sspmod_casserver_Cas_Ticket_SQLTicketStore extends sspmod_casserver_Cas_Ti
             $key = sha1($key);
         }
 
-        if ($expire !== NULL) {
+        if ($expire !== null) {
             $expire = gmdate('Y-m-d H:i:s', $expire);
         }
 

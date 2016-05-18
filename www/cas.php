@@ -19,8 +19,9 @@
 *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 *
 * Frontend for login.php, validate.php, serviceValidate.php, logout.php, proxy and proxyValidate. It allows them to be
-* called as cas.php/login, cas.php/validate, cas.php/serviceValidate, cas.php/logout, cas.php/proxy and cas.php/proxyValidate
-* and is meant for clients like phpCAS which expects one configured prefix which it appends login, validate, serviceValidate and logout to.
+* called as cas.php/login, cas.php/validate, cas.php/serviceValidate, cas.php/logout, cas.php/proxy and
+* cas.php/proxyValidate and is meant for clients like phpCAS which expects one configured prefix which it appends login,
+* validate, serviceValidate and logout to.
 *
 */
 

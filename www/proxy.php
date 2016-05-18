@@ -69,7 +69,7 @@ if (array_key_exists('targetService', $_GET) &&
 
             echo $protocol->getProxyFailureResponse('BAD_PGT', $message);
         }
-    } else if (!$ticketFactory->isProxyGrantingTicket($proxyGrantingTicket)) {
+    } elseif (!$ticketFactory->isProxyGrantingTicket($proxyGrantingTicket)) {
         $message = 'Not a valid proxy granting ticket id: ' . var_export($_GET['pgt'], true);
 
         SimpleSAML_Logger::debug('casserver:' . $message);
@@ -82,14 +82,15 @@ if (array_key_exists('targetService', $_GET) &&
 
         echo $protocol->getProxyFailureResponse('BAD_PGT', $message);
     }
-} else if (!array_key_exists('targetService', $_GET)) {
+} elseif (!array_key_exists('targetService', $_GET)) {
     $message = 'Missing target service parameter [targetService]';
 
     SimpleSAML_Logger::debug('casserver:' . $message);
 
     echo $protocol->getProxyFailureResponse('INVALID_REQUEST', $message);
-} else if (!checkServiceURL(sanitize($_GET['targetService']), $legal_target_service_urls)) {
-    $message = 'Target service parameter not listed as a legal service: [targetService] = ' . var_export($_GET['targetService'], true);
+} elseif (!checkServiceURL(sanitize($_GET['targetService']), $legal_target_service_urls)) {
+    $message = 'Target service parameter not listed as a legal service: [targetService] = '
+        . var_export($_GET['targetService'], true);
 
     SimpleSAML_Logger::debug('casserver:' . $message);
 

@@ -1,4 +1,5 @@
 <?php
+
 /*
 *    simpleSAMLphp-casserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
 *
@@ -32,7 +33,7 @@ class sspmod_casserver_Cas_Protocol_Cas20
     {
         $this->sendAttributes = $config->getValue('attributes', false);
         $this->base64EncodeAttributes = $config->getValue('base64attributes', false);
-        $this->base64IndicatorAttribute = $config->getValue('base64_attributes_indicator_attribute', NULL);
+        $this->base64IndicatorAttribute = $config->getValue('base64_attributes_indicator_attribute', null);
     }
 
     public function setAttributes($attributes)
@@ -81,13 +82,20 @@ class sspmod_casserver_Cas_Protocol_Cas20
 
             foreach ($this->attributes as $name => $values) {
                 foreach ($values as $value) {
-                    $casAttributes->appendChild($this->generateCas20Attribute($xmlDocument, str_replace(':', '_', $name), $value));
+                    $casAttributes->appendChild(
+                        $this->generateCas20Attribute($xmlDocument, str_replace(':', '_', $name), $value)
+                    );
                 }
             }
 
             if (!is_null($this->base64IndicatorAttribute)) {
-                $casAttributes->appendChild($this->generateCas20Attribute($xmlDocument, $this->base64IndicatorAttribute,
-                    $this->base64EncodeAttributes ? "true" : "false"));
+                $casAttributes->appendChild(
+                    $this->generateCas20Attribute(
+                        $xmlDocument,
+                        $this->base64IndicatorAttribute,
+                        $this->base64EncodeAttributes ? "true" : "false"
+                    )
+                );
             }
 
             $casSuccess->appendChild($casAttributes);
@@ -164,7 +172,8 @@ class sspmod_casserver_Cas_Protocol_Cas20
     }
 
     private function workAroundForBuggyJasigXmlParser($xmlString)
-    { // when will people stop hand coding xml handling....?
+    {
+        // when will people stop hand coding xml handling....?
         return str_replace('><', '>' . PHP_EOL . '<', str_replace(PHP_EOL, '', $xmlString));
     }
 

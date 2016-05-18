@@ -62,8 +62,12 @@ if ($as->isAuthenticated()) {
     if ($casconfig->getValue('skip_logout_page', false)) {
         $as->logout($_GET['url']);
     } else {
-        $as->logout(SimpleSAML_Utilities::addURLparameter(SimpleSAML_Module::getModuleURL('casserver/loggedOut.php'),
-            array_key_exists('url', $_GET) ? array('url' => $_GET['url']) : array()));
+        $as->logout(
+            SimpleSAML_Utilities::addURLparameter(
+                SimpleSAML_Module::getModuleURL('casserver/loggedOut.php'),
+                array_key_exists('url', $_GET) ? array('url' => $_GET['url']) : array()
+            )
+        );
     }
 } else {
     SimpleSAML_Logger::debug('casserver: no session to log out of, performing redirect');
@@ -71,7 +75,11 @@ if ($as->isAuthenticated()) {
     if ($casconfig->getValue('skip_logout_page', false)) {
         SimpleSAML_Utilities::redirectTrustedURL(SimpleSAML_Utilities::addURLparameter($_GET['url'], array()));
     } else {
-        SimpleSAML_Utilities::redirectTrustedURL(SimpleSAML_Utilities::addURLparameter(SimpleSAML_Module::getModuleURL('casserver/loggedOut.php'),
-            array_key_exists('url', $_GET) ? array('url' => $_GET['url']) : array()));
+        SimpleSAML_Utilities::redirectTrustedURL(
+            SimpleSAML_Utilities::addURLparameter(
+                SimpleSAML_Module::getModuleURL('casserver/loggedOut.php'),
+                array_key_exists('url', $_GET) ? array('url' => $_GET['url']) : array()
+            )
+        );
     }
 }

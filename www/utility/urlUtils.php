@@ -22,11 +22,13 @@
 
 function checkServiceURL($service, array $legal_service_urls)
 {
-    foreach ($legal_service_urls AS $legalurl) {
-        if (strpos($service, $legalurl) === 0) return TRUE;
+    foreach ($legal_service_urls as $legalurl) {
+        if (strpos($service, $legalurl) === 0) {
+            return true;
+        }
     }
 
-    return FALSE;
+    return false;
 }
 
 function sanitize($parameter)
