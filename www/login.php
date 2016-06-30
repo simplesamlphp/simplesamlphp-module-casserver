@@ -46,7 +46,7 @@ if (isset($_GET['service']) && !checkServiceURL(sanitize($_GET['service']), $leg
 
 $as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
 
-$session = SimpleSAML_Session::getInstance();
+$session = SimpleSAML_Session::getSessionFromRequest();
 
 if (array_key_exists('scope', $_GET) && is_string($_GET['scope'])) {
     $scopes = $casconfig->getValue('scopes', array());
@@ -100,7 +100,7 @@ if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewI
         $query['language'] = is_string($_GET['language']) ? $_GET['language'] : null;
     }
 
-    $returnUrl = SimpleSAML_Utilities::selfURLNoQuery() . '?' . http_build_query($query);
+    $returnUrl = \SimpleSAML\Utils\HTTP::getSelfURLNoQuery() . '?' . http_build_query($query);
 
     $params = array(
         'ForceAuthn' => $forceAuthn,
@@ -124,7 +124,8 @@ if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewI
 }
 
 if (!is_array($sessionTicket) || $forceAuthn) {
-    $sessionTicket = $ticketFactory->createSessionTicket($session->getSessionId(), time() + $session->remainingTime());
+    // FIXME: What should replace $session->remainingTime() ??
+    $sessionTicket = $ticketFactory->createSessionTicket($session->getSessionId(), time() + (60 * 10 * 1000) /*$session->remainingTime()*/);
 
     $ticketStore->addTicket($sessionTicket);
 }
@@ -181,9 +182,9 @@ if (isset($_GET['service'])) {
 
     $parameters['ticket'] = $serviceTicket['id'];
 
-    SimpleSAML_Utilities::redirectTrustedURL(SimpleSAML_Utilities::addURLparameter($_GET['service'], $parameters));
+    \SimpleSAML\Utils\HTTP::redirectTrustedURL(\SimpleSAML\Utils\HTTP::addURLParameters($_GET['service'], $parameters));
 } else {
-    SimpleSAML_Utilities::redirectTrustedURL(
-        SimpleSAML_Utilities::addURLparameter(SimpleSAML_Module::getModuleURL('casserver/loggedIn.php'), $parameters)
+    \SimpleSAML\Utils\HTTP::redirectTrustedURL(
+        \SimpleSAML\Utils\HTTP::addURLParameters(SimpleSAML_Module::getModuleURL('casserver/loggedIn.php'), $parameters)
     );
 }
