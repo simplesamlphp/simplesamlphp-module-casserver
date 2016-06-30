@@ -46,9 +46,6 @@ if (isset($_GET['service']) && !checkServiceURL(sanitize($_GET['service']), $leg
 
 $as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
 
-$session = SimpleSAML_Session::getSessionFromRequest();
-$sessionExpiry = $as->getAuthData('Expire');
-
 if (array_key_exists('scope', $_GET) && is_string($_GET['scope'])) {
     $scopes = $casconfig->getValue('scopes', array());
 
@@ -73,6 +70,8 @@ $ticketStore = new $ticketStoreClass($casconfig);
 
 $ticketFactoryClass = SimpleSAML_Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
 $ticketFactory = new $ticketFactoryClass($casconfig);
+
+$session = SimpleSAML_Session::getSessionFromRequest();
 
 $sessionTicket = $ticketStore->getTicket($session->getSessionId());
 $sessionRenewId = $sessionTicket ? $sessionTicket['renewId'] : null;
@@ -123,6 +122,8 @@ if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewI
 
     $as->login($params);
 }
+
+$sessionExpiry = $as->getAuthData('Expire');
 
 if (!is_array($sessionTicket) || $forceAuthn) {
     $sessionTicket = $ticketFactory->createSessionTicket($session->getSessionId(), $sessionExpiry);
