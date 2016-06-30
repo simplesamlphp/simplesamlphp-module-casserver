@@ -40,7 +40,7 @@ class sspmod_casserver_Cas_Ticket_TicketFactory
 
     public function createServiceTicket($content)
     {
-        $id = str_replace('_', 'ST-', SimpleSAML_Utilities::generateID());
+        $id = str_replace('_', 'ST-', SimpleSAML\Utils\Random::generateID());
         $expiresAt = time() + $this->serviceTicketExpireTime;
 
         return array_merge(array('id' => $id, 'validBefore' => $expiresAt), $content);
@@ -48,8 +48,8 @@ class sspmod_casserver_Cas_Ticket_TicketFactory
 
     public function createProxyGrantingTicket($content)
     {
-        $id = str_replace('_', 'PGT-', SimpleSAML_Utilities::generateID());
-        $iou = str_replace('_', 'PGTIOU-', SimpleSAML_Utilities::generateID());
+        $id = str_replace('_', 'PGT-', SimpleSAML\Utils\Random::generateID());
+        $iou = str_replace('_', 'PGTIOU-', SimpleSAML\Utils\Random::generateID());
 
         $expireAt = time() + $this->proxyGrantingTicketExpireTime;
 
@@ -58,7 +58,7 @@ class sspmod_casserver_Cas_Ticket_TicketFactory
 
     public function createProxyTicket($content)
     {
-        $id = str_replace('_', 'PT-', SimpleSAML_Utilities::generateID());
+        $id = str_replace('_', 'PT-', SimpleSAML\Utils\Random::generateID());
         $expiresAt = time() + $this->proxyTicketExpireTime;
 
         return array_merge(array('id' => $id, 'validBefore' => $expiresAt), $content);

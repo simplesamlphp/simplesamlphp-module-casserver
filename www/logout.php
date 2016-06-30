@@ -46,14 +46,14 @@ if ($skipLogoutPage && !array_key_exists('url', $_GET)) {
 
 $as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
 
-$session = SimpleSAML_Session::getInstance();
+$sessionId = SimpleSAML_Session::getSession();
 
-if (!is_null($session)) {
+if (!is_null($sessionId)) {
     $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'casserver:FileSystemTicketStore'));
     $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
     $ticketStore = new $ticketStoreClass($casconfig);
 
-    $ticketStore->deleteTicket($session->getSessionId());
+    $ticketStore->deleteTicket($sessionId);
 }
 
 if ($as->isAuthenticated()) {
@@ -63,7 +63,7 @@ if ($as->isAuthenticated()) {
         $as->logout($_GET['url']);
     } else {
         $as->logout(
-            SimpleSAML_Utilities::addURLparameter(
+            SimpleSAML\Utils\HTTP::addURLParameters(
                 SimpleSAML_Module::getModuleURL('casserver/loggedOut.php'),
                 array_key_exists('url', $_GET) ? array('url' => $_GET['url']) : array()
             )
@@ -73,10 +73,10 @@ if ($as->isAuthenticated()) {
     SimpleSAML_Logger::debug('casserver: no session to log out of, performing redirect');
 
     if ($casconfig->getValue('skip_logout_page', false)) {
-        SimpleSAML_Utilities::redirectTrustedURL(SimpleSAML_Utilities::addURLparameter($_GET['url'], array()));
+        SimpleSAML\Utils\HTTP::redirectTrustedURL(SimpleSAML\Utils\HTTP::addURLParameters($_GET['url'], array()));
     } else {
-        SimpleSAML_Utilities::redirectTrustedURL(
-            SimpleSAML_Utilities::addURLparameter(
+        SimpleSAML\Utils\HTTP::redirectTrustedURL(
+            SimpleSAML\Utils\HTTP::addURLParameters(
                 SimpleSAML_Module::getModuleURL('casserver/loggedOut.php'),
                 array_key_exists('url', $_GET) ? array('url' => $_GET['url']) : array()
             )

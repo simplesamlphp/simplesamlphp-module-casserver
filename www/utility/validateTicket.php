@@ -78,7 +78,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                             'sessionId' => $serviceTicket['sessionId']
                         ));
                         try {
-                            SimpleSAML_Utilities::fetch($pgtUrl . '?pgtIou=' . $proxyGrantingTicket['iou']
+                            SimpleSAML\Utils\HTTP::fetch($pgtUrl . '?pgtIou=' . $proxyGrantingTicket['iou']
                                 . '&pgtId=' . $proxyGrantingTicket['id']);
 
                             $protocol->setProxyGrantingTicketIOU($proxyGrantingTicket['iou']);
