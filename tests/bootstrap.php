@@ -9,10 +9,15 @@ if (file_exists($linkPath) === false) {
     print "Linking '$linkPath' to '$projectRoot'\n";
     symlink($projectRoot, $linkPath);
 } else {
-    if(is_link($linkPath) === false) {
+    if (is_link($linkPath) === false) {
         // Looks like the pre-installed casserver module is here. Lets remove it and symlink in this one
         print "Renaming pre-installed casserver module and linking '$linkPath' to '$projectRoot'\n";
         rename($linkPath, $linkPath . '-preinstalled');
         symlink($projectRoot, $linkPath);
     }
+}
+
+// Enable exampleauth for integration tests
+if (touch($projectRoot . '/vendor/simplesamlphp/simplesamlphp/modules/exampleauth/enable') === false) {
+    throw new Exception("Unable to enable 'exampleauth'. Integration tests will likely fail");
 }
