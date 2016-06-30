@@ -46,14 +46,14 @@ if ($skipLogoutPage && !array_key_exists('url', $_GET)) {
 
 $as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
 
-$sessionId = SimpleSAML_Session::getSession();
+$session = SimpleSAML_Session::getSession();
 
-if (!is_null($sessionId)) {
+if (!is_null($session)) {
     $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'casserver:FileSystemTicketStore'));
     $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
     $ticketStore = new $ticketStoreClass($casconfig);
 
-    $ticketStore->deleteTicket($sessionId);
+    $ticketStore->deleteTicket($session->getSessionId());
 }
 
 if ($as->isAuthenticated()) {
