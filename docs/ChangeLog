@@ -19,10 +19,11 @@
 *
 */
 
-2015-03-29 Bjorn Rohde Jensen
+2016-06-30 Bjorn Rohde Jensen
 		* Release 6.x.x
 		* Renamed module from sbcasserver to casserver.
 		* Added composer file to make module installable according to simplesamlphp guidelines.
+		* Replaced use of deprecated SimpleSAMLphp api's.
 
 2014-10-15 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
         * Release 5.2.3
