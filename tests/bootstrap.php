@@ -21,3 +21,9 @@ if (file_exists($linkPath) === false) {
 if (touch($projectRoot . '/vendor/simplesamlphp/simplesamlphp/modules/exampleauth/enable') === false) {
     throw new Exception("Unable to enable 'exampleauth'. Integration tests will likely fail");
 }
+
+// Ensure the directory used for the ticket cache exists
+$ticketCacheDirectory = $projectRoot . '/tests/ticketcache';
+if(!file_exists($ticketCacheDirectory)) {
+    mkdir($ticketCacheDirectory);
+}
