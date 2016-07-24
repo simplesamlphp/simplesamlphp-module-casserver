@@ -1,4 +1,5 @@
 <?php
+
 /*
 *    simpleSAMLphp-casserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
 *
@@ -23,13 +24,23 @@
 abstract class sspmod_casserver_Cas_Ticket_TicketStore
 {
 
-    public function __construct($config)
+    public function __construct(\SimpleSAML_Configuration $config)
     {
     }
 
+    /**
+     * @param $ticketId string
+     * @return array|null
+     */
     abstract public function getTicket($ticketId);
 
-    abstract public function addTicket($ticket);
+    /**
+     * @param $ticket
+     */
+    abstract public function addTicket(array $ticket);
 
+    /**
+     * @param $ticketId string
+     */
     abstract public function deleteTicket($ticketId);
 }

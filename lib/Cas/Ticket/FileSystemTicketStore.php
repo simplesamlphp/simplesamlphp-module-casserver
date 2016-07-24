@@ -1,4 +1,5 @@
 <?php
+
 /*
 *    simpleSAMLphp-casserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
 *
@@ -22,10 +23,9 @@
 
 class sspmod_casserver_Cas_Ticket_FileSystemTicketStore extends sspmod_casserver_Cas_Ticket_TicketStore
 {
-
     private $pathToTicketDirectory;
 
-    public function __construct($config)
+    public function __construct(\SimpleSAML_Configuration $config)
     {
         $storeConfig = $config->getValue('ticketstore', array('directory' => 'ticketcache'));
 
@@ -46,6 +46,10 @@ class sspmod_casserver_Cas_Ticket_FileSystemTicketStore extends sspmod_casserver
         $this->pathToTicketDirectory = preg_replace('/\/$/', '', $path);
     }
 
+    /**
+     * @param $ticketId string
+     * @return array|null
+     */
     public function getTicket($ticketId)
     {
         $filename = $this->pathToTicketDirectory . '/' . $ticketId;
@@ -59,12 +63,15 @@ class sspmod_casserver_Cas_Ticket_FileSystemTicketStore extends sspmod_casserver
         }
     }
 
-    public function addTicket($ticket)
+    public function addTicket(array $ticket)
     {
         $filename = $this->pathToTicketDirectory . '/' . $ticket['id'];
         file_put_contents($filename, serialize($ticket));
     }
 
+    /**
+     * @param $ticketId string
+     */
     public function deleteTicket($ticketId)
     {
         $filename = $this->pathToTicketDirectory . '/' . $ticketId;

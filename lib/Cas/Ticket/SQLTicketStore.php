@@ -28,7 +28,7 @@ class sspmod_casserver_Cas_Ticket_SQLTicketStore extends sspmod_casserver_Cas_Ti
     public $prefix;
     private $tableVersions;
 
-    public function __construct($config)
+    public function __construct(\SimpleSAML_Configuration $config)
     {
         parent::__construct($config);
 
@@ -52,6 +52,10 @@ class sspmod_casserver_Cas_Ticket_SQLTicketStore extends sspmod_casserver_Cas_Ti
         $this->initKVTable();
     }
 
+    /**
+     * @param $ticketId string
+     * @return array|null
+     */
     public function getTicket($ticketId)
     {
         $scopedTicketId = $this->scopeTicketId($ticketId);
@@ -59,13 +63,16 @@ class sspmod_casserver_Cas_Ticket_SQLTicketStore extends sspmod_casserver_Cas_Ti
         return $this->get($scopedTicketId);
     }
 
-    public function addTicket($ticket)
+    public function addTicket(array $ticket)
     {
         $scopedTicketId = $this->scopeTicketId($ticket['id']);
 
         $this->set($scopedTicketId, $ticket, $ticket['validBefore']);
     }
 
+    /**
+     * @param $ticketId string
+     */
     public function deleteTicket($ticketId)
     {
         $scopedTicketId = $this->scopeTicketId($ticketId);
@@ -73,6 +80,10 @@ class sspmod_casserver_Cas_Ticket_SQLTicketStore extends sspmod_casserver_Cas_Ti
         $this->delete($scopedTicketId);
     }
 
+    /**
+     * @param $ticketId string
+     * @return string
+     */
     private function scopeTicketId($ticketId)
     {
         return $this->prefix . '.' . $ticketId;
@@ -113,6 +124,10 @@ class sspmod_casserver_Cas_Ticket_SQLTicketStore extends sspmod_casserver_Cas_Ti
         $this->setTableVersion('kvstore', 1);
     }
 
+    /**
+     * @param $name string
+     * @return int
+     */
     private function getTableVersion($name)
     {
         assert('is_string($name)');
@@ -124,6 +139,10 @@ class sspmod_casserver_Cas_Ticket_SQLTicketStore extends sspmod_casserver_Cas_Ti
         return $this->tableVersions[$name];
     }
 
+    /**
+     * @param $name string
+     * @param $version int
+     */
     private function setTableVersion($name, $version)
     {
         assert('is_string($name)');
@@ -140,6 +159,11 @@ class sspmod_casserver_Cas_Ticket_SQLTicketStore extends sspmod_casserver_Cas_Ti
         $this->tableVersions[$name] = $version;
     }
 
+    /**
+     * @param $table string
+     * @param array $keys
+     * @param array $data
+     */
     private function insertOrUpdate($table, array $keys, array $data)
     {
         assert('is_string($table)');
@@ -207,6 +231,10 @@ class sspmod_casserver_Cas_Ticket_SQLTicketStore extends sspmod_casserver_Cas_Ti
         $query->execute($params);
     }
 
+    /**
+     * @param $key string
+     * @return mixed|null|string
+     */
     private function get($key)
     {
         assert('is_string($key)');
@@ -241,6 +269,11 @@ class sspmod_casserver_Cas_Ticket_SQLTicketStore extends sspmod_casserver_Cas_Ti
         return $value;
     }
 
+    /**
+     * @param $key string
+     * @param $value mixed
+     * @param null $expire int
+     */
     private function set($key, $value, $expire = null)
     {
         assert('is_string($key)');
@@ -270,6 +303,9 @@ class sspmod_casserver_Cas_Ticket_SQLTicketStore extends sspmod_casserver_Cas_Ti
         $this->insertOrUpdate($this->prefix . '_kvstore', array('_key'), $data);
     }
 
+    /**
+     * @param $key string
+     */
     private function delete($key)
     {
         assert('is_string($key)');

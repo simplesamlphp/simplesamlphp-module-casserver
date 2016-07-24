@@ -1,4 +1,5 @@
 <?php
+
 /*
 *    simpleSAMLphp-casserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
 *
@@ -24,7 +25,7 @@ class sspmod_casserver_Cas_Ticket_MemCacheTicketStore extends sspmod_casserver_C
 {
     private $prefix = '';
 
-    public function __construct($config)
+    public function __construct(\SimpleSAML_Configuration $config)
     {
         parent::__construct($config);
 
@@ -35,6 +36,10 @@ class sspmod_casserver_Cas_Ticket_MemCacheTicketStore extends sspmod_casserver_C
         }
     }
 
+    /**
+     * @param $ticketId string
+     * @return array|null
+     */
     public function getTicket($ticketId)
     {
         $scopedTicketId = $this->scopeTicketId($ticketId);
@@ -42,13 +47,16 @@ class sspmod_casserver_Cas_Ticket_MemCacheTicketStore extends sspmod_casserver_C
         return SimpleSAML_Memcache::get($scopedTicketId);
     }
 
-    public function addTicket($ticket)
+    public function addTicket(array $ticket)
     {
         $scopedTicketId = $this->scopeTicketId($ticket['id']);
 
         SimpleSAML_Memcache::set($scopedTicketId, $ticket, $ticket['validBefore']);
     }
 
+    /**
+     * @param $ticketId string
+     */
     public function deleteTicket($ticketId)
     {
         $scopedTicketId = $this->scopeTicketId($ticketId);
@@ -56,6 +64,10 @@ class sspmod_casserver_Cas_Ticket_MemCacheTicketStore extends sspmod_casserver_C
         SimpleSAML_Memcache::delete($scopedTicketId);
     }
 
+    /**
+     * @param $ticketId string
+     * @return string
+     */
     private function scopeTicketId($ticketId)
     {
         return $this->prefix . '.' . $ticketId;
