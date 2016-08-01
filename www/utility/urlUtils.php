@@ -22,8 +22,8 @@
 
 function checkServiceURL($service, array $legal_service_urls)
 {
-    foreach ($legal_service_urls as $legalurl) {
-        if (strpos($service, $legalurl) === 0) {
+    foreach ($legal_service_urls as $legalUrl) {
+        if (strpos($service, $legalUrl) === 0) {
             return true;
         }
     }
@@ -33,5 +33,5 @@ function checkServiceURL($service, array $legal_service_urls)
 
 function sanitize($parameter)
 {
-    return preg_replace('/;jsessionid=.*[^?].*$/', '', preg_replace('/;jsessionid=.*[?]/', '?', $parameter));
+    return preg_replace('/;jsessionid=.*[^?].*$/', '', preg_replace('/;jsessionid=.*[?]/', '?', urldecode($parameter)));
 }

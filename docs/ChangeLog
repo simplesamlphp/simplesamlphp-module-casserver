@@ -24,6 +24,8 @@
 		* Renamed module from sbcasserver to casserver.
 		* Added composer file to make module installable according to simplesamlphp guidelines.
 		* Replaced use of deprecated SimpleSAMLphp api's.
+		* Fixed a bug when comparing service url parameter to ticket service url, which caused service urls with
+		  %20 encoded spaces to fail verification.
 
 2014-10-15 Bjørn Rohde Jensen <brj@statsbiblioteket.dk>
         * Release 5.2.3
