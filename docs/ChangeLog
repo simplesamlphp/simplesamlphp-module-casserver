@@ -19,7 +19,7 @@
 *
 */
 
-2016-06-30 Bjorn Rohde Jensen
+2016-08-01 Bjorn Rohde Jensen
 		* Release 6.x.x
 		* Renamed module from sbcasserver to casserver.
 		* Added composer file to make module installable according to simplesamlphp guidelines.
