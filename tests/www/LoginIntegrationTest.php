@@ -13,8 +13,9 @@ use GuzzleHttp\Cookie\CookieJar;
  *
  * Currently you must start the embedded server by hand.
  * <pre>
- * export SIMPLESAMLPHP_CONFIG_DIR=/PATH/simplesamlphp-module-casserver/tests/config/
- * php -S 0.0.0.0:8732 -t /PATH/simplesamlphp-module-casserver/vendor/simplesamlphp/simplesamlphp/www
+ * # path is the current checkout of the module
+ * export SIMPLESAMLPHP_CONFIG_DIR=$PWD/tests/config/
+ * php -S 0.0.0.0:8732 -t $PWD/vendor/simplesamlphp/simplesamlphp/www &
  * </pre>
  *
  * @package Simplesamlphp\Casserver

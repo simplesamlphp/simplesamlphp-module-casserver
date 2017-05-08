@@ -23,6 +23,8 @@ $config = array(
     'legal_target_service_urls' => array( //Any target service url string matching any of the following prefixes is accepted
         'http://host3.domain:4321/path4',
         'https://host4.domain:8765/path5/path6',
+        // So is regex
+        '|^https://.*\.domain.com/|'
     ),
 
     'ticketstore' => array( //defaults to filesystem ticket store using the directory 'ticketcache'
