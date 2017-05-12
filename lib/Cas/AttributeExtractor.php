@@ -24,6 +24,10 @@ class sspmod_casserver_Cas_AttributeExtractor
      */
     public function extractUserAndAttributes(array $attributes, SimpleSAML_Configuration $casconfig)
     {
+        if ($casconfig->hasValue('authproc')) {
+            $attributes = $this->invokeAuthProc($attributes, $casconfig);
+        }
+
         $casUsernameAttribute = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
 
         //TODO: how should a missing userName be handled?
@@ -51,5 +55,32 @@ class sspmod_casserver_Cas_AttributeExtractor
             'user' => $userName,
             'attributes' => $casAttributes
         );
+    }
+
+    /**
+     * Process any authproc filters defined in the configuration. The Authproc filters must only
+     * rely on 'Attributes' being available and not on additional SAML state
+     * @param array $attributes The current attributes
+     * @param SimpleSAML_Configuration $casconfig The cas configuration
+     * @return array The attributes post processing.
+     */
+    private function invokeAuthProc(array $attributes, SimpleSAML_Configuration $casconfig)
+    {
+        $filters = $casconfig->getArray('authproc', array());
+
+        $state = array(
+            'Attributes' => $attributes
+        );
+        foreach ($filters as $config) {
+            $className = SimpleSAML_Module::resolveClass(
+                $config['class'],
+                'Auth_Process',
+                'SimpleSAML_Auth_ProcessingFilter'
+            );
+            $filter = new $className($config, null);
+            $filter->process($state);
+        }
+
+        return $state['Attributes'];
     }
 }
