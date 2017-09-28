@@ -35,6 +35,8 @@ require_once('utility/urlUtils.php');
 
 $forceAuthn = isset($_GET['renew']) && $_GET['renew'];
 $isPassive = isset($_GET['gateway']) && $_GET['gateway'];
+// Determine if client wants us to post or redirect the response. Default is redirect.
+$redirect = !(isset($_GET['method']) && 'POST' === $_GET['method']);
 
 $casconfig = \SimpleSAML\Configuration::getConfig('module_casserver.php');
 
@@ -170,7 +172,12 @@ if (isset($_GET['service'])) {
 
     $parameters['ticket'] = $serviceTicket['id'];
 
-    \SimpleSAML\Utils\HTTP::redirectTrustedURL(\SimpleSAML\Utils\HTTP::addURLParameters($_GET['service'], $parameters));
+    if ($redirect) {
+        SimpleSAML\Utils\HTTP::redirectTrustedURL(SimpleSAML\Utils\HTTP::addURLParameters($_GET['service'],
+            $parameters));
+    } else {
+        SimpleSAML\Utils\HTTP::submitPOSTData($_GET['service'], $parameters);
+    }
 } else {
     \SimpleSAML\Utils\HTTP::redirectTrustedURL(
         \SimpleSAML\Utils\HTTP::addURLParameters(SimpleSAML\Module::getModuleURL('casserver/loggedIn.php'), $parameters)
