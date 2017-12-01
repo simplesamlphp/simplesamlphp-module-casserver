@@ -98,6 +98,10 @@ if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewI
         $query['service'] = $_REQUEST['service'];
     }
 
+    if (isset($_REQUEST['method'])) {
+        $query['method'] = $_REQUEST['method'];
+    }
+
     if (isset($_REQUEST['renew'])) {
         $query['renew'] = $_REQUEST['renew'];
     }
