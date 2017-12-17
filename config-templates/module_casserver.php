@@ -39,6 +39,9 @@ $config = array(
         //'username' => 'username',
         //'password' => 'password',
         //'prefix' => 'some_prefix',
+        //'options' => array(
+        //    \PDO::ATTR_TIMEOUT => 4,
+        // )
     ),
 
     'attrname' => 'eduPersonPrincipalName', // 'eduPersonPrincipalName',

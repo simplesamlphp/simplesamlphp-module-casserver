@@ -32,14 +32,15 @@ class sspmod_casserver_Cas_Ticket_SQLTicketStore extends sspmod_casserver_Cas_Ti
     {
         parent::__construct($config);
 
-        $storeConfig = $config->getValue('ticketstore');
+        /** @var  $storeConfig \SimpleSAML_Configuration */
+        $storeConfig = $config->getConfigItem('ticketstore');
+        $dsn = $storeConfig->getString('dsn');
+        $username = $storeConfig->getString('username');
+        $password = $storeConfig->getString('password');
+        $options =  $storeConfig->getArray('options', array());
+        $this->prefix = $storeConfig->getString('prefix', '');
 
-        $dsn = $storeConfig['dsn'];
-        $username = $storeConfig['username'];
-        $password = $storeConfig['password'];
-        $this->prefix = $storeConfig['prefix'];
-
-        $this->pdo = new PDO($dsn, $username, $password);
+        $this->pdo = new PDO($dsn, $username, $password, $options);
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         $this->driver = $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
