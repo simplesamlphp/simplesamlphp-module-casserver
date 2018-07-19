@@ -9,7 +9,7 @@
         "simplesamlphp/composer-module-installer": "~1.0"
     },
     "require-dev": {
-        "simplesamlphp/simplesamlphp": "1.14",
+        "simplesamlphp/simplesamlphp": "1.15",
         "phpunit/phpunit": "5.3.*",
         "satooshi/php-coveralls": "^1.0",
         "guzzlehttp/guzzle": "~6.0"
