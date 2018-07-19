@@ -28,7 +28,7 @@ $casconfig = SimpleSAML_Configuration::getConfig('module_casserver.php');
 if (!$casconfig->getValue('enable_logout', false)) {
     $message = 'Logout not allowed';
 
-    SimpleSAML_Logger::debug('casserver:' . $message);
+    SimpleSAML\Logger::debug('casserver:' . $message);
 
     throw new Exception($message);
 }
@@ -38,46 +38,46 @@ $skipLogoutPage = $casconfig->getValue('skip_logout_page', false);
 if ($skipLogoutPage && !array_key_exists('url', $_GET)) {
     $message = 'Required URL query parameter [url] not provided. (CAS Server)';
 
-    SimpleSAML_Logger::debug('casserver:' . $message);
+    SimpleSAML\Logger::debug('casserver:' . $message);
 
     throw new Exception($message);
 }
 /* Load simpleSAMLphp metadata */
 
-$as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
+$as = new SimpleSAML\Auth\Simple($casconfig->getValue('authsource'));
 
 $session = SimpleSAML_Session::getSession();
 
 if (!is_null($session)) {
     $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'casserver:FileSystemTicketStore'));
-    $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
+    $ticketStoreClass = SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
     $ticketStore = new $ticketStoreClass($casconfig);
 
     $ticketStore->deleteTicket($session->getSessionId());
 }
 
 if ($as->isAuthenticated()) {
-    SimpleSAML_Logger::debug('casserver: performing a real logout');
+    SimpleSAML\Logger::debug('casserver: performing a real logout');
 
     if ($casconfig->getValue('skip_logout_page', false)) {
         $as->logout($_GET['url']);
     } else {
         $as->logout(
             SimpleSAML\Utils\HTTP::addURLParameters(
-                SimpleSAML_Module::getModuleURL('casserver/loggedOut.php'),
+                SimpleSAML\Module::getModuleURL('casserver/loggedOut.php'),
                 array_key_exists('url', $_GET) ? array('url' => $_GET['url']) : array()
             )
         );
     }
 } else {
-    SimpleSAML_Logger::debug('casserver: no session to log out of, performing redirect');
+    SimpleSAML\Logger::debug('casserver: no session to log out of, performing redirect');
 
     if ($casconfig->getValue('skip_logout_page', false)) {
         SimpleSAML\Utils\HTTP::redirectTrustedURL(SimpleSAML\Utils\HTTP::addURLParameters($_GET['url'], array()));
     } else {
         SimpleSAML\Utils\HTTP::redirectTrustedURL(
             SimpleSAML\Utils\HTTP::addURLParameters(
-                SimpleSAML_Module::getModuleURL('casserver/loggedOut.php'),
+                SimpleSAML\Module::getModuleURL('casserver/loggedOut.php'),
                 array_key_exists('url', $_GET) ? array('url' => $_GET['url']) : array()
             )
         );

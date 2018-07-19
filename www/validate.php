@@ -31,7 +31,7 @@ require_once 'utility/urlUtils.php';
 $casconfig = SimpleSAML_Configuration::getConfig('module_casserver.php');
 
 /* Instantiate protocol handler */
-$protocolClass = SimpleSAML_Module::resolveClass('casserver:Cas10', 'Cas_Protocol');
+$protocolClass = SimpleSAML\Module::resolveClass('casserver:Cas10', 'Cas_Protocol');
 $protocol = new $protocolClass($casconfig);
 
 if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
@@ -40,10 +40,10 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
     try {
         /* Instantiate ticket store */
         $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'casserver:FileSystemTicketStore'));
-        $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
+        $ticketStoreClass = SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
         $ticketStore = new $ticketStoreClass($casconfig);
 
-        $ticketFactoryClass = SimpleSAML_Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
+        $ticketFactoryClass = SimpleSAML\Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
         $ticketFactory = new $ticketFactoryClass($casconfig);
 
         $serviceTicket = $ticketStore->getTicket($_GET['ticket']);
@@ -62,7 +62,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                 echo $protocol->getValidateSuccessResponse($serviceTicket['attributes'][$usernameField][0]);
             } else {
                 if (!array_key_exists($usernameField, $serviceTicket['attributes'])) {
-                    SimpleSAML_Logger::error('casserver:validate: internal server error. Missing user name attribute: '
+                    SimpleSAML\Logger::error('casserver:validate: internal server error. Missing user name attribute: '
                         . var_export($usernameField, true));
 
                     echo $protocol->getValidateFailureResponse();
@@ -78,7 +78,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                             $message = 'Ticket was issue from single sign on session';
                         }
                     }
-                    SimpleSAML_Logger::debug('casserver:' . $message);
+                    SimpleSAML\Logger::debug('casserver:' . $message);
 
                     echo $protocol->getValidateFailureResponse();
                 }
@@ -90,12 +90,12 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                 $message = 'ticket: ' . var_export($_GET['ticket'], true) . ' is not a service ticket';
             }
 
-            SimpleSAML_Logger::debug('casserver:' . $message);
+            SimpleSAML\Logger::debug('casserver:' . $message);
 
             echo $protocol->getValidateFailureResponse();
         }
     } catch (Exception $e) {
-        SimpleSAML_Logger::error('casserver:validate: internal server error. ' . var_export($e->getMessage(), true));
+        SimpleSAML\Logger::error('casserver:validate: internal server error. ' . var_export($e->getMessage(), true));
 
         echo $protocol->getValidateFailureResponse();
     }
@@ -106,7 +106,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
         $message = 'Missing ticket parameter: [ticket]';
     }
 
-    SimpleSAML_Logger::debug('casserver:' . $message);
+    SimpleSAML\Logger::debug('casserver:' . $message);
 
     echo $protocol->getValidateFailureResponse();
 }

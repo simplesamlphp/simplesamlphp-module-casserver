@@ -24,7 +24,7 @@ function checkServiceURL($service, array $legal_service_urls)
 {
     foreach ($legal_service_urls as $legalUrl) {
         if (empty($legalUrl)) {
-            SimpleSAML_Logger::warning("Ignoring empty CAS legal service url '$legalUrl'.");
+            SimpleSAML\Logger::warning("Ignoring empty CAS legal service url '$legalUrl'.");
             continue;
         }
         if (!ctype_alnum($legalUrl[0])) {
@@ -33,7 +33,7 @@ function checkServiceURL($service, array $legal_service_urls)
             if ($result === 1) {
                 return true;
             } elseif ($result === false) {
-                SimpleSAML_Logger::warning("Invalid CAS legal service url '$legalUrl'. Error " . preg_last_error());
+                SimpleSAML\Logger::warning("Invalid CAS legal service url '$legalUrl'. Error " . preg_last_error());
             }
         } elseif (strpos($service, $legalUrl) === 0) {
             return true;

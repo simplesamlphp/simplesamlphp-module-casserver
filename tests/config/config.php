@@ -11,6 +11,6 @@ $config = array(
     ),
 
     'debug' => true,
-    'logging.level' => SimpleSAML_Logger::DEBUG,
+    'logging.level' => SimpleSAML\Logger::DEBUG,
     'logging.handler' => 'errorlog',
 );

@@ -39,7 +39,7 @@ $function = substr($_SERVER['PATH_INFO'], 1);
 if (!isset($validFunctions[$function])) {
     $message = 'Not a valid function for cas.php.';
 
-    SimpleSAML_Logger::debug('casserver:' . $message);
+    SimpleSAML\Logger::debug('casserver:' . $message);
 
     throw new Exception($message);
 }

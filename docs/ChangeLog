@@ -22,6 +22,7 @@
 2016-08-01 Bjorn Rohde Jensen
         * Release 6.1.0
         * Minimum supported simplesamlphp version bumped to 1.15.
+        * Fixed some deprecation warnings by using namespaces to refer to the relevant classes.
 
 2016-08-01 Bjorn Rohde Jensen
 		* Release 6.0.0

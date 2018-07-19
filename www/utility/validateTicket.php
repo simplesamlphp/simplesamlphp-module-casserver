@@ -32,7 +32,7 @@ require_once 'urlUtils.php';
 $casconfig = SimpleSAML_Configuration::getConfig('module_casserver.php');
 
 /* Instantiate protocol handler */
-$protocolClass = SimpleSAML_Module::resolveClass('casserver:Cas20', 'Cas_Protocol');
+$protocolClass = SimpleSAML\Module::resolveClass('casserver:Cas20', 'Cas_Protocol');
 $protocol = new $protocolClass($casconfig);
 
 if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
@@ -40,10 +40,10 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
 
     try {
         $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'casserver:FileSystemTicketStore'));
-        $ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
+        $ticketStoreClass = SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
         $ticketStore = new $ticketStoreClass($casconfig);
 
-        $ticketFactoryClass = SimpleSAML_Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
+        $ticketFactoryClass = SimpleSAML\Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
         $ticketFactory = new $ticketFactoryClass($casconfig);
 
         $serviceTicket = $ticketStore->getTicket($_GET['ticket']);
@@ -94,7 +94,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                 if ($ticketFactory->isExpired($serviceTicket)) {
                     $message = 'Ticket ' . var_export($_GET['ticket'], true) . ' has expired';
 
-                    SimpleSAML_Logger::debug('casserver:' . $message);
+                    SimpleSAML\Logger::debug('casserver:' . $message);
 
                     echo $protocol->getValidateFailureResponse('INVALID_TICKET', $message);
                 } else {
@@ -103,18 +103,18 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                             . var_export($serviceTicket['service'], true)
                             . ' but was: ' . var_export($_GET['service'], true);
 
-                        SimpleSAML_Logger::debug('casserver:' . $message);
+                        SimpleSAML\Logger::debug('casserver:' . $message);
 
                         echo $protocol->getValidateFailureResponse('INVALID_SERVICE', $message);
                     } else {
                         if ($serviceTicket['forceAuthn'] != $forceAuthn) {
                             $message = 'Ticket was issue from single sign on session';
 
-                            SimpleSAML_Logger::debug('casserver:' . $message);
+                            SimpleSAML\Logger::debug('casserver:' . $message);
 
                             echo $protocol->getValidateFailureResponse('INVALID_TICKET', $message);
                         } else {
-                            SimpleSAML_Logger::error('casserver:' . $method . ': internal server error.');
+                            SimpleSAML\Logger::error('casserver:' . $method . ': internal server error.');
 
                             echo $protocol->getValidateFailureResponse('INTERNAL_ERROR', 'Unknown internal error');
                         }
@@ -125,7 +125,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
             if (is_null($serviceTicket)) {
                 $message = 'Ticket ' . var_export($_GET['ticket'], true) . ' not recognized';
 
-                SimpleSAML_Logger::debug('casserver:' . $message);
+                SimpleSAML\Logger::debug('casserver:' . $message);
 
                 echo $protocol->getValidateFailureResponse('INVALID_TICKET', $message);
             } else {
@@ -133,13 +133,13 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                     $message = 'Ticket ' . var_export($_GET['ticket'], true)
                         . ' is a proxy ticket. Use proxyValidate instead.';
 
-                    SimpleSAML_Logger::debug('casserver:' . $message);
+                    SimpleSAML\Logger::debug('casserver:' . $message);
 
                     echo $protocol->getValidateFailureResponse('INVALID_TICKET', $message);
                 } else {
                     $message = 'Ticket ' . var_export($_GET['ticket'], true) . ' is not a service ticket';
 
-                    SimpleSAML_Logger::debug('casserver:' . $message);
+                    SimpleSAML\Logger::debug('casserver:' . $message);
 
                     echo $protocol->getValidateFailureResponse('INVALID_TICKET', $message);
                 }
@@ -147,7 +147,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
         }
 
     } catch (Exception $e) {
-        SimpleSAML_Logger::error('casserver:serviceValidate: internal server error. '
+        SimpleSAML\Logger::error('casserver:serviceValidate: internal server error. '
             . var_export($e->getMessage(), true));
 
         echo $protocol->getValidateFailureResponse('INTERNAL_ERROR', $e->getMessage());
@@ -156,13 +156,13 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
     if (!array_key_exists('service', $_GET)) {
         $message = 'Missing service parameter: [service]';
 
-        SimpleSAML_Logger::debug('casserver:' . $message);
+        SimpleSAML\Logger::debug('casserver:' . $message);
 
         echo $protocol->getValidateFailureResponse('INVALID_REQUEST', $message);
     } else {
         $message = 'Missing ticket parameter: [ticket]';
 
-        SimpleSAML_Logger::debug('casserver:' . $message);
+        SimpleSAML\Logger::debug('casserver:' . $message);
 
         echo $protocol->getValidateFailureResponse('INVALID_REQUEST', $message);
     }

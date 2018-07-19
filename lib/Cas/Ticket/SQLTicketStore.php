@@ -198,7 +198,7 @@ class sspmod_casserver_Cas_Ticket_SQLTicketStore extends sspmod_casserver_Cas_Ti
                 case '23505': /* PostgreSQL */
                     break;
                 default:
-                    SimpleSAML_Logger::error('casserver: Error while saving data: ' . $e->getMessage());
+                    SimpleSAML\Logger::error('casserver: Error while saving data: ' . $e->getMessage());
                     throw $e;
             }
         }

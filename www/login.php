@@ -39,12 +39,12 @@ $legal_service_urls = $casconfig->getValue('legal_service_urls');
 if (isset($_GET['service']) && !checkServiceURL(sanitize($_GET['service']), $legal_service_urls)) {
     $message = 'Service parameter provided to CAS server is not listed as a legal service: [service] = '
         . var_export($_GET['service'], true);
-    SimpleSAML_Logger::debug('casserver:' . $message);
+    SimpleSAML\Logger::debug('casserver:' . $message);
 
     throw new Exception($message);
 }
 
-$as = new SimpleSAML_Auth_Simple($casconfig->getValue('authsource'));
+$as = new SimpleSAML\Auth\Simple($casconfig->getValue('authsource'));
 
 if (array_key_exists('scope', $_GET) && is_string($_GET['scope'])) {
     $scopes = $casconfig->getValue('scopes', array());
@@ -54,7 +54,7 @@ if (array_key_exists('scope', $_GET) && is_string($_GET['scope'])) {
     } else {
         $message = 'Scope parameter provided to CAS server is not listed as legal scope: [scope] = '
             . var_export($_GET['scope'], true);
-        SimpleSAML_Logger::debug('casserver:' . $message);
+        SimpleSAML\Logger::debug('casserver:' . $message);
 
         throw new Exception($message);
     }
@@ -65,10 +65,10 @@ if (array_key_exists('language', $_GET) && is_string($_GET['language'])) {
 }
 
 $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'casserver:FileSystemTicketStore'));
-$ticketStoreClass = SimpleSAML_Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
+$ticketStoreClass = SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
 $ticketStore = new $ticketStoreClass($casconfig);
 
-$ticketFactoryClass = SimpleSAML_Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
+$ticketFactoryClass = SimpleSAML\Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
 $ticketFactory = new $ticketFactoryClass($casconfig);
 
 $session = SimpleSAML_Session::getSessionFromRequest();
@@ -186,6 +186,6 @@ if (isset($_GET['service'])) {
     SimpleSAML\Utils\HTTP::redirectTrustedURL(SimpleSAML\Utils\HTTP::addURLParameters($_GET['service'], $parameters));
 } else {
     SimpleSAML\Utils\HTTP::redirectTrustedURL(
-        SimpleSAML\Utils\HTTP::addURLParameters(SimpleSAML_Module::getModuleURL('casserver/loggedIn.php'), $parameters)
+        SimpleSAML\Utils\HTTP::addURLParameters(SimpleSAML\Module::getModuleURL('casserver/loggedIn.php'), $parameters)
     );
 }
