@@ -42,6 +42,9 @@ $config = array(
         //'options' => array(
         //    \PDO::ATTR_TIMEOUT => 4,
         // )
+
+        //'class' => 'casserver:RedisTicketStore',
+        //'prefix' => 'some_prefix',
     ),
 
     'attrname' => 'eduPersonPrincipalName', // 'eduPersonPrincipalName',
