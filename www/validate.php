@@ -1,37 +1,38 @@
 <?php
+
 /*
-*    simpleSAMLphp-casserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
-*
-*    Copyright (C) 2013  Bjorn R. Jensen
-*
-*    This library is free software; you can redistribute it and/or
-*    modify it under the terms of the GNU Lesser General Public
-*    License as published by the Free Software Foundation; either
-*    version 2.1 of the License, or (at your option) any later version.
-*
-*    This library is distributed in the hope that it will be useful,
-*    but WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-*    Lesser General Public License for more details.
-*
-*    You should have received a copy of the GNU Lesser General Public
-*    License along with this library; if not, write to the Free Software
-*    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-*
-* Incoming parameters:
-*  service
-*  renew
-*  ticket
-*
-*/
+ *    simpleSAMLphp-casserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
+ *
+ *    Copyright (C) 2013  Bjorn R. Jensen
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the GNU Lesser General Public
+ *    License as published by the Free Software Foundation; either
+ *    version 2.1 of the License, or (at your option) any later version.
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *    Lesser General Public License for more details.
+ *
+ *    You should have received a copy of the GNU Lesser General Public
+ *    License along with this library; if not, write to the Free Software
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * Incoming parameters:
+ *  service
+ *  renew
+ *  ticket
+ *
+ */
 
 require_once 'utility/urlUtils.php';
 
 /* Load simpleSAMLphp, configuration and metadata */
-$casconfig = SimpleSAML_Configuration::getConfig('module_casserver.php');
+$casconfig = \SimpleSAML\Configuration::getConfig('module_casserver.php');
 
 /* Instantiate protocol handler */
-$protocolClass = SimpleSAML\Module::resolveClass('casserver:Cas10', 'Cas_Protocol');
+$protocolClass = \SimpleSAML\Module::resolveClass('casserver:Cas10', 'Cas_Protocol');
 $protocol = new $protocolClass($casconfig);
 
 if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
@@ -40,10 +41,10 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
     try {
         /* Instantiate ticket store */
         $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'casserver:FileSystemTicketStore'));
-        $ticketStoreClass = SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
+        $ticketStoreClass = \SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
         $ticketStore = new $ticketStoreClass($casconfig);
 
-        $ticketFactoryClass = SimpleSAML\Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
+        $ticketFactoryClass = \SimpleSAML\Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
         $ticketFactory = new $ticketFactoryClass($casconfig);
 
         $serviceTicket = $ticketStore->getTicket($_GET['ticket']);
@@ -62,40 +63,40 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                 echo $protocol->getValidateSuccessResponse($serviceTicket['attributes'][$usernameField][0]);
             } else {
                 if (!array_key_exists($usernameField, $serviceTicket['attributes'])) {
-                    SimpleSAML\Logger::error('casserver:validate: internal server error. Missing user name attribute: '
-                        . var_export($usernameField, true));
+                    \SimpleSAML\Logger::error('casserver:validate: internal server error. Missing user name attribute: '.
+                        var_export($usernameField, true));
 
                     echo $protocol->getValidateFailureResponse();
                 } else {
                     if ($ticketFactory->isExpired($serviceTicket)) {
-                        $message = 'Ticket has ' . var_export($_GET['ticket'], true) . ' expired';
+                        $message = 'Ticket has '.var_export($_GET['ticket'], true).' expired';
                     } else {
                         if (sanitize($serviceTicket['service']) == sanitize($_GET['service'])) {
-                            $message = 'Mismatching service parameters: expected '
-                                . var_export($serviceTicket['service'], true)
-                                . ' but was: ' . var_export($_GET['service'], true);
+                            $message = 'Mismatching service parameters: expected '.
+                                var_export($serviceTicket['service'], true).
+                                ' but was: '.var_export($_GET['service'], true);
                         } else {
                             $message = 'Ticket was issue from single sign on session';
                         }
                     }
-                    SimpleSAML\Logger::debug('casserver:' . $message);
+                    \SimpleSAML\Logger::debug('casserver:'.$message);
 
                     echo $protocol->getValidateFailureResponse();
                 }
             }
         } else {
             if (is_null($serviceTicket)) {
-                $message = 'ticket: ' . var_export($_GET['ticket'], true) . ' not recognized';
+                $message = 'ticket: '.var_export($_GET['ticket'], true).' not recognized';
             } else {
-                $message = 'ticket: ' . var_export($_GET['ticket'], true) . ' is not a service ticket';
+                $message = 'ticket: '.var_export($_GET['ticket'], true).' is not a service ticket';
             }
 
-            SimpleSAML\Logger::debug('casserver:' . $message);
+            \SimpleSAML\Logger::debug('casserver:'.$message);
 
             echo $protocol->getValidateFailureResponse();
         }
-    } catch (Exception $e) {
-        SimpleSAML\Logger::error('casserver:validate: internal server error. ' . var_export($e->getMessage(), true));
+    } catch (\Exception $e) {
+        \SimpleSAML\Logger::error('casserver:validate: internal server error. '.var_export($e->getMessage(), true));
 
         echo $protocol->getValidateFailureResponse();
     }
@@ -106,7 +107,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
         $message = 'Missing ticket parameter: [ticket]';
     }
 
-    SimpleSAML\Logger::debug('casserver:' . $message);
+    SimpleSAML\Logger::debug('casserver:'.$message);
 
     echo $protocol->getValidateFailureResponse();
 }

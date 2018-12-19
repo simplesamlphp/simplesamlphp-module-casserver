@@ -1,50 +1,51 @@
 <?php
+
 /*
-*    simpleSAMLphp-casserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
-*
-*    Copyright (C) 2013  Bjorn R. Jensen
-*
-*    This library is free software; you can redistribute it and/or
-*    modify it under the terms of the GNU Lesser General Public
-*    License as published by the Free Software Foundation; either
-*    version 2.1 of the License, or (at your option) any later version.
-*
-*    This library is distributed in the hope that it will be useful,
-*    but WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-*    Lesser General Public License for more details.
-*
-*    You should have received a copy of the GNU Lesser General Public
-*    License along with this library; if not, write to the Free Software
-*    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-*
-* Incoming parameters:
-*  service
-*  renew
-*  gateway
-*  entityId
-*  scope
-*  language
-*/
+ *    simpleSAMLphp-casserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
+ *
+ *    Copyright (C) 2013  Bjorn R. Jensen
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the GNU Lesser General Public
+ *    License as published by the Free Software Foundation; either
+ *    version 2.1 of the License, or (at your option) any later version.
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *    Lesser General Public License for more details.
+ *
+ *    You should have received a copy of the GNU Lesser General Public
+ *    License along with this library; if not, write to the Free Software
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * Incoming parameters:
+ *  service
+ *  renew
+ *  gateway
+ *  entityId
+ *  scope
+ *  language
+ */
 
 require_once 'utility/urlUtils.php';
 
 $forceAuthn = isset($_GET['renew']) && $_GET['renew'];
 $isPassive = isset($_GET['gateway']) && $_GET['gateway'];
 
-$casconfig = SimpleSAML_Configuration::getConfig('module_casserver.php');
+$casconfig = \SimpleSAML\Configuration::getConfig('module_casserver.php');
 
 $legal_service_urls = $casconfig->getValue('legal_service_urls');
 
 if (isset($_GET['service']) && !checkServiceURL(sanitize($_GET['service']), $legal_service_urls)) {
-    $message = 'Service parameter provided to CAS server is not listed as a legal service: [service] = '
-        . var_export($_GET['service'], true);
-    SimpleSAML\Logger::debug('casserver:' . $message);
+    $message = 'Service parameter provided to CAS server is not listed as a legal service: [service] = '.
+        var_export($_GET['service'], true);
+    \SimpleSAML\Logger::debug('casserver:'.$message);
 
     throw new Exception($message);
 }
 
-$as = new SimpleSAML\Auth\Simple($casconfig->getValue('authsource'));
+$as = new \SimpleSAML\Auth\Simple($casconfig->getValue('authsource'));
 
 if (array_key_exists('scope', $_GET) && is_string($_GET['scope'])) {
     $scopes = $casconfig->getValue('scopes', array());
@@ -52,11 +53,11 @@ if (array_key_exists('scope', $_GET) && is_string($_GET['scope'])) {
     if (array_key_exists($_GET['scope'], $scopes)) {
         $idpList = $scopes[$_GET['scope']];
     } else {
-        $message = 'Scope parameter provided to CAS server is not listed as legal scope: [scope] = '
-            . var_export($_GET['scope'], true);
-        SimpleSAML\Logger::debug('casserver:' . $message);
+        $message = 'Scope parameter provided to CAS server is not listed as legal scope: [scope] = '.
+            var_export($_GET['scope'], true);
+        \SimpleSAML\Logger::debug('casserver:'.$message);
 
-        throw new Exception($message);
+        throw new \Exception($message);
     }
 }
 
@@ -65,13 +66,13 @@ if (array_key_exists('language', $_GET) && is_string($_GET['language'])) {
 }
 
 $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'casserver:FileSystemTicketStore'));
-$ticketStoreClass = SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
+$ticketStoreClass = \SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
 $ticketStore = new $ticketStoreClass($casconfig);
 
-$ticketFactoryClass = SimpleSAML\Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
+$ticketFactoryClass = \SimpleSAML\Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
 $ticketFactory = new $ticketFactoryClass($casconfig);
 
-$session = SimpleSAML_Session::getSessionFromRequest();
+$session = \SimpleSAML\Session::getSessionFromRequest();
 
 $sessionTicket = $ticketStore->getTicket($session->getSessionId());
 $sessionRenewId = $sessionTicket ? $sessionTicket['renewId'] : null;
@@ -100,7 +101,7 @@ if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewI
         $query['language'] = is_string($_GET['language']) ? $_GET['language'] : null;
     }
 
-    $returnUrl = SimpleSAML\Utils\HTTP::getSelfURLNoQuery() . '?' . http_build_query($query);
+    $returnUrl = \SimpleSAML\Utils\HTTP::getSelfURLNoQuery().'?'.http_build_query($query);
 
     $params = array(
         'ForceAuthn' => $forceAuthn,
@@ -134,7 +135,7 @@ if (!is_array($sessionTicket) || $forceAuthn) {
 $parameters = array();
 
 if (array_key_exists('language', $_GET)) {
-    $oldLanguagePreferred = SimpleSAML_XHTML_Template::getLanguageCookie();
+    $oldLanguagePreferred = \SimpleSAML\XHTML\Template::getLanguageCookie();
 
     if (isset($oldLanguagePreferred)) {
         $parameters['language'] = $oldLanguagePreferred;
@@ -183,9 +184,9 @@ if (isset($_GET['service'])) {
 
     $parameters['ticket'] = $serviceTicket['id'];
 
-    SimpleSAML\Utils\HTTP::redirectTrustedURL(SimpleSAML\Utils\HTTP::addURLParameters($_GET['service'], $parameters));
+    \SimpleSAML\Utils\HTTP::redirectTrustedURL(\SimpleSAML\Utils\HTTP::addURLParameters($_GET['service'], $parameters));
 } else {
-    SimpleSAML\Utils\HTTP::redirectTrustedURL(
-        SimpleSAML\Utils\HTTP::addURLParameters(SimpleSAML\Module::getModuleURL('casserver/loggedIn.php'), $parameters)
+   \ SimpleSAML\Utils\HTTP::redirectTrustedURL(
+        \SimpleSAML\Utils\HTTP::addURLParameters(SimpleSAML\Module::getModuleURL('casserver/loggedIn.php'), $parameters)
     );
 }
