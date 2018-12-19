@@ -40,7 +40,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
     $forceAuthn = isset($_GET['renew']) && $_GET['renew'];
 
     try {
-        $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'casserver:FileSystemTicketStore'));
+        $ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
         $ticketStoreClass = \SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
         $ticketStore = new $ticketStoreClass($casconfig);
 
@@ -71,13 +71,13 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                     if (!is_null($sessionTicket) && $ticketFactory->isSessionTicket($sessionTicket) &&
                         !$ticketFactory->isExpired($sessionTicket)
                     ) {
-                        $proxyGrantingTicket = $ticketFactory->createProxyGrantingTicket(array(
+                        $proxyGrantingTicket = $ticketFactory->createProxyGrantingTicket([
                             'userName' => $serviceTicket['userName'],
                             'attributes' => $attributes,
                             'forceAuthn' => false,
-                            'proxies' => array_merge(array($_GET['service']), $serviceTicket['proxies']),
+                            'proxies' => array_merge([$_GET['service']), $serviceTicket['proxies']],
                             'sessionId' => $serviceTicket['sessionId']
-                        ));
+                        ]);
                         try {
                             \SimpleSAML\Utils\HTTP::fetch($pgtUrl . '?pgtIou=' . $proxyGrantingTicket['iou']
                                 . '&pgtId=' . $proxyGrantingTicket['id']);

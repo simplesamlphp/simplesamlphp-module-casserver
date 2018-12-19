@@ -3,14 +3,14 @@
 /*
  Config file to use during integration testing
 */
-$config = array(
+$config = [
     'baseurlpath' => '/',
 
-    'metadata.sources' => array(
-        array('type' => 'flatfile', 'directory' =>  dirname(__DIR__) . '/metadata'),
-    ),
+    'metadata.sources' => [
+        ['type' => 'flatfile', 'directory' =>  dirname(__DIR__) . '/metadata'],
+    ],
 
     'debug' => true,
-    'logging.level' => SimpleSAML\Logger::DEBUG,
+    'logging.level' => \SimpleSAML\Logger::DEBUG,
     'logging.handler' => 'errorlog',
-);
+];

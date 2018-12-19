@@ -1,14 +1,14 @@
 <?php
 
-$config = array(
-    'admin' => array(
+$config = [
+    'admin' => [
         'core:AdminPassword',
-    ),
-    'casserver' => array(
+    ],
+    'casserver' => [
         'exampleauth:Static',
-        'uid' => array('testuser'),
-        'eduPersonPrincipalName' => array('testuser@example.com'),
-        'eduPersonAffiliation' => array('member', 'employee'),
-        'cn' => array('Test User'),
-    ),
-);
+        'uid' => ['testuser'],
+        'eduPersonPrincipalName' => ['testuser@example.com'],
+        'eduPersonAffiliation' => ['member', 'employee'],
+        'cn' => ['Test User'],
+    ],
+];
