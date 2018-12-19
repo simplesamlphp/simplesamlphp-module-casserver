@@ -33,13 +33,13 @@ $casconfig = \SimpleSAML\Configuration::getConfig('module_casserver.php');
 $protocolClass = \SimpleSAML\Module::resolveClass('casserver:Cas20', 'Cas_Protocol');
 $protocol = new $protocolClass($casconfig);
 
-$legal_target_service_urls = $casconfig->getValue('legal_target_service_urls', array());
+$legal_target_service_urls = $casconfig->getValue('legal_target_service_urls', []);
 
 if (array_key_exists('targetService', $_GET) &&
     checkServiceURL(sanitize($_GET['targetService']), $legal_target_service_urls) && array_key_exists('pgt', $_GET)
 ) {
 
-    $ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'casserver:FileSystemTicketStore'));
+    $ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
     $ticketStoreClass = \SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
     $ticketStore = new $ticketStoreClass($casconfig);
 
@@ -54,11 +54,14 @@ if (array_key_exists('targetService', $_GET) &&
         if (!is_null($sessionTicket) && $ticketFactory->isSessionTicket($sessionTicket) &&
             !$ticketFactory->isExpired($sessionTicket)
         ) {
-            $proxyTicket = $ticketFactory->createProxyTicket(array('service' => $_GET['targetService'],
-                'forceAuthn' => $proxyGrantingTicket['forceAuthn'],
-                'attributes' => $proxyGrantingTicket['attributes'],
-                'proxies' => $proxyGrantingTicket['proxies'],
-                'sessionId' => $proxyGrantingTicket['sessionId']));
+            $proxyTicket = $ticketFactory->createProxyTicket(
+                ['service' => $_GET['targetService'],
+                    'forceAuthn' => $proxyGrantingTicket['forceAuthn'],
+                    'attributes' => $proxyGrantingTicket['attributes'],
+                    'proxies' => $proxyGrantingTicket['proxies'],
+                    'sessionId' => $proxyGrantingTicket['sessionId']
+                ]
+            );
 
             $ticketStore->addTicket($proxyTicket);
 

@@ -1,4 +1,5 @@
 <?php
+
 /*
  *    simpleSAMLphp-casserver is a CAS 1.0 and 2.0 compliant CAS server in the form of a simpleSAMLphp module
  *

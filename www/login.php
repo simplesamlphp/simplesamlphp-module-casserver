@@ -48,7 +48,7 @@ if (isset($_GET['service']) && !checkServiceURL(sanitize($_GET['service']), $leg
 $as = new \SimpleSAML\Auth\Simple($casconfig->getValue('authsource'));
 
 if (array_key_exists('scope', $_GET) && is_string($_GET['scope'])) {
-    $scopes = $casconfig->getValue('scopes', array());
+    $scopes = $casconfig->getValue('scopes', []);
 
     if (array_key_exists($_GET['scope'], $scopes)) {
         $idpList = $scopes[$_GET['scope']];
@@ -65,7 +65,7 @@ if (array_key_exists('language', $_GET) && is_string($_GET['language'])) {
     \SimpleSAML\Locale\Language::setLanguageCookie($_GET['language']);
 }
 
-$ticketStoreConfig = $casconfig->getValue('ticketstore', array('class' => 'casserver:FileSystemTicketStore'));
+$ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
 $ticketStoreClass = \SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
 $ticketStore = new $ticketStoreClass($casconfig);
 
@@ -79,7 +79,7 @@ $sessionRenewId = $sessionTicket ? $sessionTicket['renewId'] : null;
 $requestRenewId = isset($_REQUEST['renewId']) ? $_REQUEST['renewId'] : null;
 
 if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewId)) {
-    $query = array();
+    $query = [];
 
     if ($sessionRenewId && $forceAuthn) {
         $query['renewId'] = $sessionRenewId;
@@ -103,11 +103,11 @@ if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewI
 
     $returnUrl = \SimpleSAML\Utils\HTTP::getSelfURLNoQuery().'?'.http_build_query($query);
 
-    $params = array(
+    $params = [
         'ForceAuthn' => $forceAuthn,
         'isPassive' => $isPassive,
         'ReturnTo' => $returnUrl,
-    );
+    ];
 
     if (isset($_GET['entityId'])) {
         $params['saml:idp'] = $_GET['entityId'];
@@ -132,7 +132,7 @@ if (!is_array($sessionTicket) || $forceAuthn) {
     $ticketStore->addTicket($sessionTicket);
 }
 
-$parameters = array();
+$parameters = [];
 
 if (array_key_exists('language', $_GET)) {
     $oldLanguagePreferred = \SimpleSAML\XHTML\Template::getLanguageCookie();
@@ -154,10 +154,10 @@ if (isset($_GET['service'])) {
     $userName = $attributes[$casUsernameAttribute][0];
 
     if ($casconfig->getValue('attributes', true)) {
-        $attributesToTransfer = $casconfig->getValue('attributes_to_transfer', array());
+        $attributesToTransfer = $casconfig->getValue('attributes_to_transfer', []);
 
         if (sizeof($attributesToTransfer) > 0) {
-            $casAttributes = array();
+            $casAttributes = [];
 
             foreach ($attributesToTransfer as $key) {
                 if (array_key_exists($key, $attributes)) {
@@ -168,17 +168,17 @@ if (isset($_GET['service'])) {
             $casAttributes = $attributes;
         }
     } else {
-        $casAttributes = array();
+        $casAttributes = [];
     }
 
-    $serviceTicket = $ticketFactory->createServiceTicket(array(
+    $serviceTicket = $ticketFactory->createServiceTicket([
         'service' => $_GET['service'],
         'forceAuthn' => $forceAuthn,
         'userName' => $userName,
         'attributes' => $casAttributes,
         'proxies' => array(),
         'sessionId' => $sessionTicket['id']
-    ));
+    ]);
 
     $ticketStore->addTicket($serviceTicket);
 
