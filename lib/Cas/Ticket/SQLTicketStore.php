@@ -133,7 +133,7 @@ class SQLTicketStore extends TicketStore
      */
     private function getTableVersion($name)
     {
-        assert('is_string($name)');
+        assert(is_string($name));
 
         if (!isset($this->tableVersions[$name])) {
             return 0;
@@ -148,8 +148,8 @@ class SQLTicketStore extends TicketStore
      */
     private function setTableVersion($name, $version)
     {
-        assert('is_string($name)');
-        assert('is_int($version)');
+        assert(is_string($name));
+        assert(is_int($version));
 
         $this->insertOrUpdate(
             $this->prefix.'_tableVersion',
@@ -169,7 +169,7 @@ class SQLTicketStore extends TicketStore
      */
     private function insertOrUpdate($table, array $keys, array $data)
     {
-        assert('is_string($table)');
+        assert(is_string($table));
 
         $colNames = '('.implode(', ', array_keys($data)).')';
         $values = 'VALUES(:'.implode(', :', array_keys($data)).')';
@@ -240,7 +240,7 @@ class SQLTicketStore extends TicketStore
      */
     private function get($key)
     {
-        assert('is_string($key)');
+        assert(is_string($key));
 
         if (strlen($key) > 50) {
             $key = sha1($key);
@@ -279,8 +279,8 @@ class SQLTicketStore extends TicketStore
      */
     private function set($key, $value, $expire = null)
     {
-        assert('is_string($key)');
-        assert('is_null($expire) || (is_int($expire) && $expire > 2592000)');
+        assert(is_string($key));
+        assert(is_null($expire) || (is_int($expire) && $expire > 2592000));
 
         if (rand(0, 1000) < 10) {
             $this->cleanKVStore();
@@ -311,7 +311,7 @@ class SQLTicketStore extends TicketStore
      */
     private function delete($key)
     {
-        assert('is_string($key)');
+        assert(is_string($key));
 
         if (strlen($key) > 50) {
             $key = sha1($key);
