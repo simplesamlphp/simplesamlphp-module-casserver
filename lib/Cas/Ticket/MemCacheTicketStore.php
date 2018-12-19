@@ -27,7 +27,7 @@ class MemCacheTicketStore extends TicketStore
 {
     private $prefix = '';
 
-    public function __construct(\SimpleSAML_Configuration $config)
+    public function __construct(\SimpleSAML\Configuration $config)
     {
         parent::__construct($config);
 
@@ -46,14 +46,14 @@ class MemCacheTicketStore extends TicketStore
     {
         $scopedTicketId = $this->scopeTicketId($ticketId);
 
-        return SimpleSAML_Memcache::get($scopedTicketId);
+        return \SimpleSAML\Memcache::get($scopedTicketId);
     }
 
     public function addTicket(array $ticket)
     {
         $scopedTicketId = $this->scopeTicketId($ticket['id']);
 
-        SimpleSAML_Memcache::set($scopedTicketId, $ticket, $ticket['validBefore']);
+        \SimpleSAML\Memcache::set($scopedTicketId, $ticket, $ticket['validBefore']);
     }
 
     /**
@@ -63,7 +63,7 @@ class MemCacheTicketStore extends TicketStore
     {
         $scopedTicketId = $this->scopeTicketId($ticketId);
 
-        SimpleSAML_Memcache::delete($scopedTicketId);
+        \SimpleSAML\Memcache::delete($scopedTicketId);
     }
 
     /**

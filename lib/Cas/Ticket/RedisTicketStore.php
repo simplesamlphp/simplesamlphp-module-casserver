@@ -28,7 +28,7 @@ class RedisTicketStore extends TicketStore
     private $prefix = '';
     private $redis;
 
-    public function __construct(\SimpleSAML_Configuration $config)
+    public function __construct(\SimpleSAML\Configuration $config)
     {
         parent::__construct($config);
 

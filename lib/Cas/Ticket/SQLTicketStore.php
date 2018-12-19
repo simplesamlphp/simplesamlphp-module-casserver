@@ -30,11 +30,11 @@ class SQLTicketStore extends TicketStore
     public $prefix;
     private $tableVersions;
 
-    public function __construct(\SimpleSAML_Configuration $config)
+    public function __construct(\SimpleSAML\Configuration $config)
     {
         parent::__construct($config);
 
-        /** @var  $storeConfig \SimpleSAML_Configuration */
+        /** @var  $storeConfig \SimpleSAML\Configuration */
         $storeConfig = $config->getConfigItem('ticketstore');
         $dsn = $storeConfig->getString('dsn');
         $username = $storeConfig->getString('username');

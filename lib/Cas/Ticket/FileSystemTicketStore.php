@@ -27,7 +27,7 @@ class FileSystemTicketStore extends TicketStore
 {
     private $pathToTicketDirectory;
 
-    public function __construct(\SimpleSAML_Configuration $config)
+    public function __construct(\SimpleSAML\Configuration $config)
     {
         $storeConfig = $config->getValue('ticketstore', array('directory' => 'ticketcache'));
 

@@ -24,7 +24,7 @@
 abstract class sspmod_casserver_Cas_Ticket_TicketStore
 {
 
-    public function __construct(\SimpleSAML_Configuration $config)
+    public function __construct(\SimpleSAML\Configuration $config)
     {
     }
 
