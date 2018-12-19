@@ -5,7 +5,6 @@
  */
 
 $config = array(
-
     'authsource' => 'casserver',
 
     /* Scopes are named sets of entityIDs to be used for scoping. If a named scope is provided during login, then the
