@@ -43,11 +43,11 @@ class TicketFactory
      */
     public function createSessionTicket($sessionId, $expiresAt)
     {
-        return array(
+        return [
             'id' => $sessionId,
             'validBefore' => $expiresAt,
             'renewId' => SimpleSAML\Utils\Random::generateID()
-        );
+        ];
     }
 
     /**
@@ -59,7 +59,7 @@ class TicketFactory
         $id = str_replace('_', 'ST-', SimpleSAML\Utils\Random::generateID());
         $expiresAt = time() + $this->serviceTicketExpireTime;
 
-        return array_merge(array('id' => $id, 'validBefore' => $expiresAt), $content);
+        return array_merge(['id' => $id, 'validBefore' => $expiresAt], $content);
     }
 
     /**
@@ -73,7 +73,7 @@ class TicketFactory
 
         $expireAt = time() + $this->proxyGrantingTicketExpireTime;
 
-        return array_merge(array('id' => $id, 'iou' => $iou, 'validBefore' => $expireAt), $content);
+        return array_merge(['id' => $id, 'iou' => $iou, 'validBefore' => $expireAt], $content);
     }
 
     /**
@@ -85,7 +85,7 @@ class TicketFactory
         $id = str_replace('_', 'PT-', SimpleSAML\Utils\Random::generateID());
         $expiresAt = time() + $this->proxyTicketExpireTime;
 
-        return array_merge(array('id' => $id, 'validBefore' => $expiresAt), $content);
+        return array_merge(['id' => $id, 'validBefore' => $expiresAt], $content);
     }
 
     /**

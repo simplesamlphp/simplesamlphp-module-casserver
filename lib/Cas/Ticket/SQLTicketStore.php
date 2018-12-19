@@ -39,7 +39,7 @@ class SQLTicketStore extends TicketStore
         $dsn = $storeConfig->getString('dsn');
         $username = $storeConfig->getString('username');
         $password = $storeConfig->getString('password');
-        $options =  $storeConfig->getArray('options', array());
+        $options =  $storeConfig->getArray('options', []);
         $this->prefix = $storeConfig->getString('prefix', '');
 
         $this->pdo = new PDO($dsn, $username, $password, $options);
@@ -153,11 +153,11 @@ class SQLTicketStore extends TicketStore
 
         $this->insertOrUpdate(
             $this->prefix.'_tableVersion',
-            array('_name'),
-            array(
+            ['_name'],
+            [
                 '_name' => $name,
                 '_version' => $version
-            )
+            ]
         );
         $this->tableVersions[$name] = $version;
     }
@@ -205,8 +205,8 @@ class SQLTicketStore extends TicketStore
             }
         }
 
-        $updateCols = array();
-        $condCols = array();
+        $updateCols = [];
+        $condCols = [];
 
         foreach ($data as $col => $value) {
 
@@ -228,7 +228,7 @@ class SQLTicketStore extends TicketStore
     private function cleanKVStore()
     {
         $query = 'DELETE FROM '.$this->prefix.'_kvstore WHERE _expire < :now';
-        $params = array('now' => gmdate('Y-m-d H:i:s'));
+        $params = ['now' => gmdate('Y-m-d H:i:s')];
 
         $query = $this->pdo->prepare($query);
         $query->execute($params);
@@ -248,7 +248,7 @@ class SQLTicketStore extends TicketStore
 
         $query = 'SELECT _value FROM '.$this->prefix.
             '_kvstore WHERE _key = :key AND (_expire IS NULL OR _expire > :now)';
-        $params = array('key' => $key, 'now' => gmdate('Y-m-d H:i:s'));
+        $params = ['key' => $key, 'now' => gmdate('Y-m-d H:i:s')];
 
         $query = $this->pdo->prepare($query);
         $query->execute($params);
@@ -297,13 +297,13 @@ class SQLTicketStore extends TicketStore
         $value = serialize($value);
         $value = rawurlencode($value);
 
-        $data = array(
+        $data = [
             '_key' => $key,
             '_value' => $value,
             '_expire' => $expire,
-        );
+        ];
 
-        $this->insertOrUpdate($this->prefix.'_kvstore', array('_key'), $data);
+        $this->insertOrUpdate($this->prefix.'_kvstore', ['_key'], $data);
     }
 
     /**
@@ -317,9 +317,9 @@ class SQLTicketStore extends TicketStore
             $key = sha1($key);
         }
 
-        $data = array(
+        $data = [
             '_key' => $key,
-        );
+        ];
 
         $query = 'DELETE FROM '.$this->prefix.'_kvstore WHERE _key=:_key';
         $query = $this->pdo->prepare($query);

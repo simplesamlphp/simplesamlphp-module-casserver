@@ -28,7 +28,7 @@ class Cas20
     private $sendAttributes;
     private $base64EncodeAttributes;
     private $base64IndicatorAttribute;
-    private $attributes = array();
+    private $attributes = [];
     private $proxyGrantingTicketIOU = null;
 
     public function __construct($config)

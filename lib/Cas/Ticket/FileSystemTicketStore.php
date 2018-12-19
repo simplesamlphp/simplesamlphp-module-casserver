@@ -29,7 +29,7 @@ class FileSystemTicketStore extends TicketStore
 
     public function __construct(\SimpleSAML\Configuration $config)
     {
-        $storeConfig = $config->getValue('ticketstore', array('directory' => 'ticketcache'));
+        $storeConfig = $config->getValue('ticketstore', ['directory' => 'ticketcache']);
 
         if (!is_string($storeConfig['directory'])) {
             throw new Exception('Invalid directory option in config.');
