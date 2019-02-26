@@ -24,7 +24,7 @@ Unreleased
     * Support method parameter at login
     * Improve handling of invalid xml element names for attributes
     * Minimum supported simplesamlphp version bumped to 1.17
-
+    * debugMode option to display cas ticket xml
 
 2018-07-20 Bjorn Rohde Jensen
     * Release 6.1.0
