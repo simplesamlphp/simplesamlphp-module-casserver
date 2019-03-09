@@ -21,7 +21,7 @@
  *
  */
 
-namespace \SimpleSAML\Module\casserver\Cas\Ticket;
+namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
 class MemCacheTicketStore extends TicketStore
 {

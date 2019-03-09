@@ -12,10 +12,10 @@ require_once dirname(dirname(__DIR__)) . '/www/utility/urlUtils.php';
 
 class UtilsTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @param $service string the service url to check
      * @param $allowed bool is the service url allowed?
+     * @return void
      * @dataProvider checkServiceURLProvider
      */
     public function testCheckServiceURL($service, $allowed)
@@ -42,6 +42,10 @@ class UtilsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($allowed, checkServiceURL(sanitize($service), $legalServices), "$service validated wrong");
     }
 
+
+    /**
+     * @return void
+     */
     public function checkServiceURLProvider()
     {
         return array(

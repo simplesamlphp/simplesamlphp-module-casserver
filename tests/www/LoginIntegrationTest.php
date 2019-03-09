@@ -22,10 +22,13 @@ use GuzzleHttp\Cookie\CookieJar;
  */
 class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var string $LINK_URL */
     private static $LINK_URL = 'http://localhost:8732/module.php/casserver/login.php';
+
 
     /**
      * Test authenticating to the login endpoint with no parameters.'
+     * @return void
      */
     public function testNoQueryParameters()
     {
@@ -47,8 +50,10 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+
     /**
      * Test incorrect service url
+     * @return void
      */
     public function testWrongServiceUrl()
     {
@@ -72,8 +77,10 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+
     /**
      * test a valid service URL
+     * @return void
      */
     public function testValidServiceUrl()
     {
@@ -100,9 +107,11 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+
     /**
      * Sets up an authenticated session for the cookie $jar
      * @param CookieJar $jar
+     * @return void
      */
     private function authenticate(CookieJar $jar)
     {

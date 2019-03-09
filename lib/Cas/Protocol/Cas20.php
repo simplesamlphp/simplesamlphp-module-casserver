@@ -25,12 +25,25 @@ namespace SimpleSAML\Module\casserver\Cas\Protocol;
 
 class Cas20
 {
+    /** @var bool $sendAttributes */
     private $sendAttributes;
+
+    /** @var bool $base64EncodeAttributes */
     private $base64EncodeAttributes;
+
+    /** @var string|null $base64IndicatorAttribute */
     private $base64IndicatorAttribute;
+
+    /** @var array $attributes */
     private $attributes = [];
+
+    /** @var string $proxyGrantingTicketIOU */
     private $proxyGrantingTicketIOU = null;
 
+
+    /**
+     * @param array $config
+     */
     public function __construct($config)
     {
         $this->sendAttributes = $config->getValue('attributes', false);
@@ -38,29 +51,52 @@ class Cas20
         $this->base64IndicatorAttribute = $config->getValue('base64_attributes_indicator_attribute', null);
     }
 
+
+    /**
+     * @param array $attributes
+     * @return void
+     */
     public function setAttributes($attributes)
     {
         $this->attributes = $attributes;
     }
 
+
+    /**
+     * @return array
+     */
     public function getAttributes()
     {
         return $this->attributes;
     }
 
+
+    /**
+     * @param string $proxyGrantingTicketIOU
+     * @return void
+     */
     public function setProxyGrantingTicketIOU($proxyGrantingTicketIOU)
     {
         $this->proxyGrantingTicketIOU = $proxyGrantingTicketIOU;
     }
 
+
+    /**
+     * @return string
+     */
     public function getProxyGrantingTicketIOU()
     {
         return $this->proxyGrantingTicketIOU;
     }
 
+
+    /**
+     * @param string $username
+     * @return void
+     */
     public function getValidateSuccessResponse($username)
     {
-        $xmlDocument = new DOMDocument("1.0");
+        $xmlDocument = new \DOMDocument("1.0");
 
         $root = $xmlDocument->createElement("cas:serviceResponse");
         $root->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:cas', 'http://www.yale.edu/tp/cas');
@@ -109,9 +145,15 @@ class Cas20
         return $this->workAroundForBuggyJasigXmlParser($xmlDocument->saveXML());
     }
 
+
+    /**
+     * @param string $errorCode
+     * @param string $explanation
+     * @return string
+     */
     public function getValidateFailureResponse($errorCode, $explanation)
     {
-        $xmlDocument = new DOMDocument("1.0");
+        $xmlDocument = new \DOMDocument("1.0");
 
         $root = $xmlDocument->createElement("cas:serviceResponse");
         $root->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:cas', 'http://www.yale.edu/tp/cas');
@@ -131,9 +173,14 @@ class Cas20
         return $this->workAroundForBuggyJasigXmlParser($xmlDocument->saveXML());
     }
 
+
+    /**
+     * @param string $proxyTicketId
+     * @return string
+     */
     public function getProxySuccessResponse($proxyTicketId)
     {
-        $xmlDocument = new DOMDocument("1.0");
+        $xmlDocument = new \DOMDocument("1.0");
 
         $root = $xmlDocument->createElement("cas:serviceResponse");
         $root->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:cas', 'http://www.yale.edu/tp/cas');
@@ -151,9 +198,15 @@ class Cas20
         return $this->workAroundForBuggyJasigXmlParser($xmlDocument->saveXML());
     }
 
+
+    /**
+     * @param string $errorCode
+     * @param string $explanation
+     * @return string
+     */
     public function getProxyFailureResponse($errorCode, $explanation)
     {
-        $xmlDocument = new DOMDocument("1.0");
+        $xmlDocument = new \DOMDocument("1.0");
 
         $root = $xmlDocument->createElement("cas:serviceResponse");
         $root->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:cas', 'http://www.yale.edu/tp/cas');
@@ -173,18 +226,30 @@ class Cas20
         return $this->workAroundForBuggyJasigXmlParser($xmlDocument->saveXML());
     }
 
+
+    /**
+     * @param string $xmlString
+     * @return string
+     */
     private function workAroundForBuggyJasigXmlParser($xmlString)
     {
         // when will people stop hand coding xml handling....?
-        return str_replace('><', '>' . PHP_EOL . '<', str_replace(PHP_EOL, '', $xmlString));
+        return str_replace('><', '>'.PHP_EOL.'<', str_replace(PHP_EOL, '', $xmlString));
     }
 
+
+    /**
+     * @param \DOMDocument $xmlDocument
+     * @param string $attributeName
+     * @param string $attributeValue
+     * @return \DOMElement
+     */
     private function generateCas20Attribute($xmlDocument, $attributeName, $attributeValue)
     {
         $attributeValueNode = $xmlDocument->createTextNode($this->base64EncodeAttributes ?
             base64_encode($attributeValue) : $attributeValue);
 
-        $attributeElement = $xmlDocument->createElement('cas:' . $attributeName);
+        $attributeElement = $xmlDocument->createElement('cas:'.$attributeName);
 
         $attributeElement->appendChild($attributeValueNode);
 

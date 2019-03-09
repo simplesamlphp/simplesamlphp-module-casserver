@@ -25,15 +25,26 @@ namespace SimpleSAML\Module\casserver\Cas\Protocol;
 
 class Cas10
 {
+    /**
+     * @param array $config
+     */
     public function __construct($config)
     {
     }
 
+
+    /**
+     * @param string $username
+     * @return string
+     */
     public function getValidateSuccessResponse($username)
     {
         return "yes\n".$username."\n";
     }
 
+    /**
+     * @return string
+     */
     public function getValidateFailureResponse()
     {
         return "no\n\n";

@@ -27,13 +27,14 @@
  *
  */
 
-require_once 'urlUtils.php';
+require_once('urlUtils.php');
 
 /* Load simpleSAMLphp, configuration and metadata */
 $casconfig = \SimpleSAML\Configuration::getConfig('module_casserver.php');
 
 /* Instantiate protocol handler */
 $protocolClass = \SimpleSAML\Module::resolveClass('casserver:Cas20', 'Cas_Protocol');
+/** @psalm-suppress InvalidStringClass */
 $protocol = new $protocolClass($casconfig);
 
 if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
@@ -42,15 +43,18 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
     try {
         $ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
         $ticketStoreClass = \SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
+        /** @psalm-suppress InvalidStringClass */
         $ticketStore = new $ticketStoreClass($casconfig);
 
         $ticketFactoryClass = SimpleSAML\Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
+        /** @psalm-suppress InvalidStringClass */
         $ticketFactory = new $ticketFactoryClass($casconfig);
 
         $serviceTicket = $ticketStore->getTicket($_GET['ticket']);
 
+        /** @psalm-suppress UndefinedGlobalVariable */
         if (!is_null($serviceTicket) && ($ticketFactory->isServiceTicket($serviceTicket) ||
-                ($ticketFactory->isProxyTicket($serviceTicket) && $method == 'proxyValidate'))
+                ($ticketFactory->isProxyTicket($serviceTicket) && $method === 'proxyValidate'))
         ) {
             $ticketStore->deleteTicket($_GET['ticket']);
 
@@ -130,7 +134,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
 
                 echo $protocol->getValidateFailureResponse('INVALID_TICKET', $message);
             } else {
-                if ($ticketFactory->isProxyTicket($serviceTicket) && $method == 'serviceValidate') {
+                if ($ticketFactory->isProxyTicket($serviceTicket) && ($method === 'serviceValidate')) {
                     $message = 'Ticket ' . var_export($_GET['ticket'], true)
                         . ' is a proxy ticket. Use proxyValidate instead.';
 

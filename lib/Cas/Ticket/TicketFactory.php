@@ -23,12 +23,23 @@
 
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
+use SimpleSAML\Utils\Random;
+
 class TicketFactory
 {
+    /** @var int $serviceTicketExpireTime */
     private $serviceTicketExpireTime;
+
+    /** @var int $proxyGrantingTicketExpireTime */
     private $proxyGrantingTicketExpireTime;
+
+    /** @var int $proxyTicketExpireTime */
     private $proxyTicketExpireTime;
 
+
+    /**
+     * @param \SimpleSAML\Configuration $config
+     */
     public function __construct(\SimpleSAML\Configuration $config)
     {
         $this->serviceTicketExpireTime = $config->getValue('service_ticket_expire_time', 5);
@@ -36,9 +47,10 @@ class TicketFactory
         $this->proxyTicketExpireTime = $config->getValue('proxy_ticket_expire_time', 5);
     }
 
+
     /**
-     * @param $sessionId string
-     * @param $expiresAt int
+     * @param string $sessionId
+     * @param int $expiresAt
      * @return array
      */
     public function createSessionTicket($sessionId, $expiresAt)
@@ -46,50 +58,54 @@ class TicketFactory
         return [
             'id' => $sessionId,
             'validBefore' => $expiresAt,
-            'renewId' => SimpleSAML\Utils\Random::generateID()
+            'renewId' => Random::generateID()
         ];
     }
 
+
     /**
-     * @param $content array
+     * @param array $content
      * @return array
      */
     public function createServiceTicket(array $content)
     {
-        $id = str_replace('_', 'ST-', SimpleSAML\Utils\Random::generateID());
+        $id = str_replace('_', 'ST-', Random::generateID());
         $expiresAt = time() + $this->serviceTicketExpireTime;
 
         return array_merge(['id' => $id, 'validBefore' => $expiresAt], $content);
     }
 
+
     /**
-     * @param $content array
+     * @param array $content
      * @return array
      */
     public function createProxyGrantingTicket(array $content)
     {
-        $id = str_replace('_', 'PGT-', SimpleSAML\Utils\Random::generateID());
-        $iou = str_replace('_', 'PGTIOU-', SimpleSAML\Utils\Random::generateID());
+        $id = str_replace('_', 'PGT-', Random::generateID());
+        $iou = str_replace('_', 'PGTIOU-', Random::generateID());
 
         $expireAt = time() + $this->proxyGrantingTicketExpireTime;
 
         return array_merge(['id' => $id, 'iou' => $iou, 'validBefore' => $expireAt], $content);
     }
 
+
     /**
-     * @param $content array
+     * @param array $content
      * @return array
      */
     public function createProxyTicket(array $content)
     {
-        $id = str_replace('_', 'PT-', SimpleSAML\Utils\Random::generateID());
+        $id = str_replace('_', 'PT-', Random::generateID());
         $expiresAt = time() + $this->proxyTicketExpireTime;
 
         return array_merge(['id' => $id, 'validBefore' => $expiresAt], $content);
     }
 
+
     /**
-     * @param $ticket array
+     * @param array $ticket
      * @return int|false
      */
     public function isSessionTicket(array $ticket)
@@ -97,8 +113,9 @@ class TicketFactory
         return preg_match('/^[a-zA-Z0-9]+$/D', $ticket['id']);
     }
 
+
     /**
-     * @param $ticket array
+     * @param array $ticket
      * @return int|false
      */
     public function isServiceTicket(array $ticket)
@@ -106,8 +123,9 @@ class TicketFactory
         return preg_match('/^ST-?[a-zA-Z0-9]+$/D', $ticket['id']);
     }
 
+
     /**
-     * @param $ticket array
+     * @param array $ticket
      * @return int|false
      */
     public function isProxyGrantingTicket(array $ticket)
@@ -115,8 +133,9 @@ class TicketFactory
         return preg_match('/^PGT-?[a-zA-Z0-9]+$/D', $ticket['id']);
     }
 
+
     /**
-     * @param $ticket array
+     * @param array $ticket
      * @return int|false
      */
     public function isProxyTicket(array $ticket)
@@ -124,8 +143,9 @@ class TicketFactory
         return preg_match('/^PT-?[a-zA-Z0-9]+$/D', $ticket['id']);
     }
 
+
     /**
-     * @param $ticket array
+     * @param array $ticket
      * @return bool
      */
     public function isExpired(array $ticket)

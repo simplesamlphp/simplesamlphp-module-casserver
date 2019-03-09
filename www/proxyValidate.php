@@ -28,4 +28,4 @@
 
 $method = 'proxyValidate';
 
-require_once 'utility/validateTicket.php';
+require_once('utility/validateTicket.php');
