@@ -19,7 +19,7 @@ matrix:
 
 before_script:
   - export SIMPLESAMLPHP_CONFIG_DIR=tests/config/
-  - git clone -b release-${SIMPLESAMLPHP_VERSION https://github.com/simplesamlphp/simplesamlphp testwww
+  - git clone -b release-${SIMPLESAMLPHP_VERSION} https://github.com/simplesamlphp/simplesamlphp testwww
   - cd testwww
   - composer require "simplesamlphp/simplesamlphp-module-casserver"
   - php -S localhost:8732 &
