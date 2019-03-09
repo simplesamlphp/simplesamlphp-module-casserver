@@ -18,6 +18,10 @@ matrix:
     - php: 7.3
 
 before_script:
+  - sudo apt-get install stunnel4 apache2
+  - php -S localhost:8732 &
+  - export WEBPID=$!
+  - export SIMPLESAMLPHP_CONFIG_DIR=tests/config/
   - composer require "simplesamlphp/simplesamlphp:${SIMPLESAMLPHP_VERSION}" --no-update
   - composer update --no-interaction
   - if [[ "$TRAVIS_PHP_VERSION" == "7.3" ]]; then composer require --dev vimeo/psalm; fi
