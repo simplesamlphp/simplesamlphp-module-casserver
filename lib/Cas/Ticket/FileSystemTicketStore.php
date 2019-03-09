@@ -25,28 +25,36 @@ namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
 class FileSystemTicketStore extends TicketStore
 {
+    /** @var string $pathToTicketDirectory */
     private $pathToTicketDirectory;
 
+
+    /**
+     * @param \SimpleSAML\Configuration $config
+     * @return void
+     * @throws \Exception
+     */
     public function __construct(\SimpleSAML\Configuration $config)
     {
         $storeConfig = $config->getValue('ticketstore', ['directory' => 'ticketcache']);
 
         if (!is_string($storeConfig['directory'])) {
-            throw new Exception('Invalid directory option in config.');
+            throw new \Exception('Invalid directory option in config.');
         }
 
         $path = $config->resolvePath($storeConfig['directory']);
 
-        if (!is_dir($path)) {
-            throw new Exception('Directory for CAS Server ticket storage ['.$path.'] does not exists.');
+        if (is_null($path) || !is_dir($path)) {
+            throw new \Exception('Directory for CAS Server ticket storage ['.$path.'] does not exists.');
         }
 
         if (!is_writable($path)) {
-            throw new Exception('Directory for CAS Server ticket storage ['.$path.'] is not writable.');
+            throw new \Exception('Directory for CAS Server ticket storage ['.$path.'] is not writable.');
         }
 
         $this->pathToTicketDirectory = preg_replace('/\/$/', '', $path);
     }
+
 
     /**
      * @param $ticketId string
@@ -65,14 +73,21 @@ class FileSystemTicketStore extends TicketStore
         }
     }
 
+
+    /**
+     * @param array $ticker
+     * @return void
+     */
     public function addTicket(array $ticket)
     {
         $filename = $this->pathToTicketDirectory.'/'.$ticket['id'];
         file_put_contents($filename, serialize($ticket));
     }
 
+
     /**
      * @param $ticketId string
+     * @return void
      */
     public function deleteTicket($ticketId)
     {

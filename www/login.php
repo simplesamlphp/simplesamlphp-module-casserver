@@ -67,11 +67,11 @@ if (array_key_exists('language', $_GET) && is_string($_GET['language'])) {
 
 $ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
 $ticketStoreClass = \SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
-/** @psalm-supress InvalidStringClass */
+/** @psalm-suppress InvalidStringClass */
 $ticketStore = new $ticketStoreClass($casconfig);
 
 $ticketFactoryClass = \SimpleSAML\Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
-/** @psalm-supress InvalidStringClass */
+/** @psalm-suppress InvalidStringClass */
 $ticketFactory = new $ticketFactoryClass($casconfig);
 
 $session = \SimpleSAML\Session::getSessionFromRequest();

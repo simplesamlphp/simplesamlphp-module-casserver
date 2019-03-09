@@ -37,12 +37,12 @@ class Cas20
     /** @var array $attributes */
     private $attributes = [];
 
-    /** @var string $proxyGrantingTicketIOU */
+    /** @var string|null $proxyGrantingTicketIOU */
     private $proxyGrantingTicketIOU = null;
 
 
     /**
-     * @param array $config
+     * @param \SimpleSAML\Configuration $config
      */
     public function __construct($config)
     {
@@ -92,7 +92,7 @@ class Cas20
 
     /**
      * @param string $username
-     * @return void
+     * @return string
      */
     public function getValidateSuccessResponse($username)
     {

@@ -44,7 +44,7 @@ class UtilsTest extends \PHPUnit_Framework_TestCase
 
 
     /**
-     * @return void
+     * @return array
      */
     public function checkServiceURLProvider()
     {

@@ -25,16 +25,27 @@ namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
 class SQLTicketStore extends TicketStore
 {
+    /** @var \PDO $pdo */
     public $pdo;
+
+    /** @var string $driver */
     public $driver;
+
+    /** @var string $prefix */
     public $prefix;
+
+    /** @var string $tableVersions */
     private $tableVersions;
 
+
+    /**
+     * @param \SimpleSAML\Configuration $config
+     */
     public function __construct(\SimpleSAML\Configuration $config)
     {
         parent::__construct($config);
 
-        /** @var  $storeConfig \SimpleSAML\Configuration */
+        /** @var \SimpleSAML\Configuration $storeConfig */
         $storeConfig = $config->getConfigItem('ticketstore');
         $dsn = $storeConfig->getString('dsn');
         $username = $storeConfig->getString('username');
@@ -42,7 +53,7 @@ class SQLTicketStore extends TicketStore
         $options =  $storeConfig->getArray('options', []);
         $this->prefix = $storeConfig->getString('prefix', '');
 
-        $this->pdo = new PDO($dsn, $username, $password, $options);
+        $this->pdo = new \PDO($dsn, $username, $password, $options);
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         $this->driver = $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
@@ -55,6 +66,7 @@ class SQLTicketStore extends TicketStore
         $this->initKVTable();
     }
 
+
     /**
      * @param $ticketId string
      * @return array|null
@@ -66,6 +78,11 @@ class SQLTicketStore extends TicketStore
         return $this->get($scopedTicketId);
     }
 
+
+    /**
+     * @param array $ticket
+     * @return void
+     */
     public function addTicket(array $ticket)
     {
         $scopedTicketId = $this->scopeTicketId($ticket['id']);
@@ -73,8 +90,10 @@ class SQLTicketStore extends TicketStore
         $this->set($scopedTicketId, $ticket, $ticket['validBefore']);
     }
 
+
     /**
      * @param $ticketId string
+     * @return void
      */
     public function deleteTicket($ticketId)
     {
@@ -82,6 +101,7 @@ class SQLTicketStore extends TicketStore
 
         $this->delete($scopedTicketId);
     }
+
 
     /**
      * @param $ticketId string
@@ -92,6 +112,10 @@ class SQLTicketStore extends TicketStore
         return $this->prefix.'.'.$ticketId;
     }
 
+
+    /**
+     * @return void
+     */
     private function initTableVersionTable()
     {
 
@@ -99,7 +123,7 @@ class SQLTicketStore extends TicketStore
 
         try {
             $fetchTableVersion = $this->pdo->query('SELECT _name, _version FROM '.$this->prefix.'_tableVersion');
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             $this->pdo->exec('CREATE TABLE '.$this->prefix.
                 '_tableVersion (_name VARCHAR(30) NOT NULL UNIQUE, _version INTEGER NOT NULL)');
             return;
@@ -110,6 +134,10 @@ class SQLTicketStore extends TicketStore
         }
     }
 
+
+    /**
+     * @return void
+     */
     private function initKVTable()
     {
         if ($this->getTableVersion('kvstore') === 1) {
@@ -127,6 +155,7 @@ class SQLTicketStore extends TicketStore
         $this->setTableVersion('kvstore', 1);
     }
 
+
     /**
      * @param $name string
      * @return int
@@ -142,9 +171,11 @@ class SQLTicketStore extends TicketStore
         return $this->tableVersions[$name];
     }
 
+
     /**
      * @param $name string
      * @param $version int
+     * @return void
      */
     private function setTableVersion($name, $version)
     {
@@ -162,10 +193,12 @@ class SQLTicketStore extends TicketStore
         $this->tableVersions[$name] = $version;
     }
 
+
     /**
      * @param $table string
      * @param array $keys
      * @param array $data
+     * @return void
      */
     private function insertOrUpdate($table, array $keys, array $data)
     {
@@ -200,7 +233,7 @@ class SQLTicketStore extends TicketStore
                 case '23505': /* PostgreSQL */
                     break;
                 default:
-                    SimpleSAML\Logger::error('casserver: Error while saving data: '.$e->getMessage());
+                    \SimpleSAML\Logger::error('casserver: Error while saving data: '.$e->getMessage());
                     throw $e;
             }
         }
@@ -225,6 +258,10 @@ class SQLTicketStore extends TicketStore
         $updateQuery->execute($data);
     }
 
+
+    /**
+     * @return void
+     */
     private function cleanKVStore()
     {
         $query = 'DELETE FROM '.$this->prefix.'_kvstore WHERE _expire < :now';
@@ -233,6 +270,7 @@ class SQLTicketStore extends TicketStore
         $query = $this->pdo->prepare($query);
         $query->execute($params);
     }
+
 
     /**
      * @param $key string
@@ -272,10 +310,12 @@ class SQLTicketStore extends TicketStore
         return $value;
     }
 
+
     /**
      * @param $key string
      * @param $value mixed
      * @param null $expire int
+     * @return void
      */
     private function set($key, $value, $expire = null)
     {
@@ -306,8 +346,10 @@ class SQLTicketStore extends TicketStore
         $this->insertOrUpdate($this->prefix.'_kvstore', ['_key'], $data);
     }
 
+
     /**
      * @param $key string
+     * @return void
      */
     private function delete($key)
     {

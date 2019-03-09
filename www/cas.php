@@ -45,4 +45,5 @@ if (!isset($validFunctions[$function])) {
     throw new \Exception($message);
 }
 
+/** @psalm-suppress UnresolvableInclude */
 include(dirname(__FILE__).'/'.strval($validFunctions[$function]).'.php');
