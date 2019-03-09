@@ -22,7 +22,7 @@ before_script:
   - git clone https://github.com/simplesamlphp/simplesamlphp testwww
   - cd testwww && composer require simplesamlphp/simplesamlphp-module-casserver --update-no-dev
   - cd www && php -S localhost:8732 &
-  - export WEBPID=$! && cd .. && cd ..
+  - export WEBPID=$! && cd ..
   - composer require "simplesamlphp/simplesamlphp:${SIMPLESAMLPHP_VERSION}" --no-update
   - composer update --no-interaction
   - if [[ "$TRAVIS_PHP_VERSION" == "7.3" ]]; then composer require --dev vimeo/psalm; fi
