@@ -75,7 +75,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                             'userName' => $serviceTicket['userName'],
                             'attributes' => $attributes,
                             'forceAuthn' => false,
-                            'proxies' => array_merge([$_GET['service']), $serviceTicket['proxies']],
+                            'proxies' => array_merge([$_GET['service']], $serviceTicket['proxies']),
                             'sessionId' => $serviceTicket['sessionId']
                         ]);
                         try {
