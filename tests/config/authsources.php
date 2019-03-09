@@ -5,7 +5,7 @@ $config = [
         'core:AdminPassword',
     ],
     'casserver' => [
-        'exampleauth:Static',
+        'exampleauth:StaticSource',
         'uid' => ['testuser'],
         'eduPersonPrincipalName' => ['testuser@example.com'],
         'eduPersonAffiliation' => ['member', 'employee'],
