@@ -6,11 +6,12 @@
     "license": "LGPL-2.1",
     "type": "simplesamlphp-module",
     "require": {
+        "php": ">=5.5",
         "simplesamlphp/composer-module-installer": "~1.1"
     },
     "require-dev": {
         "simplesamlphp/simplesamlphp": "1.16",
-        "phpunit/phpunit": "5.3.*",
+        "phpunit/phpunit": "4.8.36",
         "satooshi/php-coveralls": "^1.0",
         "guzzlehttp/guzzle": "~6.0"
     },
