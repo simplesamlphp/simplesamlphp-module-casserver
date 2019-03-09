@@ -18,13 +18,11 @@ matrix:
     - php: 7.3
 
 before_script:
-  - export SIMPLESAMLPHP_CONFIG_DIR=tests/config/
+  - export SIMPLESAMLPHP_CONFIG_DIR=`pwd`/tests/config/
   - git clone https://github.com/simplesamlphp/simplesamlphp testwww
-  - cd testwww
-  - composer require "simplesamlphp/simplesamlphp-module-casserver"
-  - php -S localhost:8732 &
-  - export WEBPID=$!
-  - cd ..
+  - cd testwww && composer require simplesamlphp/simplesamlphp-module-casserver --update-no-dev
+  - cd www && php -S localhost:8732 &
+  - export WEBPID=$! && cd .. && cd ..
   - composer require "simplesamlphp/simplesamlphp:${SIMPLESAMLPHP_VERSION}" --no-update
   - composer update --no-interaction
   - if [[ "$TRAVIS_PHP_VERSION" == "7.3" ]]; then composer require --dev vimeo/psalm; fi
