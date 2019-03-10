@@ -52,7 +52,8 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
 
         $serviceTicket = $ticketStore->getTicket($_GET['ticket']);
 
-        /** @var string $method */
+        /** @psalm-suppress UndefinedGlobalVariable */
+        /** @psalm-suppress TypeDoesNotContainType */
         if (!is_null($serviceTicket) && ($ticketFactory->isServiceTicket($serviceTicket) ||
                 ($ticketFactory->isProxyTicket($serviceTicket) && $method === 'proxyValidate'))
         ) {
@@ -134,6 +135,9 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
 
                 echo $protocol->getValidateFailureResponse('INVALID_TICKET', $message);
             } else {
+                /** @psalm-suppress UndefinedGlobalVariable */
+                /** @psalm-suppress RedundantCondition */
+                /** @psalm-suppress TypeDoesNotContainType */
                 if ($ticketFactory->isProxyTicket($serviceTicket) && ($method === 'serviceValidate')) {
                     $message = 'Ticket ' . var_export($_GET['ticket'], true)
                         . ' is a proxy ticket. Use proxyValidate instead.';
