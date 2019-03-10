@@ -21,26 +21,30 @@
  *
  */
 
-abstract class sspmod_casserver_Cas_Ticket_TicketStore
-{
+namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
+abstract class TicketStore
+{
+    /**
+     * @param \SimpleSAML\Configuration $config
+     */
     public function __construct(\SimpleSAML\Configuration $config)
     {
     }
 
     /**
-     * @param $ticketId string
+     * @param string $ticketId
      * @return array|null
      */
     abstract public function getTicket($ticketId);
 
     /**
-     * @param $ticket
+     * @param array $ticket
      */
     abstract public function addTicket(array $ticket);
 
     /**
-     * @param $ticketId string
+     * @param string $ticketId
      */
     abstract public function deleteTicket($ticketId);
 }

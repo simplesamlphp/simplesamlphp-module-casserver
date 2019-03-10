@@ -19,6 +19,7 @@ matrix:
 
 before_script:
   - export SIMPLESAMLPHP_CONFIG_DIR=`pwd`/tests/config/
+  - mkdir tests/ticketcache
   - git clone https://github.com/simplesamlphp/simplesamlphp testwww
   - cd testwww && composer require simplesamlphp/simplesamlphp-module-casserver --update-no-dev
   - cd www && php -S localhost:8732 &

@@ -46,9 +46,9 @@ $config = [
         //'username' => 'username',
         //'password' => 'password',
         //'prefix' => 'some_prefix',
-        //'options' => array(
+        //'options' => [
         //    \PDO::ATTR_TIMEOUT => 4,
-        // )
+        // ]
 
         //'class' => 'casserver:RedisTicketStore',
         //'prefix' => 'some_prefix',

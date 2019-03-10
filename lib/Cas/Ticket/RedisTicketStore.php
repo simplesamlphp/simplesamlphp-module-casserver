@@ -25,9 +25,16 @@ namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
 class RedisTicketStore extends TicketStore
 {
+    /** @var string $prefix */
     private $prefix = '';
+
+    /** @var \SimpleSAML\Store\Redis $redis */
     private $redis;
 
+
+    /**
+     * @param \SimpleSAML\Configuration $config
+     */
     public function __construct(\SimpleSAML\Configuration $config)
     {
         parent::__construct($config);
@@ -41,8 +48,9 @@ class RedisTicketStore extends TicketStore
         $this->redis = new \SimpleSAML\Store\Redis();
     }
 
+
     /**
-     * @param $ticketId string
+     * @param string $ticketId
      * @return array|null
      */
     public function getTicket($ticketId)
@@ -50,13 +58,20 @@ class RedisTicketStore extends TicketStore
         return $this->redis->get($this->prefix, $ticketId);
     }
 
+
+    /**
+     * @param array $ticket
+     * @return void
+     */
     public function addTicket(array $ticket)
     {
         $this->redis->set($this->prefix, $ticket['id'], $ticket, $ticket['validBefore']);
     }
 
+
     /**
-     * @param $ticketId string
+     * @param string $ticketId
+     * @return void
      */
     public function deleteTicket($ticketId)
     {

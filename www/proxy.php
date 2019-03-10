@@ -25,12 +25,13 @@
  *
  */
 
-require_once 'utility/urlUtils.php';
+require_once('utility/urlUtils.php');
 
 $casconfig = \SimpleSAML\Configuration::getConfig('module_casserver.php');
 
 /* Instantiate protocol handler */
 $protocolClass = \SimpleSAML\Module::resolveClass('casserver:Cas20', 'Cas_Protocol');
+/** @psalm-suppress InvalidStringClass */
 $protocol = new $protocolClass($casconfig);
 
 $legal_target_service_urls = $casconfig->getValue('legal_target_service_urls', []);
@@ -41,9 +42,11 @@ if (array_key_exists('targetService', $_GET) &&
 
     $ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
     $ticketStoreClass = \SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
+    /** @psalm-suppress InvalidStringClass */
     $ticketStore = new $ticketStoreClass($casconfig);
 
     $ticketFactoryClass = \SimpleSAML\Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
+    /** @psalm-suppress InvalidStringClass */
     $ticketFactory = new $ticketFactoryClass($casconfig);
 
     $proxyGrantingTicket = $ticketStore->getTicket($_GET['pgt']);

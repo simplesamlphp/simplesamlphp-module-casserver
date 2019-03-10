@@ -1,6 +1,7 @@
 <?php
 
 $projectRoot = dirname(__DIR__);
+/** @psalm-suppress UnresolvableInclude */
 require_once($projectRoot.'/vendor/autoload.php');
 
 // Symlink module into ssp vendor lib so that templates and urls can resolve correctly
@@ -15,10 +16,4 @@ if (file_exists($linkPath) === false) {
         rename($linkPath, $linkPath.'-preinstalled');
         symlink($projectRoot, $linkPath);
     }
-}
-
-// Ensure the directory used for the ticket cache exists
-$ticketCacheDirectory = $projectRoot.'/tests/ticketcache';
-if (!file_exists($ticketCacheDirectory)) {
-    mkdir($ticketCacheDirectory);
 }

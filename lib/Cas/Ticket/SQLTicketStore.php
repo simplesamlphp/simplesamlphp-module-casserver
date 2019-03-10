@@ -23,29 +23,42 @@
 
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
+use Webmozart\Assert\Assert;
+
 class SQLTicketStore extends TicketStore
 {
+    /** @var \PDO $pdo */
     public $pdo;
-    public $driver;
-    public $prefix;
-    private $tableVersions;
 
+    /** @var string $driver */
+    public $driver = 'pdo';
+
+    /** @var string $prefix */
+    public $prefix;
+
+    /** @var array $tableVersions */
+    private $tableVersions = [];
+
+
+    /**
+     * @param \SimpleSAML\Configuration $config
+     */
     public function __construct(\SimpleSAML\Configuration $config)
     {
         parent::__construct($config);
 
-        /** @var  $storeConfig \SimpleSAML\Configuration */
+        /** @var \SimpleSAML\Configuration $storeConfig */
         $storeConfig = $config->getConfigItem('ticketstore');
         $dsn = $storeConfig->getString('dsn');
         $username = $storeConfig->getString('username');
         $password = $storeConfig->getString('password');
-        $options =  $storeConfig->getArray('options', []);
+        $options = $storeConfig->getArray('options', []);
         $this->prefix = $storeConfig->getString('prefix', '');
 
-        $this->pdo = new PDO($dsn, $username, $password, $options);
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->pdo = new \PDO($dsn, $username, $password, $options);
+        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
-        $this->driver = $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+        $this->driver = $this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
 
         if ($this->driver === 'mysql') {
             $this->pdo->exec('SET time_zone = "+00:00"');
@@ -55,8 +68,9 @@ class SQLTicketStore extends TicketStore
         $this->initKVTable();
     }
 
+
     /**
-     * @param $ticketId string
+     * @param string $ticketId
      * @return array|null
      */
     public function getTicket($ticketId)
@@ -66,6 +80,11 @@ class SQLTicketStore extends TicketStore
         return $this->get($scopedTicketId);
     }
 
+
+    /**
+     * @param array $ticket
+     * @return void
+     */
     public function addTicket(array $ticket)
     {
         $scopedTicketId = $this->scopeTicketId($ticket['id']);
@@ -73,8 +92,10 @@ class SQLTicketStore extends TicketStore
         $this->set($scopedTicketId, $ticket, $ticket['validBefore']);
     }
 
+
     /**
-     * @param $ticketId string
+     * @param string $ticketId
+     * @return void
      */
     public function deleteTicket($ticketId)
     {
@@ -83,8 +104,9 @@ class SQLTicketStore extends TicketStore
         $this->delete($scopedTicketId);
     }
 
+
     /**
-     * @param $ticketId string
+     * @param string $ticketId
      * @return string
      */
     private function scopeTicketId($ticketId)
@@ -92,6 +114,10 @@ class SQLTicketStore extends TicketStore
         return $this->prefix.'.'.$ticketId;
     }
 
+
+    /**
+     * @return void
+     */
     private function initTableVersionTable()
     {
 
@@ -99,17 +125,21 @@ class SQLTicketStore extends TicketStore
 
         try {
             $fetchTableVersion = $this->pdo->query('SELECT _name, _version FROM '.$this->prefix.'_tableVersion');
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             $this->pdo->exec('CREATE TABLE '.$this->prefix.
                 '_tableVersion (_name VARCHAR(30) NOT NULL UNIQUE, _version INTEGER NOT NULL)');
             return;
         }
 
-        while (($row = $fetchTableVersion->fetch(PDO::FETCH_ASSOC)) !== false) {
-            $this->tableVersions[$row['_name']] = (int)$row['_version'];
+        while (($row = $fetchTableVersion->fetch(\PDO::FETCH_ASSOC)) !== false) {
+            $this->tableVersions[$row['_name']] = intval($row['_version']);
         }
     }
 
+
+    /**
+     * @return void
+     */
     private function initKVTable()
     {
         if ($this->getTableVersion('kvstore') === 1) {
@@ -127,13 +157,14 @@ class SQLTicketStore extends TicketStore
         $this->setTableVersion('kvstore', 1);
     }
 
+
     /**
-     * @param $name string
+     * @param string $name
      * @return int
      */
     private function getTableVersion($name)
     {
-        assert(is_string($name));
+        Assert::string($name);
 
         if (!isset($this->tableVersions[$name])) {
             return 0;
@@ -142,14 +173,16 @@ class SQLTicketStore extends TicketStore
         return $this->tableVersions[$name];
     }
 
+
     /**
-     * @param $name string
-     * @param $version int
+     * @param string $name
+     * @param int $version
+     * @return void
      */
     private function setTableVersion($name, $version)
     {
-        assert(is_string($name));
-        assert(is_int($version));
+        Assert::string($name);
+        Assert::integer($version);
 
         $this->insertOrUpdate(
             $this->prefix.'_tableVersion',
@@ -162,14 +195,16 @@ class SQLTicketStore extends TicketStore
         $this->tableVersions[$name] = $version;
     }
 
+
     /**
-     * @param $table string
+     * @param string $table
      * @param array $keys
      * @param array $data
+     * @return void
      */
     private function insertOrUpdate($table, array $keys, array $data)
     {
-        assert(is_string($table));
+        Assert::string($table);
 
         $colNames = '('.implode(', ', array_keys($data)).')';
         $values = 'VALUES(:'.implode(', :', array_keys($data)).')';
@@ -195,12 +230,12 @@ class SQLTicketStore extends TicketStore
             $insertQuery->execute($data);
             return;
         } catch (\PDOException $e) {
-            $ecode = (string)$e->getCode();
+            $ecode = strval($e->getCode());
             switch ($ecode) {
                 case '23505': /* PostgreSQL */
                     break;
                 default:
-                    SimpleSAML\Logger::error('casserver: Error while saving data: '.$e->getMessage());
+                    \SimpleSAML\Logger::error('casserver: Error while saving data: '.$e->getMessage());
                     throw $e;
             }
         }
@@ -225,6 +260,10 @@ class SQLTicketStore extends TicketStore
         $updateQuery->execute($data);
     }
 
+
+    /**
+     * @return void
+     */
     private function cleanKVStore()
     {
         $query = 'DELETE FROM '.$this->prefix.'_kvstore WHERE _expire < :now';
@@ -234,13 +273,14 @@ class SQLTicketStore extends TicketStore
         $query->execute($params);
     }
 
+
     /**
-     * @param $key string
+     * @param string $key
      * @return mixed|null|string
      */
     private function get($key)
     {
-        assert(is_string($key));
+        Assert::string($key);
 
         if (strlen($key) > 50) {
             $key = sha1($key);
@@ -253,7 +293,7 @@ class SQLTicketStore extends TicketStore
         $query = $this->pdo->prepare($query);
         $query->execute($params);
 
-        $row = $query->fetch(PDO::FETCH_ASSOC);
+        $row = $query->fetch(\PDO::FETCH_ASSOC);
         if ($row === false) {
             return null;
         }
@@ -272,15 +312,18 @@ class SQLTicketStore extends TicketStore
         return $value;
     }
 
+
     /**
-     * @param $key string
-     * @param $value mixed
-     * @param null $expire int
+     * @param string $key
+     * @param mixed $value
+     * @param int|null $expire
+     * @return void
      */
     private function set($key, $value, $expire = null)
     {
-        assert(is_string($key));
-        assert(is_null($expire) || (is_int($expire) && $expire > 2592000));
+        Assert::string($key);
+        Assert::nullOrInteger($expire);
+        Assert::greaterThan($expire, 2592000);
 
         if (rand(0, 1000) < 10) {
             $this->cleanKVStore();
@@ -306,12 +349,14 @@ class SQLTicketStore extends TicketStore
         $this->insertOrUpdate($this->prefix.'_kvstore', ['_key'], $data);
     }
 
+
     /**
-     * @param $key string
+     * @param string $key
+     * @return void
      */
     private function delete($key)
     {
-        assert(is_string($key));
+        Assert::string($key);
 
         if (strlen($key) > 50) {
             $key = sha1($key);
@@ -319,6 +364,7 @@ class SQLTicketStore extends TicketStore
 
         $data = [
             '_key' => $key,
+
         ];
 
         $query = 'DELETE FROM '.$this->prefix.'_kvstore WHERE _key=:_key';

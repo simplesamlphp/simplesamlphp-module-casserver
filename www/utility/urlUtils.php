@@ -21,6 +21,11 @@
  *
  */
 
+/**
+ * @param string $service
+ * @param array $legal_service_urls
+ * @return bool
+ */
 function checkServiceURL($service, array $legal_service_urls)
 {
     foreach ($legal_service_urls as $legalUrl) {
@@ -30,7 +35,7 @@ function checkServiceURL($service, array $legal_service_urls)
         }
         if (!ctype_alnum($legalUrl[0])) {
             // Probably a regex. Suppress errors incase the format is invalid
-            $result =  @preg_match($legalUrl, $service);
+            $result = @preg_match($legalUrl, $service);
             if ($result === 1) {
                 return true;
             } elseif ($result === false) {
@@ -44,6 +49,11 @@ function checkServiceURL($service, array $legal_service_urls)
     return false;
 }
 
+
+/**
+ * @param string $parameter
+ * @return string
+ */
 function sanitize($parameter)
 {
     return preg_replace('/;jsessionid=.*[^?].*$/', '', preg_replace('/;jsessionid=.*[?]/', '?', urldecode($parameter)));
