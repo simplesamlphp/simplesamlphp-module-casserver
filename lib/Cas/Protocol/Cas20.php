@@ -82,7 +82,7 @@ class Cas20
 
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getProxyGrantingTicketIOU()
     {

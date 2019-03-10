@@ -13,15 +13,15 @@ require_once dirname(dirname(__DIR__)) . '/www/utility/urlUtils.php';
 class UtilsTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @param $service string the service url to check
-     * @param $allowed bool is the service url allowed?
+     * @param string $service the service url to check
+     * @param bool $allowed is the service url allowed?
      * @return void
      * @dataProvider checkServiceURLProvider
      */
     public function testCheckServiceURL($service, $allowed)
     {
 
-        $legalServices = array(
+        $legalServices = [
             // Regular prefix match
             'https://myservice.com',
             'https://anotherservice.com/',
@@ -37,7 +37,7 @@ class UtilsTest extends \PHPUnit_Framework_TestCase
             // Invalid settings don't blow up
             '|invalid-regex',
             '',
-        );
+        ];
 
         $this->assertEquals($allowed, checkServiceURL(sanitize($service), $legalServices), "$service validated wrong");
     }
@@ -48,39 +48,39 @@ class UtilsTest extends \PHPUnit_Framework_TestCase
      */
     public function checkServiceURLProvider()
     {
-        return array(
-            array('no-match', false),
-            array('https://myservice.com', true),
+        return [
+            ['no-match', false],
+            ['https://myservice.com', true],
             // maybe we should warn if there is no at least a path component of /
-            array('https://myservice.com.at.somedomain', true),
-            array('https://anotherservice.com.nope', false),
-            array('https://anotherservice.com/anypathOk', true),
-            array('https://anotherservice.com:8080/anypathOk', true),
-            array('https://anotherservice.com:8080/', true),
-            array('https://anotherservice.com:9999/', false),
+            ['https://myservice.com.at.somedomain', true],
+            ['https://anotherservice.com.nope', false],
+            ['https://anotherservice.com/anypathOk', true],
+            ['https://anotherservice.com:8080/anypathOk', true],
+            ['https://anotherservice.com:8080/', true],
+            ['https://anotherservice.com:9999/', false],
 
-            array('http://sub.domain.com/path/a/b/c/more?query=a', true),
+            ['http://sub.domain.com/path/a/b/c/more?query=a', true],
             // Matching less path fails
-            array('http://sub.domain.com/path/a/b/less', false),
+            ['http://sub.domain.com/path/a/b/less', false],
 
-            array('https://query.param/secure?apple=red&b=g', true),
+            ['https://query.param/secure?apple=red&b=g', true],
             // Future improvement: ignore query parameter order
-            //array('https://query.param/secure?b=g&apple=red', true),
-            array('https://query.param/secure?b=g', false),
+            //['https://query.param/secure?b=g&apple=red', true],
+            ['https://query.param/secure?b=g', false],
 
-            array('https://encode.com/space test/', true),
-            array('https://encode.com/space+test/', true),
-            array('https://encode.com/space%20test/', true),
+            ['https://encode.com/space test/', true],
+            ['https://encode.com/space+test/', true],
+            ['https://encode.com/space%20test/', true],
 
-            array('https://any.subdomain.com/', true),
-            array('https://two.any.subdomain.com/', true),
-            array('https://path.subdomain.com/abc', true),
-            array('https://subdomain.com/abc', false),
+            ['https://any.subdomain.com/', true],
+            ['https://two.any.subdomain.com/', true],
+            ['https://path.subdomain.com/abc', true],
+            ['https://subdomain.com/abc', false],
 
-            array('https://anything-someprefix.com/abc', true),
-            array('http://need_an_s-someprefix.com/abc', false),
+            ['https://anything-someprefix.com/abc', true],
+            ['http://need_an_s-someprefix.com/abc', false],
 
-            array('', false),
-        );
+            ['', false],
+        ];
     }
 }

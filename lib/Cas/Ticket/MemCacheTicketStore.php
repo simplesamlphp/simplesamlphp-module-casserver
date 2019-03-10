@@ -45,7 +45,7 @@ class MemCacheTicketStore extends TicketStore
 
 
     /**
-     * @param $ticketId string
+     * @param string $ticketId
      * @return array|null
      */
     public function getTicket($ticketId)
@@ -57,7 +57,7 @@ class MemCacheTicketStore extends TicketStore
 
 
     /**
-     * @param array $ticker
+     * @param array $ticket
      * @return void
      */
     public function addTicket(array $ticket)
@@ -69,7 +69,7 @@ class MemCacheTicketStore extends TicketStore
 
 
     /**
-     * @param $ticketId string
+     * @param string $ticketId
      * @return void
      */
     public function deleteTicket($ticketId)
@@ -81,7 +81,7 @@ class MemCacheTicketStore extends TicketStore
 
 
     /**
-     * @param $ticketId string
+     * @param string $ticketId
      * @return string
      */
     private function scopeTicketId($ticketId)

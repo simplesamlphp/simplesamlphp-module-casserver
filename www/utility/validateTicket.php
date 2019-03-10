@@ -52,7 +52,6 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
 
         $serviceTicket = $ticketStore->getTicket($_GET['ticket']);
 
-        /** @psalm-suppress UndefinedGlobalVariable */
         if (!is_null($serviceTicket) && ($ticketFactory->isServiceTicket($serviceTicket) ||
                 ($ticketFactory->isProxyTicket($serviceTicket) && $method === 'proxyValidate'))
         ) {

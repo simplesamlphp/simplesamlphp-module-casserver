@@ -29,13 +29,13 @@ class SQLTicketStore extends TicketStore
     public $pdo;
 
     /** @var string $driver */
-    public $driver;
+    public $driver = 'pdo';
 
     /** @var string $prefix */
     public $prefix;
 
-    /** @var string $tableVersions */
-    private $tableVersions;
+    /** @var array $tableVersions */
+    private $tableVersions = [];
 
 
     /**
@@ -54,9 +54,9 @@ class SQLTicketStore extends TicketStore
         $this->prefix = $storeConfig->getString('prefix', '');
 
         $this->pdo = new \PDO($dsn, $username, $password, $options);
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
-        $this->driver = $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+        $this->driver = $this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
 
         if ($this->driver === 'mysql') {
             $this->pdo->exec('SET time_zone = "+00:00"');
@@ -68,7 +68,7 @@ class SQLTicketStore extends TicketStore
 
 
     /**
-     * @param $ticketId string
+     * @param string $ticketId
      * @return array|null
      */
     public function getTicket($ticketId)
@@ -92,7 +92,7 @@ class SQLTicketStore extends TicketStore
 
 
     /**
-     * @param $ticketId string
+     * @param string $ticketId
      * @return void
      */
     public function deleteTicket($ticketId)
@@ -104,7 +104,7 @@ class SQLTicketStore extends TicketStore
 
 
     /**
-     * @param $ticketId string
+     * @param string $ticketId
      * @return string
      */
     private function scopeTicketId($ticketId)
@@ -129,7 +129,7 @@ class SQLTicketStore extends TicketStore
             return;
         }
 
-        while (($row = $fetchTableVersion->fetch(PDO::FETCH_ASSOC)) !== false) {
+        while (($row = $fetchTableVersion->fetch(\PDO::FETCH_ASSOC)) !== false) {
             $this->tableVersions[$row['_name']] = (int)$row['_version'];
         }
     }
@@ -157,7 +157,7 @@ class SQLTicketStore extends TicketStore
 
 
     /**
-     * @param $name string
+     * @param string $name
      * @return int
      */
     private function getTableVersion($name)
@@ -173,8 +173,8 @@ class SQLTicketStore extends TicketStore
 
 
     /**
-     * @param $name string
-     * @param $version int
+     * @param string $name
+     * @param int $version
      * @return void
      */
     private function setTableVersion($name, $version)
@@ -195,7 +195,7 @@ class SQLTicketStore extends TicketStore
 
 
     /**
-     * @param $table string
+     * @param string $table
      * @param array $keys
      * @param array $data
      * @return void
@@ -273,7 +273,7 @@ class SQLTicketStore extends TicketStore
 
 
     /**
-     * @param $key string
+     * @param string $key
      * @return mixed|null|string
      */
     private function get($key)
@@ -291,7 +291,7 @@ class SQLTicketStore extends TicketStore
         $query = $this->pdo->prepare($query);
         $query->execute($params);
 
-        $row = $query->fetch(PDO::FETCH_ASSOC);
+        $row = $query->fetch(\PDO::FETCH_ASSOC);
         if ($row === false) {
             return null;
         }
@@ -312,9 +312,9 @@ class SQLTicketStore extends TicketStore
 
 
     /**
-     * @param $key string
-     * @param $value mixed
-     * @param null $expire int
+     * @param string $key
+     * @param mixed $value
+     * @param int|null $expire
      * @return void
      */
     private function set($key, $value, $expire = null)
@@ -348,7 +348,7 @@ class SQLTicketStore extends TicketStore
 
 
     /**
-     * @param $key string
+     * @param string $key
      * @return void
      */
     private function delete($key)

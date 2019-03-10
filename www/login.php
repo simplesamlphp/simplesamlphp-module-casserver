@@ -178,7 +178,7 @@ if (isset($_GET['service'])) {
         'forceAuthn' => $forceAuthn,
         'userName' => $userName,
         'attributes' => $casAttributes,
-        'proxies' => array(),
+        'proxies' => [],
         'sessionId' => $sessionTicket['id']
     ]);
 

@@ -45,7 +45,7 @@ class FileSystemTicketStore extends TicketStore
         $path = $config->resolvePath($storeConfig['directory']);
 
         if (is_null($path) || !is_dir($path)) {
-            throw new \Exception('Directory for CAS Server ticket storage ['.$path.'] does not exists.');
+            throw new \Exception('Directory for CAS Server ticket storage ['.strval($path).'] does not exists.');
         }
 
         if (!is_writable($path)) {
@@ -57,7 +57,7 @@ class FileSystemTicketStore extends TicketStore
 
 
     /**
-     * @param $ticketId string
+     * @param string $ticketId
      * @return array|null
      */
     public function getTicket($ticketId)
@@ -75,7 +75,7 @@ class FileSystemTicketStore extends TicketStore
 
 
     /**
-     * @param array $ticker
+     * @param array $ticket
      * @return void
      */
     public function addTicket(array $ticket)
@@ -86,7 +86,7 @@ class FileSystemTicketStore extends TicketStore
 
 
     /**
-     * @param $ticketId string
+     * @param string $ticketId
      * @return void
      */
     public function deleteTicket($ticketId)

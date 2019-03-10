@@ -50,7 +50,7 @@ class RedisTicketStore extends TicketStore
 
 
     /**
-     * @param $ticketId string
+     * @param string $ticketId
      * @return array|null
      */
     public function getTicket($ticketId)
@@ -61,6 +61,7 @@ class RedisTicketStore extends TicketStore
 
     /**
      * @param array $ticket
+     * @return void
      */
     public function addTicket(array $ticket)
     {
@@ -69,7 +70,7 @@ class RedisTicketStore extends TicketStore
 
 
     /**
-     * @param $ticketId string
+     * @param string $ticketId
      * @return void
      */
     public function deleteTicket($ticketId)
