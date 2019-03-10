@@ -52,7 +52,7 @@ class SQLTicketStore extends TicketStore
         $dsn = $storeConfig->getString('dsn');
         $username = $storeConfig->getString('username');
         $password = $storeConfig->getString('password');
-        $options =  $storeConfig->getArray('options', []);
+        $options = $storeConfig->getArray('options', []);
         $this->prefix = $storeConfig->getString('prefix', '');
 
         $this->pdo = new \PDO($dsn, $username, $password, $options);
@@ -132,7 +132,7 @@ class SQLTicketStore extends TicketStore
         }
 
         while (($row = $fetchTableVersion->fetch(\PDO::FETCH_ASSOC)) !== false) {
-            $this->tableVersions[$row['_name']] = (int)$row['_version'];
+            $this->tableVersions[$row['_name']] = intval($row['_version']);
         }
     }
 
@@ -230,7 +230,7 @@ class SQLTicketStore extends TicketStore
             $insertQuery->execute($data);
             return;
         } catch (\PDOException $e) {
-            $ecode = (string)$e->getCode();
+            $ecode = strval($e->getCode());
             switch ($ecode) {
                 case '23505': /* PostgreSQL */
                     break;
@@ -364,6 +364,7 @@ class SQLTicketStore extends TicketStore
 
         $data = [
             '_key' => $key,
+
         ];
 
         $query = 'DELETE FROM '.$this->prefix.'_kvstore WHERE _key=:_key';

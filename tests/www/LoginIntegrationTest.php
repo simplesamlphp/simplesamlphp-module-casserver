@@ -45,7 +45,7 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertContains(
             'You are logged in.',
-            (string)$response->getBody(),
+            strval($response->getBody()),
             'Login with no query parameters should make you authenticate and then take you to the login page.'
         );
     }
@@ -72,7 +72,7 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertContains(
             'CAS server is not listed as a legal service',
-            (string)$response->getBody(),
+            strval($response->getBody()),
             'Illegal cas service urls should be rejected'
         );
     }
