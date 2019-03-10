@@ -35,7 +35,7 @@ function checkServiceURL($service, array $legal_service_urls)
         }
         if (!ctype_alnum($legalUrl[0])) {
             // Probably a regex. Suppress errors incase the format is invalid
-            $result =  @preg_match($legalUrl, $service);
+            $result = @preg_match($legalUrl, $service);
             if ($result === 1) {
                 return true;
             } elseif ($result === false) {

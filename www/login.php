@@ -188,7 +188,7 @@ if (isset($_GET['service'])) {
 
     \SimpleSAML\Utils\HTTP::redirectTrustedURL(\SimpleSAML\Utils\HTTP::addURLParameters($_GET['service'], $parameters));
 } else {
-   \ SimpleSAML\Utils\HTTP::redirectTrustedURL(
+    \SimpleSAML\Utils\HTTP::redirectTrustedURL(
         \SimpleSAML\Utils\HTTP::addURLParameters(SimpleSAML\Module::getModuleURL('casserver/loggedIn.php'), $parameters)
     );
 }
