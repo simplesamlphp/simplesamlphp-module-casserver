@@ -121,9 +121,10 @@ class Cas20
             $casAttributes = $xmlDocument->createElement('cas:attributes');
 
             foreach ($this->attributes as $name => $values) {
+                $_name = str_replace(':', '_', $name);
                 foreach ($values as $value) {
                     $casAttributes->appendChild(
-                        $this->generateCas20Attribute($xmlDocument, str_replace(':', '_', $name), $value)
+                        $this->generateCas20Attribute($xmlDocument, $_name, $value)
                     );
                 }
             }
