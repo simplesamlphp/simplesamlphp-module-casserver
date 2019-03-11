@@ -23,6 +23,7 @@
 
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
+use SimpleSAML\Configuration;
 use SimpleSAML\Utils\Random;
 
 class TicketFactory
@@ -40,7 +41,7 @@ class TicketFactory
     /**
      * @param \SimpleSAML\Configuration $config
      */
-    public function __construct(\SimpleSAML\Configuration $config)
+    public function __construct(Configuration $config)
     {
         $this->serviceTicketExpireTime = $config->getValue('service_ticket_expire_time', 5);
         $this->proxyGrantingTicketExpireTime = $config->getValue('proxy_granting_ticket_expire_time', 3600);

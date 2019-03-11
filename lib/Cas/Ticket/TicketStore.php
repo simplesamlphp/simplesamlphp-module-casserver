@@ -23,12 +23,14 @@
 
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
+use SimpleSAML\Configuration;
+
 abstract class TicketStore
 {
     /**
      * @param \SimpleSAML\Configuration $config
      */
-    public function __construct(\SimpleSAML\Configuration $config)
+    public function __construct(Configuration $config)
     {
     }
 

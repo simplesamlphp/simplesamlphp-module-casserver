@@ -11,7 +11,7 @@
         "webmozart/assert": "1.4"
     },
     "require-dev": {
-        "simplesamlphp/simplesamlphp": "1.17",
+        "simplesamlphp/simplesamlphp": "^1.17",
         "phpunit/phpunit": "4.8.36",
         "satooshi/php-coveralls": "^1.0",
         "guzzlehttp/guzzle": "~6.0"

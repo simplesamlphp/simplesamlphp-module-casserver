@@ -23,6 +23,8 @@
 
 namespace SimpleSAML\Module\casserver\Cas\Protocol;
 
+use SimpleSAML\Configuration;
+
 class Cas20
 {
     /** @var bool $sendAttributes */
@@ -44,7 +46,7 @@ class Cas20
     /**
      * @param \SimpleSAML\Configuration $config
      */
-    public function __construct($config)
+    public function __construct(Configuration $config)
     {
         $this->sendAttributes = $config->getValue('attributes', false);
         $this->base64EncodeAttributes = $config->getValue('base64attributes', false);

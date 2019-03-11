@@ -23,6 +23,8 @@
 
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
+use \SimpleSAML\Configuration;
+
 class FileSystemTicketStore extends TicketStore
 {
     /** @var string $pathToTicketDirectory */
@@ -34,7 +36,7 @@ class FileSystemTicketStore extends TicketStore
      * @return void
      * @throws \Exception
      */
-    public function __construct(\SimpleSAML\Configuration $config)
+    public function __construct(Configuration $config)
     {
         $storeConfig = $config->getValue('ticketstore', ['directory' => 'ticketcache']);
 

@@ -23,6 +23,8 @@
 
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
+use SimpleSAML\Configuration;
+
 class MemCacheTicketStore extends TicketStore
 {
     /** @var string $prefix */
@@ -32,11 +34,11 @@ class MemCacheTicketStore extends TicketStore
     /**
      * @param \SimpleSAML\Configuration $config
      */
-    public function __construct(\SimpleSAML\Configuration $config)
+    public function __construct(Configuration $config)
     {
         parent::__construct($config);
 
-        $storeConfig = $config->getValue('ticketstore');
+        $storeConfig = $config->getValue('ticketstore', []);
 
         if (array_key_exists('prefix', $storeConfig)) {
             $this->prefix = $storeConfig['prefix'];

@@ -23,6 +23,7 @@
 
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
+use SimpleSAML\Configuration;
 use Webmozart\Assert\Assert;
 
 class SQLTicketStore extends TicketStore
@@ -43,7 +44,7 @@ class SQLTicketStore extends TicketStore
     /**
      * @param \SimpleSAML\Configuration $config
      */
-    public function __construct(\SimpleSAML\Configuration $config)
+    public function __construct(Configuration $config)
     {
         parent::__construct($config);
 
@@ -71,7 +72,7 @@ class SQLTicketStore extends TicketStore
 
     /**
      * @param string $ticketId
-     * @return array|null
+     * @return mixed|null
      */
     public function getTicket($ticketId)
     {
@@ -276,7 +277,7 @@ class SQLTicketStore extends TicketStore
 
     /**
      * @param string $key
-     * @return mixed|null|string
+     * @return mixed|null
      */
     private function get($key)
     {
