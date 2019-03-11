@@ -35,7 +35,7 @@ $isPassive = isset($_GET['gateway']) && $_GET['gateway'];
 
 $casconfig = \SimpleSAML\Configuration::getConfig('module_casserver.php');
 
-$legal_service_urls = $casconfig->getValue('legal_service_urls');
+$legal_service_urls = $casconfig->getValue('legal_service_urls', []);
 
 if (isset($_GET['service']) && !checkServiceURL(sanitize($_GET['service']), $legal_service_urls)) {
     $message = 'Service parameter provided to CAS server is not listed as a legal service: [service] = '.
