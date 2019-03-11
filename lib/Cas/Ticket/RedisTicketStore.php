@@ -23,6 +23,8 @@
 
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
+use SimpleSAML\Configuration;
+
 class RedisTicketStore extends TicketStore
 {
     /** @var string $prefix */
@@ -35,7 +37,7 @@ class RedisTicketStore extends TicketStore
     /**
      * @param \SimpleSAML\Configuration $config
      */
-    public function __construct(\SimpleSAML\Configuration $config)
+    public function __construct(Configuration $config)
     {
         parent::__construct($config);
 

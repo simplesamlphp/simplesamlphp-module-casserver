@@ -23,12 +23,14 @@
 
 namespace SimpleSAML\Module\casserver\Cas\Protocol;
 
+use SimpleSAML\Configuration;
+
 class Cas10
 {
     /**
-     * @param array $config
+     * @param \SimpleSAML\Configuration $config
      */
-    public function __construct($config)
+    public function __construct(Configuration $config)
     {
     }
 
