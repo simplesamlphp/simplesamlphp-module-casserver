@@ -41,7 +41,7 @@ class RedisTicketStore extends TicketStore
     {
         parent::__construct($config);
 
-        $storeConfig = $config->getValue('ticketstore');
+        $storeConfig = $config->getValue('ticketstore', []);
 
         if (array_key_exists('prefix', $storeConfig)) {
             $this->prefix = $storeConfig['prefix'];

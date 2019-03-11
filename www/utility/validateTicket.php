@@ -92,7 +92,8 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                             $protocol->setProxyGrantingTicketIOU($proxyGrantingTicket['iou']);
 
                             $ticketStore->addTicket($proxyGrantingTicket);
-                        } catch (Exception $e) {
+                        } catch (\Exception $e) {
+                            // Fall through
                         }
                     }
                 }
