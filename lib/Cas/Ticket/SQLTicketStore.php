@@ -72,7 +72,7 @@ class SQLTicketStore extends TicketStore
 
     /**
      * @param string $ticketId
-     * @return mixed|null
+     * @return array|null
      */
     public function getTicket($ticketId)
     {
@@ -277,7 +277,7 @@ class SQLTicketStore extends TicketStore
 
     /**
      * @param string $key
-     * @return mixed|null
+     * @return array|null
      */
     private function get($key)
     {
@@ -316,7 +316,7 @@ class SQLTicketStore extends TicketStore
 
     /**
      * @param string $key
-     * @param mixed $value
+     * @param array $value
      * @param int|null $expire
      * @return void
      */
