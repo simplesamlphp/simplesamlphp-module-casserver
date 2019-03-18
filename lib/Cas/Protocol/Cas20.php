@@ -23,7 +23,9 @@
 
 namespace SimpleSAML\Module\casserver\Cas\Protocol;
 
+use DOMException;
 use SimpleSAML\Configuration;
+use SimpleSAML\Logger;
 
 class Cas20
 {
@@ -121,11 +123,27 @@ class Cas20
             $casAttributes = $xmlDocument->createElement('cas:attributes');
 
             foreach ($this->attributes as $name => $values) {
+                /**
+                 * XML element names have a lot of rules. We handle the most probable case, an attribute name that
+                 * contains ':' (e.g. the common oid attribute name), however for the rest we just log the name
+                 * and continue processing.
+                 * Ref: https://www.w3.org/TR/REC-xml/#NT-NameChar
+                 * https://stackoverflow.com/q/2519845/54396
+                 * must only start with letter or underscore
+                 * cannot start with 'xml'
+                 * cannot contain a ':' since those are for namespaces
+                 * cannot contains space
+                 * can only  contain letters, digits, hyphens, underscores, and periods
+                 */
                 $_name = str_replace(':', '_', $name);
-                foreach ($values as $value) {
-                    $casAttributes->appendChild(
-                        $this->generateCas20Attribute($xmlDocument, $_name, $value)
-                    );
+                try {
+                    foreach ($values as $value) {
+                        $casAttributes->appendChild(
+                            $this->generateCas20Attribute($xmlDocument, $_name, $value)
+                        );
+                    }
+                } catch (DOMException $e) {
+                    Logger::warning("Dom exception creating attribute '$_name'. Continuing without atrribute'");
                 }
             }
 
