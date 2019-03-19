@@ -221,12 +221,28 @@ class SQLTicketStore extends TicketStore
                 $query = $this->pdo->prepare($query);
                 $query->execute($data);
                 return;
+            default:
+                /* Default implementation. Try INSERT, and UPDATE if that fails. */
+
+                $insertQuery = 'INSERT INTO '.$table.' '.$colNames.' '.$values;
+                $insertQuery = $this->pdo->prepare($insertQuery);
+
+                $this->insertOrUpdateFallback($table, $keys, $data, $insertQuery);
+                return;
         }
 
-        /* Default implementation. Try INSERT, and UPDATE if that fails. */
+    }
 
-        $insertQuery = 'INSERT INTO '.$table.' '.$colNames.' '.$values;
-        $insertQuery = $this->pdo->prepare($insertQuery);
+
+    /**
+     * @param string $table
+     * @param array $keys
+     * @param array $data
+     * @param \PDOStatement|bool $insertQuery
+     * @return void
+     */
+    private function insertOrUpdateFallback($table, array $keys, array $data, $insertQuery)
+    {
         try {
             $insertQuery->execute($data);
             return;
@@ -255,8 +271,7 @@ class SQLTicketStore extends TicketStore
             }
         }
 
-        $updateQuery = 'UPDATE '.$table.' SET '.implode(',', $updateCols).' WHERE '.
-            implode(' AND ', $condCols);
+        $updateQuery = 'UPDATE '.$table.' SET '.implode(',', $updateCols).' WHERE '.implode(' AND ', $condCols);
         $updateQuery = $this->pdo->prepare($updateQuery);
         $updateQuery->execute($data);
     }

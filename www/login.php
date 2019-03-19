@@ -149,9 +149,9 @@ if (array_key_exists('language', $_GET)) {
 }
 
 if (isset($_GET['service'])) {
-    $attributes = $as->getAttributes();
+    $attributeExtractor = new \sspmod_casserver_Cas_AttributeExtractor();
+    $mappedAttributes = $attributeExtractor->extractUserAndAttributes($as->getAttributes(), $casconfig);
 
-    $casUsernameAttribute = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
 
     $userName = $attributes[$casUsernameAttribute][0];
 
@@ -176,8 +176,8 @@ if (isset($_GET['service'])) {
     $serviceTicket = $ticketFactory->createServiceTicket([
         'service' => $_GET['service'],
         'forceAuthn' => $forceAuthn,
-        'userName' => $userName,
-        'attributes' => $casAttributes,
+        'userName' => $mappedAttributes['user'],
+        'attributes' => $mappedAttributes['attributes'],
         'proxies' => [],
         'sessionId' => $sessionTicket['id']
     ]);
