@@ -30,6 +30,12 @@
 
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
+use SimpleSAML\Configuration;
+use SimpleSAML\Locale\Language;
+use SimpleSAML\Logger;
+use SimpleSAML\Module;
+use SimpleSAML\Session;
+use SimpleSAML\Utils\HTTP;
 
 require_once('utility/urlUtils.php');
 
@@ -38,14 +44,14 @@ $isPassive = isset($_GET['gateway']) && $_GET['gateway'];
 // Determine if client wants us to post or redirect the response. Default is redirect.
 $redirect = !(isset($_GET['method']) && 'POST' === $_GET['method']);
 
-$casconfig = \SimpleSAML\Configuration::getConfig('module_casserver.php');
+$casconfig = Configuration::getConfig('module_casserver.php');
 
 $legal_service_urls = $casconfig->getValue('legal_service_urls', []);
 
 if (isset($_GET['service']) && !checkServiceURL(sanitize($_GET['service']), $legal_service_urls)) {
     $message = 'Service parameter provided to CAS server is not listed as a legal service: [service] = '.
         var_export($_GET['service'], true);
-    \SimpleSAML\Logger::debug('casserver:'.$message);
+    Logger::debug('casserver:'.$message);
 
     throw new \Exception($message);
 }
@@ -60,28 +66,28 @@ if (array_key_exists('scope', $_GET) && is_string($_GET['scope'])) {
     } else {
         $message = 'Scope parameter provided to CAS server is not listed as legal scope: [scope] = '.
             var_export($_GET['scope'], true);
-        \SimpleSAML\Logger::debug('casserver:'.$message);
+        Logger::debug('casserver:'.$message);
 
         throw new \Exception($message);
     }
 }
 
 if (array_key_exists('language', $_GET) && is_string($_GET['language'])) {
-    \SimpleSAML\Locale\Language::setLanguageCookie($_GET['language']);
+    Language::setLanguageCookie($_GET['language']);
 }
 
 $ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
-$ticketStoreClass = \SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
+$ticketStoreClass = Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
 /** @var $ticketStore TicketStore */
 /** @psalm-suppress InvalidStringClass */
 $ticketStore = new $ticketStoreClass($casconfig);
 
-$ticketFactoryClass = \SimpleSAML\Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
+$ticketFactoryClass = Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
 /** @var $ticketFactory TicketFactory */
 /** @psalm-suppress InvalidStringClass */
 $ticketFactory = new $ticketFactoryClass($casconfig);
 
-$session = \SimpleSAML\Session::getSessionFromRequest();
+$session = Session::getSessionFromRequest();
 
 $sessionTicket = $ticketStore->getTicket($session->getSessionId());
 $sessionRenewId = $sessionTicket ? $sessionTicket['renewId'] : null;
@@ -114,7 +120,7 @@ if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewI
         $query['language'] = is_string($_GET['language']) ? $_GET['language'] : null;
     }
 
-    $returnUrl = \SimpleSAML\Utils\HTTP::getSelfURLNoQuery().'?'.http_build_query($query);
+    $returnUrl = HTTP::getSelfURLNoQuery().'?'.http_build_query($query);
 
     $params = [
         'ForceAuthn' => $forceAuthn,
@@ -148,7 +154,7 @@ if (!is_array($sessionTicket) || $forceAuthn) {
 $parameters = [];
 
 if (array_key_exists('language', $_GET)) {
-    $oldLanguagePreferred = \SimpleSAML\Locale\Language::getLanguageCookie();
+    $oldLanguagePreferred = Language::getLanguageCookie();
 
     if (isset($oldLanguagePreferred)) {
         $parameters['language'] = $oldLanguagePreferred;
@@ -177,13 +183,12 @@ if (isset($_GET['service'])) {
     $parameters['ticket'] = $serviceTicket['id'];
 
     if ($redirect) {
-        SimpleSAML\Utils\HTTP::redirectTrustedURL(SimpleSAML\Utils\HTTP::addURLParameters($_GET['service'],
-            $parameters));
+        HTTP::redirectTrustedURL(HTTP::addURLParameters($_GET['service'], $parameters));
     } else {
-        SimpleSAML\Utils\HTTP::submitPOSTData($_GET['service'], $parameters);
+        HTTP::submitPOSTData($_GET['service'], $parameters);
     }
 } else {
-    \SimpleSAML\Utils\HTTP::redirectTrustedURL(
-        \SimpleSAML\Utils\HTTP::addURLParameters(SimpleSAML\Module::getModuleURL('casserver/loggedIn.php'), $parameters)
+    HTTP::redirectTrustedURL(
+        HTTP::addURLParameters(Module::getModuleURL('casserver/loggedIn.php'), $parameters)
     );
 }
