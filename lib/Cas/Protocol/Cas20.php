@@ -136,13 +136,13 @@ class Cas20
                  * can only  contain letters, digits, hyphens, underscores, and periods
                  */
                 $_name = str_replace(':', '_', $name);
-                try {
+                if ($this->isValidXmlName() === true) {
                     foreach ($values as $value) {
                         $casAttributes->appendChild(
                             $this->generateCas20Attribute($xmlDocument, $_name, $value)
                         );
                     }
-                } catch (DOMException $e) {
+                } else {
                     Logger::warning("Dom exception creating attribute '$_name'. Continuing without atrribute'");
                 }
             }
@@ -275,5 +275,20 @@ class Cas20
         $attributeElement->appendChild($attributeValueNode);
 
         return $attributeElement;
+    }
+
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    private function isValidXmlName($name)
+    {
+        try {
+            new \DOMElement($name);
+            return true;
+        } catch(\DOMException $e) {
+            return false;
+        }
     }
 }
