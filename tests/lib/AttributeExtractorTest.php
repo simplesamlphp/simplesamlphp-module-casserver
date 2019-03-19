@@ -10,13 +10,14 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
      */
     public function testNoCasConfig()
     {
-        $casConfig = array(// Default is to use eppn and copy all attributes
-        );
+        $casConfig = [
+            // Default is to use eppn and copy all attributes
+        ];
 
-        $attributes = array(
-            'eduPersonPrincipalName' => array('testuser@example.com'),
-            'additionalAttribute' => array('Taco Club')
-        );
+        $attributes = [
+            'eduPersonPrincipalName' => ['testuser@example.com'],
+            'additionalAttribute' => ['Taco Club']
+        ];
         $attributeExtractor = new \sspmod_casserver_Cas_AttributeExtractor();
         $result = $attributeExtractor->extractUserAndAttributes(
             $attributes,
@@ -32,14 +33,14 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
      */
     public function testNoAttributeCopying()
     {
-        $casConfig = array(
+        $casConfig = [
             'attributes' => false
-        );
+        ];
 
-        $attributes = array(
-            'eduPersonPrincipalName' => array('testuser@example.com'),
-            'additionalAttribute' => array('Taco Club')
-        );
+        $attributes = [
+            'eduPersonPrincipalName' => ['testuser@example.com'],
+            'additionalAttribute' => ['Taco Club']
+        ];
         $attributeExtractor = new \sspmod_casserver_Cas_AttributeExtractor();
         $result = $attributeExtractor->extractUserAndAttributes(
             $attributes,
@@ -55,18 +56,18 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
      */
     public function testCustomAttributeCopy()
     {
-        $casConfig = array(
+        $casConfig = [
             'attrname' => 'userNameAttribute',
-            'attributes_to_transfer' => array(
+            'attributes_to_transfer' => [
                 'exampleAttribute',
                 'additionalAttribute'
-            )
-        );
+            ]
+        ];
 
-        $attributes = array(
-            'userNameAttribute' => array('testuser@example.com'),
-            'additionalAttribute' => array('Taco Club')
-        );
+        $attributes = [
+            'userNameAttribute' => ['testuser@example.com'],
+            'additionalAttribute' => ['Taco Club']
+        ];
         $attributeExtractor = new \sspmod_casserver_Cas_AttributeExtractor();
         $result = $attributeExtractor->extractUserAndAttributes(
             $attributes,
@@ -74,7 +75,7 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals('testuser@example.com', $result['user']);
-        $this->assertEquals(array('additionalAttribute' => array('Taco Club')), $result['attributes']);
+        $this->assertEquals(['additionalAttribute' => ['Taco Club']], $result['attributes']);
     }
 
     /**
@@ -82,14 +83,15 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
      */
     public function testEmptyAuthproc()
     {
-        $casConfig = array(// Default is to use eppn and copy all attributes
-        );
+        $casConfig = [
+            // Default is to use eppn and copy all attributes
+        ];
 
-        $attributes = array(
-            'eduPersonPrincipalName' => array('testuser@example.com'),
-            'additionalAttribute' => array('Taco Club'),
-            'authproc' => array(),
-        );
+        $attributes = [
+            'eduPersonPrincipalName' => ['testuser@example.com'],
+            'additionalAttribute' => ['Taco Club'],
+            'authproc' => [],
+        ];
         $attributeExtractor = new \sspmod_casserver_Cas_AttributeExtractor();
         $result = $attributeExtractor->extractUserAndAttributes(
             $attributes,
@@ -107,36 +109,37 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
     {
         // Authproc filters need a config.php defined
         putenv('SIMPLESAMLPHP_CONFIG_DIR=' . dirname(__DIR__) . '/config/');
-        $casConfig = array(// Default is to use eppn and copy all attributes
-            'authproc' => array(
-                array(
+        $casConfig = [
+            // Default is to use eppn and copy all attributes
+            'authproc' => [
+                [
                     'class' => 'core:AttributeMap',
                     'oid2name',
                     'urn:example' => 'additionalAttribute'
-                )
-            ),
-            'attributes_to_transfer' => array(
+                ]
+            ],
+            'attributes_to_transfer' => [
                 'not-affected-by-authproc',
                 'additionalAttribute'
-            )
-        );
+            ]
+        ];
 
-        $attributes = array(
-            'urn:oid:1.3.6.1.4.1.5923.1.1.1.6' => array('testuser@example.com'),
-            'urn:example' => array('Taco Club'),
-            'not-affected-by-authproc' => array('Value')
-        );
+        $attributes = [
+            'urn:oid:1.3.6.1.4.1.5923.1.1.1.6' => ['testuser@example.com'],
+            'urn:example' => ['Taco Club'],
+            'not-affected-by-authproc' => ['Value']
+        ];
         $attributeExtractor = new \sspmod_casserver_Cas_AttributeExtractor();
         // The authproc filters will remap the attributes prior to mapping them to CAS attributes
         $result = $attributeExtractor->extractUserAndAttributes(
             $attributes,
-            \SimpleSAML_Configuration::loadFromArray($casConfig)
+            \SimpleSAML\Configuration::loadFromArray($casConfig)
         );
 
-        $expectedAttributes = array(
-            'additionalAttribute' => array('Taco Club'),
-            'not-affected-by-authproc' => array('Value')
-        );
+        $expectedAttributes = [
+            'additionalAttribute' => ['Taco Club'],
+            'not-affected-by-authproc' => ['Value']
+        ];
         $this->assertEquals('testuser@example.com', $result['user']);
         $this->assertEquals($expectedAttributes, $result['attributes']);
     }

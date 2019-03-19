@@ -60,14 +60,14 @@ $config = [
 
     /* Optional authproc filter. Only authproc filters that solely rely on attributes (such as core:AttributeMap and AttributeAlter)
        may be used. If your authsource supports authproc filters you are better off doing it there. */
-    'authproc' => array(
-        array(
+    'authproc' => [
+        [
             'class' => 'core:AttributeMap',
             'oid2name',
             'urn:example' => 'example'
-        ),
+        ],
         // Additonal authproc filter
-    ),
+    ],
 
     'base64attributes' => true, // base64 encode transferred attributes, defaults to false
     'base64_attributes_indicator_attribute' => 'base64Attributes', /*add an attribute with the value of the base64attributes
