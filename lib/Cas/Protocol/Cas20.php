@@ -24,6 +24,7 @@
 namespace SimpleSAML\Module\casserver\Cas\Protocol;
 
 use SimpleSAML\Configuration;
+use SimpleSAML\Logger;
 
 class Cas20
 {
@@ -121,11 +122,16 @@ class Cas20
             $casAttributes = $xmlDocument->createElement('cas:attributes');
 
             foreach ($this->attributes as $name => $values) {
+                // Fix the most common cause of invalid XML elements
                 $_name = str_replace(':', '_', $name);
-                foreach ($values as $value) {
-                    $casAttributes->appendChild(
-                        $this->generateCas20Attribute($xmlDocument, $_name, $value)
-                    );
+                if ($this->isValidXmlName($_name) === true) {
+                    foreach ($values as $value) {
+                        $casAttributes->appendChild(
+                            $this->generateCas20Attribute($xmlDocument, $_name, $value)
+                        );
+                    }
+                } else {
+                    Logger::warning("Dom exception creating attribute '$_name'. Continuing without atrribute'");
                 }
             }
 
@@ -257,5 +263,28 @@ class Cas20
         $attributeElement->appendChild($attributeValueNode);
 
         return $attributeElement;
+    }
+
+
+    /**
+     * XML element names have a lot of rules and not every SAML attribute name can be converted.
+     * Ref: https://www.w3.org/TR/REC-xml/#NT-NameChar
+     * https://stackoverflow.com/q/2519845/54396
+     * must only start with letter or underscore
+     * cannot start with 'xml' (or maybe it can - stackoverflow commenters don't agree)
+     * cannot contain a ':' since those are for namespaces
+     * cannot contains space
+     * can only  contain letters, digits, hyphens, underscores, and periods
+     * @param string $name The attribute name to be used as an element
+     * @return bool true if $name would make a valid xml element.
+     */
+    private function isValidXmlName($name)
+    {
+        try {
+            new \DOMElement($name);
+            return true;
+        } catch (\DOMException $e) {
+                return false;
+        }
     }
 }
