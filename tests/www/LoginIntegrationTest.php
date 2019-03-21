@@ -134,17 +134,17 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
         $dom = new \DOMDocument;
         $dom->loadHTML($body);
         $form = $dom->getElementsByTagName('form');
-        $this->assertEquals($service_url, $form[0]->getAttribute('action'));
+        $this->assertEquals($service_url, $form->item(0)->getAttribute('action'));
         $formInputs = $dom->getElementsByTagName('input');
         //note: $formInputs[0] is '<input type="submit" style="display:none;" />' . See the post.php template from SSP 
         $this->assertEquals(
             'ticket',
-            $formInputs[1]->getAttribute('name')
+            $formInputs->item(1)->getAttribute('name')
 
         );
         $this->assertStringStartsWith(
             'ST-',
-            $formInputs[1]->getAttribute('value'),
+            $formInputs->item(1)->getAttribute('value'),
             ''
         );
     }

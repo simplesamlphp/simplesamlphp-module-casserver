@@ -2,6 +2,8 @@
 
 namespace Simplesamlphp\Casserver;
 
+use SimpleSAML\Configuration;
+
 class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -21,7 +23,7 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
         $attributeExtractor = new \sspmod_casserver_Cas_AttributeExtractor();
         $result = $attributeExtractor->extractUserAndAttributes(
             $attributes,
-            \SimpleSAML_Configuration::loadFromArray($casConfig)
+            Configuration::loadFromArray($casConfig)
         );
 
         $this->assertEquals('testuser@example.com', $result['user']);
@@ -44,7 +46,7 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
         $attributeExtractor = new \sspmod_casserver_Cas_AttributeExtractor();
         $result = $attributeExtractor->extractUserAndAttributes(
             $attributes,
-            \SimpleSAML_Configuration::loadFromArray($casConfig)
+            Configuration::loadFromArray($casConfig)
         );
 
         $this->assertEquals('testuser@example.com', $result['user']);
@@ -71,7 +73,7 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
         $attributeExtractor = new \sspmod_casserver_Cas_AttributeExtractor();
         $result = $attributeExtractor->extractUserAndAttributes(
             $attributes,
-            \SimpleSAML_Configuration::loadFromArray($casConfig)
+            Configuration::loadFromArray($casConfig)
         );
 
         $this->assertEquals('testuser@example.com', $result['user']);
@@ -95,7 +97,7 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
         $attributeExtractor = new \sspmod_casserver_Cas_AttributeExtractor();
         $result = $attributeExtractor->extractUserAndAttributes(
             $attributes,
-            \SimpleSAML_Configuration::loadFromArray($casConfig)
+            Configuration::loadFromArray($casConfig)
         );
 
         $this->assertEquals('testuser@example.com', $result['user']);
@@ -133,7 +135,7 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
         // The authproc filters will remap the attributes prior to mapping them to CAS attributes
         $result = $attributeExtractor->extractUserAndAttributes(
             $attributes,
-            \SimpleSAML\Configuration::loadFromArray($casConfig)
+            Configuration::loadFromArray($casConfig)
         );
 
         $expectedAttributes = [

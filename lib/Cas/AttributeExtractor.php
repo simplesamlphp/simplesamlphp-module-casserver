@@ -80,6 +80,7 @@ class sspmod_casserver_Cas_AttributeExtractor
                 'Auth\Process',
                 \SimpleSAML\Auth\ProcessingFilter::class
             );
+            /** @psalm-suppress InvalidStringClass */
             $filter = new $className($config, null);
             $filter->process($state);
         }
