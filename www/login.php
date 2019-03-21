@@ -28,6 +28,9 @@
  *  language
  */
 
+use SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory;
+use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
+
 require_once('utility/urlUtils.php');
 
 $forceAuthn = isset($_GET['renew']) && $_GET['renew'];
@@ -67,10 +70,12 @@ if (array_key_exists('language', $_GET) && is_string($_GET['language'])) {
 
 $ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
 $ticketStoreClass = \SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
+/** @var $ticketStore TicketStore */
 /** @psalm-suppress InvalidStringClass */
 $ticketStore = new $ticketStoreClass($casconfig);
 
 $ticketFactoryClass = \SimpleSAML\Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
+/** @var $ticketFactory TicketFactory */
 /** @psalm-suppress InvalidStringClass */
 $ticketFactory = new $ticketFactoryClass($casconfig);
 
@@ -151,27 +156,6 @@ if (array_key_exists('language', $_GET)) {
 if (isset($_GET['service'])) {
     $attributeExtractor = new \sspmod_casserver_Cas_AttributeExtractor();
     $mappedAttributes = $attributeExtractor->extractUserAndAttributes($as->getAttributes(), $casconfig);
-
-
-    $userName = $attributes[$casUsernameAttribute][0];
-
-    if ($casconfig->getValue('attributes', true)) {
-        $attributesToTransfer = $casconfig->getValue('attributes_to_transfer', []);
-
-        if (sizeof($attributesToTransfer) > 0) {
-            $casAttributes = [];
-
-            foreach ($attributesToTransfer as $key) {
-                if (array_key_exists($key, $attributes)) {
-                    $casAttributes[$key] = $attributes[$key];
-                }
-            }
-        } else {
-            $casAttributes = $attributes;
-        }
-    } else {
-        $casAttributes = [];
-    }
 
     $serviceTicket = $ticketFactory->createServiceTicket([
         'service' => $_GET['service'],
