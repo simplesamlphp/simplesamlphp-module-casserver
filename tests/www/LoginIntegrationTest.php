@@ -103,7 +103,49 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
         $this->assertStringStartsWith(
             $service_url . '?ticket=ST-',
             $response->getHeader('Location')[0],
-            'Link should read the correct socialname from the idpdisco_saml_lastidp cookie'
+            'Ticket should be part of the redirect.'
+        );
+    }
+
+    /**
+     * test a valid service URL with Post
+     */
+    public function testValidServiceUrlWithPost()
+    {
+        $service_url = 'http://host1.domain:1234/path1';
+        $client = new Client();
+        // Use cookies Jar to store auth session cookies
+        $jar = new CookieJar;
+        // Setup authenticated cookies
+        $this->authenticate($jar);
+        $response = $client->get(
+            self::$LINK_URL,
+            [
+                'query' => ['service' => $service_url, 'method' => 'POST'],
+                'cookies' => $jar,
+                'allow_redirects' => false, // Disable redirects since the service url can't be redirected to
+            ]
+        );
+        // POST responds with a form that is uses JavaScript to submit
+        $this->assertEquals(200, $response->getStatusCode());
+
+        // Validate the form contains the required elements
+        $body = $response->getBody()->getContents();
+        $dom = new \DOMDocument;
+        $dom->loadHTML($body);
+        $form = $dom->getElementsByTagName('form');
+        $this->assertEquals($service_url, $form->item(0)->getAttribute('action'));
+        $formInputs = $dom->getElementsByTagName('input');
+        //note: $formInputs[0] is '<input type="submit" style="display:none;" />' . See the post.php template from SSP 
+        $this->assertEquals(
+            'ticket',
+            $formInputs->item(1)->getAttribute('name')
+
+        );
+        $this->assertStringStartsWith(
+            'ST-',
+            $formInputs->item(1)->getAttribute('value'),
+            ''
         );
     }
 
