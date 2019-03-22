@@ -227,6 +227,9 @@ class SQLTicketStore extends TicketStore
                 $insertQuery = 'INSERT INTO '.$table.' '.$colNames.' '.$values;
                 $insertQuery = $this->pdo->prepare($insertQuery);
 
+                if ($insertQuery === false) {
+                    throw new \Exception("Error preparing statement.");
+                }
                 $this->insertOrUpdateFallback($table, $keys, $data, $insertQuery);
                 return;
         }
@@ -238,10 +241,10 @@ class SQLTicketStore extends TicketStore
      * @param string $table
      * @param array $keys
      * @param array $data
-     * @param \PDOStatement|bool $insertQuery
+     * @param \PDOStatement $insertQuery
      * @return void
      */
-    private function insertOrUpdateFallback($table, array $keys, array $data, $insertQuery)
+    private function insertOrUpdateFallback($table, array $keys, array $data, \PDOStatement $insertQuery)
     {
         try {
             $insertQuery->execute($data);

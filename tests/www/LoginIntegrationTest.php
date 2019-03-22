@@ -109,6 +109,7 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * test a valid service URL with Post
+     * @return void
      */
     public function testValidServiceUrlWithPost()
     {
@@ -134,17 +135,27 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
         $dom = new \DOMDocument;
         $dom->loadHTML($body);
         $form = $dom->getElementsByTagName('form');
-        $this->assertEquals($service_url, $form->item(0)->getAttribute('action'));
+        $item = $form->item(0);
+        if (is_null($item)) {
+            $this->fail('Unable to parse response.');
+            return;
+        }
+        $this->assertEquals($service_url, $item->getAttribute('action'));
         $formInputs = $dom->getElementsByTagName('input');
         //note: $formInputs[0] is '<input type="submit" style="display:none;" />' . See the post.php template from SSP 
+        $item = $formInputs->item(1);
+        if (is_null($item)) {
+            $this->fail('Unable to parse response.');
+            return;
+        }
         $this->assertEquals(
             'ticket',
-            $formInputs->item(1)->getAttribute('name')
+            $item->getAttribute('name')
 
         );
         $this->assertStringStartsWith(
             'ST-',
-            $formInputs->item(1)->getAttribute('value'),
+            $item->getAttribute('value'),
             ''
         );
     }

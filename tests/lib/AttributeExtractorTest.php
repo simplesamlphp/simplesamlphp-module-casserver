@@ -9,6 +9,7 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Confirm behavior of a default configuration
+     * @return void
      */
     public function testNoCasConfig()
     {
@@ -32,6 +33,7 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test disable attribute copying
+     * @return void
      */
     public function testNoAttributeCopying()
     {
@@ -55,6 +57,7 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Confirm customizing the attribute for user and attributes to copy
+     * @return void
      */
     public function testCustomAttributeCopy()
     {
@@ -82,6 +85,7 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Confirm empty authproc has no affect
+     * @return void
      */
     public function testEmptyAuthproc()
     {
@@ -106,6 +110,7 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test authproc configurations can adjust the attributes.
+     * @return void
      */
     public function testAuthprocConfig()
     {

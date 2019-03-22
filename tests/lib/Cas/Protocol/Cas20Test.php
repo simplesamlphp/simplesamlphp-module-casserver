@@ -5,7 +5,9 @@ use SimpleSAML\Module\casserver\Cas\Protocol\Cas20;
 
 class Cas20Test extends \PHPUnit_Framework_TestCase
 {
-
+    /**
+     * @return void
+     */
     public function testAttributeToXmlConversion()
     {
 
