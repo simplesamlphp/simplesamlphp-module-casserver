@@ -2,8 +2,9 @@
 
 namespace Simplesamlphp\Casserver;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Cookie\CookieJar;
+
+use \SimpleSAML\Test\BuiltInServer;
+
 
 /**
  *
@@ -23,7 +24,51 @@ use GuzzleHttp\Cookie\CookieJar;
 class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
 {
     /** @var string $LINK_URL */
-    private static $LINK_URL = 'http://localhost:8732/module.php/casserver/login.php';
+    private static $LINK_URL = '/module.php/casserver/login.php';
+    /**
+     * @var \SimpleSAML\Test\BuiltInServer
+     */
+    protected $server;
+    /**
+     * @var string
+     */
+    protected $server_addr;
+    /**
+     * @var int
+     */
+    protected $server_pid;
+    /**
+     * @var string
+     */
+    protected $shared_file;
+
+    /**
+     * @var string
+     */
+    protected $cookies_file;
+
+    /**
+     * The setup method that is run before any tests in this class.
+     */
+    protected function setup()
+    {
+        $this->server = new BuiltInServer();
+        $this->server_addr = $this->server->start();
+        $this->server_pid = $this->server->getPid();
+        $this->shared_file = sys_get_temp_dir() . '/' . $this->server_pid . '.lock';
+        $this->cookies_file = sys_get_temp_dir() . '/' . $this->server_pid . '.cookies';
+    }
+
+    /**
+     * The tear down method that is executed after all tests in this class.
+     * Removes the lock file and cookies file
+     */
+    protected function tearDown()
+    {
+        @unlink($this->shared_file);
+        @unlink($this->cookies_file); // remove it if it exists
+        $this->server->stop();
+    }
 
 
     /**
@@ -32,20 +77,17 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
      */
     public function testNoQueryParameters()
     {
-        $client = new Client();
-        // Use cookies Jar to store auth session cookies
-        $jar = new CookieJar;
-        $response = $client->get(
-            self::$LINK_URL,
+        $resp = $this->server->get(self::$LINK_URL, [],
             [
-                'cookies' => $jar
-            ]
-        );
-        $this->assertEquals(200, $response->getStatusCode());
+                CURLOPT_COOKIEJAR => $this->cookies_file,
+                CURLOPT_COOKIEFILE => $this->cookies_file,
+                CURLOPT_FOLLOWLOCATION => true
+            ]);
+        $this->assertEquals(200, $resp['code']);
 
         $this->assertContains(
             'You are logged in.',
-            strval($response->getBody()),
+            $resp['body'],
             'Login with no query parameters should make you authenticate and then take you to the login page.'
         );
     }
@@ -57,22 +99,18 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
      */
     public function testWrongServiceUrl()
     {
-        $client = new Client();
-        // Use cookies Jar to store auth session cookies
-        $jar = new CookieJar;
-        $response = $client->get(
-            self::$LINK_URL,
+        $resp = $this->server->get(self::$LINK_URL,
+            ['service' => 'http://not-legal'],
             [
-                'query' => ['service' => 'http://not-legal'],
-                'http_errors' => false,
-                'cookies' => $jar
-            ]
-        );
-        $this->assertEquals(500, $response->getStatusCode());
+                CURLOPT_COOKIEJAR => $this->cookies_file,
+                CURLOPT_COOKIEFILE => $this->cookies_file,
+                CURLOPT_FOLLOWLOCATION => true
+            ]);
+        $this->assertEquals(500, $resp['code']);
 
         $this->assertContains(
             'CAS server is not listed as a legal service',
-            strval($response->getBody()),
+            $resp['body'],
             'Illegal cas service urls should be rejected'
         );
     }
@@ -85,24 +123,20 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
     public function testValidServiceUrl()
     {
         $service_url = 'http://host1.domain:1234/path1';
-        $client = new Client();
-        // Use cookies Jar to store auth session cookies
-        $jar = new CookieJar;
-        // Setup authenticated cookies
-        $this->authenticate($jar);
-        $response = $client->get(
-            self::$LINK_URL,
+
+        $this->authenticate();
+
+        $resp = $this->server->get(self::$LINK_URL,
+            ['service' => $service_url],
             [
-                'query' => ['service' => $service_url],
-                'cookies' => $jar,
-                'allow_redirects' => false, // Disable redirects since the service url can't be redirected to
-            ]
-        );
-        $this->assertEquals(302, $response->getStatusCode());
+                CURLOPT_COOKIEJAR => $this->cookies_file,
+                CURLOPT_COOKIEFILE => $this->cookies_file
+            ]);
+        $this->assertEquals(302, $resp['code']);
 
         $this->assertStringStartsWith(
             $service_url . '?ticket=ST-',
-            $response->getHeader('Location')[0],
+            $resp['headers']['Location'],
             'Ticket should be part of the redirect.'
         );
     }
@@ -114,24 +148,23 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
     public function testValidServiceUrlWithPost()
     {
         $service_url = 'http://host1.domain:1234/path1';
-        $client = new Client();
-        // Use cookies Jar to store auth session cookies
-        $jar = new CookieJar;
-        // Setup authenticated cookies
-        $this->authenticate($jar);
-        $response = $client->get(
-            self::$LINK_URL,
+
+        $this->authenticate();
+        $resp = $this->server->get(self::$LINK_URL,
             [
-                'query' => ['service' => $service_url, 'method' => 'POST'],
-                'cookies' => $jar,
-                'allow_redirects' => false, // Disable redirects since the service url can't be redirected to
-            ]
-        );
+                'service' => $service_url,
+                'method' => 'POST',
+            ],
+            [
+                CURLOPT_COOKIEJAR => $this->cookies_file,
+                CURLOPT_COOKIEFILE => $this->cookies_file
+            ]);
+
         // POST responds with a form that is uses JavaScript to submit
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(200, $resp['code']);
 
         // Validate the form contains the required elements
-        $body = $response->getBody()->getContents();
+        $body = $resp['body'];
         $dom = new \DOMDocument;
         $dom->loadHTML($body);
         $form = $dom->getElementsByTagName('form');
@@ -142,7 +175,7 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
         }
         $this->assertEquals($service_url, $item->getAttribute('action'));
         $formInputs = $dom->getElementsByTagName('input');
-        //note: $formInputs[0] is '<input type="submit" style="display:none;" />' . See the post.php template from SSP 
+        //note: $formInputs[0] is '<input type="submit" style="display:none;" />' . See the post.php template from SSP
         $item = $formInputs->item(1);
         if (is_null($item)) {
             $this->fail('Unable to parse response.');
@@ -163,19 +196,18 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Sets up an authenticated session for the cookie $jar
-     * @param CookieJar $jar
      * @return void
      */
-    private function authenticate(CookieJar $jar)
+    private function authenticate()
     {
-        $client = new Client();
         // Use cookies Jar to store auth session cookies
-        $response = $client->get(
-            self::$LINK_URL,
+        $resp = $this->server->get(
+            self::$LINK_URL, [],
             [
-                'cookies' => $jar
-            ]
-        );
-        $this->assertEquals(200, $response->getStatusCode());
+                CURLOPT_COOKIEJAR => $this->cookies_file,
+                CURLOPT_COOKIEFILE => $this->cookies_file,
+                CURLOPT_FOLLOWLOCATION => true
+            ]);
+        $this->assertEquals(200, $resp['code']);
     }
 }
