@@ -49,6 +49,7 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * The setup method that is run before any tests in this class.
+     * @return void
      */
     protected function setup()
     {
@@ -62,6 +63,7 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
     /**
      * The tear down method that is executed after all tests in this class.
      * Removes the lock file and cookies file
+     * @return void
      */
     protected function tearDown()
     {
@@ -77,6 +79,7 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
      */
     public function testNoQueryParameters()
     {
+        /** @var array $resp */
         $resp = $this->server->get(self::$LINK_URL, [],
             [
                 CURLOPT_COOKIEJAR => $this->cookies_file,
@@ -99,6 +102,7 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
      */
     public function testWrongServiceUrl()
     {
+        /** @var array $resp */
         $resp = $this->server->get(self::$LINK_URL,
             ['service' => 'http://not-legal'],
             [
@@ -126,6 +130,7 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
 
         $this->authenticate();
 
+        /** @var array $resp */
         $resp = $this->server->get(self::$LINK_URL,
             ['service' => $service_url],
             [
@@ -150,6 +155,7 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
         $service_url = 'http://host1.domain:1234/path1';
 
         $this->authenticate();
+        /** @var array $resp */
         $resp = $this->server->get(self::$LINK_URL,
             [
                 'service' => $service_url,
@@ -201,6 +207,7 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
     private function authenticate()
     {
         // Use cookies Jar to store auth session cookies
+        /** @var array $resp */
         $resp = $this->server->get(
             self::$LINK_URL, [],
             [
