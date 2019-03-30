@@ -56,8 +56,8 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
         $this->server = new BuiltInServer();
         $this->server_addr = $this->server->start();
         $this->server_pid = $this->server->getPid();
-        $this->shared_file = sys_get_temp_dir() . '/' . $this->server_pid . '.lock';
-        $this->cookies_file = sys_get_temp_dir() . '/' . $this->server_pid . '.cookies';
+        $this->shared_file = sys_get_temp_dir().'/'.$this->server_pid.'.lock';
+        $this->cookies_file = sys_get_temp_dir().'/'.$this->server_pid.'.cookies';
     }
 
     /**
@@ -181,7 +181,7 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
         }
         $this->assertEquals($service_url, $item->getAttribute('action'));
         $formInputs = $dom->getElementsByTagName('input');
-        //note: $formInputs[0] is '<input type="submit" style="display:none;" />' . See the post.php template from SSP
+        //note: $formInputs[0] is '<input type="submit" style="display:none;" />'. See the post.php template from SSP
         $item = $formInputs->item(1);
         if (is_null($item)) {
             $this->fail('Unable to parse response.');
