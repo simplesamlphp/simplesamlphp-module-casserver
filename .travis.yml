@@ -23,8 +23,6 @@ before_script:
   - composer update --no-interaction
   # Link this branch/pr/etc of simplesamlphp-module-casserver into SSP's vendor directory
   - php tests/bootstrap.php
-  - php -S localhost:8732 -t `pwd`/vendor/simplesamlphp/simplesamlphp/www &
-  - export WEBPID=$!
   - if [[ "$TRAVIS_PHP_VERSION" == "7.3" ]]; then composer require --dev vimeo/psalm; fi
 
 script:
@@ -33,7 +31,6 @@ script:
   - if [[ "$TRAVIS_PHP_VERSION" == "7.3" ]]; then vendor/bin/psalm; fi
 
 after_success:
-  - kill -kill $WEBPID
   # Codecov, need to edit bash uploader for incorrect TRAVIS_PYTHON_VERSION environment variable matching, at least until codecov/codecov-bash#133 is resolved
   - curl -s https://codecov.io/bash > .codecov
   - sed -i -e 's/TRAVIS_.*_VERSION/^TRAVIS_.*_VERSION=/' .codecov
