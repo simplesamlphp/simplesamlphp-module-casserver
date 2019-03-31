@@ -1,19 +1,36 @@
 <?php
 
-$projectRoot = dirname(__DIR__);
-/** @psalm-suppress UnresolvableInclude */
-require_once($projectRoot.'/vendor/autoload.php');
+$projectRootDirectory = dirname(__DIR__);
+$projectConfigDirectory = $projectRootDirectory.'/tests/config';
+$casserverModulePath = $projectRootDirectory.'/vendor/simplesamlphp/simplesamlphp/modules/casserver';
+$simplesamlphpConfig = $projectRootDirectory.'/vendor/simplesamlphp/simplesamlphp/config';
 
-// Symlink module into ssp vendor lib so that templates and urls can resolve correctly
-$linkPath = $projectRoot.'/vendor/simplesamlphp/simplesamlphp/modules/casserver';
-if (file_exists($linkPath) === false) {
-    print "Linking '$linkPath' to '$projectRoot'\n";
-    symlink($projectRoot,$linkPath);
-} else {
-    if (is_link($linkPath) === false) {
-        // Looks like the pre-installed casserver module is here. Lets remove it and symlink in this one
-        print "Renaming pre-installed casserver module and linking '$linkPath' to '$projectRoot'\n";
-        rename($linkPath, $linkPath.'-preinstalled');
-        symlink($projectRoot, $linkPath);
+/** @psalm-suppress UnresolvableInclude */
+require_once($projectRootDirectory.'/vendor/autoload.php');
+
+/**
+ * Sets a link in the simplesamlphp vendor directory
+ * @param $target
+ * @param $link
+ */
+function symlinkModulePathInVendorDirectory($target, $link)
+{
+    if (file_exists($link) === false) {
+        // If the link is invalid, remove it.
+        if (is_link($link)) {
+            unlink($link);
+        }
+        print "Linking '$link' to '$target'\n";
+        symlink($target, $link);
+    } else {
+        if (is_link($link) === false) {
+            // Looks like there is a directory here. Lets remove it and symlink in this one
+            print "Renaming pre-installed path and linking '$link' to '$target'\n";
+            rename($link, $link.'-preinstalled');
+            symlink($target, $link);
+        }
     }
 }
+
+symlinkModulePathInVendorDirectory($projectRootDirectory, $casserverModulePath);
+symlinkModulePathInVendorDirectory($projectConfigDirectory, $simplesamlphpConfig);
