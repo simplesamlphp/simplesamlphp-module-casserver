@@ -233,7 +233,6 @@ class SQLTicketStore extends TicketStore
                 $this->insertOrUpdateFallback($table, $keys, $data, $insertQuery);
                 return;
         }
-
     }
 
 
@@ -264,7 +263,6 @@ class SQLTicketStore extends TicketStore
         $condCols = [];
 
         foreach ($data as $col => $value) {
-
             $tmp = $col.' = :'.$col;
 
             if (in_array($col, $keys, true)) {

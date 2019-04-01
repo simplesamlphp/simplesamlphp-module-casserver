@@ -67,7 +67,6 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                 sanitize($serviceTicket['service']) == sanitize($_GET['service']) &&
                 (!$forceAuthn || $serviceTicket['forceAuthn'])
             ) {
-
                 $protocol->setAttributes($attributes);
 
                 if (isset($_GET['pgtUrl'])) {
@@ -159,7 +158,6 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                 }
             }
         }
-
     } catch (\Exception $e) {
         \SimpleSAML\Logger::error('casserver:serviceValidate: internal server error. '.
             var_export($e->getMessage(), true));

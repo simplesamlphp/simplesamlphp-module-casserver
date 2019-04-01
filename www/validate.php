@@ -53,7 +53,6 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
         $serviceTicket = $ticketStore->getTicket($_GET['ticket']);
 
         if (!is_null($serviceTicket) && $ticketFactory->isServiceTicket($serviceTicket)) {
-
             $ticketStore->deleteTicket($_GET['ticket']);
 
             $usernameField = $casconfig->getValue('attrname', 'eduPersonPrincipalName');

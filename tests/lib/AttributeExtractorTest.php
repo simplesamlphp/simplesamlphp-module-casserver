@@ -3,6 +3,7 @@
 namespace Simplesamlphp\Casserver;
 
 use SimpleSAML\Configuration;
+use SimpleSAML\Module\casserver\Cas\AttributeExtractor;
 
 class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
 {
@@ -21,7 +22,7 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
             'eduPersonPrincipalName' => ['testuser@example.com'],
             'additionalAttribute' => ['Taco Club']
         ];
-        $attributeExtractor = new \sspmod_casserver_Cas_AttributeExtractor();
+        $attributeExtractor = new AttributeExtractor();
         $result = $attributeExtractor->extractUserAndAttributes(
             $attributes,
             Configuration::loadFromArray($casConfig)
@@ -45,7 +46,7 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
             'eduPersonPrincipalName' => ['testuser@example.com'],
             'additionalAttribute' => ['Taco Club']
         ];
-        $attributeExtractor = new \sspmod_casserver_Cas_AttributeExtractor();
+        $attributeExtractor = new AttributeExtractor();
         $result = $attributeExtractor->extractUserAndAttributes(
             $attributes,
             Configuration::loadFromArray($casConfig)
@@ -73,7 +74,7 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
             'userNameAttribute' => ['testuser@example.com'],
             'additionalAttribute' => ['Taco Club']
         ];
-        $attributeExtractor = new \sspmod_casserver_Cas_AttributeExtractor();
+        $attributeExtractor = new AttributeExtractor();
         $result = $attributeExtractor->extractUserAndAttributes(
             $attributes,
             Configuration::loadFromArray($casConfig)
@@ -98,7 +99,7 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
             'additionalAttribute' => ['Taco Club'],
             'authproc' => [],
         ];
-        $attributeExtractor = new \sspmod_casserver_Cas_AttributeExtractor();
+        $attributeExtractor = new AttributeExtractor();
         $result = $attributeExtractor->extractUserAndAttributes(
             $attributes,
             Configuration::loadFromArray($casConfig)
@@ -136,7 +137,7 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
             'urn:example' => ['Taco Club'],
             'not-affected-by-authproc' => ['Value']
         ];
-        $attributeExtractor = new \sspmod_casserver_Cas_AttributeExtractor();
+        $attributeExtractor = new AttributeExtractor();
         // The authproc filters will remap the attributes prior to mapping them to CAS attributes
         $result = $attributeExtractor->extractUserAndAttributes(
             $attributes,

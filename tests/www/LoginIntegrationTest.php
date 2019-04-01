@@ -2,9 +2,7 @@
 
 namespace Simplesamlphp\Casserver;
 
-
 use \SimpleSAML\Test\BuiltInServer;
-
 
 /**
  *
@@ -80,12 +78,15 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
     public function testNoQueryParameters()
     {
         /** @var array $resp */
-        $resp = $this->server->get(self::$LINK_URL, [],
+        $resp = $this->server->get(
+            self::$LINK_URL,
+            [],
             [
                 CURLOPT_COOKIEJAR => $this->cookies_file,
                 CURLOPT_COOKIEFILE => $this->cookies_file,
                 CURLOPT_FOLLOWLOCATION => true
-            ]);
+            ]
+        );
         $this->assertEquals(200, $resp['code']);
 
         $this->assertContains(
@@ -103,13 +104,15 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
     public function testWrongServiceUrl()
     {
         /** @var array $resp */
-        $resp = $this->server->get(self::$LINK_URL,
+        $resp = $this->server->get(
+            self::$LINK_URL,
             ['service' => 'http://not-legal'],
             [
                 CURLOPT_COOKIEJAR => $this->cookies_file,
                 CURLOPT_COOKIEFILE => $this->cookies_file,
                 CURLOPT_FOLLOWLOCATION => true
-            ]);
+            ]
+        );
         $this->assertEquals(500, $resp['code']);
 
         $this->assertContains(
@@ -131,12 +134,14 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
         $this->authenticate();
 
         /** @var array $resp */
-        $resp = $this->server->get(self::$LINK_URL,
+        $resp = $this->server->get(
+            self::$LINK_URL,
             ['service' => $service_url],
             [
                 CURLOPT_COOKIEJAR => $this->cookies_file,
                 CURLOPT_COOKIEFILE => $this->cookies_file
-            ]);
+            ]
+        );
         $this->assertEquals(302, $resp['code']);
 
         $this->assertStringStartsWith(
@@ -156,7 +161,8 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
 
         $this->authenticate();
         /** @var array $resp */
-        $resp = $this->server->get(self::$LINK_URL,
+        $resp = $this->server->get(
+            self::$LINK_URL,
             [
                 'service' => $service_url,
                 'method' => 'POST',
@@ -164,7 +170,8 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
             [
                 CURLOPT_COOKIEJAR => $this->cookies_file,
                 CURLOPT_COOKIEFILE => $this->cookies_file
-            ]);
+            ]
+        );
 
         // POST responds with a form that is uses JavaScript to submit
         $this->assertEquals(200, $resp['code']);
@@ -190,7 +197,6 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             'ticket',
             $item->getAttribute('name')
-
         );
         $this->assertStringStartsWith(
             'ST-',
@@ -209,12 +215,14 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
         // Use cookies Jar to store auth session cookies
         /** @var array $resp */
         $resp = $this->server->get(
-            self::$LINK_URL, [],
+            self::$LINK_URL,
+            [],
             [
                 CURLOPT_COOKIEJAR => $this->cookies_file,
                 CURLOPT_COOKIEFILE => $this->cookies_file,
                 CURLOPT_FOLLOWLOCATION => true
-            ]);
+            ]
+        );
         $this->assertEquals(200, $resp['code']);
     }
 }

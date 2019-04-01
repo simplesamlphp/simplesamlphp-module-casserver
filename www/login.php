@@ -28,6 +28,7 @@
  *  language
  */
 
+use SimpleSAML\Module\casserver\Cas\AttributeExtractor;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
 use SimpleSAML\Configuration;
@@ -166,7 +167,7 @@ if (array_key_exists('language', $_GET)) {
 }
 
 if (isset($_GET['service'])) {
-    $attributeExtractor = new \sspmod_casserver_Cas_AttributeExtractor();
+    $attributeExtractor = new AttributeExtractor();
     $mappedAttributes = $attributeExtractor->extractUserAndAttributes($as->getAttributes(), $casconfig);
 
     $serviceTicket = $ticketFactory->createServiceTicket([

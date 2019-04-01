@@ -39,7 +39,6 @@ $legal_target_service_urls = $casconfig->getValue('legal_target_service_urls', [
 if (array_key_exists('targetService', $_GET) &&
     checkServiceURL(sanitize($_GET['targetService']), $legal_target_service_urls) && array_key_exists('pgt', $_GET)
 ) {
-
     $ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
     $ticketStoreClass = \SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
     /** @psalm-suppress InvalidStringClass */

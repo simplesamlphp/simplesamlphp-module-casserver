@@ -1,12 +1,14 @@
 <?php
 
+namespace SimpleSAML\Module\casserver\Cas;
+
 use SimpleSAML\Configuration;
 use SimpleSAML\Module;
 
 /**
  * Extract the user and any mapped attributes from the AuthSource attributes
  */
-class sspmod_casserver_Cas_AttributeExtractor
+class AttributeExtractor
 {
 
     /**
