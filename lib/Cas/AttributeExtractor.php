@@ -64,7 +64,8 @@ class AttributeExtractor
 
     /**
      * Process any authproc filters defined in the configuration. The Authproc filters must only
-     * rely on 'Attributes' being available and not on additional SAML state
+     * rely on 'Attributes' being available and not on additional SAML state.
+     * @see \SimpleSAML_Auth_ProcessingChain::parseFilter() For the original, SAML side implementation
      * @param array $attributes The current attributes
      * @param \SimpleSAML\Configuration $casconfig The cas configuration
      * @return array The attributes post processing.
@@ -82,6 +83,8 @@ class AttributeExtractor
                 'Auth\Process',
                 \SimpleSAML\Auth\ProcessingFilter::class
             );
+            // Unset 'class' to prevent the filter from interpreting it as an option
+            unset($config['class']);
             /** @psalm-suppress InvalidStringClass */
             $filter = new $className($config, null);
             $filter->process($state);
