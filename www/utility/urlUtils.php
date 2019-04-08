@@ -21,32 +21,22 @@
  *
  */
 
+use SimpleSAML\Configuration;
+use SimpleSAML\Module\casserver\Cas\ServiceValidator;
+
 /**
+ * @deprecated
+ * @see ServiceValidator
  * @param string $service
  * @param array $legal_service_urls
  * @return bool
  */
 function checkServiceURL($service, array $legal_service_urls)
 {
-    foreach ($legal_service_urls as $legalUrl) {
-        if (empty($legalUrl)) {
-            \SimpleSAML\Logger::warning("Ignoring empty CAS legal service url '$legalUrl'.");
-            continue;
-        }
-        if (!ctype_alnum($legalUrl[0])) {
-            // Probably a regex. Suppress errors incase the format is invalid
-            $result = @preg_match($legalUrl, $service);
-            if ($result === 1) {
-                return true;
-            } elseif ($result === false) {
-                \SimpleSAML\Logger::warning("Invalid CAS legal service url '$legalUrl'. Error ".preg_last_error());
-            }
-        } elseif (strpos($service, $legalUrl) === 0) {
-            return true;
-        }
-    }
-
-    return false;
+    //delegate to ServiceValidator until all references to this can be cleaned up
+    $config = Configuration::loadFromArray(['legal_service_urls' => $legal_service_urls]);
+    $serviceValidator = new ServiceValidator($config);
+    return $serviceValidator->checkServiceURL($service) !== null;
 }
 
 

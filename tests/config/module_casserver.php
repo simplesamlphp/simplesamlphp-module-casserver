@@ -24,6 +24,10 @@ $config = [
         // Any service url string matching any of the following prefixes is accepted
         'http://host1.domain:1234/path1',
         'https://host2.domain:5678/path2/path3',
+        '|https://override.example.com/|' => [
+            'attrname' => 'uid',
+            'attributes_to_transfer' => ['cn'],
+        ]
     ],
 
     'legal_target_service_urls' => [
