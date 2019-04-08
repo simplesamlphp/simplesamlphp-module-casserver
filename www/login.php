@@ -183,7 +183,17 @@ if (isset($_GET['service'])) {
 
     $parameters['ticket'] = $serviceTicket['id'];
 
-    if ($redirect) {
+    if (isset($_GET['debugMode']) && $_GET['debugMode'] == 'true' && $casconfig->getBoolean('debugMode', false)) {
+        $method = 'serviceValidate';
+        // Fake some options for validateTicket
+        $_GET['ticket'] = $serviceTicket['id'];
+        // We want to capture the output from echo used in validateTicket
+        ob_start();
+        require_once 'utility/validateTicket.php';
+        $casResponse = ob_get_contents();
+        ob_end_clean();
+        echo '<pre>' . htmlspecialchars($casResponse) . '</pre>';
+    } elseif ($redirect) {
         HTTP::redirectTrustedURL(HTTP::addURLParameters($_GET['service'], $parameters));
     } else {
         HTTP::submitPOSTData($_GET['service'], $parameters);

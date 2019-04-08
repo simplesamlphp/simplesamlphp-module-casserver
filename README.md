@@ -13,6 +13,26 @@ Install with composer
 
 See the `config-templates` folder for examples of configuring this module
 
+## Debug
+
+To aid in debugging you can print out the CAS ticket xml rather then returning a ticket id.
+Enable `debugMode` in `module_casserver.php` and then add a query parameter `debugMode=true` to the CAS login url.
+
+Logging in to https://cas.example.com/cas/login?debugMode=true&service=http://localhost/ would now print the xml for that service.
+
+```xml
+<?xml version="1.0">
+<cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
+ <cas:authenticationSuccess>
+  <cas:user>testuser@example.com</cas:user>
+  <cas:attributes>
+   <cas:eduPersonPrincipalName>testuser@example.com</cas:eduPersonPrincipalName>
+   <cas:base64Attributes>false</cas:base64Attributes>
+  </cas:attributes>
+ </cas:authenticationSuccess>
+</cas:serviceResponse>
+```
+
 # Development
 
 Run `phpcs` to check code style

@@ -152,6 +152,31 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test outputting user info instead of redirecting
+     */
+    public function testDebugOutput()
+    {
+        $service_url = 'http://host1.domain:1234/path1';
+        $this->authenticate();
+        /** @var array $resp */
+        $resp = $this->server->get(
+            self::$LINK_URL,
+            ['service' => $service_url, 'debugMode' => 'true'],
+            [
+                CURLOPT_COOKIEJAR => $this->cookies_file,
+                CURLOPT_COOKIEFILE => $this->cookies_file
+            ]
+        );
+        $this->assertEquals(200, $resp['code']);
+
+        $this->assertContains(
+            '&lt;cas:eduPersonPrincipalName&gt;testuser@example.com&lt;/cas:eduPersonPrincipalName&gt;',
+            $resp['body'],
+            'Attributes should have been printed.'
+        );
+    }
+
+    /**
      * test a valid service URL with Post
      * @return void
      */
