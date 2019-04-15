@@ -36,7 +36,7 @@ abstract class TicketStore
 
     /**
      * @param string $ticketId
-     * @return array|null
+     * @return array|null The ticket content or null if there is no such ticket
      */
     abstract public function getTicket($ticketId);
 

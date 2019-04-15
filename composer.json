@@ -18,7 +18,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "SimpleSAML\\Test\\": "vendor/simplesamlphp/simplesamlphp/tests"
+            "SimpleSAML\\Test\\": "vendor/simplesamlphp/simplesamlphp/tests",
+            "Simplesamlphp\\Casserver\\": "tests/lib"
         }
     },
     "require-dev": {
