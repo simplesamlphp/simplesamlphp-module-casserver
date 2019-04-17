@@ -177,6 +177,35 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test outputting user info instead of redirecting
+     */
+    public function testAlternateServiceConfigUsed()
+    {
+        $service_url = 'https://override.example.com/somepath';
+        $this->authenticate();
+        /** @var array $resp */
+        $resp = $this->server->get(
+            self::$LINK_URL,
+            ['service' => $service_url, 'debugMode' => 'true'],
+            [
+                CURLOPT_COOKIEJAR => $this->cookies_file,
+                CURLOPT_COOKIEFILE => $this->cookies_file
+            ]
+        );
+        $this->assertEquals(200, $resp['code']);
+        $this->assertContains(
+            '&lt;cas:user&gt;testuser&lt;/cas:user&gt;',
+            $resp['body'],
+            'cas:user attribute should have been overridden'
+        );
+        $this->assertContains(
+            '&lt;cas:cn&gt;Test User&lt;/cas:cn&gt;',
+            $resp['body'],
+            'Attributes should have been printed with alternate attribute release'
+        );
+    }
+
+    /**
      * test a valid service URL with Post
      * @return void
      */
