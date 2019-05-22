@@ -23,7 +23,7 @@ before_script:
   - composer update --no-interaction
   # Link this branch/pr/etc of simplesamlphp-module-casserver into SSP's vendor directory
   - php tests/bootstrap.php
-  - if [[ "$TRAVIS_PHP_VERSION" == "7.3" ]]; then composer require --dev vimeo/psalm; fi
+  - if [[ "$TRAVIS_PHP_VERSION" == "7.3" ]]; then composer require --dev vimeo/psalm:1.1.9; fi
 
 script:
   - bin/check-syntax.sh
