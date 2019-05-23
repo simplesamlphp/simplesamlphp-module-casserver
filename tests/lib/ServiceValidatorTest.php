@@ -56,10 +56,11 @@ class ServiceValidatorTest extends \PHPUnit_Framework_TestCase
 
         $serviceValidator = new ServiceValidator(Configuration::loadFromArray($casConfig));
         $check = $serviceValidator->checkServiceURL($service);
-        $this->assertNotEquals($check, null);
-
-        $config = $check->toArray();
-        unset($config['legal_service_urls']);
+        $config = [];
+        if ($check !== null) {
+            $config = $check->toArray();
+            unset($config['legal_service_urls']);
+        }
         $this->assertEquals($expectedConfig, $config);
     }
 
