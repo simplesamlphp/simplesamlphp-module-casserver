@@ -11,10 +11,6 @@ php:
 
 env:
   - SIMPLESAMLPHP_VERSION=1.17.*
-  
-matrix:
-  allow_failures:
-    - php: 7.3
 
 before_script:
   - export SIMPLESAMLPHP_CONFIG_DIR=`pwd`/tests/config/
