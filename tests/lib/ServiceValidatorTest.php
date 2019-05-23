@@ -19,9 +19,10 @@ class ServiceValidatorTest extends \PHPUnit_Framework_TestCase
      *
      * @param string $service The service url to test
      * @param array $expectedConfig The expected CAS configuration to use
+     * @return void
      * @dataProvider overridingDataProvider
      */
-    public function testOverridingServiceConfig($service, $expectedConfig)
+    public function testOverridingServiceConfig($service, array $expectedConfig)
     {
         $casConfig = [
             'attrname' => 'defaultAttribute',
@@ -54,11 +55,18 @@ class ServiceValidatorTest extends \PHPUnit_Framework_TestCase
         ];
 
         $serviceValidator = new ServiceValidator(Configuration::loadFromArray($casConfig));
-        $config = $serviceValidator->checkServiceURL($service)->toArray();
+        $check = $serviceValidator->checkServiceURL($service);
+        $this->assertNotEquals($check, null);
+
+        $config = $check->toArray();
         unset($config['legal_service_urls']);
         $this->assertEquals($expectedConfig, $config);
     }
 
+
+    /**
+     * @return array
+     */
     public function overridingDataProvider()
     {
         // The expected configuration if no overrides occur

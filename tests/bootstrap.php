@@ -10,8 +10,8 @@ require_once($projectRootDirectory.'/vendor/autoload.php');
 
 /**
  * Sets a link in the simplesamlphp vendor directory
- * @param $target
- * @param $link
+ * @param string $target
+ * @param string $link
  */
 function symlinkModulePathInVendorDirectory($target, $link)
 {

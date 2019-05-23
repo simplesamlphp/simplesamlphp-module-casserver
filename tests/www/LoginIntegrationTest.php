@@ -153,6 +153,7 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test outputting user info instead of redirecting
+     * @return void
      */
     public function testDebugOutput()
     {
@@ -178,6 +179,7 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test outputting user info instead of redirecting
+     * @return void
      */
     public function testAlternateServiceConfigUsed()
     {

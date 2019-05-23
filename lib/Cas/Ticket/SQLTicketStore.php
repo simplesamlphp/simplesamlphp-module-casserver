@@ -225,6 +225,7 @@ class SQLTicketStore extends TicketStore
                 /* Default implementation. Try INSERT, and UPDATE if that fails. */
 
                 $insertQuery = 'INSERT INTO '.$table.' '.$colNames.' '.$values;
+                /** @var \PDOStatement|false $insertQuery */
                 $insertQuery = $this->pdo->prepare($insertQuery);
 
                 if ($insertQuery === false) {
