@@ -11,12 +11,6 @@ use SimpleSAML\Test\BuiltInServer;
  *
  * The embedded server is authenticating users user exampleauth::static to automatically log users in.
  *
- * Currently you must start the embedded server by hand.
- * <pre>
- * # path is the current checkout of the module
- * export SIMPLESAMLPHP_CONFIG_DIR=$PWD/tests/config/
- * php -S 0.0.0.0:8732 -t $PWD/vendor/simplesamlphp/simplesamlphp/www &
- * </pre>
  *
  * @package Simplesamlphp\Casserver
  */
@@ -24,6 +18,9 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
 {
     /** @var string $LINK_URL */
     private static $LINK_URL = '/module.php/casserver/login.php';
+
+    private static $SAMLVALIDATE_URL = '/module.php/casserver/samlvalidate.php';
+
     /**
      * @var \SimpleSAML\Test\BuiltInServer
      */
@@ -182,6 +179,32 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
      * Test outputting user info instead of redirecting
      * @return void
      */
+    public function testDebugOutputSamlValidate()
+    {
+        $service_url = 'http://host1.domain:1234/path1';
+        $this->authenticate();
+        /** @var array $resp */
+        $resp = $this->server->get(
+            self::$LINK_URL,
+            ['service' => $service_url, 'debugMode' => 'samlValidate'],
+            [
+                CURLOPT_COOKIEJAR => $this->cookies_file,
+                CURLOPT_COOKIEFILE => $this->cookies_file
+            ]
+        );
+        $this->assertEquals(200, $resp['code']);
+
+
+        $this->assertContains(
+            'testuser@example.com&lt;/NameIdentifier',
+            $resp['body'],
+            'Attributes should have been printed.'
+        );
+    }
+
+    /**
+     * Test outputting user info instead of redirecting
+     */
     public function testAlternateServiceConfigUsed()
     {
         $service_url = 'https://override.example.com/somepath';
@@ -262,6 +285,54 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    public function testSamlValidate()
+    {
+        $service_url = 'http://host1.domain:1234/path1';
+        $this->authenticate();
+
+        /** @var array $resp */
+        $resp = $this->server->get(
+            self::$LINK_URL,
+            ['service' => $service_url],
+            [
+                CURLOPT_COOKIEJAR => $this->cookies_file,
+                CURLOPT_COOKIEFILE => $this->cookies_file
+            ]
+        );
+        $this->assertEquals(302, $resp['code']);
+
+        $this->assertStringStartsWith(
+            $service_url . '?ticket=ST-',
+            $resp['headers']['Location'],
+            'Ticket should be part of the redirect.'
+        );
+
+        $location =  $resp['headers']['Location'];
+        $matches = [];
+        $this->assertEquals(1, preg_match('@ticket=(.*)@', $location, $matches));
+        $ticket = $matches[1];
+        $soapRequest = <<<SOAP
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+	<SOAP-ENV:Header/>
+	<SOAP-ENV:Body>
+		<samlp:Request xmlns:samlp="urn:oasis:names:tc:SAML:1.0:protocol" MajorVersion="1" MinorVersion="1" RequestID="_192.168.16.51.1024506224022" IssueInstant="2002-06-19T17:03:44.022Z">
+			<samlp:AssertionArtifact>$ticket</samlp:AssertionArtifact>
+		</samlp:Request>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+SOAP;
+
+        $resp = $this->post(
+            self::$SAMLVALIDATE_URL,
+            $soapRequest,
+            [
+                'TARGET' => $service_url,
+            ]
+        );
+
+        $this->assertEquals(200, $resp['code']);
+        $this->assertContains('testuser@example.com</NameIdentifier>', $resp['body']);
+    }
 
     /**
      * Sets up an authenticated session for the cookie $jar
@@ -281,5 +352,61 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $this->assertEquals(200, $resp['code']);
+    }
+
+    /**
+     * TODO: migrate into BuiltInServer
+     * @param resource $ch
+     * @return array
+     */
+    private function execAndHandleCurlResponse($ch)
+    {
+        $resp = curl_exec($ch);
+        if ($resp === false) {
+            throw new \Exception('curl error: ' . curl_error($ch));
+        }
+        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        list($header, $body) = explode("\r\n\r\n", $resp, 2);
+        $raw_headers = explode("\r\n", $header);
+        array_shift($raw_headers);
+        $headers = [];
+        foreach ($raw_headers as $header) {
+            list($name, $value) = explode(':', $header, 2);
+            $headers[trim($name)] = trim($value);
+        }
+        curl_close($ch);
+        return [
+            'code' => $code,
+            'headers' => $headers,
+            'body' => $body,
+        ];
+    }
+
+    /**
+     * TODO: migrate into BuiltInServer
+     * @param string $query The path at the embedded server to query
+     * @param string|array $body The content to post
+     * @param array $parameters Any query parameters to add.
+     * @param array $curlopts Additional curl options
+     * @return array The response code, headers and body
+     */
+    public function post($query, $body, $parameters = [], $curlopts = [])
+    {
+        $ch = curl_init();
+        $url = 'http://'.$this->server_addr.$query;
+        $url .= (!empty($parameters)) ? '?'.http_build_query($parameters) : '';
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_HEADER => 1,
+            CURLOPT_POST => 1,
+        ]);
+
+        // body may be multi dimensional, so we convert it ourselves
+        // https://stackoverflow.com/a/21111209/54396
+        $postParam = is_string($body) ? $body : http_build_query($body);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postParam);
+        curl_setopt_array($ch, $curlopts);
+        return $this->execAndHandleCurlResponse($ch);
     }
 }
