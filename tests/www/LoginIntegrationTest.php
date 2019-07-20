@@ -3,7 +3,7 @@
 namespace Simplesamlphp\Casserver;
 
 use DOMDocument;
-use \SimpleSAML\TestUtils\BuiltInServer;
+use SimpleSAML\TestUtils\BuiltInServer;
 
 /**
  *
