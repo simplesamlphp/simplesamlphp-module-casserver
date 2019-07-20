@@ -19,6 +19,14 @@
  *
  */
 
+Unreleased
+    * Allow certain authproc filters to be used in configuration
+    * Support method parameter at login
+    * Improve handling of invalid xml element names for attributes
+    * Minimum supported simplesamlphp version bumped to 1.17
+    * debugMode option to display cas ticket xml
+    * Allow per service overriding of configuration options for www/login
+
 2018-07-20 Bjorn Rohde Jensen
     * Release 6.1.0
     * Minimum supported simplesamlphp version bumped to 1.15.

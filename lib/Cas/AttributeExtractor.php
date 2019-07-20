@@ -1,12 +1,14 @@
 <?php
 
+namespace SimpleSAML\Module\casserver\Cas;
+
 use SimpleSAML\Configuration;
 use SimpleSAML\Module;
 
 /**
  * Extract the user and any mapped attributes from the AuthSource attributes
  */
-class sspmod_casserver_Cas_AttributeExtractor
+class AttributeExtractor
 {
     /**
      * Determine the user and any CAS attributes based on the attributes from the
@@ -62,7 +64,8 @@ class sspmod_casserver_Cas_AttributeExtractor
 
     /**
      * Process any authproc filters defined in the configuration. The Authproc filters must only
-     * rely on 'Attributes' being available and not on additional SAML state
+     * rely on 'Attributes' being available and not on additional SAML state.
+     * @see \SimpleSAML_Auth_ProcessingChain::parseFilter() For the original, SAML side implementation
      * @param array $attributes The current attributes
      * @param \SimpleSAML\Configuration $casconfig The cas configuration
      * @return array The attributes post processing.
@@ -80,6 +83,8 @@ class sspmod_casserver_Cas_AttributeExtractor
                 'Auth\Process',
                 \SimpleSAML\Auth\ProcessingFilter::class
             );
+            // Unset 'class' to prevent the filter from interpreting it as an option
+            unset($config['class']);
             /** @psalm-suppress InvalidStringClass */
             $filter = new $className($config, null);
             $filter->process($state);

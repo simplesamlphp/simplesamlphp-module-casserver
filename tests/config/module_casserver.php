@@ -1,8 +1,8 @@
 <?php
 
-/* 
+/*
  * Configuration for the module casserver.
- * 
+ *
  */
 $config = [
     'authsource' => 'casserver',
@@ -24,6 +24,10 @@ $config = [
         // Any service url string matching any of the following prefixes is accepted
         'http://host1.domain:1234/path1',
         'https://host2.domain:5678/path2/path3',
+        '|https://override.example.com/|' => [
+            'attrname' => 'uid',
+            'attributes_to_transfer' => ['cn'],
+        ]
     ],
 
     'legal_target_service_urls' => [
@@ -51,7 +55,7 @@ $config = [
     'attributes' => true, // enable transfer of attributes, defaults to false
     'attributes_to_transfer' => ['eduPersonPrincipalName'], // set of attributes to transfer, defaults to all
 
-    'base64attributes' => true, //base64 encode transferred attributes, defaults to false
+    'base64attributes' => false, //base64 encode transferred attributes, defaults to false
     'base64_attributes_indicator_attribute' => 'base64Attributes', /*add an attribute with the value of the base64attributes
                                                                      configuration parameter to the set of transferred attributes.
                                                                      Defaults to not adding an indicator attribute. */
@@ -64,4 +68,6 @@ $config = [
     'service_ticket_expire_time' => 5, //how many seconds service tickets are valid for, defaults to 5
     'proxy_granting_ticket_expire_time' => 600, //how many seconds proxy granting tickets are valid for at most, defaults to 3600
     'proxy_ticket_expire_time' => 5, //how many seconds proxy tickets are valid for, defaults to 5
+
+    'debugMode' => true,
 ];

@@ -230,6 +230,7 @@ class SQLTicketStore extends TicketStore
                 /* Default implementation. Try INSERT, and UPDATE if that fails. */
 
                 $insertQuery = 'INSERT INTO '.$table.' '.$colNames.' '.$values;
+                /** @var \PDOStatement|false $insertQuery */
                 $insertQuery = $this->pdo->prepare($insertQuery);
 
                 if ($insertQuery === false) {
@@ -238,7 +239,6 @@ class SQLTicketStore extends TicketStore
                 $this->insertOrUpdateFallback($table, $keys, $data, $insertQuery);
                 return;
         }
-
     }
 
 
@@ -269,7 +269,6 @@ class SQLTicketStore extends TicketStore
         $condCols = [];
 
         foreach ($data as $col => $value) {
-
             $tmp = $col.' = :'.$col;
 
             if (in_array($col, $keys, true)) {

@@ -28,6 +28,8 @@
  *  language
  */
 
+use SimpleSAML\Module\casserver\Cas\AttributeExtractor;
+use SimpleSAML\Module\casserver\Cas\ServiceValidator;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
 use SimpleSAML\Configuration;
@@ -45,16 +47,22 @@ $isPassive = isset($_GET['gateway']) && $_GET['gateway'];
 $redirect = !(isset($_GET['method']) && 'POST' === $_GET['method']);
 
 $casconfig = Configuration::getConfig('module_casserver.php');
+$serviceValidator = new ServiceValidator($casconfig);
 
-$legal_service_urls = $casconfig->getValue('legal_service_urls', []);
+if (isset($_GET['service'])) {
+    $serviceCasConfig = $serviceValidator->checkServiceURL(sanitize($_GET['service']));
+    if (isset($serviceCasConfig)) {
+        // Override the cas configuration to use for this service
+        $casconfig = $serviceCasConfig;
+    } else {
+        $message = 'Service parameter provided to CAS server is not listed as a legal service: [service] = ' .
+            var_export($_GET['service'], true);
+        Logger::debug('casserver:' . $message);
 
-if (isset($_GET['service']) && !checkServiceURL(sanitize($_GET['service']), $legal_service_urls)) {
-    $message = 'Service parameter provided to CAS server is not listed as a legal service: [service] = '.
-        var_export($_GET['service'], true);
-    Logger::debug('casserver:'.$message);
-
-    throw new \Exception($message);
+        throw new \Exception($message);
+    }
 }
+
 
 $as = new \SimpleSAML\Auth\Simple($casconfig->getValue('authsource'));
 
@@ -166,7 +174,7 @@ if (array_key_exists('language', $_GET)) {
 }
 
 if (isset($_GET['service'])) {
-    $attributeExtractor = new \sspmod_casserver_Cas_AttributeExtractor();
+    $attributeExtractor = new AttributeExtractor();
     $mappedAttributes = $attributeExtractor->extractUserAndAttributes($as->getAttributes(), $casconfig);
 
     $serviceTicket = $ticketFactory->createServiceTicket([
@@ -182,7 +190,17 @@ if (isset($_GET['service'])) {
 
     $parameters['ticket'] = $serviceTicket['id'];
 
-    if ($redirect) {
+    if (isset($_GET['debugMode']) && $_GET['debugMode'] == 'true' && $casconfig->getBoolean('debugMode', false)) {
+        $method = 'serviceValidate';
+        // Fake some options for validateTicket
+        $_GET['ticket'] = $serviceTicket['id'];
+        // We want to capture the output from echo used in validateTicket
+        ob_start();
+        require_once 'utility/validateTicket.php';
+        $casResponse = ob_get_contents();
+        ob_end_clean();
+        echo '<pre>' . htmlspecialchars($casResponse) . '</pre>';
+    } elseif ($redirect) {
         HTTP::redirectTrustedURL(HTTP::addURLParameters($_GET['service'], $parameters));
     } else {
         HTTP::submitPOSTData($_GET['service'], $parameters);
