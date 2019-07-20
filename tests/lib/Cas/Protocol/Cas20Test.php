@@ -1,17 +1,17 @@
 <?php
 namespace Simplesamlphp\Casserver;
 
+use SimpleSAML\Configuration;
 use SimpleSAML\Module\casserver\Cas\Protocol\Cas20;
 
-class Cas20Test extends \PHPUnit_Framework_TestCase
+class Cas20Test extends \PHPUnit\Framework\TestCase
 {
     /**
      * @return void
      */
     public function testAttributeToXmlConversion()
     {
-
-            $casConfig = \SimpleSAML\Configuration::loadFromArray([
+            $casConfig = Configuration::loadFromArray([
                 'attributes' => true, //send all attributes
             ]);
 
@@ -52,7 +52,6 @@ class Cas20Test extends \PHPUnit_Framework_TestCase
 </cas:authenticationSuccess>
 </cas:serviceResponse>
 EOD;
-            //var_dump($xml);
             $this->assertEquals($expectedXml, $xml);
     }
 }
