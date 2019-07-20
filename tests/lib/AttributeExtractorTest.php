@@ -5,7 +5,7 @@ namespace Simplesamlphp\Casserver;
 use SimpleSAML\Configuration;
 use SimpleSAML\Module\casserver\Cas\AttributeExtractor;
 
-class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
+class AttributeExtractorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Confirm behavior of a default configuration
