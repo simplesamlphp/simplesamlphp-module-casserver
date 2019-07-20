@@ -23,6 +23,7 @@
 
 namespace SimpleSAML\Module\casserver\Cas\Protocol;
 
+use DOMDocument;
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
 
@@ -99,7 +100,7 @@ class Cas20
      */
     public function getValidateSuccessResponse($username)
     {
-        $xmlDocument = new \DOMDocument("1.0");
+        $xmlDocument = new DOMDocument("1.0");
 
         $root = $xmlDocument->createElement("cas:serviceResponse");
         $root->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:cas', 'http://www.yale.edu/tp/cas');
@@ -162,7 +163,7 @@ class Cas20
      */
     public function getValidateFailureResponse($errorCode, $explanation)
     {
-        $xmlDocument = new \DOMDocument("1.0");
+        $xmlDocument = new DOMDocument("1.0");
 
         $root = $xmlDocument->createElement("cas:serviceResponse");
         $root->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:cas', 'http://www.yale.edu/tp/cas');
@@ -189,7 +190,7 @@ class Cas20
      */
     public function getProxySuccessResponse($proxyTicketId)
     {
-        $xmlDocument = new \DOMDocument("1.0");
+        $xmlDocument = new DOMDocument("1.0");
 
         $root = $xmlDocument->createElement("cas:serviceResponse");
         $root->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:cas', 'http://www.yale.edu/tp/cas');
@@ -215,7 +216,7 @@ class Cas20
      */
     public function getProxyFailureResponse($errorCode, $explanation)
     {
-        $xmlDocument = new \DOMDocument("1.0");
+        $xmlDocument = new DOMDocument("1.0");
 
         $root = $xmlDocument->createElement("cas:serviceResponse");
         $root->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:cas', 'http://www.yale.edu/tp/cas');

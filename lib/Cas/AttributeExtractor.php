@@ -8,7 +8,6 @@ use SimpleSAML\Module;
  */
 class sspmod_casserver_Cas_AttributeExtractor
 {
-
     /**
      * Determine the user and any CAS attributes based on the attributes from the
      * authsource and the CAS configuration.
@@ -59,6 +58,7 @@ class sspmod_casserver_Cas_AttributeExtractor
             'attributes' => $casAttributes
         ];
     }
+
 
     /**
      * Process any authproc filters defined in the configuration. The Authproc filters must only

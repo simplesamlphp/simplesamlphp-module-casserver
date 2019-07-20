@@ -23,7 +23,8 @@
 
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
-use \SimpleSAML\Configuration;
+use Exception;
+use SimpleSAML\Configuration;
 
 class FileSystemTicketStore extends TicketStore
 {
@@ -41,17 +42,17 @@ class FileSystemTicketStore extends TicketStore
         $storeConfig = $config->getValue('ticketstore', ['directory' => 'ticketcache']);
 
         if (!is_string($storeConfig['directory'])) {
-            throw new \Exception('Invalid directory option in config.');
+            throw new Exception('Invalid directory option in config.');
         }
 
         $path = $config->resolvePath($storeConfig['directory']);
 
         if (is_null($path) || !is_dir($path)) {
-            throw new \Exception('Directory for CAS Server ticket storage ['.strval($path).'] does not exists.');
+            throw new Exception('Directory for CAS Server ticket storage ['.strval($path).'] does not exists.');
         }
 
         if (!is_writable($path)) {
-            throw new \Exception('Directory for CAS Server ticket storage ['.$path.'] is not writable.');
+            throw new Exception('Directory for CAS Server ticket storage ['.$path.'] is not writable.');
         }
 
         $this->pathToTicketDirectory = preg_replace('/\/$/', '', $path);

@@ -23,7 +23,12 @@
 
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
+use Exception;
+use PDO;
+use PDOException;
+use PDOStatement;
 use SimpleSAML\Configuration;
+use SimpleSAML\Logger;
 use Webmozart\Assert\Assert;
 
 class SQLTicketStore extends TicketStore
@@ -56,10 +61,10 @@ class SQLTicketStore extends TicketStore
         $options = $storeConfig->getArray('options', []);
         $this->prefix = $storeConfig->getString('prefix', '');
 
-        $this->pdo = new \PDO($dsn, $username, $password, $options);
-        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->pdo = new PDO($dsn, $username, $password, $options);
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $this->driver = $this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
+        $this->driver = $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
 
         if ($this->driver === 'mysql') {
             $this->pdo->exec('SET time_zone = "+00:00"');
@@ -126,13 +131,13 @@ class SQLTicketStore extends TicketStore
 
         try {
             $fetchTableVersion = $this->pdo->query('SELECT _name, _version FROM '.$this->prefix.'_tableVersion');
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             $this->pdo->exec('CREATE TABLE '.$this->prefix.
                 '_tableVersion (_name VARCHAR(30) NOT NULL UNIQUE, _version INTEGER NOT NULL)');
             return;
         }
 
-        while (($row = $fetchTableVersion->fetch(\PDO::FETCH_ASSOC)) !== false) {
+        while (($row = $fetchTableVersion->fetch(PDO::FETCH_ASSOC)) !== false) {
             $this->tableVersions[$row['_name']] = intval($row['_version']);
         }
     }
@@ -228,7 +233,7 @@ class SQLTicketStore extends TicketStore
                 $insertQuery = $this->pdo->prepare($insertQuery);
 
                 if ($insertQuery === false) {
-                    throw new \Exception("Error preparing statement.");
+                    throw new Exception("Error preparing statement.");
                 }
                 $this->insertOrUpdateFallback($table, $keys, $data, $insertQuery);
                 return;
@@ -244,18 +249,18 @@ class SQLTicketStore extends TicketStore
      * @param \PDOStatement $insertQuery
      * @return void
      */
-    private function insertOrUpdateFallback($table, array $keys, array $data, \PDOStatement $insertQuery)
+    private function insertOrUpdateFallback($table, array $keys, array $data, PDOStatement $insertQuery)
     {
         try {
             $insertQuery->execute($data);
             return;
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             $ecode = strval($e->getCode());
             switch ($ecode) {
                 case '23505': /* PostgreSQL */
                     break;
                 default:
-                    \SimpleSAML\Logger::error('casserver: Error while saving data: '.$e->getMessage());
+                    Logger::error('casserver: Error while saving data: '.$e->getMessage());
                     throw $e;
             }
         }
@@ -312,7 +317,7 @@ class SQLTicketStore extends TicketStore
         $query = $this->pdo->prepare($query);
         $query->execute($params);
 
-        $row = $query->fetch(\PDO::FETCH_ASSOC);
+        $row = $query->fetch(PDO::FETCH_ASSOC);
         if ($row === false) {
             return null;
         }

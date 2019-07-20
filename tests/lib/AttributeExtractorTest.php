@@ -6,7 +6,6 @@ use SimpleSAML\Configuration;
 
 class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * Confirm behavior of a default configuration
      * @return void
@@ -31,6 +30,7 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($attributes, $result['attributes']);
     }
 
+
     /**
      * Test disable attribute copying
      * @return void
@@ -54,6 +54,7 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('testuser@example.com', $result['user']);
         $this->assertEquals([], $result['attributes']);
     }
+
 
     /**
      * Confirm customizing the attribute for user and attributes to copy
@@ -83,6 +84,7 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['additionalAttribute' => ['Taco Club']], $result['attributes']);
     }
 
+
     /**
      * Confirm empty authproc has no affect
      * @return void
@@ -107,6 +109,7 @@ class AttributeExtractorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('testuser@example.com', $result['user']);
         $this->assertEquals($attributes, $result['attributes']);
     }
+
 
     /**
      * Test authproc configurations can adjust the attributes.

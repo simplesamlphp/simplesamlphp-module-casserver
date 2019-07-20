@@ -24,6 +24,7 @@
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
 use SimpleSAML\Configuration;
+use SimpleSAML\Memcache;
 
 class MemCacheTicketStore extends TicketStore
 {
@@ -54,7 +55,7 @@ class MemCacheTicketStore extends TicketStore
     {
         $scopedTicketId = $this->scopeTicketId($ticketId);
 
-        return \SimpleSAML\Memcache::get($scopedTicketId);
+        return Memcache::get($scopedTicketId);
     }
 
 
@@ -66,7 +67,7 @@ class MemCacheTicketStore extends TicketStore
     {
         $scopedTicketId = $this->scopeTicketId($ticket['id']);
 
-        \SimpleSAML\Memcache::set($scopedTicketId, $ticket, $ticket['validBefore']);
+        Memcache::set($scopedTicketId, $ticket, $ticket['validBefore']);
     }
 
 
@@ -78,7 +79,7 @@ class MemCacheTicketStore extends TicketStore
     {
         $scopedTicketId = $this->scopeTicketId($ticketId);
 
-        \SimpleSAML\Memcache::delete($scopedTicketId);
+        Memcache::delete($scopedTicketId);
     }
 
 

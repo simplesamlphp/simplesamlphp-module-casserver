@@ -1,5 +1,7 @@
 <?php
 
+use SimpleSAML\Logger;
+
 /*
  Config file to use during integration testing
 */
@@ -15,6 +17,6 @@ $config = [
     ],
 
     'debug' => true,
-    'logging.level' => \SimpleSAML\Logger::DEBUG,
+    'logging.level' => Logger::DEBUG,
     'logging.handler' => 'errorlog',
 ];

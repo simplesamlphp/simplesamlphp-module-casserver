@@ -25,10 +25,10 @@ before_script:
   - php tests/bootstrap.php
   - php -S localhost:8732 -t `pwd`/vendor/simplesamlphp/simplesamlphp/www &
   - export WEBPID=$!
-  - if [[ "$TRAVIS_PHP_VERSION" == "7.3" ]]; then composer require --dev vimeo/psalm; fi
 
 script:
-  - bin/check-syntax.sh
+  - vendor/simplesamlphp/simplesamlphp-test-framework/bin/check-syntax-php.sh
+  - vendor/simplesamlphp/simplesamlphp-test-framework/bin/check-syntax-json.sh
   - if [[ "$TRAVIS_PHP_VERSION" == "5.6" ]]; then php vendor/phpunit/phpunit/phpunit; else php vendor/phpunit/phpunit/phpunit --no-coverage; fi
   - if [[ "$TRAVIS_PHP_VERSION" == "7.3" ]]; then vendor/bin/psalm; fi
 

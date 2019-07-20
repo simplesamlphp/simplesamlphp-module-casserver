@@ -4,20 +4,20 @@
  * Configuration for the module casserver.
  * 
  */
-
 $config = [
     'authsource' => 'casserver',
 
     /* Scopes are named sets of entityIDs to be used for scoping. If a named scope is provided during login, then the
        IdPs listed by the disco service will be restricted to entityIDs in the specified set. */
     'scopes' => [
-        'mobile' =>  [
-                        'https://idp1.domain:1234/saml2/idp/metadata.php',
-                        'https://idp2.domain:5678/saml2/idp/metadata.php'
-                     ],
-        'desktop' => [  'https://idp3.domain:1234/saml2/idp/metadata.php',
-                        'https://idp4.domain:5678/saml2/idp/metadata.php'
-                     ]
+        'mobile' => [
+            'https://idp1.domain:1234/saml2/idp/metadata.php',
+            'https://idp2.domain:5678/saml2/idp/metadata.php'
+        ],
+        'desktop' => [
+             'https://idp3.domain:1234/saml2/idp/metadata.php',
+             'https://idp4.domain:5678/saml2/idp/metadata.php'
+        ]
     ],
 
     'legal_service_urls' => [

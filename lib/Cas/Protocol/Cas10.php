@@ -44,6 +44,7 @@ class Cas10
         return "yes\n".$username."\n";
     }
 
+
     /**
      * @return string
      */
