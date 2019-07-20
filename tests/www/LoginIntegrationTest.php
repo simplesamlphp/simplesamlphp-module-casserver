@@ -2,7 +2,8 @@
 
 namespace Simplesamlphp\Casserver;
 
-use \SimpleSAML\Test\BuiltInServer;
+use DOMDocument;
+use \SimpleSAML\TestUtils\BuiltInServer;
 
 /**
  *
@@ -19,7 +20,7 @@ use \SimpleSAML\Test\BuiltInServer;
  *
  * @package Simplesamlphp\Casserver
  */
-class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
+class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
 {
     /** @var string $LINK_URL */
     private static $LINK_URL = '/module.php/casserver/login.php';
@@ -234,7 +235,7 @@ class LoginIntegrationTest extends \PHPUnit_Framework_TestCase
 
         // Validate the form contains the required elements
         $body = $resp['body'];
-        $dom = new \DOMDocument;
+        $dom = new DOMDocument;
         $dom->loadHTML($body);
         $form = $dom->getElementsByTagName('form');
         $item = $form->item(0);
