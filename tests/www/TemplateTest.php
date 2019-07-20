@@ -6,7 +6,7 @@
  * @package SimpleSAMLphp
  */
  
-namespace SimpleSAML\Test\Web;
+namespace SimpleSAML\Casserver;
 
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Configuration;
