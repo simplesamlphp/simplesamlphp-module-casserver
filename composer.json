@@ -23,8 +23,7 @@
     },
     "require-dev": {
         "simplesamlphp/simplesamlphp": "^1.17",
-        "phpunit/phpunit": "~5.7",
-        "satooshi/php-coveralls": "^1.0"
+        "simplesamlphp/simplesamlphp-test-framework": "~0.0.6",
     },
     "support": {
         "issues": "https://github.com/simplesamlphp/simplesamlphp-module-casserver/issues",
