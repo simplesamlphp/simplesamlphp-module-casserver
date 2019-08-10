@@ -23,7 +23,7 @@
     },
     "require-dev": {
         "simplesamlphp/simplesamlphp": "^1.17",
-        "simplesamlphp/simplesamlphp-test-framework": "~0.0.6"
+        "simplesamlphp/simplesamlphp-test-framework": "~0.0.8"
     },
     "support": {
         "issues": "https://github.com/simplesamlphp/simplesamlphp-module-casserver/issues",
