@@ -1,6 +1,8 @@
 simpleSAMLphp-casserver
 =========================
 
+[![Build Status](https://travis-ci.com/simplesamlphp/simplesamlphp-module-casserver.svg?branch=master)](https://travis-ci.com/simplesamlphp/simplesamlphp-module-casserver)
+
 # Usage
 
 ## Install
