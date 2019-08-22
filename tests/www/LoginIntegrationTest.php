@@ -64,7 +64,7 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
      * Removes the lock file and cookies file
      * @return void
      */
-    protected function tearDown()
+    protected function tearDown() : void
     {
         @unlink($this->shared_file);
         @unlink($this->cookies_file); // remove it if it exists
