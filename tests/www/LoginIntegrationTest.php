@@ -50,7 +50,7 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
      * The setup method that is run before any tests in this class.
      * @return void
      */
-    protected function setup()
+    protected function setup() : void
     {
         $this->server = new BuiltInServer();
         $this->server_addr = $this->server->start();
