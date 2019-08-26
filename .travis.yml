@@ -10,6 +10,7 @@ env:
   - SIMPLESAMLPHP_VERSION=dev-master
 
 before_script:
+  - pecl install krb5
   - export SIMPLESAMLPHP_CONFIG_DIR=`pwd`/tests/config/
   - mkdir tests/ticketcache
   - composer require "simplesamlphp/simplesamlphp:${SIMPLESAMLPHP_VERSION}" --no-update
