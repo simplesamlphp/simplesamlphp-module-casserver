@@ -29,6 +29,7 @@
  */
 
 use SimpleSAML\Module\casserver\Cas\AttributeExtractor;
+use SimpleSAML\Module\casserver\Cas\Protocol\SamlValidateResponder;
 use SimpleSAML\Module\casserver\Cas\ServiceValidator;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
@@ -190,16 +191,24 @@ if (isset($_GET['service'])) {
 
     $parameters['ticket'] = $serviceTicket['id'];
 
-    if (isset($_GET['debugMode']) && $_GET['debugMode'] == 'true' && $casconfig->getBoolean('debugMode', false)) {
-        $method = 'serviceValidate';
-        // Fake some options for validateTicket
-        $_GET['ticket'] = $serviceTicket['id'];
-        // We want to capture the output from echo used in validateTicket
-        ob_start();
-        require_once 'utility/validateTicket.php';
-        $casResponse = ob_get_contents();
-        ob_end_clean();
-        echo '<pre>' . htmlspecialchars($casResponse) . '</pre>';
+    $validDebugModes = ['true', 'samlValidate'];
+    if (array_key_exists('debugMode',$_GET) && in_array($_GET['debugMode'], $validDebugModes) && $casconfig->getBoolean('debugMode', false)) {
+        if ($_GET['debugMode'] === 'samlValidate') {
+            $samlValidate = new SamlValidateResponder();
+            $samlResponse = $samlValidate->convertToSaml($serviceTicket);
+            $soap = $samlValidate->wrapInSoap($samlResponse);
+            echo '<pre>' . htmlspecialchars($soap) . '</pre>';
+        } else {
+            $method = 'serviceValidate';
+            // Fake some options for validateTicket
+            $_GET['ticket'] = $serviceTicket['id'];
+            // We want to capture the output from echo used in validateTicket
+            ob_start();
+            require_once 'utility/validateTicket.php';
+            $casResponse = ob_get_contents();
+            ob_end_clean();
+            echo '<pre>' . htmlspecialchars($casResponse) . '</pre>';
+        }
     } elseif ($redirect) {
         HTTP::redirectTrustedURL(HTTP::addURLParameters($_GET['service'], $parameters));
     } else {
