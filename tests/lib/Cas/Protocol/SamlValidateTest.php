@@ -7,7 +7,6 @@ use SimpleXMLElement;
 
 class SamlValidateTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testSamlValidatXmlGeneration()
     {
         $serviceUrl = 'http://jellyfish.greatvalleyu.com:7777/ssomanager/c/SSB';

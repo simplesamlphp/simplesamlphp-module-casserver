@@ -7,7 +7,6 @@ use SimpleSAML\XML\Shib13\AuthnResponse;
 
 class SamlValidateResponder
 {
-
     /**
      * Converts a ticket to saml1 response. Caller likely needs wrap in SOAP
      * to return to a client.

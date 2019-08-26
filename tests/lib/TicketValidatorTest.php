@@ -18,7 +18,6 @@ use SimpleSAML\Utils\Random;
 
 class TicketValidatorTest extends TestCase
 {
-
     /**
      * @var TicketValidator
      */
