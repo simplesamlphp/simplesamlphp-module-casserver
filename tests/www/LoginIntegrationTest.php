@@ -19,7 +19,7 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
     /** @var string $LINK_URL */
     private static $LINK_URL = '/module.php/casserver/login.php';
 
-    private static $SAMLVALIDATE_URL = '/module.php/casserver/samlvalidate.php';
+    private static $SAMLVALIDATE_URL = '/module.php/casserver/samlValidate.php';
 
     /**
      * @var \SimpleSAML\Test\BuiltInServer

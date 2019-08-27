@@ -6,6 +6,9 @@ php:
   - 7.2
   - 7.3
 
+matrix:
+  allow_failures:
+  - php: 7.3
 env:
   - SIMPLESAMLPHP_VERSION=dev-master
 
@@ -16,8 +19,6 @@ before_script:
   - composer update --no-interaction
   # Link this branch/pr/etc of simplesamlphp-module-casserver into SSP's vendor directory
   - php tests/bootstrap.php
-  - php -S localhost:8732 -t `pwd`/vendor/simplesamlphp/simplesamlphp/www &
-  - export WEBPID=$!
 
 script:
   - vendor/simplesamlphp/simplesamlphp-test-framework/bin/check-syntax-php.sh
