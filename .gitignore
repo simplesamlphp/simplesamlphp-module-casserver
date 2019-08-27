@@ -2,3 +2,4 @@
 /vendor
 *~
 tests/ticketcache/
+.phpunit.result.cache

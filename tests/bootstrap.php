@@ -4,7 +4,10 @@ $projectRootDirectory = dirname(__DIR__);
 $projectConfigDirectory = $projectRootDirectory.'/tests/config';
 $casserverModulePath = $projectRootDirectory.'/vendor/simplesamlphp/simplesamlphp/modules/casserver';
 $simplesamlphpConfig = $projectRootDirectory.'/vendor/simplesamlphp/simplesamlphp/config';
-
+$ticketCacheDir = $projectRootDirectory.'/tests/ticketcache';
+if (!file_exists($ticketCacheDir)) {
+    mkdir($ticketCacheDir);
+}
 /** @psalm-suppress UnresolvableInclude */
 require_once($projectRootDirectory.'/vendor/autoload.php');
 

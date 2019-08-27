@@ -87,7 +87,7 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(200, $resp['code']);
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             'You are logged in.',
             $resp['body'],
             'Login with no query parameters should make you authenticate and then take you to the login page.'
@@ -113,7 +113,7 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(500, $resp['code']);
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             'CAS server is not listed as a legal service',
             $resp['body'],
             'Illegal cas service urls should be rejected'
@@ -168,7 +168,7 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(200, $resp['code']);
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             '&lt;cas:eduPersonPrincipalName&gt;testuser@example.com&lt;/cas:eduPersonPrincipalName&gt;',
             $resp['body'],
             'Attributes should have been printed.'
@@ -195,7 +195,7 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(200, $resp['code']);
 
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             'testuser@example.com&lt;/NameIdentifier',
             $resp['body'],
             'Attributes should have been printed.'
@@ -219,12 +219,12 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $this->assertEquals(200, $resp['code']);
-        $this->assertContains(
+        $this->assertStringContainsString(
             '&lt;cas:user&gt;testuser&lt;/cas:user&gt;',
             $resp['body'],
             'cas:user attribute should have been overridden'
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             '&lt;cas:cn&gt;Test User&lt;/cas:cn&gt;',
             $resp['body'],
             'Attributes should have been printed with alternate attribute release'
@@ -331,7 +331,7 @@ SOAP;
         );
 
         $this->assertEquals(200, $resp['code']);
-        $this->assertContains('testuser@example.com</NameIdentifier>', $resp['body']);
+        $this->assertStringContainsString('testuser@example.com</NameIdentifier>', $resp['body']);
     }
 
     /**
@@ -351,7 +351,7 @@ SOAP;
                 CURLOPT_FOLLOWLOCATION => true
             ]
         );
-        $this->assertEquals(200, $resp['code']);
+        $this->assertEquals(200, $resp['code'], $resp['body']);
     }
 
     /**
