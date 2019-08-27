@@ -28,7 +28,7 @@ class TicketValidatorTest extends TestCase
      */
     private $ticketStore;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $casConfig = Configuration::loadFromArray([
