@@ -30,6 +30,10 @@ $config = [
         ],
         'http://changeTicketParam' => [
             'ticketName' => 'myTicket',
+        ],
+        'https://buggy.edu' => [
+            // Don't use php or SSP's built in methods for constructing queries.
+            'noReencode' => true
         ]
     ],
 

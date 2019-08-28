@@ -28,15 +28,15 @@
  *  language
  */
 
+use SimpleSAML\Configuration;
+use SimpleSAML\Locale\Language;
+use SimpleSAML\Logger;
+use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Cas\AttributeExtractor;
 use SimpleSAML\Module\casserver\Cas\Protocol\SamlValidateResponder;
 use SimpleSAML\Module\casserver\Cas\ServiceValidator;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
-use SimpleSAML\Configuration;
-use SimpleSAML\Locale\Language;
-use SimpleSAML\Logger;
-use SimpleSAML\Module;
 use SimpleSAML\Session;
 use SimpleSAML\Utils\HTTP;
 
@@ -223,7 +223,15 @@ if (isset($serviceUrl)) {
             echo '<pre>' . htmlspecialchars($casResponse) . '</pre>';
         }
     } elseif ($redirect) {
-        HTTP::redirectTrustedURL(HTTP::addURLParameters($serviceUrl, $parameters));
+        if ($casconfig->getBoolean('noReencode', false)) {
+            // Some client encode query params wrong, and calling HTTP::addURLParameters
+            // will reencode them resulting in service mismatches
+            $extraParams = http_build_query($parameters);
+            $redirectUrl = $_GET['service'] . (strpos('?', $_GET['service']) === false ? '?' : '&') . $extraParams;
+            HTTP::redirectTrustedURL($redirectUrl);
+        } else {
+            HTTP::redirectTrustedURL(HTTP::addURLParameters($_GET['service'], $parameters));
+        }
     } else {
         HTTP::submitPOSTData($serviceUrl, $parameters);
     }
