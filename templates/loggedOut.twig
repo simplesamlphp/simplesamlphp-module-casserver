@@ -1,0 +1,17 @@
+{% set pagetitle = '{casserver:casserver:loggedout_header}'|trans %}
+{% extends "base.twig" %}
+
+{% block content %}
+    <h2>{{ pagetitle }}</h2>
+
+    <p>{{ '{casserver:casserver:loggedout_description}'|trans }}</p>
+{% if url is defined %}
+    <a href="{{ url }}">{{ '{casserver:casserver:continue_heading}'|trans }}</a>
+{% endif %}
+{% endblock %}
+
+{% block postload %}
+{% if autofocus %}
+    <script type="text/javascript">window.onload = function() {document.getElementById('{{ autofocus }}').focus();}</script>
+{% endif %}
+{% endblock %}
