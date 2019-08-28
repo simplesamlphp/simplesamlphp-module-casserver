@@ -52,6 +52,11 @@ class SamlValidateResponder
         return $ret;
     }
 
+
+    /**
+     * @param string $samlResponse
+     * @return string
+     */
     public function wrapInSoap($samlResponse)
     {
         $envelope = <<<SOAP

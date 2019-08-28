@@ -25,6 +25,7 @@ class TicketValidator
      */
     const INVALID_TICKET = 'INVALID_TICKET';
 
+
     /**
      * TicketValidator constructor.
      * @param Configuration $casconfig
@@ -42,6 +43,7 @@ class TicketValidator
         /** @psalm-suppress InvalidStringClass */
         $this->ticketFactory = new $ticketFactoryClass($casconfig);
     }
+
 
     /**
      * @param string $ticket the ticket id to load validate
@@ -88,6 +90,11 @@ class TicketValidator
         return $serviceTicket;
     }
 
+
+    /**
+     * @param string $parameter
+     * @return string
+     */
     public static function sanitize($parameter)
     {
         return preg_replace(

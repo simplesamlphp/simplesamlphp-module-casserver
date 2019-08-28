@@ -28,6 +28,10 @@ class TicketValidatorTest extends TestCase
      */
     private $ticketStore;
 
+
+    /**
+     * @return void
+     */
     protected function setUp() : void
     {
         parent::setUp();
@@ -42,6 +46,9 @@ class TicketValidatorTest extends TestCase
     }
 
 
+    /**
+     * @return void
+     */
     public function testNonExistantTicket()
     {
         $id = 'no-such-ticket';
@@ -55,6 +62,10 @@ class TicketValidatorTest extends TestCase
         }
     }
 
+
+    /**
+     * @return void
+     */
     public function testValidTicket()
     {
         $serviceUrl =  'http://efh.com?a=b&';
@@ -75,6 +86,10 @@ class TicketValidatorTest extends TestCase
         }
     }
 
+
+    /**
+     * @return void
+     */
     public function testWrongServiceUrlTicket()
     {
         $serviceUrl =  'http://efh.com?a=b&';
@@ -95,6 +110,10 @@ class TicketValidatorTest extends TestCase
         $this->assertNull($this->ticketStore->getTicket($id), "ticket deleted after loading");
     }
 
+
+    /**
+     * @return void
+     */
     public function testExpiredTicket()
     {
         $serviceUrl =  'http://efh.com?a=b&';
@@ -111,6 +130,7 @@ class TicketValidatorTest extends TestCase
         // ensure ticket deleted after validation
         $this->assertNull($this->ticketStore->getTicket($id), "ticket deleted after loading");
     }
+
 
     /**
      * Create a ticket to use for testing

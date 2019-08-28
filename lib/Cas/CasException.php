@@ -12,6 +12,7 @@ class CasException extends \Exception
     const INVALID_TICKET = 'INVALID_TICKET';
     const INVALID_SERVICE = 'INVALID_SERVICE';
 
+    /** @var string */
     private $casCode;
 
     /**

@@ -43,6 +43,7 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
      */
     protected $cookies_file;
 
+
     /**
      * The setup method that is run before any tests in this class.
      * @return void
@@ -55,6 +56,7 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
         $this->shared_file = sys_get_temp_dir().'/'.$this->server_pid.'.lock';
         $this->cookies_file = sys_get_temp_dir().'/'.$this->server_pid.'.cookies';
     }
+
 
     /**
      * The tear down method that is executed after all tests in this class.
@@ -149,6 +151,7 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+
     /**
      * Test outputting user info instead of redirecting
      * @return void
@@ -174,6 +177,7 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
             'Attributes should have been printed.'
         );
     }
+
 
     /**
      * Test outputting user info instead of redirecting
@@ -202,8 +206,10 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+
     /**
      * Test outputting user info instead of redirecting
+     * @return void
      */
     public function testAlternateServiceConfigUsed()
     {
@@ -230,6 +236,7 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
             'Attributes should have been printed with alternate attribute release'
         );
     }
+
 
     /**
      * test a valid service URL with Post
@@ -285,6 +292,10 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+
+    /**
+     * @return void
+     */
     public function testSamlValidate()
     {
         $service_url = 'http://host1.domain:1234/path1';
@@ -334,6 +345,7 @@ SOAP;
         $this->assertStringContainsString('testuser@example.com</NameIdentifier>', $resp['body']);
     }
 
+
     /**
      * Sets up an authenticated session for the cookie $jar
      * @return void
@@ -353,6 +365,7 @@ SOAP;
         );
         $this->assertEquals(200, $resp['code'], $resp['body']);
     }
+
 
     /**
      * TODO: migrate into BuiltInServer
@@ -381,6 +394,7 @@ SOAP;
             'body' => $body,
         ];
     }
+
 
     /**
      * TODO: migrate into BuiltInServer
