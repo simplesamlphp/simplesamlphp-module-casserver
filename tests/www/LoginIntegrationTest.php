@@ -234,7 +234,7 @@ class LoginIntegrationTest extends TestCase
      * @dataProvider buggyClientProvider
      * @return void
      */
-    public function testBuggyClientBadUrlEncodingWorkAround($service_url)
+    public function testBuggyClientBadUrlEncodingWorkAround($service_url, $expectedStartsWith, $expectedEndsWith)
     {
         $this->authenticate();
 
@@ -247,20 +247,34 @@ class LoginIntegrationTest extends TestCase
                 CURLOPT_COOKIEFILE => $this->cookies_file
             ]
         );
-        $this->assertEquals(302, $resp['code']);
+        $this->assertEquals(302, $resp['code'], $resp['body']);
 
         $this->assertStringStartsWith(
-            $service_url . '?ticket=ST-',
+            $expectedStartsWith,
             $resp['headers']['Location'],
             'Ticket should be part of the redirect.'
         );
+        if (!empty($expectedEndsWith)) {
+            $this->assertStringEndsWith(
+                $expectedEndsWith,
+                $resp['headers']['Location'],
+                'url fragments happen after the query params'
+            );
+        }
     }
 
     public function buggyClientProvider(): array
     {
+        $urlWithQuery = 'https://buggy.edu/kc/portal.do?solo&ct=Search%20Prot&curl=https://kc.edu/kc/IRB.do?se=1875*&runSearch=1';
+        $urlNoQuery = 'https://buggy.edu/kc';
+        $urlMultiKeys = 'https://buggy.edu/kc?a=val1&a=val2';
         return [
-            ['https://buggy.edu/kc/portal.do?solo&ct=Search%20Prot&curl=https://kc.edu/kc/IRB.do?se=1875*&runSearch=1'],
-            ['https://buggy.edu/kc'],
+            [$urlWithQuery, $urlWithQuery . '&ticket=ST-', ''],
+            [$urlWithQuery . '#fragment', $urlWithQuery . '&ticket=ST-', '#fragment'],
+            [$urlMultiKeys, $urlMultiKeys . '&ticket=ST-', ''],
+            [$urlMultiKeys . '#fragment', $urlMultiKeys . '&ticket=ST-', '#fragment'],
+            [$urlNoQuery, $urlNoQuery. '?ticket=ST-', ''],
+            [$urlNoQuery . '#fragment', $urlNoQuery . '?ticket=ST-', '#fragment'],
         ];
     }
 

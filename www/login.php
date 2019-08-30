@@ -224,10 +224,7 @@ if (isset($serviceUrl)) {
         }
     } elseif ($redirect) {
         if ($casconfig->getBoolean('noReencode', false)) {
-            // Some client encode query params wrong, and calling HTTP::addURLParameters
-            // will reencode them resulting in service mismatches
-            $extraParams = http_build_query($parameters);
-            $redirectUrl = $_GET['service'] . (strpos('?', $_GET['service']) === false ? '?' : '&') . $extraParams;
+            $redirectUrl = casAddURLParameters($_GET['service'], $parameters);
             HTTP::redirectTrustedURL($redirectUrl);
         } else {
             HTTP::redirectTrustedURL(HTTP::addURLParameters($_GET['service'], $parameters));
@@ -239,4 +236,30 @@ if (isset($serviceUrl)) {
     HTTP::redirectTrustedURL(
         HTTP::addURLParameters(Module::getModuleURL('casserver/loggedIn.php'), $parameters)
     );
+}
+
+
+/**
+ * CAS wants to ensure that a service url provided in login matches exactly that provided in service validate.
+ * This method avoids SSP's built in redirect which can change that url in certain ways, such as
+ * * changing how a ' ' is encoded
+ * * not correctly handling url fragments (e.g. #)
+ * * not correctly handling query param keys occurring multiple times
+ * * some buggy clients don't encode query params correctly
+ * which results in either the wrong url being returned to the client, or a service mismatch
+ * @param string $url The url to adjust
+ * @param array $params The query parameters to add.
+ * @return string The url to return
+ */
+function casAddURLParameters($url, $params)
+{
+    $url_fragment = explode("#", $url);
+    if (strpos($url_fragment[0], "?") === false) {
+        $url_fragment[0] .= "?";
+    } else {
+        $url_fragment[0] .= "&";
+    }
+    $url_fragment[0] .= http_build_query($params);
+    $url = implode("#", $url_fragment);
+    return $url;
 }
