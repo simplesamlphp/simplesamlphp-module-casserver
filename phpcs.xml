@@ -6,11 +6,11 @@
         By default it is less stringent about long lines than other coding standards
     </description>
 
-    <directory>config-templates</directory>
-    <directory>lib</directory>
-    <directory>templates</directory>
-    <directory>tests</directory>
-    <directory>www</directory>
+    <file>config-templates</file>
+    <file>lib</file>
+    <file>templates</file>
+    <file>tests</file>
+    <file>www</file>
 
     <!-- Exclude old PHP templates (and related); they are removed in SSP 2.0 -->
     <exclude-pattern>templates/*.tpl.php</exclude-pattern>
