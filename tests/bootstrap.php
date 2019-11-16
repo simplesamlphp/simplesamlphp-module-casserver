@@ -1,15 +1,15 @@
 <?php
 
 $projectRootDirectory = dirname(__DIR__);
-$projectConfigDirectory = $projectRootDirectory.'/tests/config';
-$casserverModulePath = $projectRootDirectory.'/vendor/simplesamlphp/simplesamlphp/modules/casserver';
-$simplesamlphpConfig = $projectRootDirectory.'/vendor/simplesamlphp/simplesamlphp/config';
-$ticketCacheDir = $projectRootDirectory.'/tests/ticketcache';
+$projectConfigDirectory = $projectRootDirectory . '/tests/config';
+$casserverModulePath = $projectRootDirectory . '/vendor/simplesamlphp/simplesamlphp/modules/casserver';
+$simplesamlphpConfig = $projectRootDirectory . '/vendor/simplesamlphp/simplesamlphp/config';
+$ticketCacheDir = $projectRootDirectory . '/tests/ticketcache';
 if (!file_exists($ticketCacheDir)) {
     mkdir($ticketCacheDir);
 }
 /** @psalm-suppress UnresolvableInclude */
-require_once($projectRootDirectory.'/vendor/autoload.php');
+require_once($projectRootDirectory . '/vendor/autoload.php');
 
 /**
  * Sets a link in the simplesamlphp vendor directory
@@ -30,7 +30,7 @@ function symlinkModulePathInVendorDirectory($target, $link)
         if (is_link($link) === false) {
             // Looks like there is a directory here. Lets remove it and symlink in this one
             print "Renaming pre-installed path and linking '$link' to '$target'\n";
-            rename($link, $link.'-preinstalled');
+            rename($link, $link . '-preinstalled');
             symlink($target, $link);
         }
     }

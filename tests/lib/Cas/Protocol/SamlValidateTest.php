@@ -29,7 +29,7 @@ class SamlValidateTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('samlp:Success', $response->Status->StatusCode->attributes()->Value);
         $this->assertEquals('localhost', $response->Assertion->attributes()->Issuer);
         $this->assertEquals($serviceUrl, $response->Assertion->Conditions->AudienceRestrictionCondition->Audience);
-        $attributeStatement= $response->Assertion->AttributeStatement;
+        $attributeStatement = $response->Assertion->AttributeStatement;
         $this->assertEquals('saisusr', $attributeStatement->Subject->NameIdentifier);
         $this->assertEquals(
             'urn:oasis:names:tc:SAML:1.0:cm:artifact',
@@ -43,7 +43,7 @@ class SamlValidateTest extends \PHPUnit\Framework\TestCase
 
         $asSoap = $samlValidate->wrapInSoap($xmlString);
 
-        $soapPrefix =<<< EOF
+        $soapPrefix = <<< EOF
 <?xml version="1.0" encoding="utf-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
     <SOAP-ENV:Header />

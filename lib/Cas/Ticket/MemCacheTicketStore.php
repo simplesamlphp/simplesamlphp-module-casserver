@@ -89,6 +89,6 @@ class MemCacheTicketStore extends TicketStore
      */
     private function scopeTicketId($ticketId)
     {
-        return $this->prefix.'.'.$ticketId;
+        return $this->prefix . '.' . $ticketId;
     }
 }

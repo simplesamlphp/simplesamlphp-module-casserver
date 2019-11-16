@@ -48,11 +48,11 @@ class FileSystemTicketStore extends TicketStore
         $path = $config->resolvePath($storeConfig['directory']);
 
         if (is_null($path) || !is_dir($path)) {
-            throw new Exception('Directory for CAS Server ticket storage ['.strval($path).'] does not exists.');
+            throw new Exception('Directory for CAS Server ticket storage [' . strval($path) . '] does not exists.');
         }
 
         if (!is_writable($path)) {
-            throw new Exception('Directory for CAS Server ticket storage ['.$path.'] is not writable.');
+            throw new Exception('Directory for CAS Server ticket storage [' . $path . '] is not writable.');
         }
 
         $this->pathToTicketDirectory = preg_replace('/\/$/', '', $path);
@@ -65,7 +65,7 @@ class FileSystemTicketStore extends TicketStore
      */
     public function getTicket($ticketId)
     {
-        $filename = $this->pathToTicketDirectory.'/'.$ticketId;
+        $filename = $this->pathToTicketDirectory . '/' . $ticketId;
 
         if (file_exists($filename)) {
             $content = file_get_contents($filename);
@@ -83,7 +83,7 @@ class FileSystemTicketStore extends TicketStore
      */
     public function addTicket(array $ticket)
     {
-        $filename = $this->pathToTicketDirectory.'/'.$ticket['id'];
+        $filename = $this->pathToTicketDirectory . '/' . $ticket['id'];
         file_put_contents($filename, serialize($ticket));
     }
 
@@ -94,7 +94,7 @@ class FileSystemTicketStore extends TicketStore
      */
     public function deleteTicket($ticketId)
     {
-        $filename = $this->pathToTicketDirectory.'/'.$ticketId;
+        $filename = $this->pathToTicketDirectory . '/' . $ticketId;
 
         if (file_exists($filename)) {
             unlink($filename);

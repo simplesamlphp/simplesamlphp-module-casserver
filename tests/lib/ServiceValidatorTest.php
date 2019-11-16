@@ -1,16 +1,16 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: patrick
- * Date: 4/8/19
- * Time: 2:58 PM
- */
 
 namespace Simplesamlphp\Casserver;
 
 use SimpleSAML\Configuration;
 use SimpleSAML\Module\casserver\Cas\ServiceValidator;
 
+/**
+ * Created by PhpStorm.
+ * User: patrick
+ * Date: 4/8/19
+ * Time: 2:58 PM
+ */
 class ServiceValidatorTest extends \PHPUnit\Framework\TestCase
 {
     /**

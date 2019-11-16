@@ -40,10 +40,10 @@ $function = substr($_SERVER['PATH_INFO'], 1);
 if (!isset($validFunctions[$function])) {
     $message = 'Not a valid function for cas.php.';
 
-    \SimpleSAML\Logger::debug('casserver:'.$message);
+    \SimpleSAML\Logger::debug('casserver:' . $message);
 
     throw new \Exception($message);
 }
 
 /** @psalm-suppress UnresolvableInclude */
-include(dirname(__FILE__).'/'.strval($validFunctions[$function]).'.php');
+include(dirname(__FILE__) . '/' . strval($validFunctions[$function]) . '.php');

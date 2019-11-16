@@ -1,4 +1,5 @@
 <?php
+
 namespace Simplesamlphp\Casserver;
 
 use SimpleSAML\Configuration;

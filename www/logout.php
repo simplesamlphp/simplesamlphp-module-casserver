@@ -29,7 +29,7 @@ $casconfig = \SimpleSAML\Configuration::getConfig('module_casserver.php');
 if (!$casconfig->getValue('enable_logout', false)) {
     $message = 'Logout not allowed';
 
-    \SimpleSAML\Logger::debug('casserver:'.$message);
+    \SimpleSAML\Logger::debug('casserver:' . $message);
 
     throw new \Exception($message);
 }
@@ -39,7 +39,7 @@ $skipLogoutPage = $casconfig->getValue('skip_logout_page', false);
 if ($skipLogoutPage && !array_key_exists('url', $_GET)) {
     $message = 'Required URL query parameter [url] not provided. (CAS Server)';
 
-    \SimpleSAML\Logger::debug('casserver:'.$message);
+    \SimpleSAML\Logger::debug('casserver:' . $message);
 
     throw new \Exception($message);
 }

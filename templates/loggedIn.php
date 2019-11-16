@@ -36,5 +36,5 @@ $this->includeAtTemplateBase('includes/header.php');
 $this->includeAtTemplateBase('includes/footer.php');
 
 if (isset($this->data['autofocus'])) {
-    echo '<script type="text/javascript">window.onload = function() {document.getElementById(\''.$this->data['autofocus'].'\').focus();}</script>';
+    echo '<script type="text/javascript">window.onload = function() {document.getElementById(\'' . $this->data['autofocus'] . '\').focus();}</script>';
 }

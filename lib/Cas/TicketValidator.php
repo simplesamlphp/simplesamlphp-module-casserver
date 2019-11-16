@@ -63,8 +63,8 @@ class TicketValidator
 
         $serviceTicket = $this->ticketStore->getTicket($ticket);
         if ($serviceTicket == null) {
-            $message = 'Ticket '.var_export($ticket, true).' not recognized';
-            Logger::debug('casserver:'.$message);
+            $message = 'Ticket ' . var_export($ticket, true) . ' not recognized';
+            Logger::debug('casserver:' . $message);
             throw new CasException(CasException::INVALID_TICKET, $message);
         }
 
@@ -72,17 +72,17 @@ class TicketValidator
         $this->ticketStore->deleteTicket($ticket);
 
         if ($this->ticketFactory->isExpired($serviceTicket)) {
-            $message = 'Ticket '.var_export($ticket, true).' has expired';
-            Logger::debug('casserver:'.$message);
+            $message = 'Ticket ' . var_export($ticket, true) . ' has expired';
+            Logger::debug('casserver:' . $message);
             throw new CasException(CasException::INVALID_TICKET, $message);
         }
 
         if (self::sanitize($serviceTicket['service']) !== self::sanitize($service)) {
-            $message = 'Mismatching service parameters: expected '.
-                var_export($serviceTicket['service'], true).
-                ' but was: '.var_export($service, true);
+            $message = 'Mismatching service parameters: expected ' .
+                var_export($serviceTicket['service'], true) .
+                ' but was: ' . var_export($service, true);
 
-            Logger::debug('casserver:'.$message);
+            Logger::debug('casserver:' . $message);
             throw new CasException(CasException::INVALID_SERVICE, $message);
         }
 

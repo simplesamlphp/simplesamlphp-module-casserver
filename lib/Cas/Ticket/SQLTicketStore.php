@@ -117,7 +117,7 @@ class SQLTicketStore extends TicketStore
      */
     private function scopeTicketId($ticketId)
     {
-        return $this->prefix.'.'.$ticketId;
+        return $this->prefix . '.' . $ticketId;
     }
 
 
@@ -130,9 +130,9 @@ class SQLTicketStore extends TicketStore
         $this->tableVersions = [];
 
         try {
-            $fetchTableVersion = $this->pdo->query('SELECT _name, _version FROM '.$this->prefix.'_tableVersion');
+            $fetchTableVersion = $this->pdo->query('SELECT _name, _version FROM ' . $this->prefix . '_tableVersion');
         } catch (PDOException $e) {
-            $this->pdo->exec('CREATE TABLE '.$this->prefix.
+            $this->pdo->exec('CREATE TABLE ' . $this->prefix .
                 '_tableVersion (_name VARCHAR(30) NOT NULL UNIQUE, _version INTEGER NOT NULL)');
             return;
         }
@@ -153,11 +153,11 @@ class SQLTicketStore extends TicketStore
             return;
         }
 
-        $query = 'CREATE TABLE '.$this->prefix.
+        $query = 'CREATE TABLE ' . $this->prefix .
             '_kvstore (_key VARCHAR(50) NOT NULL, _value TEXT NOT NULL, _expire TIMESTAMP, PRIMARY KEY (_key))';
         $this->pdo->exec($query);
 
-        $query = 'CREATE INDEX '.$this->prefix.'_kvstore_expire ON '.$this->prefix.'_kvstore (_expire)';
+        $query = 'CREATE INDEX ' . $this->prefix . '_kvstore_expire ON ' . $this->prefix . '_kvstore (_expire)';
         $this->pdo->exec($query);
 
         $this->setTableVersion('kvstore', 1);
@@ -191,7 +191,7 @@ class SQLTicketStore extends TicketStore
         Assert::integer($version);
 
         $this->insertOrUpdate(
-            $this->prefix.'_tableVersion',
+            $this->prefix . '_tableVersion',
             ['_name'],
             [
                 '_name' => $name,
@@ -212,24 +212,24 @@ class SQLTicketStore extends TicketStore
     {
         Assert::string($table);
 
-        $colNames = '('.implode(', ', array_keys($data)).')';
-        $values = 'VALUES(:'.implode(', :', array_keys($data)).')';
+        $colNames = '(' . implode(', ', array_keys($data)) . ')';
+        $values = 'VALUES(:' . implode(', :', array_keys($data)) . ')';
 
         switch ($this->driver) {
             case 'mysql':
-                $query = 'REPLACE INTO '.$table.' '.$colNames.' '.$values;
+                $query = 'REPLACE INTO ' . $table . ' ' . $colNames . ' ' . $values;
                 $query = $this->pdo->prepare($query);
                 $query->execute($data);
                 return;
             case 'sqlite':
-                $query = 'INSERT OR REPLACE INTO '.$table.' '.$colNames.' '.$values;
+                $query = 'INSERT OR REPLACE INTO ' . $table . ' ' . $colNames . ' ' . $values;
                 $query = $this->pdo->prepare($query);
                 $query->execute($data);
                 return;
             default:
                 /* Default implementation. Try INSERT, and UPDATE if that fails. */
 
-                $insertQuery = 'INSERT INTO '.$table.' '.$colNames.' '.$values;
+                $insertQuery = 'INSERT INTO ' . $table . ' ' . $colNames . ' ' . $values;
                 /** @var \PDOStatement|false $insertQuery */
                 $insertQuery = $this->pdo->prepare($insertQuery);
 
@@ -260,7 +260,7 @@ class SQLTicketStore extends TicketStore
                 case '23505': /* PostgreSQL */
                     break;
                 default:
-                    Logger::error('casserver: Error while saving data: '.$e->getMessage());
+                    Logger::error('casserver: Error while saving data: ' . $e->getMessage());
                     throw $e;
             }
         }
@@ -269,7 +269,7 @@ class SQLTicketStore extends TicketStore
         $condCols = [];
 
         foreach ($data as $col => $value) {
-            $tmp = $col.' = :'.$col;
+            $tmp = $col . ' = :' . $col;
 
             if (in_array($col, $keys, true)) {
                 $condCols[] = $tmp;
@@ -278,7 +278,7 @@ class SQLTicketStore extends TicketStore
             }
         }
 
-        $updateQuery = 'UPDATE '.$table.' SET '.implode(',', $updateCols).' WHERE '.implode(' AND ', $condCols);
+        $updateQuery = 'UPDATE ' . $table . ' SET ' . implode(',', $updateCols) . ' WHERE ' . implode(' AND ', $condCols);
         $updateQuery = $this->pdo->prepare($updateQuery);
         $updateQuery->execute($data);
     }
@@ -289,7 +289,7 @@ class SQLTicketStore extends TicketStore
      */
     private function cleanKVStore()
     {
-        $query = 'DELETE FROM '.$this->prefix.'_kvstore WHERE _expire < :now';
+        $query = 'DELETE FROM ' . $this->prefix . '_kvstore WHERE _expire < :now';
         $params = ['now' => gmdate('Y-m-d H:i:s')];
 
         $query = $this->pdo->prepare($query);
@@ -309,7 +309,7 @@ class SQLTicketStore extends TicketStore
             $key = sha1($key);
         }
 
-        $query = 'SELECT _value FROM '.$this->prefix.
+        $query = 'SELECT _value FROM ' . $this->prefix .
             '_kvstore WHERE _key = :key AND (_expire IS NULL OR _expire > :now)';
         $params = ['key' => $key, 'now' => gmdate('Y-m-d H:i:s')];
 
@@ -369,7 +369,7 @@ class SQLTicketStore extends TicketStore
             '_expire' => $expire,
         ];
 
-        $this->insertOrUpdate($this->prefix.'_kvstore', ['_key'], $data);
+        $this->insertOrUpdate($this->prefix . '_kvstore', ['_key'], $data);
     }
 
 
@@ -390,7 +390,7 @@ class SQLTicketStore extends TicketStore
 
         ];
 
-        $query = 'DELETE FROM '.$this->prefix.'_kvstore WHERE _key=:_key';
+        $query = 'DELETE FROM ' . $this->prefix . '_kvstore WHERE _key=:_key';
         $query = $this->pdo->prepare($query);
         $query->execute($data);
     }

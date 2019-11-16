@@ -244,7 +244,7 @@ class Cas20
     private function workAroundForBuggyJasigXmlParser($xmlString)
     {
         // when will people stop hand coding xml handling....?
-        return str_replace('><', '>'.PHP_EOL.'<', str_replace(PHP_EOL, '', $xmlString));
+        return str_replace('><', '>' . PHP_EOL . '<', str_replace(PHP_EOL, '', $xmlString));
     }
 
 
@@ -259,7 +259,7 @@ class Cas20
         $attributeValueNode = $xmlDocument->createTextNode($this->base64EncodeAttributes ?
             base64_encode($attributeValue) : $attributeValue);
 
-        $attributeElement = $xmlDocument->createElement('cas:'.$attributeName);
+        $attributeElement = $xmlDocument->createElement('cas:' . $attributeName);
 
         $attributeElement->appendChild($attributeValueNode);
 

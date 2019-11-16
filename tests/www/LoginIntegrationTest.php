@@ -48,13 +48,13 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
      * The setup method that is run before any tests in this class.
      * @return void
      */
-    protected function setup() : void
+    protected function setup(): void
     {
         $this->server = new BuiltInServer();
         $this->server_addr = $this->server->start();
         $this->server_pid = $this->server->getPid();
-        $this->shared_file = sys_get_temp_dir().'/'.$this->server_pid.'.lock';
-        $this->cookies_file = sys_get_temp_dir().'/'.$this->server_pid.'.cookies';
+        $this->shared_file = sys_get_temp_dir() . '/' . $this->server_pid . '.lock';
+        $this->cookies_file = sys_get_temp_dir() . '/' . $this->server_pid . '.cookies';
     }
 
 
@@ -63,7 +63,7 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
      * Removes the lock file and cookies file
      * @return void
      */
-    protected function tearDown() : void
+    protected function tearDown(): void
     {
         @unlink($this->shared_file);
         @unlink($this->cookies_file); // remove it if it exists
@@ -265,7 +265,7 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
 
         // Validate the form contains the required elements
         $body = $resp['body'];
-        $dom = new DOMDocument;
+        $dom = new DOMDocument();
         $dom->loadHTML($body);
         $form = $dom->getElementsByTagName('form');
         $item = $form->item(0);
@@ -407,8 +407,8 @@ SOAP;
     public function post($query, $body, $parameters = [], $curlopts = [])
     {
         $ch = curl_init();
-        $url = 'http://'.$this->server_addr.$query;
-        $url .= (!empty($parameters)) ? '?'.http_build_query($parameters) : '';
+        $url = 'http://' . $this->server_addr . $query;
+        $url .= (!empty($parameters)) ? '?' . http_build_query($parameters) : '';
         curl_setopt_array($ch, [
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => 1,

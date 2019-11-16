@@ -33,7 +33,7 @@ $this->includeAtTemplateBase('includes/header.php');
 
 <?php
 if (isset($this->data['url'])) {
-    echo('<p><a href="'.$this->data["url"].'">'.$this->t('{casserver:casserver:continue_heading}').'</a>');
+    echo('<p><a href="' . $this->data["url"] . '">' . $this->t('{casserver:casserver:continue_heading}') . '</a>');
 }
 ?>
 
@@ -42,5 +42,5 @@ if (isset($this->data['url'])) {
 $this->includeAtTemplateBase('includes/footer.php');
 
 if (isset($this->data['autofocus'])) {
-    echo '<script type="text/javascript">window.onload = function() {document.getElementById(\''.$this->data['autofocus'].'\').focus();}</script>';
+    echo '<script type="text/javascript">window.onload = function() {document.getElementById(\'' . $this->data['autofocus'] . '\').focus();}</script>';
 }

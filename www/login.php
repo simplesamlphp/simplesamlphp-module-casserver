@@ -73,9 +73,9 @@ if (array_key_exists('scope', $_GET) && is_string($_GET['scope'])) {
     if (array_key_exists($_GET['scope'], $scopes)) {
         $idpList = $scopes[$_GET['scope']];
     } else {
-        $message = 'Scope parameter provided to CAS server is not listed as legal scope: [scope] = '.
+        $message = 'Scope parameter provided to CAS server is not listed as legal scope: [scope] = ' .
             var_export($_GET['scope'], true);
-        Logger::debug('casserver:'.$message);
+        Logger::debug('casserver:' . $message);
 
         throw new \Exception($message);
     }
@@ -129,7 +129,7 @@ if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewI
         $query['language'] = is_string($_GET['language']) ? $_GET['language'] : null;
     }
 
-    $returnUrl = HTTP::getSelfURLNoQuery().'?'.http_build_query($query);
+    $returnUrl = HTTP::getSelfURLNoQuery() . '?' . http_build_query($query);
 
     $params = [
         'ForceAuthn' => $forceAuthn,
@@ -192,7 +192,11 @@ if (isset($_GET['service'])) {
     $parameters['ticket'] = $serviceTicket['id'];
 
     $validDebugModes = ['true', 'samlValidate'];
-    if (array_key_exists('debugMode',$_GET) && in_array($_GET['debugMode'], $validDebugModes) && $casconfig->getBoolean('debugMode', false)) {
+    if (
+        array_key_exists('debugMode', $_GET) &&
+        in_array($_GET['debugMode'], $validDebugModes) &&
+        $casconfig->getBoolean('debugMode', false)
+    ) {
         if ($_GET['debugMode'] === 'samlValidate') {
             $samlValidate = new SamlValidateResponder();
             $samlResponse = $samlValidate->convertToSaml($serviceTicket);

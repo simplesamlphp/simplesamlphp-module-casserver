@@ -8,7 +8,8 @@ namespace SimpleSAML\Module\casserver\Cas;
  */
 class CasException extends \Exception
 {
-    // For list of cas codes see https://apereo.github.io/cas/5.2.x/protocol/CAS-Protocol-Specification.html#253-error-codes
+    // For list of cas codes see:
+    // https://apereo.github.io/cas/5.2.x/protocol/CAS-Protocol-Specification.html#253-error-codes
     const INVALID_TICKET = 'INVALID_TICKET';
     const INVALID_SERVICE = 'INVALID_SERVICE';
 

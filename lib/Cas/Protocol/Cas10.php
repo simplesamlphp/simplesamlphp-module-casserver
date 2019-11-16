@@ -41,7 +41,7 @@ class Cas10
      */
     public function getValidateSuccessResponse($username)
     {
-        return "yes\n".$username."\n";
+        return "yes\n" . $username . "\n";
     }
 
 

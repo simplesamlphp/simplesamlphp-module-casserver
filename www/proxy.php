@@ -36,7 +36,8 @@ $protocol = new $protocolClass($casconfig);
 
 $legal_target_service_urls = $casconfig->getValue('legal_target_service_urls', []);
 
-if (array_key_exists('targetService', $_GET) &&
+if (
+    array_key_exists('targetService', $_GET) &&
     checkServiceURL(sanitize($_GET['targetService']), $legal_target_service_urls) && array_key_exists('pgt', $_GET)
 ) {
     $ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
@@ -53,7 +54,9 @@ if (array_key_exists('targetService', $_GET) &&
     if (!is_null($proxyGrantingTicket) && $ticketFactory->isProxyGrantingTicket($proxyGrantingTicket)) {
         $sessionTicket = $ticketStore->getTicket($proxyGrantingTicket['sessionId']);
 
-        if (!is_null($sessionTicket) && $ticketFactory->isSessionTicket($sessionTicket) &&
+        if (
+            !is_null($sessionTicket) &&
+            $ticketFactory->isSessionTicket($sessionTicket) &&
             !$ticketFactory->isExpired($sessionTicket)
         ) {
             $proxyTicket = $ticketFactory->createProxyTicket(
@@ -69,42 +72,42 @@ if (array_key_exists('targetService', $_GET) &&
 
             echo $protocol->getProxySuccessResponse($proxyTicket['id']);
         } else {
-            $message = 'Ticket '.var_export($_GET['pgt'], true).' has expired';
+            $message = 'Ticket ' . var_export($_GET['pgt'], true) . ' has expired';
 
-            \SimpleSAML\Logger::debug('casserver:'.$message);
+            \SimpleSAML\Logger::debug('casserver:' . $message);
 
             echo $protocol->getProxyFailureResponse('BAD_PGT', $message);
         }
     } elseif (!$ticketFactory->isProxyGrantingTicket($proxyGrantingTicket)) {
-        $message = 'Not a valid proxy granting ticket id: '.var_export($_GET['pgt'], true);
+        $message = 'Not a valid proxy granting ticket id: ' . var_export($_GET['pgt'], true);
 
-        \SimpleSAML\Logger::debug('casserver:'.$message);
+        \SimpleSAML\Logger::debug('casserver:' . $message);
 
         echo $protocol->getProxyFailureResponse('BAD_PGT', $message);
     } else {
-        $message = 'Ticket '.var_export($_GET['pgt'], true).' not recognized';
+        $message = 'Ticket ' . var_export($_GET['pgt'], true) . ' not recognized';
 
-        \SimpleSAML\Logger::debug('casserver:'.$message);
+        \SimpleSAML\Logger::debug('casserver:' . $message);
 
         echo $protocol->getProxyFailureResponse('BAD_PGT', $message);
     }
 } elseif (!array_key_exists('targetService', $_GET)) {
     $message = 'Missing target service parameter [targetService]';
 
-    \SimpleSAML\Logger::debug('casserver:'.$message);
+    \SimpleSAML\Logger::debug('casserver:' . $message);
 
     echo $protocol->getProxyFailureResponse('INVALID_REQUEST', $message);
 } elseif (!checkServiceURL(sanitize($_GET['targetService']), $legal_target_service_urls)) {
-    $message = 'Target service parameter not listed as a legal service: [targetService] = '.
+    $message = 'Target service parameter not listed as a legal service: [targetService] = ' .
         var_export($_GET['targetService'], true);
 
-    \SimpleSAML\Logger::debug('casserver:'.$message);
+    \SimpleSAML\Logger::debug('casserver:' . $message);
 
     echo $protocol->getProxyFailureResponse('INVALID_REQUEST', $message);
 } else {
     $message = 'Missing proxy granting ticket parameter: [pgt]';
 
-    \SimpleSAML\Logger::debug('casserver:'.$message);
+    \SimpleSAML\Logger::debug('casserver:' . $message);
 
     echo $protocol->getProxyFailureResponse('INVALID_REQUEST', $message);
 }

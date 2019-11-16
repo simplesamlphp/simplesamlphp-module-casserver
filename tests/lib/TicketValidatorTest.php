@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: patrick
- * Date: 8/23/19
- * Time: 12:13 PM
- */
 
 namespace Simplesamlphp\Casserver;
 
@@ -16,6 +10,12 @@ use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
 use SimpleSAML\Module\casserver\Cas\TicketValidator;
 use SimpleSAML\Utils\Random;
 
+/**
+ * Created by PhpStorm.
+ * User: patrick
+ * Date: 8/23/19
+ * Time: 12:13 PM
+ */
 class TicketValidatorTest extends TestCase
 {
     /**
@@ -32,7 +32,7 @@ class TicketValidatorTest extends TestCase
     /**
      * @return void
      */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $casConfig = Configuration::loadFromArray([
