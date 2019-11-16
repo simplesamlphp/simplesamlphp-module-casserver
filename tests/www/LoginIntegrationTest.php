@@ -11,7 +11,6 @@ use SimpleSAML\Test\BuiltInServer;
  *
  * The embedded server is authenticating users user exampleauth::static to automatically log users in.
  *
- *
  * @package Simplesamlphp\Casserver
  */
 class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
@@ -19,20 +18,26 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
     /** @var string $LINK_URL */
     private static $LINK_URL = '/module.php/casserver/login.php';
 
+    /**
+     * @var string $SAMLVALIDATE_URL
+     */
     private static $SAMLVALIDATE_URL = '/module.php/casserver/samlValidate.php';
 
     /**
      * @var \SimpleSAML\Test\BuiltInServer
      */
     protected $server;
+
     /**
      * @var string
      */
     protected $server_addr;
+
     /**
      * @var int
      */
     protected $server_pid;
+
     /**
      * @var string
      */
@@ -379,6 +384,7 @@ SOAP;
             throw new \Exception('curl error: ' . curl_error($ch));
         }
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        /** @psalm-var string $resp */
         list($header, $body) = explode("\r\n\r\n", $resp, 2);
         $raw_headers = explode("\r\n", $header);
         array_shift($raw_headers);

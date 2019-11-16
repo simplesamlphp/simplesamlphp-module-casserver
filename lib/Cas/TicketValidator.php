@@ -6,18 +6,19 @@ use SimpleSAML\Configuration;
 use SimpleSAML\Error\BadRequest;
 use SimpleSAML\Logger;
 use SimpleSAML\Module;
+use SimpleSAML\Module\casserver\Cas\CasException;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
 
 class TicketValidator
 {
-    /** @var  Configuration */
+    /** @var \SimpleSAML\Configuration */
     private $casconfig;
 
-    /** @var TicketStore */
+    /** @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore */
     private $ticketStore;
 
-    /** @var  TicketFactory */
+    /** @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory */
     private $ticketFactory;
 
     /**
@@ -28,19 +29,23 @@ class TicketValidator
 
     /**
      * TicketValidator constructor.
-     * @param Configuration $casconfig
+     * @param \SimpleSAML\Configuration $casconfig
      */
     public function __construct(Configuration $casconfig)
     {
         $this->casconfig = $casconfig;
         $ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
         $ticketStoreClass = Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
-        /** @var TicketStore $ticketStore */
-        /** @psalm-suppress InvalidStringClass */
+        /**
+         * @psalm-suppress InvalidStringClass
+         * @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore
+         */
         $this->ticketStore = new $ticketStoreClass($casconfig);
         $ticketFactoryClass = Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
-        /** @var $ticketFactory TicketFactory */
-        /** @psalm-suppress InvalidStringClass */
+        /**
+         * @psalm-suppress InvalidStringClass
+         * @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory
+         */
         $this->ticketFactory = new $ticketFactoryClass($casconfig);
     }
 
@@ -49,7 +54,7 @@ class TicketValidator
      * @param string $ticket the ticket id to load validate
      * @param string $service the service that the ticket was issued to
      * @return string|array|null
-     * @throws CasException Thrown if ticket doesn't exist, expired, service mismatch
+     * @throws \SimpleSAML\Module\casserver\Cas\CasException Thrown if ticket doesn't exist, expired, service mismatch
      * @throws \InvalidArgumentException thrown if $ticket or $service parameter is missing
      */
     public function validateAndDeleteTicket($ticket, $service)

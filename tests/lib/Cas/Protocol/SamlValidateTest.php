@@ -25,6 +25,7 @@ class SamlValidateTest extends \PHPUnit\Framework\TestCase
         $samlValidate = new SamlValidateResponder();
         $xmlString = $samlValidate->convertToSaml($ticket);
         $response = new SimpleXMLElement($xmlString);
+        /** @psalm-suppress PossiblyNullPropertyFetch */
         $this->assertEquals($serviceUrl, $response->attributes()->Recipient);
         $this->assertEquals('samlp:Success', $response->Status->StatusCode->attributes()->Value);
         $this->assertEquals('localhost', $response->Assertion->attributes()->Issuer);

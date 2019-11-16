@@ -16,6 +16,7 @@
 
         <!-- level 3 issues - slightly lazy code writing, but probably low false-negatives -->
         <DeprecatedMethod errorLevel="info" />
+        <DeprecatedFunction errorLevel="info" />
 
         <MissingClosureReturnType errorLevel="info" />
         <MissingReturnType errorLevel="info" />
@@ -29,5 +30,12 @@
         <MissingParamType errorLevel="info" />
         <UnusedClass errorLevel="info" />
         <PossiblyUnusedMethod errorLevel="info" />
+
+        <!-- Suppress PHPunit-issue -->
+        <InternalMethod>
+            <errorLevel type="suppress">
+                <directory name="tests" />
+            </errorLevel>
+        </InternalMethod>
     </issueHandlers>
 </psalm>
