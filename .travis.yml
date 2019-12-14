@@ -14,7 +14,7 @@ stages:
 php:
   - 7.2
   - 7.3
-  - 7.4snapshot
+  - 7.4
 
 env:
   - COMMAND="composer install"
@@ -63,6 +63,14 @@ jobs:
         - vendor/bin/check-syntax-php.sh
 
     - stage: pre-conditions
+      php: 7.4
+      env: Syntax check PHP
+      before_script:
+        - composer install
+      script:
+        - vendor/bin/check-syntax-php.sh
+
+    - stage: pre-conditions
       php: 7.3
       env: Syntax check YAML / XML / JSON
       before_script:
@@ -100,12 +108,7 @@ jobs:
         - composer update
         - php vendor/bin/phpunit
       script:
-        # Codecov, need to edit bash uploader for incorrect TRAVIS_PYTHON_VERSION environment variable matching, at least until codecov/codecov-bash#133 is resolved
-        - curl -s https://codecov.io/bash > .codecov
-        - sed -i -e 's/TRAVIS_.*_VERSION/^TRAVIS_.*_VERSION=/' .codecov
-        - chmod +x .codecov
-        - ./.codecov -X gcov
-        # - <(curl -s https://codecov.io/bash)
+        - bash <(curl -s https://codecov.io/bash)
 
     - stage: quality
       php: 7.3
