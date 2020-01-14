@@ -22,7 +22,7 @@
         }
     },
     "require-dev": {
-        "simplesamlphp/simplesamlphp": "^1.18@RC",
+        "simplesamlphp/simplesamlphp": "^1.18",
         "simplesamlphp/simplesamlphp-test-framework": "~0.1.0",
         "squizlabs/php_codesniffer": "^3.5"
     },
