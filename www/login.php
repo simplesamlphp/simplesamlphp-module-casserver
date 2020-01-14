@@ -50,14 +50,16 @@ $redirect = !(isset($_GET['method']) && 'POST' === $_GET['method']);
 $casconfig = Configuration::getConfig('module_casserver.php');
 $serviceValidator = new ServiceValidator($casconfig);
 
-if (isset($_GET['service'])) {
-    $serviceCasConfig = $serviceValidator->checkServiceURL(sanitize($_GET['service']));
+$serviceUrl = $_GET['service'] ?? $_GET['TARGET'] ?? null;
+
+if (isset($serviceUrl)) {
+    $serviceCasConfig = $serviceValidator->checkServiceURL(sanitize($serviceUrl));
     if (isset($serviceCasConfig)) {
         // Override the cas configuration to use for this service
         $casconfig = $serviceCasConfig;
     } else {
         $message = 'Service parameter provided to CAS server is not listed as a legal service: [service] = ' .
-            var_export($_GET['service'], true);
+            var_export($serviceUrl, true);
         Logger::debug('casserver:' . $message);
 
         throw new \Exception($message);
@@ -111,6 +113,10 @@ if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewI
 
     if (isset($_REQUEST['service'])) {
         $query['service'] = $_REQUEST['service'];
+    }
+
+    if (isset($_REQUEST['TARGET'])) {
+        $query['TARGET'] = $_REQUEST['TARGET'];
     }
 
     if (isset($_REQUEST['method'])) {
@@ -174,12 +180,15 @@ if (array_key_exists('language', $_GET)) {
     }
 }
 
-if (isset($_GET['service'])) {
+if (isset($serviceUrl)) {
+    $defaultTicketName = isset($_GET['service']) ? 'ticket' : 'SAMLart';
+    $ticketName = $casconfig->getValue('ticketName', $defaultTicketName);
+
     $attributeExtractor = new AttributeExtractor();
     $mappedAttributes = $attributeExtractor->extractUserAndAttributes($as->getAttributes(), $casconfig);
 
     $serviceTicket = $ticketFactory->createServiceTicket([
-        'service' => $_GET['service'],
+        'service' => $serviceUrl,
         'forceAuthn' => $forceAuthn,
         'userName' => $mappedAttributes['user'],
         'attributes' => $mappedAttributes['attributes'],
@@ -189,7 +198,7 @@ if (isset($_GET['service'])) {
 
     $ticketStore->addTicket($serviceTicket);
 
-    $parameters['ticket'] = $serviceTicket['id'];
+    $parameters[$ticketName] = $serviceTicket['id'];
 
     $validDebugModes = ['true', 'samlValidate'];
     if (
@@ -205,7 +214,7 @@ if (isset($_GET['service'])) {
         } else {
             $method = 'serviceValidate';
             // Fake some options for validateTicket
-            $_GET['ticket'] = $serviceTicket['id'];
+            $_GET[$ticketName] = $serviceTicket['id'];
             // We want to capture the output from echo used in validateTicket
             ob_start();
             require_once 'utility/validateTicket.php';
@@ -214,9 +223,9 @@ if (isset($_GET['service'])) {
             echo '<pre>' . htmlspecialchars($casResponse) . '</pre>';
         }
     } elseif ($redirect) {
-        HTTP::redirectTrustedURL(HTTP::addURLParameters($_GET['service'], $parameters));
+        HTTP::redirectTrustedURL(HTTP::addURLParameters($serviceUrl, $parameters));
     } else {
-        HTTP::submitPOSTData($_GET['service'], $parameters);
+        HTTP::submitPOSTData($serviceUrl, $parameters);
     }
 } else {
     HTTP::redirectTrustedURL(

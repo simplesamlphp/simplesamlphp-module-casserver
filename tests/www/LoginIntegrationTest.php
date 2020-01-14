@@ -3,6 +3,7 @@
 namespace Simplesamlphp\Casserver;
 
 use DOMDocument;
+use PHPUnit\Framework\TestCase;
 use SimpleSAML\Test\BuiltInServer;
 
 /**
@@ -13,10 +14,13 @@ use SimpleSAML\Test\BuiltInServer;
  *
  * @package Simplesamlphp\Casserver
  */
-class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
+class LoginIntegrationTest extends TestCase
 {
     /** @var string $LINK_URL */
     private static $LINK_URL = '/module.php/casserver/login.php';
+
+    /** @var string $VALIDATE_URL */
+    private static $VALIDATE_URL = '/module.php/casserver/serviceValidate.php';
 
     /**
      * @var string $SAMLVALIDATE_URL
@@ -129,10 +133,13 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
 
 
     /**
-     * test a valid service URL
+     * Test a valid service URL
+     * @dataProvider validServiceUrlProvider
+     * @param string $serviceParam The name of the query parameter to use for the service url
+     * @param string $ticketParam The name of the query parameter that will contain the ticket
      * @return void
      */
-    public function testValidServiceUrl()
+    public function testValidServiceUrl(string $serviceParam, string $ticketParam)
     {
         $service_url = 'http://host1.domain:1234/path1';
 
@@ -141,7 +148,7 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
         /** @var array $resp */
         $resp = $this->server->get(
             self::$LINK_URL,
-            ['service' => $service_url],
+            [$serviceParam => $service_url],
             [
                 CURLOPT_COOKIEJAR => $this->cookies_file,
                 CURLOPT_COOKIEFILE => $this->cookies_file
@@ -150,7 +157,71 @@ class LoginIntegrationTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(302, $resp['code']);
 
         $this->assertStringStartsWith(
-            $service_url . '?ticket=ST-',
+            $service_url . '?' . $ticketParam . '=ST-',
+            $resp['headers']['Location'],
+            'Ticket should be part of the redirect.'
+        );
+
+        // Config ticket can be validated
+        $matches = [];
+        $this->assertEquals(1, preg_match("@$ticketParam=(.*)@", $resp['headers']['Location'], $matches));
+        $ticket = $matches[1];
+        $resp = $this->server->get(
+            self::$VALIDATE_URL,
+            [
+                $serviceParam => $service_url,
+                'ticket' => $ticket,
+                ],
+            [
+                CURLOPT_COOKIEJAR => $this->cookies_file,
+                CURLOPT_COOKIEFILE => $this->cookies_file
+            ]
+        );
+        $expectedResponse = '<?xml version="1.0"?>
+<cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
+<cas:authenticationSuccess>
+<cas:user>testuser@example.com</cas:user>
+<cas:attributes>
+<cas:eduPersonPrincipalName>testuser@example.com</cas:eduPersonPrincipalName>
+<cas:base64Attributes>false</cas:base64Attributes>
+</cas:attributes>
+</cas:authenticationSuccess>
+</cas:serviceResponse>';
+        $this->assertEquals(200, $resp['code']);
+        $this->assertEquals($expectedResponse, $resp['body']);
+    }
+
+    public function validServiceUrlProvider(): array
+    {
+        return [
+            ['service', 'ticket'],
+            ['TARGET', 'SAMLart']
+        ];
+    }
+
+    /**
+     * Test changing the ticket name
+     * @return void
+     */
+    public function testValidTicketNameOverride()
+    {
+        $service_url = 'http://changeTicketParam/abc';
+
+        $this->authenticate();
+
+        /** @var array $resp */
+        $resp = $this->server->get(
+            self::$LINK_URL,
+            ['TARGET' => $service_url],
+            [
+                CURLOPT_COOKIEJAR => $this->cookies_file,
+                CURLOPT_COOKIEFILE => $this->cookies_file
+            ]
+        );
+        $this->assertEquals(302, $resp['code']);
+
+        $this->assertStringStartsWith(
+            $service_url . '?myTicket=ST-',
             $resp['headers']['Location'],
             'Ticket should be part of the redirect.'
         );

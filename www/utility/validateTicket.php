@@ -41,8 +41,9 @@ $protocolClass = \SimpleSAML\Module::resolveClass('casserver:Cas20', 'Cas_Protoc
 /** @var Cas20 $protocol */
 /** @psalm-suppress InvalidStringClass */
 $protocol = new $protocolClass($casconfig);
+$serviceUrl = $_GET['service'] ?? $_GET['TARGET'] ?? null;
 
-if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
+if (isset($serviceUrl) && array_key_exists('ticket', $_GET)) {
     $forceAuthn = isset($_GET['renew']) && $_GET['renew'];
 
     try {
@@ -73,7 +74,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
 
             if (
                 !$ticketFactory->isExpired($serviceTicket) &&
-                sanitize($serviceTicket['service']) == sanitize($_GET['service']) &&
+                sanitize($serviceTicket['service']) == sanitize($serviceUrl) &&
                 (!$forceAuthn || $serviceTicket['forceAuthn'])
             ) {
                 $protocol->setAttributes($attributes);
@@ -91,7 +92,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                             'userName' => $serviceTicket['userName'],
                             'attributes' => $attributes,
                             'forceAuthn' => false,
-                            'proxies' => array_merge([$_GET['service']], $serviceTicket['proxies']),
+                            'proxies' => array_merge([$serviceUrl], $serviceTicket['proxies']),
                             'sessionId' => $serviceTicket['sessionId']
                         ]);
                         try {
@@ -116,10 +117,10 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
 
                     echo $protocol->getValidateFailureResponse('INVALID_TICKET', $message);
                 } else {
-                    if (sanitize($serviceTicket['service']) != sanitize($_GET['service'])) {
+                    if (sanitize($serviceTicket['service']) != sanitize($serviceUrl)) {
                         $message = 'Mismatching service parameters: expected ' .
                             var_export($serviceTicket['service'], true) .
-                            ' but was: ' . var_export($_GET['service'], true);
+                            ' but was: ' . var_export($serviceUrl, true);
 
                         \SimpleSAML\Logger::debug('casserver:' . $message);
 

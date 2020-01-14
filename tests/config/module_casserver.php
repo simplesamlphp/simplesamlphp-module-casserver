@@ -27,6 +27,9 @@ $config = [
         '|https://override.example.com/|' => [
             'attrname' => 'uid',
             'attributes_to_transfer' => ['cn'],
+        ],
+        'http://changeTicketParam' => [
+            'ticketName' => 'myTicket',
         ]
     ],
 
