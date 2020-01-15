@@ -133,7 +133,7 @@ class TicketValidatorTest extends TestCase
      * @param string $expectedSanitzedUrl The expected result
      * @return void
      */
-    public function testUrlSanitization(string $serviceUrl, string $expectedSanitzedUrl):void
+    public function testUrlSanitization(string $serviceUrl, string $expectedSanitzedUrl): void
     {
         $this->assertEquals($expectedSanitzedUrl, TicketValidator::sanitize($serviceUrl));
     }
