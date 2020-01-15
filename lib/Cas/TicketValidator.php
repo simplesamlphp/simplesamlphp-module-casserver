@@ -97,15 +97,17 @@ class TicketValidator
 
 
     /**
-     * @param string $parameter
-     * @return string
+     * Java CAS clients are inconsistent with their sending of jsessionid, so remove it to
+     * avoid service url matching issues.
+     * @param string $parameter The service url to sanitize
+     * @return string The sanitized url
      */
     public static function sanitize($parameter)
     {
         return preg_replace(
-            '/;jsessionid=.*[^?].*$/',
+            '/;jsessionid=.*[^?].*$/U',
             '',
-            preg_replace('/;jsessionid=.*[?]/', '?', urldecode($parameter))
+            preg_replace('/;jsessionid=.*[?]/U', '?', urldecode($parameter))
         );
     }
 }

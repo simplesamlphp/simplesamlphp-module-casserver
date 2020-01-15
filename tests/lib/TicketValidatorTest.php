@@ -10,12 +10,6 @@ use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
 use SimpleSAML\Module\casserver\Cas\TicketValidator;
 use SimpleSAML\Utils\Random;
 
-/**
- * Created by PhpStorm.
- * User: patrick
- * Date: 8/23/19
- * Time: 12:13 PM
- */
 class TicketValidatorTest extends TestCase
 {
     /**
@@ -35,6 +29,8 @@ class TicketValidatorTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        Configuration::clearInternalState();
+        putenv('SIMPLESAMLPHP_CONFIG_DIR=' . dirname(__DIR__) . '/config');
         $casConfig = Configuration::loadFromArray([
             'ticketstore' => [
                 'class' => 'casserver:FileSystemTicketStore',
@@ -129,6 +125,39 @@ class TicketValidatorTest extends TestCase
         }
         // ensure ticket deleted after validation
         $this->assertNull($this->ticketStore->getTicket($id), "ticket deleted after loading");
+    }
+
+    /**
+     * @dataProvider urlSanitizationProvider
+     * @param string $serviceUrl The service url that will get sanitized
+     * @param string $expectedSanitzedUrl The expected result
+     * @return void
+     */
+    public function testUrlSanitization(string $serviceUrl, string $expectedSanitzedUrl): void
+    {
+        $this->assertEquals($expectedSanitzedUrl, TicketValidator::sanitize($serviceUrl));
+    }
+
+    /**
+     * Urls to test
+     * @return array
+     */
+    public function urlSanitizationProvider()
+    {
+        return [
+            [
+                'https://example.edu/kc/portal.do;jsessionid=99AC064A12?a=b',
+                'https://example.edu/kc/portal.do?a=b',
+            ],
+            [
+                'https://example.edu/kc/portal.do?a=b',
+                'https://example.edu/kc/portal.do?a=b',
+            ],
+            [
+                'https://k.edu/kc/portal.do;jsessionid=99AC064A127?ct=Search&cu=https://k.edu/kc/as.do?ssf=456*&rsol=1',
+                'https://k.edu/kc/portal.do?ct=Search&cu=https://k.edu/kc/as.do?ssf=456*&rsol=1',
+            ]
+        ];
     }
 
 
