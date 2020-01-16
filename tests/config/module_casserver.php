@@ -32,7 +32,6 @@ $config = [
             'ticketName' => 'myTicket',
         ],
         'https://encoding.edu' => [
-            'noReencode' => true,
         ]
     ],
 

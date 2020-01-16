@@ -32,9 +32,6 @@ $config = [
             'attributes_to_transfer' => ['cn'],
         ],
     ],
-    // Don't use php or SSP's built in methods for constructing queries. Default is false
-    // Enabling this redirects the user back to the service with the exact service url provided.
-    'noReencode' => false,
 
     'legal_target_service_urls' => [
         //Any target service url string matching any of the following prefixes is accepted

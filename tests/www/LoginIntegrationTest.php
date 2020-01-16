@@ -276,6 +276,7 @@ class LoginIntegrationTest extends TestCase
         $urlMultiKeys = 'https://encoding.edu/bug?a=val1&a=val2';
         $urlWithCaseDifference = 'https://encoding.edu?url=https%3a%2f%2Fencoding.edu%3Fa%3Db';
         $urlWithSpace = 'https://encoding.edu?a=a%20space';
+        $urlWithRepeatParams = 'https://encoding.edu?a=b&a=c';
         return [
             [$urlWithQuery, $urlWithQuery . '&ticket=ST-', ''],
             [$urlWithQuery . '#fragment', $urlWithQuery . '&ticket=ST-', '#fragment'],
@@ -285,6 +286,7 @@ class LoginIntegrationTest extends TestCase
             [$urlNoQuery . '#fragment', $urlNoQuery . '?ticket=ST-', '#fragment'],
             [$urlWithCaseDifference, $urlWithCaseDifference. '&ticket=ST-', ''],
             [$urlWithSpace, $urlWithSpace. '&ticket=ST-', ''],
+            [$urlWithRepeatParams, $urlWithRepeatParams. '&ticket=ST-', ''],
         ];
     }
 

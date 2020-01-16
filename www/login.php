@@ -223,12 +223,8 @@ if (isset($serviceUrl)) {
             echo '<pre>' . htmlspecialchars($casResponse) . '</pre>';
         }
     } elseif ($redirect) {
-        if ($casconfig->getBoolean('noReencode', false)) {
-            $redirectUrl = casAddURLParameters($serviceUrl, $parameters);
-            HTTP::redirectTrustedURL($redirectUrl);
-        } else {
-            HTTP::redirectTrustedURL(HTTP::addURLParameters($serviceUrl, $parameters));
-        }
+        $redirectUrl = casAddURLParameters($serviceUrl, $parameters);
+        HTTP::redirectTrustedURL($redirectUrl);
     } else {
         HTTP::submitPOSTData($serviceUrl, $parameters);
     }
@@ -245,6 +241,7 @@ if (isset($serviceUrl)) {
  * * changing how a ' ' is encoded
  * * not correctly handling url fragments (e.g. #)
  * * not correctly handling query param keys occurring multiple times
+ * * changing lower case hexadecimal to upper case
  * * some buggy clients don't encode query params correctly
  * which results in either the wrong url being returned to the client, or a service mismatch
  * @param string $url The url to adjust
