@@ -224,10 +224,10 @@ if (isset($serviceUrl)) {
         }
     } elseif ($redirect) {
         if ($casconfig->getBoolean('noReencode', false)) {
-            $redirectUrl = casAddURLParameters($_GET['service'], $parameters);
+            $redirectUrl = casAddURLParameters($serviceUrl, $parameters);
             HTTP::redirectTrustedURL($redirectUrl);
         } else {
-            HTTP::redirectTrustedURL(HTTP::addURLParameters($_GET['service'], $parameters));
+            HTTP::redirectTrustedURL(HTTP::addURLParameters($serviceUrl, $parameters));
         }
     } else {
         HTTP::submitPOSTData($serviceUrl, $parameters);

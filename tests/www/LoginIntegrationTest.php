@@ -218,7 +218,7 @@ class LoginIntegrationTest extends TestCase
                 CURLOPT_COOKIEFILE => $this->cookies_file
             ]
         );
-        $this->assertEquals(302, $resp['code']);
+        $this->assertEquals(302, $resp['code'], $resp['body']);
 
         $this->assertStringStartsWith(
             $service_url . '?myTicket=ST-',
@@ -232,6 +232,9 @@ class LoginIntegrationTest extends TestCase
      * urls or encode a space in a different way then SSP will in a redirect. This workaround
      * is to allow those clients to work
      * @dataProvider buggyClientProvider
+     * @param string $service_url The service url submitted by the client
+     * @param string $expectedStartsWith The redirect location is expected to start with this.
+     * @param string $expectedEndsWith The redirect location is expected to end with this. Used for testing #fragments.
      * @return void
      */
     public function testBuggyClientBadUrlEncodingWorkAround($service_url, $expectedStartsWith, $expectedEndsWith)
