@@ -228,16 +228,19 @@ class LoginIntegrationTest extends TestCase
     }
 
     /**
-     * Some clients don't correctly encode query parameters that are part their service
-     * urls or encode a space in a different way then SSP will in a redirect. This workaround
-     * is to allow those clients to work
-     * @dataProvider buggyClientProvider
+     * Some clients urls:
+     * 1. Incorrectly encode query parameters or fragments
+     * 2. Encode spaces as %20 which php rencodes to +
+     * 3. Special characters url encoded to lower case hexadecimal (some .net versions) are changed to upper case.
+     *
+     * Test to confirm these type of urls work
+     * @dataProvider encodingIssueProvider
      * @param string $service_url The service url submitted by the client
      * @param string $expectedStartsWith The redirect location is expected to start with this.
      * @param string $expectedEndsWith The redirect location is expected to end with this. Used for testing #fragments.
      * @return void
      */
-    public function testBuggyClientBadUrlEncodingWorkAround($service_url, $expectedStartsWith, $expectedEndsWith)
+    public function testEncodingIssued($service_url, $expectedStartsWith, $expectedEndsWith)
     {
         $this->authenticate();
 
@@ -266,11 +269,13 @@ class LoginIntegrationTest extends TestCase
         }
     }
 
-    public function buggyClientProvider(): array
+    public function encodingIssueProvider(): array
     {
-        $urlWithQuery = 'https://buggy.edu/kc/portal.do?solo&ct=Search%20Prot&curl=https://kc.edu/kc/IRB.do?se=1875*&runSearch=1';
-        $urlNoQuery = 'https://buggy.edu/kc';
-        $urlMultiKeys = 'https://buggy.edu/kc?a=val1&a=val2';
+        $urlWithQuery = 'https://encoding.edu/bug/portal.do?solo&ct=Search%20Prot&curl=https://kc.edu/IRB.do?se=1875*&rs=1';
+        $urlNoQuery = 'https://encoding.edu/bug';
+        $urlMultiKeys = 'https://encoding.edu/bug?a=val1&a=val2';
+        $urlWithCaseDifference = 'https://encoding.edu?url=https%3a%2f%2Fencoding.edu%3Fa%3Db';
+        $urlWithSpace = 'https://encoding.edu?a=a%20space';
         return [
             [$urlWithQuery, $urlWithQuery . '&ticket=ST-', ''],
             [$urlWithQuery . '#fragment', $urlWithQuery . '&ticket=ST-', '#fragment'],
@@ -278,6 +283,8 @@ class LoginIntegrationTest extends TestCase
             [$urlMultiKeys . '#fragment', $urlMultiKeys . '&ticket=ST-', '#fragment'],
             [$urlNoQuery, $urlNoQuery. '?ticket=ST-', ''],
             [$urlNoQuery . '#fragment', $urlNoQuery . '?ticket=ST-', '#fragment'],
+            [$urlWithCaseDifference, $urlWithCaseDifference. '&ticket=ST-', ''],
+            [$urlWithSpace, $urlWithSpace. '&ticket=ST-', ''],
         ];
     }
 
