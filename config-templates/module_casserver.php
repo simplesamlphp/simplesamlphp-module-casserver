@@ -61,6 +61,7 @@ $config = [
 
         // Store tickets in multiple ticket stores for redundancy or to allow
         // transitions between data stores without downtime.
+        /*
         'class' => 'casserver:DelegatingTicketStore',
         'delegateTo' => 'all',
         'ticketStores' => [
@@ -72,7 +73,7 @@ $config = [
                 'class' => 'casserver:FileSystemTicketStore',
                 'prefix' => 'cas'
             ]
-        ]
+        ]*/
     ],
 
     'attrname' => 'eduPersonPrincipalName', // 'eduPersonPrincipalName',

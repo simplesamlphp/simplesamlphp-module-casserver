@@ -35,27 +35,30 @@ class DelegatingTicketStore extends TicketStore
     {
         $config = $casConfig->getConfigItem('ticketstore');
         $this->delegateTo = $config->getString('delegateTo', 'all');
-        /** @var $storeConfig Configuration */
         foreach ($config->getArray('ticketStores') as $name => $storeArray) {
             // TicketStore expects the store config to be in a specific item
             $storeConfig = Configuration::loadFromArray(['ticketstore' => $storeArray]);
             $class = $storeConfig->getConfigItem('ticketstore')->getString('class');
             $ticketStoreClass = Module::resolveClass($class, 'Cas_Ticket');
             try {
+                /**
+                 * @var TicketStore $ticketStore
+                 * @psalm-suppress InvalidStringClass
+                 */
                 $ticketStore = new $ticketStoreClass($storeConfig);
-                $ticketStores[$name] = $ticketStore;
+                $this->ticketStores[$name] = $ticketStore;
             } catch (\Exception $e) {
                 Logger::error("Unable to create ticket store '$name'. Error " . $e->getMessage());
             }
         }
-        assert(!empty($ticketStores));
-        $this->ticketStores = $ticketStores;
+        assert(!empty($this->ticketStores), "'ticketStores' must be defined.");
+        $this->ticketStores = $this->ticketStores;
 
         if ($this->delegateTo === 'first') {
-            $this->primaryDelegate = reset($ticketStores);
+            $this->primaryDelegate = reset($this->ticketStores);
         } elseif ($this->delegateTo !== 'all') {
-            if (array_key_exists($this->delegateTo, $ticketStores)) {
-                $this->primaryDelegate = $ticketStores[$this->delegateTo];
+            if (array_key_exists($this->delegateTo, $this->ticketStores)) {
+                $this->primaryDelegate = $this->ticketStores[$this->delegateTo];
             } else {
                 throw new InvalidArgumentException("No ticket store called '" . $this->delegateTo . "'");
             }
