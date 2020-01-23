@@ -62,7 +62,7 @@ class DelegatingTicketStoreTest extends TestCase
     /**
      * Test storing and retrieving from all ticket store delegates.
      */
-    public function testAll()
+    public function testAll(): void
     {
         $this->ticketstoreConfig['delegateTo'] = 'all';
         $ticketStore = new DelegatingTicketStore(
@@ -90,7 +90,7 @@ class DelegatingTicketStoreTest extends TestCase
         $this->assertNull($this->fileStore2->getTicket('1'));
     }
 
-    public function testFirst()
+    public function testFirst(): void
     {
         $this->ticketstoreConfig['delegateTo'] = 'first';
         $ticketStore = new DelegatingTicketStore(
@@ -112,7 +112,7 @@ class DelegatingTicketStoreTest extends TestCase
         $this->assertNull($this->fileStore1->getTicket('1'));
     }
 
-    public function testNamed()
+    public function testNamed(): void
     {
         $this->ticketstoreConfig['delegateTo'] = 'name2';
         $ticketStore = new DelegatingTicketStore(
@@ -137,7 +137,7 @@ class DelegatingTicketStoreTest extends TestCase
     /**
      * Confirm behavior of a default configuration
      */
-    public function testDelegateErrorsIfNoSuccess()
+    public function testDelegateErrorsIfNoSuccess(): void
     {
         $config = array(
             'delegateTo' => 'all',

@@ -9,7 +9,6 @@ use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
  */
 class ErroringTicketStore extends TicketStore
 {
-
     /**
      * @param string $ticketId The ticket id
      * @return array|null The ticket content or null if there is no such ticket

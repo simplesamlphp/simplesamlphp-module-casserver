@@ -13,6 +13,9 @@ use SimpleSAML\Module;
  */
 class DelegatingTicketStore extends TicketStore
 {
+    /**
+     * @var string Delegate to 'all', 'first', or a named entry.
+     */
     private $delegateTo = 'all';
 
     /**
@@ -25,6 +28,9 @@ class DelegatingTicketStore extends TicketStore
      */
     private $primaryDelegate;
 
+    /**
+     * @param \SimpleSAML\Configuration $casConfig The cas configuration.
+     */
     public function __construct(Configuration $casConfig)
     {
         $config = $casConfig->getConfigItem('ticketstore');
@@ -58,7 +64,7 @@ class DelegatingTicketStore extends TicketStore
 
     /**
      * Get the ticket, searching one or all of the delegates
-     * @param $ticketId string The ticket to find
+     * @param string $ticketId The ticket to find
      * @return array|null The ticket or null if none found
      * @throws \Exception from any delegate stores ONLY if no delegates worked
      */
@@ -91,7 +97,7 @@ class DelegatingTicketStore extends TicketStore
     }
 
     /**
-     * @param $ticket
+     * @param array $ticket Ticket to add
      * @throws \Exception from any delegate stores ONLY if no delegates worked
      */
     public function addTicket(array $ticket)
@@ -118,7 +124,7 @@ class DelegatingTicketStore extends TicketStore
     }
 
     /**
-     * @param $ticketId string
+     * @param string $ticketId Ticket to delete
      */
     public function deleteTicket($ticketId)
     {
