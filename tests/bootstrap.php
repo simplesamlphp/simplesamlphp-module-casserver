@@ -8,6 +8,10 @@ $ticketCacheDir = $projectRootDirectory . '/tests/ticketcache';
 if (!file_exists($ticketCacheDir)) {
     mkdir($ticketCacheDir);
 }
+$ticketCacheDirAlt = $projectRootDirectory . '/tests/ticketcacheAlt';
+if (!file_exists($ticketCacheDirAlt)) {
+    mkdir($ticketCacheDirAlt);
+}
 /** @psalm-suppress UnresolvableInclude */
 require_once($projectRootDirectory . '/vendor/autoload.php');
 
