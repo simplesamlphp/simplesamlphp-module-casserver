@@ -60,7 +60,7 @@ if (isset($serviceUrl)) {
     } else {
         $message = 'Service parameter provided to CAS server is not listed as a legal service: [service] = ' .
             var_export($serviceUrl, true);
-        Logger::debug('casserver:' . $message);
+        Logger::error('casserver:' . $message);
 
         throw new \Exception($message);
     }
@@ -77,7 +77,7 @@ if (array_key_exists('scope', $_GET) && is_string($_GET['scope'])) {
     } else {
         $message = 'Scope parameter provided to CAS server is not listed as legal scope: [scope] = ' .
             var_export($_GET['scope'], true);
-        Logger::debug('casserver:' . $message);
+        Logger::error('casserver:' . $message);
 
         throw new \Exception($message);
     }
