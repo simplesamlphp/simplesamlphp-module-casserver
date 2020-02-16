@@ -24,7 +24,7 @@ class TicketValidator
     /**
      * The ticket id doesn't match a ticket
      */
-    const INVALID_TICKET = 'INVALID_TICKET';
+    public const INVALID_TICKET = 'INVALID_TICKET';
 
 
     /**
@@ -35,13 +35,13 @@ class TicketValidator
     {
         $this->casconfig = $casconfig;
         $ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
-        $ticketStoreClass = Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
+        $ticketStoreClass = Module::resolveClass($ticketStoreConfig['class'], 'Cas\Ticket');
         /**
          * @psalm-suppress InvalidStringClass
          * @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore
          */
         $this->ticketStore = new $ticketStoreClass($casconfig);
-        $ticketFactoryClass = Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
+        $ticketFactoryClass = Module::resolveClass('casserver:TicketFactory', 'Cas\Ticket');
         /**
          * @psalm-suppress InvalidStringClass
          * @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory
@@ -57,7 +57,7 @@ class TicketValidator
      * @throws \SimpleSAML\Module\casserver\Cas\CasException Thrown if ticket doesn't exist, expired, service mismatch
      * @throws \InvalidArgumentException thrown if $ticket or $service parameter is missing
      */
-    public function validateAndDeleteTicket($ticket, $service)
+    public function validateAndDeleteTicket(string $ticket, string $service)
     {
         if (empty($ticket)) {
             throw new \InvalidArgumentException('Missing ticket parameter: [ticket]');
@@ -102,7 +102,7 @@ class TicketValidator
      * @param string $parameter The service url to sanitize
      * @return string The sanitized url
      */
-    public static function sanitize($parameter)
+    public static function sanitize(string $parameter): string
     {
         return preg_replace(
             '/;jsessionid=.*[^?].*$/U',

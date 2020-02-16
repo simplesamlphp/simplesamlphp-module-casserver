@@ -27,4 +27,4 @@ $globalConfig = \SimpleSAML\Configuration::getInstance();
 
 $t = new \SimpleSAML\XHTML\Template($globalConfig, 'casserver:loggedIn.php');
 
-$t->show();
+$t->send();

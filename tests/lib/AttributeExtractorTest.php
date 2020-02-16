@@ -11,7 +11,7 @@ class AttributeExtractorTest extends \PHPUnit\Framework\TestCase
      * Confirm behavior of a default configuration
      * @return void
      */
-    public function testNoCasConfig()
+    public function testNoCasConfig(): void
     {
         $casConfig = [
             // Default is to use eppn and copy all attributes
@@ -36,7 +36,7 @@ class AttributeExtractorTest extends \PHPUnit\Framework\TestCase
      * Test disable attribute copying
      * @return void
      */
-    public function testNoAttributeCopying()
+    public function testNoAttributeCopying(): void
     {
         $casConfig = [
             'attributes' => false
@@ -61,7 +61,7 @@ class AttributeExtractorTest extends \PHPUnit\Framework\TestCase
      * Confirm customizing the attribute for user and attributes to copy
      * @return void
      */
-    public function testCustomAttributeCopy()
+    public function testCustomAttributeCopy(): void
     {
         $casConfig = [
             'attrname' => 'userNameAttribute',
@@ -90,7 +90,7 @@ class AttributeExtractorTest extends \PHPUnit\Framework\TestCase
      * Confirm empty authproc has no affect
      * @return void
      */
-    public function testEmptyAuthproc()
+    public function testEmptyAuthproc(): void
     {
         $casConfig = [
             // Default is to use eppn and copy all attributes
@@ -116,7 +116,7 @@ class AttributeExtractorTest extends \PHPUnit\Framework\TestCase
      * Test authproc configurations can adjust the attributes.
      * @return void
      */
-    public function testAuthprocConfig()
+    public function testAuthprocConfig(): void
     {
         // Authproc filters need a config.php defined
         putenv('SIMPLESAMLPHP_CONFIG_DIR=' . dirname(__DIR__) . '/config/');

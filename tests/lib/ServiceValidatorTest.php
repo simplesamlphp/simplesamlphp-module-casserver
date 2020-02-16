@@ -21,7 +21,7 @@ class ServiceValidatorTest extends \PHPUnit\Framework\TestCase
      * @return void
      * @dataProvider overridingDataProvider
      */
-    public function testOverridingServiceConfig($service, array $expectedConfig)
+    public function testOverridingServiceConfig(string $service, array $expectedConfig): void
     {
         $casConfig = [
             'attrname' => 'defaultAttribute',
@@ -67,7 +67,7 @@ class ServiceValidatorTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array
      */
-    public function overridingDataProvider()
+    public function overridingDataProvider(): array
     {
         // The expected configuration if no overrides occur
         $defaultConfig = [
@@ -137,7 +137,7 @@ class ServiceValidatorTest extends \PHPUnit\Framework\TestCase
      * @return void
      * @dataProvider checkServiceURLProvider
      */
-    public function testCheckServiceURL($service, $allowed)
+    public function testCheckServiceURL(string $service, bool $allowed): void
     {
         $casConfig = [
             'legal_service_urls' => [
@@ -166,7 +166,7 @@ class ServiceValidatorTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array
      */
-    public function checkServiceURLProvider()
+    public function checkServiceURLProvider(): array
     {
         return [
             ['no-match', false],

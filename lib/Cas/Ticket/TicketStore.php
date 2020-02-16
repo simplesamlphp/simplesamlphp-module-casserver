@@ -34,21 +34,24 @@ abstract class TicketStore
     {
     }
 
+
     /**
      * @param string $ticketId
      * @return array|null The ticket content or null if there is no such ticket
      */
-    abstract public function getTicket($ticketId);
+    abstract public function getTicket(string $ticketId): ?array;
+
 
     /**
      * @param array $ticket
      * @return void
      */
-    abstract public function addTicket(array $ticket);
+    abstract public function addTicket(array $ticket): void;
+
 
     /**
      * @param string $ticketId
      * @return void
      */
-    abstract public function deleteTicket($ticketId);
+    abstract public function deleteTicket(string $ticketId) : void;
 }

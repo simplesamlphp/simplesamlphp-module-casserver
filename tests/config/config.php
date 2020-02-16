@@ -2,9 +2,9 @@
 
 use SimpleSAML\Logger;
 
-/*
- Config file to use during integration testing
-*/
+/**
+ * Config file to use during integration testing
+ */
 $config = [
     'baseurlpath' => '/',
 

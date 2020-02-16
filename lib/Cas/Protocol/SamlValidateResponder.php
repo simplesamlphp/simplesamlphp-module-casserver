@@ -13,7 +13,7 @@ class SamlValidateResponder
      * @param array $ticket The cas ticket
      * @return string The saml 1 xml for the CAS response
      */
-    public function convertToSaml(array $ticket)
+    public function convertToSaml(array $ticket): string
     {
         $serviceUrl = $ticket['service'];
         $attributes = $ticket['attributes'];
@@ -57,7 +57,7 @@ class SamlValidateResponder
      * @param string $samlResponse
      * @return string
      */
-    public function wrapInSoap($samlResponse)
+    public function wrapInSoap(string $samlResponse): string
     {
         $envelope = <<<SOAP
 <?xml version="1.0" encoding="utf-8"?>

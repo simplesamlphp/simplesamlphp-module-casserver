@@ -17,15 +17,19 @@ class DelegatingTicketStoreTest extends TestCase
     private $ticketstoreConfig = [];
 
     /**
-     * @var TicketStore $fileStore1
+     * @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore $fileStore1
      */
     private $fileStore1;
 
     /**
-     * @var TicketStore $fileStore2
+     * @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore $fileStore2
      */
     private $fileStore2;
 
+
+    /**
+     * @return void
+     */
     public function setup(): void
     {
         putenv('SIMPLESAMLPHP_CONFIG_DIR=' . dirname(dirname(__DIR__)) . '/config');
@@ -59,6 +63,7 @@ class DelegatingTicketStoreTest extends TestCase
         );
     }
 
+
     /**
      * Test storing and retrieving from all ticket store delegates.
      */
@@ -90,6 +95,7 @@ class DelegatingTicketStoreTest extends TestCase
         $this->assertNull($this->fileStore2->getTicket('1'));
     }
 
+
     public function testFirst(): void
     {
         $this->ticketstoreConfig['delegateTo'] = 'first';
@@ -112,6 +118,7 @@ class DelegatingTicketStoreTest extends TestCase
         $this->assertNull($this->fileStore1->getTicket('1'));
     }
 
+
     public function testNamed(): void
     {
         $this->ticketstoreConfig['delegateTo'] = 'name2';
@@ -133,6 +140,7 @@ class DelegatingTicketStoreTest extends TestCase
         $this->assertNull($ticketStore->getTicket('1'));
         $this->assertNull($this->fileStore2->getTicket('1'));
     }
+
 
     /**
      * Confirm behavior of a default configuration

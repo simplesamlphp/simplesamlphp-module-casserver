@@ -2,6 +2,7 @@
 
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
+use Exception;
 use InvalidArgumentException;
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
@@ -39,7 +40,7 @@ class DelegatingTicketStore extends TicketStore
             // TicketStore expects the store config to be in a specific item
             $storeConfig = Configuration::loadFromArray(['ticketstore' => $storeArray]);
             $class = $storeConfig->getConfigItem('ticketstore')->getString('class');
-            $ticketStoreClass = Module::resolveClass($class, 'Cas_Ticket');
+            $ticketStoreClass = Module::resolveClass($class, 'Cas\Ticket');
             try {
                 /**
                  * @var TicketStore $ticketStore
@@ -47,7 +48,7 @@ class DelegatingTicketStore extends TicketStore
                  */
                 $ticketStore = new $ticketStoreClass($storeConfig);
                 $this->ticketStores[$name] = $ticketStore;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Logger::error("Unable to create ticket store '$name'. Error " . $e->getMessage());
             }
         }
@@ -71,7 +72,7 @@ class DelegatingTicketStore extends TicketStore
      * @return array|null The ticket or null if none found
      * @throws \Exception from any delegate stores ONLY if no delegates worked
      */
-    public function getTicket($ticketId)
+    public function getTicket(string $ticketId): ?array
     {
         if ($this->delegateTo === 'all') {
             $ticket = null;
@@ -80,7 +81,7 @@ class DelegatingTicketStore extends TicketStore
                 try {
                     $ticket = $store->getTicket($ticketId);
                     $rethrowException = false; // no need to rethrow, at least one store worked
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     if ($rethrowException === null) {
                         $rethrowException = $e;
                     }
@@ -101,9 +102,10 @@ class DelegatingTicketStore extends TicketStore
 
     /**
      * @param array $ticket Ticket to add
+     * @return void
      * @throws \Exception from any delegate stores ONLY if no delegates worked
      */
-    public function addTicket(array $ticket)
+    public function addTicket(array $ticket): void
     {
         if ($this->delegateTo === 'all') {
             $rethrowException = null;
@@ -111,7 +113,7 @@ class DelegatingTicketStore extends TicketStore
                 try {
                     $store->addTicket($ticket);
                     $rethrowException = false; // no need to rethrow, at least one store worked
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     if ($rethrowException === null) {
                         $rethrowException = $e;
                     }
@@ -126,16 +128,18 @@ class DelegatingTicketStore extends TicketStore
         }
     }
 
+
     /**
      * @param string $ticketId Ticket to delete
+     * @return void
      */
-    public function deleteTicket($ticketId)
+    public function deleteTicket(string $ticketId): void
     {
         if ($this->delegateTo === 'all') {
             foreach ($this->ticketStores as $name => $store) {
                 try {
                     $store->deleteTicket($ticketId);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     Logger::error("Unable to delete ticket from '$name'. Trying next store. Error" . $e->getMessage());
                 }
             }

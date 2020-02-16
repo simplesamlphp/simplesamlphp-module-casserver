@@ -54,7 +54,7 @@ class TicketFactory
      * @param int $expiresAt
      * @return array
      */
-    public function createSessionTicket($sessionId, $expiresAt)
+    public function createSessionTicket(string $sessionId, int $expiresAt): array
     {
         return [
             'id' => $sessionId,
@@ -68,7 +68,7 @@ class TicketFactory
      * @param array $content
      * @return array
      */
-    public function createServiceTicket(array $content)
+    public function createServiceTicket(array $content): array
     {
         $id = str_replace('_', 'ST-', Random::generateID());
         $expiresAt = time() + $this->serviceTicketExpireTime;
@@ -81,7 +81,7 @@ class TicketFactory
      * @param array $content
      * @return array
      */
-    public function createProxyGrantingTicket(array $content)
+    public function createProxyGrantingTicket(array $content): array
     {
         $id = str_replace('_', 'PGT-', Random::generateID());
         $iou = str_replace('_', 'PGTIOU-', Random::generateID());
@@ -96,7 +96,7 @@ class TicketFactory
      * @param array $content
      * @return array
      */
-    public function createProxyTicket(array $content)
+    public function createProxyTicket(array $content): array
     {
         $id = str_replace('_', 'PT-', Random::generateID());
         $expiresAt = time() + $this->proxyTicketExpireTime;
@@ -149,7 +149,7 @@ class TicketFactory
      * @param array $ticket
      * @return bool
      */
-    public function isExpired(array $ticket)
+    public function isExpired(array $ticket): bool
     {
         return !array_key_exists('validBefore', $ticket) || $ticket['validBefore'] < time();
     }

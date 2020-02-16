@@ -30,7 +30,7 @@ class ServiceValidator
      * @param string $service The service url. Assume to already be url decoded
      * @return Configuration|null Return the configuration to use for this service, or null if service is not allowed
      */
-    public function checkServiceURL($service)
+    public function checkServiceURL(string $service): ?Configuration
     {
         $isValidService = false;
         $legalUrl = 'undefined';

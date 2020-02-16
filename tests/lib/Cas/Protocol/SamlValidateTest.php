@@ -10,7 +10,7 @@ class SamlValidateTest extends \PHPUnit\Framework\TestCase
     /**
      * @return void
      */
-    public function testSamlValidatXmlGeneration()
+    public function testSamlValidatXmlGeneration(): void
     {
         $serviceUrl = 'http://jellyfish.greatvalleyu.com:7777/ssomanager/c/SSB';
         $udcValue = '2F10C881AC7D55942329E149405DC2F5';

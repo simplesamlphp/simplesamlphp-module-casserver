@@ -14,7 +14,7 @@ class ErroringTicketStore extends TicketStore
      * @return array|null The ticket content or null if there is no such ticket
      * @throws \Exception for all invocations.
      */
-    public function getTicket($ticketId)
+    public function getTicket(string $ticketId): ?array
     {
         throw new \Exception("Sample get error");
     }
@@ -23,7 +23,7 @@ class ErroringTicketStore extends TicketStore
      * @param array $ticket The ticket to store
      * @throws \Exception for all invocations.
      */
-    public function addTicket(array $ticket)
+    public function addTicket(array $ticket): void
     {
         throw new \Exception("Sample add error");
     }
@@ -32,7 +32,7 @@ class ErroringTicketStore extends TicketStore
      * @param string $ticketId The ticket id
      * @throws \Exception for all invocations.
      */
-    public function deleteTicket($ticketId)
+    public function deleteTicket(string $ticketId): void
     {
         throw new \Exception("Sample delete error");
     }

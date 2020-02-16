@@ -56,7 +56,7 @@ class RedisTicketStore extends TicketStore
      * @param string $ticketId
      * @return array|null
      */
-    public function getTicket($ticketId)
+    public function getTicket(string $ticketId): ?array
     {
         return $this->redis->get($this->prefix, $ticketId);
     }
@@ -66,7 +66,7 @@ class RedisTicketStore extends TicketStore
      * @param array $ticket
      * @return void
      */
-    public function addTicket(array $ticket)
+    public function addTicket(array $ticket): void
     {
         $this->redis->set($this->prefix, $ticket['id'], $ticket, $ticket['validBefore']);
     }
@@ -76,7 +76,7 @@ class RedisTicketStore extends TicketStore
      * @param string $ticketId
      * @return void
      */
-    public function deleteTicket($ticketId)
+    public function deleteTicket(string $ticketId): void
     {
         $this->redis->delete($this->prefix, $ticketId);
     }

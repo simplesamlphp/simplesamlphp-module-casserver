@@ -31,4 +31,4 @@ if (array_key_exists('url', $_GET)) {
     $t->data['url'] = $_GET['url'];
 }
 
-$t->show();
+$t->send();

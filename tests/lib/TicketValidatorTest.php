@@ -45,7 +45,7 @@ class TicketValidatorTest extends TestCase
     /**
      * @return void
      */
-    public function testNonExistantTicket()
+    public function testNonExistantTicket(): void
     {
         $id = 'no-such-ticket';
         $this->assertNull($this->ticketStore->getTicket($id));
@@ -62,7 +62,7 @@ class TicketValidatorTest extends TestCase
     /**
      * @return void
      */
-    public function testValidTicket()
+    public function testValidTicket(): void
     {
         $serviceUrl =  'http://efh.com?a=b&';
         $serviceTicket = $this->createTicket($serviceUrl);
@@ -86,7 +86,7 @@ class TicketValidatorTest extends TestCase
     /**
      * @return void
      */
-    public function testWrongServiceUrlTicket()
+    public function testWrongServiceUrlTicket(): void
     {
         $serviceUrl =  'http://efh.com?a=b&';
         $serviceTicket = $this->createTicket('http://otherurl.com');
@@ -110,7 +110,7 @@ class TicketValidatorTest extends TestCase
     /**
      * @return void
      */
-    public function testExpiredTicket()
+    public function testExpiredTicket(): void
     {
         $serviceUrl =  'http://efh.com?a=b&';
         $serviceTicket = $this->createTicket($serviceUrl, -1);
@@ -142,7 +142,7 @@ class TicketValidatorTest extends TestCase
      * Urls to test
      * @return array
      */
-    public function urlSanitizationProvider()
+    public function urlSanitizationProvider(): array
     {
         return [
             [
@@ -167,7 +167,7 @@ class TicketValidatorTest extends TestCase
      * @param int $expiration seconds from now that ticket should expire
      * @return array the ticket contents
      */
-    private function createTicket($serviceUrl, $expiration = 0)
+    private function createTicket(string $serviceUrl, int $expiration = 0): array
     {
         $id = Random::generateID();
         $serviceTicket = [

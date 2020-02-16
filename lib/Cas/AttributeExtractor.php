@@ -26,7 +26,7 @@ class AttributeExtractor
      * @param \SimpleSAML\Configuration $casconfig
      * @return array
      */
-    public function extractUserAndAttributes(array $attributes, Configuration $casconfig)
+    public function extractUserAndAttributes(array $attributes, Configuration $casconfig): array
     {
         if ($casconfig->hasValue('authproc')) {
             $attributes = $this->invokeAuthProc($attributes, $casconfig);
@@ -72,7 +72,7 @@ class AttributeExtractor
      * @param \SimpleSAML\Configuration $casconfig The cas configuration
      * @return array The attributes post processing.
      */
-    private function invokeAuthProc(array $attributes, Configuration $casconfig)
+    private function invokeAuthProc(array $attributes, Configuration $casconfig): array
     {
         $filters = $casconfig->getArray('authproc', []);
 
