@@ -32,7 +32,7 @@ require_once('utility/urlUtils.php');
 $casconfig = \SimpleSAML\Configuration::getConfig('module_casserver.php');
 
 /* Instantiate protocol handler */
-$protocolClass = \SimpleSAML\Module::resolveClass('casserver:Cas10', 'Cas_Protocol');
+$protocolClass = \SimpleSAML\Module::resolveClass('casserver:Cas10', 'Cas\Protocol');
 /** @psalm-suppress InvalidStringClass */
 $protocol = new $protocolClass($casconfig);
 
@@ -42,11 +42,11 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
     try {
         /* Instantiate ticket store */
         $ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
-        $ticketStoreClass = \SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
+        $ticketStoreClass = \SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas\Ticket');
         /** @psalm-suppress InvalidStringClass */
         $ticketStore = new $ticketStoreClass($casconfig);
 
-        $ticketFactoryClass = \SimpleSAML\Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
+        $ticketFactoryClass = \SimpleSAML\Module::resolveClass('casserver:TicketFactory', 'Cas\Ticket');
         /** @psalm-suppress InvalidStringClass */
         $ticketFactory = new $ticketFactoryClass($casconfig);
 

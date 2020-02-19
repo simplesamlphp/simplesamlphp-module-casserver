@@ -88,12 +88,12 @@ if (array_key_exists('language', $_GET) && is_string($_GET['language'])) {
 }
 
 $ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
-$ticketStoreClass = Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
+$ticketStoreClass = Module::resolveClass($ticketStoreConfig['class'], 'Cas\Ticket');
 /** @var $ticketStore TicketStore */
 /** @psalm-suppress InvalidStringClass */
 $ticketStore = new $ticketStoreClass($casconfig);
 
-$ticketFactoryClass = Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
+$ticketFactoryClass = Module::resolveClass('casserver:TicketFactory', 'Cas\Ticket');
 /** @var $ticketFactory TicketFactory */
 /** @psalm-suppress InvalidStringClass */
 $ticketFactory = new $ticketFactoryClass($casconfig);

@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block postload %}
-{% if autofocus %}
+{% if autofocus is defined %}
     <script type="text/javascript">window.onload = function() {document.getElementById('{{ autofocus }}').focus();}</script>
 {% endif %}
 {% endblock %}
