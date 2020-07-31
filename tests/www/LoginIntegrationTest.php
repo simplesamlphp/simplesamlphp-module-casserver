@@ -28,7 +28,7 @@ class LoginIntegrationTest extends TestCase
     private static $SAMLVALIDATE_URL = '/module.php/casserver/samlValidate.php';
 
     /**
-     * @var \SimpleSAML\Test\BuiltInServer
+     * @var \SimpleSAML\TestUtils\BuiltInServer
      */
     protected $server;
 
