@@ -21,7 +21,7 @@
         "php": ">=7.2",
         "simplesamlphp/composer-module-installer": "~1.1",
         "simplesamlphp/simplesamlphp": "dev-master",
-        "webmozart/assert": "1.7"
+        "webmozart/assert": "1.8"
     },
     "require-dev": {
         "simplesamlphp/simplesamlphp-test-framework": "~0.1.0",
