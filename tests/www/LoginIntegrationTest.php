@@ -4,6 +4,7 @@ namespace Simplesamlphp\Casserver;
 
 use DOMDocument;
 use PHPUnit\Framework\TestCase;
+use SimpleSAML\Logger;
 use SimpleSAML\TestUtils\BuiltInServer;
 
 /**
@@ -59,11 +60,25 @@ class LoginIntegrationTest extends TestCase
      */
     protected function setup(): void
     {
-        $this->server = new BuiltInServer();
+        $this->server = new BuiltInServer('configLoader', dirname(dirname(dirname(__FILE__))) . '/vendor/simplesamlphp/simplesamlphp/www');
         $this->server_addr = $this->server->start();
         $this->server_pid = $this->server->getPid();
         $this->shared_file = sys_get_temp_dir() . '/' . $this->server_pid . '.lock';
         $this->cookies_file = sys_get_temp_dir() . '/' . $this->server_pid . '.cookies';
+
+
+        $this->updateConfig([
+            'baseurlpath' => '/',
+            'secretsalt' => 'abc123',
+
+            'tempdir' => sys_get_temp_dir(),
+            'loggingdir' => sys_get_temp_dir(),
+
+            'module.enable' => [
+                'casserver' => true,
+            ]
+        ]);
+
     }
 
 
@@ -77,6 +92,18 @@ class LoginIntegrationTest extends TestCase
         @unlink($this->shared_file);
         @unlink($this->cookies_file); // remove it if it exists
         $this->server->stop();
+    }
+
+
+    /**
+     * @param array $config
+     * @return void
+     */
+    protected function updateConfig(array $config): void
+    {
+        @unlink($this->shared_file);
+        $config = "<?php\n\$config = " . var_export($config, true) . ";\n";
+        file_put_contents($this->shared_file, $config);
     }
 
 
@@ -349,6 +376,7 @@ class LoginIntegrationTest extends TestCase
             $this->fail('Unable to parse response.');
             return;
         }
+
         $this->assertEquals($service_url, $item->getAttribute('action'));
         $formInputs = $dom->getElementsByTagName('input');
         //note: $formInputs[0] is '<input type="submit" style="display:none;" />'. See the post.php template from SSP
@@ -454,6 +482,7 @@ SOAP;
         if ($resp === false) {
             throw new \Exception('curl error: ' . curl_error($ch));
         }
+
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         /** @psalm-var string $resp */
         list($header, $body) = explode("\r\n\r\n", $resp, 2);
