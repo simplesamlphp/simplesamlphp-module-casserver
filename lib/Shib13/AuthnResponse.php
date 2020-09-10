@@ -5,7 +5,6 @@ declare(strict_types=1);
 /**
  * A Shibboleth 1.3 authentication response.
  *
- * @author Andreas Åkre Solberg, UNINETT AS. <andreas.solberg@uninett.no>
  * @package SimpleSAMLphp
  */
 
@@ -487,8 +486,6 @@ class AuthnResponse
      *
      * @see \SAML2\Utils::xsDateTimeToTimestamp.
      *
-     * @author Andreas Solberg, UNINETT AS <andreas.solberg@uninett.no>
-     * @author Olav Morken, UNINETT AS <olav.morken@uninett.no>
      */
     protected static function checkDateConditions(string $start = null, string $end = null): bool
     {
