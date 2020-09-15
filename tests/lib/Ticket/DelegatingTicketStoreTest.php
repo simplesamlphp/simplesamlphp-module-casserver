@@ -28,7 +28,6 @@ class DelegatingTicketStoreTest extends TestCase
 
 
     /**
-     * @return void
      */
     public function setup(): void
     {

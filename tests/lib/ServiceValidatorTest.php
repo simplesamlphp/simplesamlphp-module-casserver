@@ -18,7 +18,6 @@ class ServiceValidatorTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $service The service url to test
      * @param array $expectedConfig The expected CAS configuration to use
-     * @return void
      * @dataProvider overridingDataProvider
      */
     public function testOverridingServiceConfig(string $service, array $expectedConfig): void
@@ -134,7 +133,6 @@ class ServiceValidatorTest extends \PHPUnit\Framework\TestCase
      * Test confirming service url matching and per service configuration
      * @param string $service the service url to check
      * @param bool $allowed is the service url allowed?
-     * @return void
      * @dataProvider checkServiceURLProvider
      */
     public function testCheckServiceURL(string $service, bool $allowed): void

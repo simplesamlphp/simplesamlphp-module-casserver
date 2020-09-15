@@ -89,7 +89,6 @@ class SQLTicketStore extends TicketStore
 
     /**
      * @param array $ticket
-     * @return void
      */
     public function addTicket(array $ticket): void
     {
@@ -101,7 +100,6 @@ class SQLTicketStore extends TicketStore
 
     /**
      * @param string $ticketId
-     * @return void
      */
     public function deleteTicket(string $ticketId): void
     {
@@ -122,7 +120,6 @@ class SQLTicketStore extends TicketStore
 
 
     /**
-     * @return void
      */
     private function initTableVersionTable(): void
     {
@@ -143,7 +140,6 @@ class SQLTicketStore extends TicketStore
 
 
     /**
-     * @return void
      */
     private function initKVTable(): void
     {
@@ -180,7 +176,6 @@ class SQLTicketStore extends TicketStore
     /**
      * @param string $name
      * @param int $version
-     * @return void
      */
     private function setTableVersion(string $name, int $version): void
     {
@@ -200,7 +195,6 @@ class SQLTicketStore extends TicketStore
      * @param string $table
      * @param array $keys
      * @param array $data
-     * @return void
      */
     private function insertOrUpdate(string $table, array $keys, array $data): void
     {
@@ -239,7 +233,6 @@ class SQLTicketStore extends TicketStore
      * @param array $keys
      * @param array $data
      * @param \PDOStatement $insertQuery
-     * @return void
      */
     private function insertOrUpdateFallback(string $table, array $keys, array $data, PDOStatement $insertQuery): void
     {
@@ -277,7 +270,6 @@ class SQLTicketStore extends TicketStore
 
 
     /**
-     * @return void
      */
     private function cleanKVStore(): void
     {
@@ -330,7 +322,6 @@ class SQLTicketStore extends TicketStore
      * @param string $key
      * @param array $value
      * @param int|null $expire
-     * @return void
      */
     private function set(string $key, array $value, int $expire = null): void
     {
@@ -365,7 +356,6 @@ class SQLTicketStore extends TicketStore
 
     /**
      * @param string $key
-     * @return void
      */
     private function delete(string $key): void
     {

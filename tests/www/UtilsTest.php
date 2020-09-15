@@ -16,7 +16,6 @@ class UtilsTest extends \PHPUnit\Framework\TestCase
     /**
      * @param string $service the service url to check
      * @param bool $allowed is the service url allowed?
-     * @return void
      * @dataProvider checkServiceURLProvider
      */
     public function testCheckServiceURL($service, $allowed)

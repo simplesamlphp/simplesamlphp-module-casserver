@@ -8,7 +8,6 @@ use SimpleXMLElement;
 class SamlValidateTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @return void
      */
     public function testSamlValidatXmlGeneration(): void
     {

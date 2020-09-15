@@ -34,7 +34,6 @@ class FileSystemTicketStore extends TicketStore
 
     /**
      * @param \SimpleSAML\Configuration $config
-     * @return void
      * @throws \Exception
      */
     public function __construct(Configuration $config)
@@ -79,7 +78,6 @@ class FileSystemTicketStore extends TicketStore
 
     /**
      * @param array $ticket
-     * @return void
      */
     public function addTicket(array $ticket): void
     {
@@ -90,7 +88,6 @@ class FileSystemTicketStore extends TicketStore
 
     /**
      * @param string $ticketId
-     * @return void
      */
     public function deleteTicket(string $ticketId): void
     {

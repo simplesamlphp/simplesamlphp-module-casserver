@@ -60,7 +60,6 @@ class Cas20
 
     /**
      * @param array $attributes
-     * @return void
      */
     public function setAttributes(array $attributes): void
     {
@@ -79,7 +78,6 @@ class Cas20
 
     /**
      * @param string $proxyGrantingTicketIOU
-     * @return void
      */
     public function setProxyGrantingTicketIOU(string $proxyGrantingTicketIOU): void
     {

@@ -56,7 +56,6 @@ class LoginIntegrationTest extends TestCase
 
     /**
      * The setup method that is run before any tests in this class.
-     * @return void
      */
     protected function setup(): void
     {
@@ -85,7 +84,6 @@ class LoginIntegrationTest extends TestCase
     /**
      * The tear down method that is executed after all tests in this class.
      * Removes the lock file and cookies file
-     * @return void
      */
     protected function tearDown(): void
     {
@@ -97,7 +95,6 @@ class LoginIntegrationTest extends TestCase
 
     /**
      * @param array $config
-     * @return void
      */
     protected function updateConfig(array $config): void
     {
@@ -109,7 +106,6 @@ class LoginIntegrationTest extends TestCase
 
     /**
      * Test authenticating to the login endpoint with no parameters.'
-     * @return void
      */
     public function testNoQueryParameters()
     {
@@ -135,7 +131,6 @@ class LoginIntegrationTest extends TestCase
 
     /**
      * Test incorrect service url
-     * @return void
      */
     public function testWrongServiceUrl()
     {
@@ -164,7 +159,6 @@ class LoginIntegrationTest extends TestCase
      * @dataProvider validServiceUrlProvider
      * @param string $serviceParam The name of the query parameter to use for the service url
      * @param string $ticketParam The name of the query parameter that will contain the ticket
-     * @return void
      */
     public function testValidServiceUrl(string $serviceParam, string $ticketParam)
     {
@@ -228,7 +222,6 @@ class LoginIntegrationTest extends TestCase
 
     /**
      * Test changing the ticket name
-     * @return void
      */
     public function testValidTicketNameOverride()
     {
@@ -257,7 +250,6 @@ class LoginIntegrationTest extends TestCase
 
     /**
      * Test outputting user info instead of redirecting
-     * @return void
      */
     public function testDebugOutput()
     {
@@ -284,7 +276,6 @@ class LoginIntegrationTest extends TestCase
 
     /**
      * Test outputting user info instead of redirecting
-     * @return void
      */
     public function testDebugOutputSamlValidate()
     {
@@ -312,7 +303,6 @@ class LoginIntegrationTest extends TestCase
 
     /**
      * Test outputting user info instead of redirecting
-     * @return void
      */
     public function testAlternateServiceConfigUsed()
     {
@@ -343,7 +333,6 @@ class LoginIntegrationTest extends TestCase
 
     /**
      * test a valid service URL with Post
-     * @return void
      */
     public function testValidServiceUrlWithPost()
     {
@@ -398,7 +387,6 @@ class LoginIntegrationTest extends TestCase
 
 
     /**
-     * @return void
      */
     public function testSamlValidate()
     {
@@ -452,7 +440,6 @@ SOAP;
 
     /**
      * Sets up an authenticated session for the cookie $jar
-     * @return void
      */
     private function authenticate()
     {

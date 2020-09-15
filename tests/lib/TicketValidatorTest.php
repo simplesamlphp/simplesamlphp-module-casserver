@@ -24,7 +24,6 @@ class TicketValidatorTest extends TestCase
 
 
     /**
-     * @return void
      */
     protected function setUp(): void
     {
@@ -43,7 +42,6 @@ class TicketValidatorTest extends TestCase
 
 
     /**
-     * @return void
      */
     public function testNonExistantTicket(): void
     {
@@ -60,7 +58,6 @@ class TicketValidatorTest extends TestCase
 
 
     /**
-     * @return void
      */
     public function testValidTicket(): void
     {
@@ -84,7 +81,6 @@ class TicketValidatorTest extends TestCase
 
 
     /**
-     * @return void
      */
     public function testWrongServiceUrlTicket(): void
     {
@@ -108,7 +104,6 @@ class TicketValidatorTest extends TestCase
 
 
     /**
-     * @return void
      */
     public function testExpiredTicket(): void
     {
@@ -131,7 +126,6 @@ class TicketValidatorTest extends TestCase
      * @dataProvider urlSanitizationProvider
      * @param string $serviceUrl The service url that will get sanitized
      * @param string $expectedSanitzedUrl The expected result
-     * @return void
      */
     public function testUrlSanitization(string $serviceUrl, string $expectedSanitzedUrl): void
     {

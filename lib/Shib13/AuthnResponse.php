@@ -54,7 +54,6 @@ class AuthnResponse
      * Set whether this message was validated externally.
      *
      * @param bool $messageValidated  TRUE if the message is already validated, FALSE if not.
-     * @return void
      */
     public function setMessageValidated(bool $messageValidated): void
     {
@@ -65,7 +64,6 @@ class AuthnResponse
     /**
      * @param string $xml
      * @throws \Exception
-     * @return void
      */
     public function setXML(string $xml): void
     {
@@ -79,7 +77,6 @@ class AuthnResponse
 
     /**
      * @param string|null $relayState
-     * @return void
      */
     public function setRelayState(?string $relayState) : void
     {

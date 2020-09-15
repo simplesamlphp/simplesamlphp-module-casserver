@@ -8,7 +8,6 @@ use SimpleSAML\Module\casserver\Cas\Protocol\Cas20;
 class Cas20Test extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @return void
      */
     public function testAttributeToXmlConversion(): void
     {

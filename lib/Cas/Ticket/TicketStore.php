@@ -44,14 +44,12 @@ abstract class TicketStore
 
     /**
      * @param array $ticket
-     * @return void
      */
     abstract public function addTicket(array $ticket): void;
 
 
     /**
      * @param string $ticketId
-     * @return void
      */
     abstract public function deleteTicket(string $ticketId) : void;
 }

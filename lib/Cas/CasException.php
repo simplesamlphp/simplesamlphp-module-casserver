@@ -21,7 +21,6 @@ class CasException extends \Exception
      * CasException constructor.
      * @param string $casCode
      * @param string $message
-     * @return void
      */
     public function __construct(string $casCode, string $message)
     {

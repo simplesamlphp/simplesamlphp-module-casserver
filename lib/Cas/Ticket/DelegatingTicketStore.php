@@ -102,7 +102,6 @@ class DelegatingTicketStore extends TicketStore
 
     /**
      * @param array $ticket Ticket to add
-     * @return void
      * @throws \Exception from any delegate stores ONLY if no delegates worked
      */
     public function addTicket(array $ticket): void
@@ -131,7 +130,6 @@ class DelegatingTicketStore extends TicketStore
 
     /**
      * @param string $ticketId Ticket to delete
-     * @return void
      */
     public function deleteTicket(string $ticketId): void
     {

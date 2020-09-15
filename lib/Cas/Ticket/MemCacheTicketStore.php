@@ -61,7 +61,6 @@ class MemCacheTicketStore extends TicketStore
 
     /**
      * @param array $ticket
-     * @return void
      */
     public function addTicket(array $ticket): void
     {
@@ -73,7 +72,6 @@ class MemCacheTicketStore extends TicketStore
 
     /**
      * @param string $ticketId
-     * @return void
      */
     public function deleteTicket(string $ticketId): void
     {
