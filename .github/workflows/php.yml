@@ -57,6 +57,11 @@ jobs:
       - name: Syntax check PHP
         run: bash vendor/bin/check-syntax-php.sh
 
+      - name: Create ticket cache
+        run: |
+          echo "SIMPLESAMLPHP_CONFIG_DIR=${{ github.workspace }}/tests/config/" >> $GITHUB_ENV
+          mkdir ${{ github.workspace }}/tests/ticketcache
+
       - name: Decide whether to run code coverage or not
         if: ${{ matrix.php-versions != '7.4' || matrix.operating-system != 'ubuntu-latest' }}
         run: |
