@@ -9,9 +9,3 @@
     <a href="{{ url }}">{{ 'Go back to the service'|trans }}</a>
 {% endif %}
 {% endblock %}
-
-{% block postload %}
-{% if autofocus is defined %}
-    <script type="text/javascript">window.onload = function() {document.getElementById('{{ autofocus }}').focus();}</script>
-{% endif %}
-{% endblock %}
