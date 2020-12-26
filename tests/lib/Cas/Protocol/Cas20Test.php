@@ -2,11 +2,29 @@
 
 namespace Simplesamlphp\Casserver;
 
+use DOMDocument;
+use PHPUnit\Framework\TestCase;
+use SAML2\DOMDocumentFactory;
 use SimpleSAML\Configuration;
 use SimpleSAML\Module\casserver\Cas\Protocol\Cas20;
+//use SimpleSAML\XML\DOMDocumentFactory;
 
-class Cas20Test extends \PHPUnit\Framework\TestCase
+final class Cas20Test extends TestCase
 {
+    /** @var \DOMDocument */
+    protected DOMDocument $document;
+
+
+    /**
+     */
+    protected function setUp(): void
+    {
+        $this->document = DOMDocumentFactory::fromFile(
+            dirname(dirname(dirname(dirname(__FILE__)))) . '/resources/xml/testAttributeToXmlConversion.xml'
+        );
+    }
+
+
     /**
      */
     public function testAttributeToXmlConversion(): void
@@ -35,22 +53,6 @@ class Cas20Test extends \PHPUnit\Framework\TestCase
 
         $xml = $casProtocol->getValidateSuccessResponse('myUser');
 
-        $expectedXml = <<<'EOD'
-<?xml version="1.0"?>
-<cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
-<cas:authenticationSuccess>
-<cas:user>myUser</cas:user>
-<cas:attributes>
-<cas:lastName>lasty</cas:lastName>
-<cas:valuesAreEscaped>&gt;abc&lt;blah&gt;</cas:valuesAreEscaped>
-<cas:urn_oid_0.9.2342.19200300.100.1.1>someValue</cas:urn_oid_0.9.2342.19200300.100.1.1>
-<cas:urn_oid_1.3.6.1.4.1.34199.1.7.1.5.2>CN=Some-Service,OU=Non-Privileged,OU=Groups,DC=exmple,DC=com</cas:urn_oid_1.3.6.1.4.1.34199.1.7.1.5.2>
-<cas:urn_oid_1.3.6.1.4.1.34199.1.7.1.5.2>CN=Other Servics,OU=Non-Privileged,OU=Groups,DC=example,DC=com</cas:urn_oid_1.3.6.1.4.1.34199.1.7.1.5.2>
-</cas:attributes>
-</cas:authenticationSuccess>
-</cas:serviceResponse>
-EOD;
-
-        $this->assertEquals($expectedXml, $xml);
+        $this->assertEquals(rtrim($this->document->saveXML()), $xml);
     }
 }

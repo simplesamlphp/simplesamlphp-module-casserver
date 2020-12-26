@@ -4,8 +4,10 @@ namespace Simplesamlphp\Casserver;
 
 use DOMDocument;
 use PHPUnit\Framework\TestCase;
+use SAML2\DOMDocumentFactory;
 use SimpleSAML\Logger;
 use SimpleSAML\TestUtils\BuiltInServer;
+//use SimpleSAML\XML\DOMDocumentFactory;
 
 /**
  *
@@ -198,18 +200,13 @@ class LoginIntegrationTest extends TestCase
                 CURLOPT_COOKIEFILE => $this->cookies_file
             ]
         );
-        $expectedResponse = '<?xml version="1.0"?>
-<cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
-<cas:authenticationSuccess>
-<cas:user>testuser@example.com</cas:user>
-<cas:attributes>
-<cas:eduPersonPrincipalName>testuser@example.com</cas:eduPersonPrincipalName>
-<cas:base64Attributes>false</cas:base64Attributes>
-</cas:attributes>
-</cas:authenticationSuccess>
-</cas:serviceResponse>';
+
+        $expectedResponse = DOMDocumentFactory::fromFile(
+            dirname(dirname(__FILE__)) . '/resources/xml/testValidServiceUrl.xml'
+        )->saveXML();
+
         $this->assertEquals(200, $resp['code']);
-        $this->assertEquals($expectedResponse, $resp['body']);
+        $this->assertEquals(rtrim($expectedResponse), $resp['body']);
     }
 
     public function validServiceUrlProvider(): array
