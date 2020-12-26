@@ -15,18 +15,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-msgid "{casserver:loggedout_header}"
+msgid "Logged out"
 msgstr "Du er logget ud"
 
-msgid "{casserver:loggedout_description}"
+msgid "You have been logged out. Thank you for using this service."
 msgstr "Du er logget ud. Tak for fordi du brugte denne tjeneste."
 
-msgid "{casserver:continue_heading}"
+msgid "Go back to the service"
 msgstr "Tilbage til tjenesten"
 
-msgid "{casserver:loggedin_header}"
+msgid "Logged in"
 msgstr "Logget ind"
 
-msgid "{casserver:loggedin_description}"
+msgid "You are logged in."
 msgstr "Du er logget ind."
 

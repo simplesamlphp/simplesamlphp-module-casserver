@@ -1,10 +1,10 @@
-{% set pagetitle = '{casserver:loggedin_header}'|trans %}
+{% set pagetitle = 'Logged in'|trans %}
 {% extends "base.twig" %}
 
 {% block content %}
     <h2>{{ pagetitle }}</h2>
 
-    <p>{{ '{casserver:loggedin_description}'|trans }}</p>
+    <p>{{ 'You are logged in.'|trans }}</p>
 {% endblock %}
 
 {% block postload %}

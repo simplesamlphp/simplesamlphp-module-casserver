@@ -1,12 +1,12 @@
-{% set pagetitle = '{casserver:loggedout_header}'|trans %}
+{% set pagetitle = 'Logged out'|trans %}
 {% extends "base.twig" %}
 
 {% block content %}
     <h2>{{ pagetitle }}</h2>
 
-    <p>{{ '{casserver:loggedout_description}'|trans }}</p>
+    <p>{{ 'You have been logged out. Thank you for using this service.'|trans }}</p>
 {% if url is defined %}
-    <a href="{{ url }}">{{ '{casserver:continue_heading}'|trans }}</a>
+    <a href="{{ url }}">{{ 'Go back to the service'|trans }}</a>
 {% endif %}
 {% endblock %}
 
