@@ -30,6 +30,8 @@ $config = [
         ],
         'http://changeTicketParam' => [
             'ticketName' => 'myTicket',
+        ],
+        'https://encoding.edu' => [
         ]
     ],
 
