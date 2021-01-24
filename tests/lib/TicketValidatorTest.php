@@ -20,7 +20,7 @@ class TicketValidatorTest extends TestCase
     private TicketValidator $ticketValidator;
 
     /**
-     * @var \SimpleSAML\Module\casserver\Cas\TicketStore
+     * @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore
      */
     private TicketStore $ticketStore;
 

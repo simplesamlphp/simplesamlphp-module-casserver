@@ -11,6 +11,11 @@
             "*": "dist"
         }
     },
+    "autoload": {
+        "psr-4": {
+            "Simplesamlphp\\Module\\casserver\\": "lib"
+        }
+    },
     "autoload-dev": {
         "psr-4": {
             "Simplesamlphp\\Casserver\\": "tests/lib"
