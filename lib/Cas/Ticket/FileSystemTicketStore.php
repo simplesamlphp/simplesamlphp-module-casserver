@@ -21,6 +21,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
 use Exception;
@@ -29,7 +31,7 @@ use SimpleSAML\Configuration;
 class FileSystemTicketStore extends TicketStore
 {
     /** @var string $pathToTicketDirectory */
-    private $pathToTicketDirectory;
+    private string $pathToTicketDirectory;
 
 
     /**

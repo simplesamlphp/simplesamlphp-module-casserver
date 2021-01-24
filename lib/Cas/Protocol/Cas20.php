@@ -21,6 +21,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\casserver\Cas\Protocol;
 
 use DOMDocument;
@@ -32,19 +34,19 @@ use SimpleSAML\Logger;
 class Cas20
 {
     /** @var bool $sendAttributes */
-    private $sendAttributes;
+    private bool $sendAttributes;
 
     /** @var bool $base64EncodeAttributes */
-    private $base64EncodeAttributes;
+    private bool $base64EncodeAttributes;
 
     /** @var string|null $base64IndicatorAttribute */
-    private $base64IndicatorAttribute;
+    private ?string $base64IndicatorAttribute;
 
     /** @var array $attributes */
-    private $attributes = [];
+    private array $attributes = [];
 
     /** @var string|null $proxyGrantingTicketIOU */
-    private $proxyGrantingTicketIOU = null;
+    private ?string $proxyGrantingTicketIOU = null;
 
 
     /**

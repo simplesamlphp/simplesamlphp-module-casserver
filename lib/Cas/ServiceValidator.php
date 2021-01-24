@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\casserver\Cas;
 
 use SimpleSAML\Configuration;
@@ -12,9 +14,9 @@ use SimpleSAML\Logger;
 class ServiceValidator
 {
     /**
-     * @var Configuration
+     * @var \SimpleSAML\Configuration
      */
-    private $mainConfig;
+    private Configuration $mainConfig;
 
     /**
      * ServiceValidator constructor.

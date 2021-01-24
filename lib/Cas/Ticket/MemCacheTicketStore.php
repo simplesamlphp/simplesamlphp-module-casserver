@@ -21,6 +21,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
 use SimpleSAML\Configuration;
@@ -29,7 +31,7 @@ use SimpleSAML\Memcache;
 class MemCacheTicketStore extends TicketStore
 {
     /** @var string $prefix */
-    private $prefix = '';
+    private string $prefix = '';
 
 
     /**

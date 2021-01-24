@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $projectRootDirectory = dirname(__DIR__);
 $projectConfigDirectory = $projectRootDirectory . '/tests/config';
 $casserverModulePath = $projectRootDirectory . '/vendor/simplesamlphp/simplesamlphp/modules/casserver';

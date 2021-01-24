@@ -14,6 +14,7 @@ use DOMDocument;
 use DOMNode;
 use DOMNodeList;
 use DOMXpath;
+use Exception;
 use SAML2\DOMDocumentFactory;
 use SimpleSAML\Configuration;
 use SimpleSAML\Error;
@@ -26,12 +27,12 @@ class AuthnResponse
     /**
      * @var \SimpleSAML\XML\Validator|null This variable contains an XML validator for this message.
      */
-    private $validator = null;
+    private ?Validator $validator = null;
 
     /**
      * @var bool Whether this response was validated by some external means (e.g. SSL).
      */
-    private $messageValidated = false;
+    private bool $messageValidated = false;
 
     /** @var string */
     public const SHIB_PROTOCOL_NS = 'urn:oasis:names:tc:SAML:1.0:protocol';
@@ -42,12 +43,12 @@ class AuthnResponse
     /**
      * @var \DOMDocument|null The DOMDocument which represents this message.
      */
-    private $dom = null;
+    private ?DOMDocument $dom = null;
 
     /**
      * @var string|null The relaystate which is associated with this response.
      */
-    private $relayState = null;
+    private ?string $relayState = null;
 
 
     /**
@@ -69,8 +70,8 @@ class AuthnResponse
     {
         try {
             $this->dom = DOMDocumentFactory::fromString(str_replace("\r", "", $xml));
-        } catch (\Exception $e) {
-            throw new \Exception('Unable to parse AuthnResponse XML.');
+        } catch (Exception $e) {
+            throw new Exception('Unable to parse AuthnResponse XML.');
         }
     }
 
@@ -237,7 +238,7 @@ class AuthnResponse
 
         foreach ($assertions as $assertion) {
             if (!$this->isNodeValidated($assertion)) {
-                throw new \Exception('Shib13 AuthnResponse contained an unsigned assertion.');
+                throw new Exception('Shib13 AuthnResponse contained an unsigned assertion.');
             }
 
             $conditions = $this->doXPathQuery('shib:Conditions', $assertion);
@@ -275,7 +276,7 @@ class AuthnResponse
                 }
 
                 if (empty($name)) {
-                    throw new \Exception('Shib13 Attribute node without an AttributeName.');
+                    throw new Exception('Shib13 Attribute node without an AttributeName.');
                 }
 
                 if (!array_key_exists($name, $attributes)) {
@@ -309,7 +310,7 @@ class AuthnResponse
         if ($attr = $nodelist->item(0)) {
             return $attr->value;
         } else {
-            throw new \Exception('Could not find Issuer field in Authentication response');
+            throw new Exception('Could not find Issuer field in Authentication response');
         }
     }
 

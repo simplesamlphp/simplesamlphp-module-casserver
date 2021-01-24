@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Simplesamlphp\Casserver;
 
+use PHPUnit\Framework\TestCase;
 use SimpleSAML\Module\casserver\Cas\Protocol\SamlValidateResponder;
 use SimpleXMLElement;
 
-class SamlValidateTest extends \PHPUnit\Framework\TestCase
+class SamlValidateTest extends TestCase
 {
     /**
      */

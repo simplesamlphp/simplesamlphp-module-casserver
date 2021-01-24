@@ -21,6 +21,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
 use Exception;
@@ -34,16 +36,16 @@ use Webmozart\Assert\Assert;
 class SQLTicketStore extends TicketStore
 {
     /** @var \PDO $pdo */
-    public $pdo;
+    public PDO $pdo;
 
     /** @var string $driver */
-    public $driver = 'pdo';
+    public string $driver = 'pdo';
 
     /** @var string $prefix */
-    public $prefix;
+    public string $prefix;
 
     /** @var array $tableVersions */
-    private $tableVersions = [];
+    private array $tableVersions = [];
 
 
     /**

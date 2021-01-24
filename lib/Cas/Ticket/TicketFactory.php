@@ -21,6 +21,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
 use SimpleSAML\Configuration;
@@ -29,13 +31,13 @@ use SimpleSAML\Utils\Random;
 class TicketFactory
 {
     /** @var int $serviceTicketExpireTime */
-    private $serviceTicketExpireTime;
+    private int $serviceTicketExpireTime;
 
     /** @var int $proxyGrantingTicketExpireTime */
-    private $proxyGrantingTicketExpireTime;
+    private int $proxyGrantingTicketExpireTime;
 
     /** @var int $proxyTicketExpireTime */
-    private $proxyTicketExpireTime;
+    private int $proxyTicketExpireTime;
 
 
     /**

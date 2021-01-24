@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Simplesamlphp\Casserver;
 
 use DOMDocument;
@@ -7,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 use SAML2\DOMDocumentFactory;
 use SimpleSAML\Logger;
 use SimpleSAML\TestUtils\BuiltInServer;
-//use SimpleSAML\XML\DOMDocumentFactory;
 
 /**
  *
@@ -20,40 +21,40 @@ use SimpleSAML\TestUtils\BuiltInServer;
 class LoginIntegrationTest extends TestCase
 {
     /** @var string $LINK_URL */
-    private static $LINK_URL = '/module.php/casserver/login.php';
+    private static string $LINK_URL = '/module.php/casserver/login.php';
 
     /** @var string $VALIDATE_URL */
-    private static $VALIDATE_URL = '/module.php/casserver/serviceValidate.php';
+    private static string $VALIDATE_URL = '/module.php/casserver/serviceValidate.php';
 
     /**
      * @var string $SAMLVALIDATE_URL
      */
-    private static $SAMLVALIDATE_URL = '/module.php/casserver/samlValidate.php';
+    private static string $SAMLVALIDATE_URL = '/module.php/casserver/samlValidate.php';
 
     /**
      * @var \SimpleSAML\TestUtils\BuiltInServer
      */
-    protected $server;
+    protected BuiltInServer $server;
 
     /**
      * @var string
      */
-    protected $server_addr;
+    protected string $server_addr;
 
     /**
      * @var int
      */
-    protected $server_pid;
+    protected int $server_pid;
 
     /**
      * @var string
      */
-    protected $shared_file;
+    protected string $shared_file;
 
     /**
      * @var string
      */
-    protected $cookies_file;
+    protected string $cookies_file;
 
 
     /**

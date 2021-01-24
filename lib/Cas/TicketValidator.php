@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\casserver\Cas;
 
 use SimpleSAML\Configuration;
@@ -13,13 +15,13 @@ use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
 class TicketValidator
 {
     /** @var \SimpleSAML\Configuration */
-    private $casconfig;
+    private Configuration $casconfig;
 
     /** @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore */
-    private $ticketStore;
+    private TicketStore $ticketStore;
 
     /** @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory */
-    private $ticketFactory;
+    private TicketFactory $ticketFactory;
 
     /**
      * The ticket id doesn't match a ticket

@@ -7,11 +7,15 @@
  * Time: 3:57 PM
  */
 
+declare(strict_types=1);
+
 namespace Simplesamlphp\Casserver;
+
+use PHPUnit\Framework\TestCase;
 
 require_once dirname(dirname(__DIR__)) . '/www/utility/urlUtils.php';
 
-class UtilsTest extends \PHPUnit\Framework\TestCase
+class UtilsTest extends TestCase
 {
     /**
      * @param string $service the service url to check

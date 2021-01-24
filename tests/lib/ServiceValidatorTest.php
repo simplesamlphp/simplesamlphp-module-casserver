@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Simplesamlphp\Casserver;
 
+use PHPUnit\Framework\TestCase;
 use SimpleSAML\Configuration;
 use SimpleSAML\Module\casserver\Cas\ServiceValidator;
 
@@ -11,7 +14,7 @@ use SimpleSAML\Module\casserver\Cas\ServiceValidator;
  * Date: 4/8/19
  * Time: 2:58 PM
  */
-class ServiceValidatorTest extends \PHPUnit\Framework\TestCase
+class ServiceValidatorTest extends TestCase
 {
     /**
      * Test being able to override CAS configuration options per service.

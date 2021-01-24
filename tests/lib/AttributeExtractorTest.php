@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Simplesamlphp\Casserver;
 
+use PHPUnit\Framework\TestCase;
 use SimpleSAML\Configuration;
 use SimpleSAML\Module\casserver\Cas\AttributeExtractor;
 
-class AttributeExtractorTest extends \PHPUnit\Framework\TestCase
+class AttributeExtractorTest extends TestCase
 {
     /**
      * Confirm behavior of a default configuration

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Simplesamlphp\Casserver;
 
 use PHPUnit\Framework\TestCase;
@@ -13,14 +15,14 @@ use SimpleSAML\Utils\Random;
 class TicketValidatorTest extends TestCase
 {
     /**
-     * @var TicketValidator
+     * @var \SimpleSAML\Module\casserver\Cas\TicketValidator
      */
-    private $ticketValidator;
+    private TicketValidator $ticketValidator;
 
     /**
-     * @var TicketStore
+     * @var \SimpleSAML\Module\casserver\Cas\TicketStore
      */
-    private $ticketStore;
+    private TicketStore $ticketStore;
 
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Simplesamlphp\Casserver;
 
 use DOMDocument;
@@ -7,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 use SAML2\DOMDocumentFactory;
 use SimpleSAML\Configuration;
 use SimpleSAML\Module\casserver\Cas\Protocol\Cas20;
-//use SimpleSAML\XML\DOMDocumentFactory;
 
 final class Cas20Test extends TestCase
 {

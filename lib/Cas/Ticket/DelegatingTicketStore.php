@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
 use Exception;
@@ -17,17 +19,18 @@ class DelegatingTicketStore extends TicketStore
     /**
      * @var string Delegate to 'all', 'first', or a named entry.
      */
-    private $delegateTo = 'all';
+    private string $delegateTo = 'all';
 
     /**
-     * @var TicketStore[]
+     * @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore[]
      */
-    private $ticketStores = [];
+    private array $ticketStores = [];
 
     /**
-     * @var TicketStore
+     * @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore
      */
-    private $primaryDelegate;
+    private TicketStore $primaryDelegate;
+
 
     /**
      * @param \SimpleSAML\Configuration $casConfig The cas configuration.

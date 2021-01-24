@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\casserver\Cas;
 
 /**
@@ -15,7 +17,7 @@ class CasException extends \Exception
     public const INVALID_SERVICE = 'INVALID_SERVICE';
 
     /** @var string */
-    private $casCode;
+    private string $casCode;
 
     /**
      * CasException constructor.

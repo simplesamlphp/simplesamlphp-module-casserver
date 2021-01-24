@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Simplesamlphp\Casserver\Ticket;
 
 use PHPUnit\Framework\TestCase;
@@ -14,17 +16,17 @@ class DelegatingTicketStoreTest extends TestCase
     /**
      * @var array The configuration of the ticket store
      */
-    private $ticketstoreConfig = [];
+    private array $ticketstoreConfig = [];
 
     /**
      * @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore $fileStore1
      */
-    private $fileStore1;
+    private TicketStore $fileStore1;
 
     /**
      * @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore $fileStore2
      */
-    private $fileStore2;
+    private TicketStore $fileStore2;
 
 
     /**
