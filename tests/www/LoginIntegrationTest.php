@@ -207,7 +207,7 @@ class LoginIntegrationTest extends TestCase
         )->saveXML();
 
         $this->assertEquals(200, $resp['code']);
-        $this->assertEquals(rtrim($expectedResponse), $resp['body']);
+        $this->assertEquals($expectedResponse, $resp['body']);
     }
 
     public function validServiceUrlProvider(): array

@@ -1,9 +1,9 @@
 <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
-<cas:authenticationSuccess>
-<cas:user>testuser@example.com</cas:user>
-<cas:attributes>
-<cas:eduPersonPrincipalName>testuser@example.com</cas:eduPersonPrincipalName>
-<cas:base64Attributes>false</cas:base64Attributes>
-</cas:attributes>
-</cas:authenticationSuccess>
+  <cas:authenticationSuccess>
+    <cas:user>testuser@example.com</cas:user>
+    <cas:attributes>
+      <cas:eduPersonPrincipalName>testuser@example.com</cas:eduPersonPrincipalName>
+      <cas:base64Attributes>false</cas:base64Attributes>
+    </cas:attributes>
+  </cas:authenticationSuccess>
 </cas:serviceResponse>
