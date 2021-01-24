@@ -25,7 +25,8 @@
         "php": ">=7.4 || ^8.0",
 
         "simplesamlphp/composer-module-installer": "~1.1",
-        "simplesamlphp/simplesamlphp": "dev-master"
+        "simplesamlphp/simplesamlphp": "dev-master",
+        "simplesamlphp/xml-common": "^0.0.12"
     },
     "require-dev": {
         "simplesamlphp/simplesamlphp-test-framework": "~1.0.4"

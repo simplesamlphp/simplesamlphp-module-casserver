@@ -30,6 +30,7 @@ use DOMElement;
 use DOMException;
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
+use SimpleSAML\XML\DOMDocumentFactory;
 
 class Cas20
 {
@@ -102,7 +103,8 @@ class Cas20
      */
     public function getValidateSuccessResponse(string $username): string
     {
-        $xmlDocument = new DOMDocument("1.0");
+        $xmlDocument = DOMDocumentFactory::create();
+        $xmlDocument->formatOutput = true;
 
         $root = $xmlDocument->createElement("cas:serviceResponse");
         $root->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:cas', 'http://www.yale.edu/tp/cas');
@@ -154,7 +156,7 @@ class Cas20
         $root->appendChild($casSuccess);
         $xmlDocument->appendChild($root);
 
-        return $this->workAroundForBuggyJasigXmlParser($xmlDocument->saveXML());
+        return $xmlDocument->saveXML();
     }
 
 
@@ -165,7 +167,7 @@ class Cas20
      */
     public function getValidateFailureResponse(string $errorCode, string $explanation): string
     {
-        $xmlDocument = new DOMDocument("1.0");
+        $xmlDocument = DOMDocumentFactory::create();
 
         $root = $xmlDocument->createElement("cas:serviceResponse");
         $root->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:cas', 'http://www.yale.edu/tp/cas');
@@ -182,7 +184,7 @@ class Cas20
 
         $xmlDocument->appendChild($root);
 
-        return $this->workAroundForBuggyJasigXmlParser($xmlDocument->saveXML());
+        return $xmlDocument->saveXML();
     }
 
 
@@ -192,7 +194,7 @@ class Cas20
      */
     public function getProxySuccessResponse(string $proxyTicketId): string
     {
-        $xmlDocument = new DOMDocument("1.0");
+        $xmlDocument = DOMDocumentFactory::create();
 
         $root = $xmlDocument->createElement("cas:serviceResponse");
         $root->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:cas', 'http://www.yale.edu/tp/cas');
@@ -207,7 +209,7 @@ class Cas20
         $root->appendChild($casProxySuccess);
         $xmlDocument->appendChild($root);
 
-        return $this->workAroundForBuggyJasigXmlParser($xmlDocument->saveXML());
+        return $xmlDocument->saveXML();
     }
 
 
@@ -218,7 +220,7 @@ class Cas20
      */
     public function getProxyFailureResponse(string $errorCode, string $explanation): string
     {
-        $xmlDocument = new DOMDocument("1.0");
+        $xmlDocument = DOMDocumentFactory::create();
 
         $root = $xmlDocument->createElement("cas:serviceResponse");
         $root->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:cas', 'http://www.yale.edu/tp/cas');
@@ -235,18 +237,7 @@ class Cas20
 
         $xmlDocument->appendChild($root);
 
-        return $this->workAroundForBuggyJasigXmlParser($xmlDocument->saveXML());
-    }
-
-
-    /**
-     * @param string $xmlString
-     * @return string
-     */
-    private function workAroundForBuggyJasigXmlParser(string $xmlString): string
-    {
-        // when will people stop hand coding xml handling....?
-        return str_replace('><', '>' . PHP_EOL . '<', str_replace(PHP_EOL, '', $xmlString));
+        return $xmlDocument->saveXML();
     }
 
 

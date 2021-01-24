@@ -54,6 +54,6 @@ final class Cas20Test extends TestCase
 
         $xml = $casProtocol->getValidateSuccessResponse('myUser');
 
-        $this->assertEquals(rtrim($this->document->saveXML()), $xml);
+        $this->assertEquals($this->document->saveXML(), $xml);
     }
 }
