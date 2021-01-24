@@ -6,6 +6,7 @@ namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
 use Exception;
 use InvalidArgumentException;
+use SimpleSAML\Assert\Assert;
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
 use SimpleSAML\Module;
@@ -55,7 +56,7 @@ class DelegatingTicketStore extends TicketStore
                 Logger::error("Unable to create ticket store '$name'. Error " . $e->getMessage());
             }
         }
-        assert(!empty($this->ticketStores), "'ticketStores' must be defined.");
+        Assert::notEmpty($this->ticketStores, "'ticketStores' must be defined.");
         $this->ticketStores = $this->ticketStores;
 
         if ($this->delegateTo === 'first') {

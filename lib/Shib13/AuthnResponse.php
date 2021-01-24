@@ -16,6 +16,7 @@ use DOMNodeList;
 use DOMXpath;
 use Exception;
 use SAML2\DOMDocumentFactory;
+use SimpleSAML\Assert\Assert;
 use SimpleSAML\Configuration;
 use SimpleSAML\Error;
 use SimpleSAML\Metadata\MetaDataStorageHandler;
@@ -100,7 +101,7 @@ class AuthnResponse
      */
     public function validate(): bool
     {
-        assert($this->dom instanceof DOMDocument);
+        Assert::isInstanceOf($this->dom, DOMDocument::class);
 
         if ($this->messageValidated) {
             // This message was validated externally
@@ -167,7 +168,7 @@ class AuthnResponse
             $node = dom_import_simplexml($node);
         }
 
-        assert($node instanceof DOMNode);
+        Assert::isInstanceOf($node, DOMNode::class);
 
         return $this->validator->isNodeValidated($node);
     }
@@ -183,13 +184,13 @@ class AuthnResponse
      */
     private function doXPathQuery(string $query, DOMNode $node = null): DOMNodeList
     {
-        assert($this->dom instanceof DOMDocument);
+        Assert::isInstanceOf($node, DOMNode::class);
 
         if ($node === null) {
             $node = $this->dom->documentElement;
         }
 
-        assert($node instanceof DOMNode);
+        Assert::isInstanceOf($node, DOMNode::class);
 
         $xPath = new DOMXpath($this->dom);
         $xPath->registerNamespace('shibp', self::SHIB_PROTOCOL_NS);
@@ -206,7 +207,7 @@ class AuthnResponse
      */
     public function getSessionIndex(): ?string
     {
-        assert($this->dom instanceof DOMDocument);
+        Assert::isInstanceOf($node, DOMNode::class);
 
         $query = '/shibp:Response/shib:Assertion/shib:AuthnStatement';
         $nodelist = $this->doXPathQuery($query);
