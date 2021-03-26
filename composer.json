@@ -29,7 +29,7 @@
         "simplesamlphp/xml-common": "^0.0.12"
     },
     "require-dev": {
-        "simplesamlphp/simplesamlphp-test-framework": "~1.0.4"
+        "simplesamlphp/simplesamlphp-test-framework": "~1.1.0"
     },
     "support": {
         "issues": "https://github.com/simplesamlphp/simplesamlphp-module-casserver/issues",

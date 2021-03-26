@@ -38,7 +38,7 @@ use SimpleSAML\Locale\Language;
 use SimpleSAML\Logger;
 use SimpleSAML\Module;
 use SimpleSAML\Session;
-use SimpleSAML\Utils\HTTP;
+use SimpleSAML\Utils;
 
 require_once('utility/urlUtils.php');
 
@@ -97,7 +97,7 @@ $ticketFactoryClass = Module::resolveClass('casserver:TicketFactory', 'Cas\Ticke
 /** @var $ticketFactory TicketFactory */
 /** @psalm-suppress InvalidStringClass */
 $ticketFactory = new $ticketFactoryClass($casconfig);
-
+$httpUtils = new Utils\HTTP();
 $session = Session::getSessionFromRequest();
 
 $sessionTicket = $ticketStore->getTicket($session->getSessionId());
@@ -139,7 +139,7 @@ if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewI
         $query['debugMode'] = $_REQUEST['debugMode'];
     }
 
-    $returnUrl = HTTP::getSelfURLNoQuery() . '?' . http_build_query($query);
+    $returnUrl = $httpUtils->getSelfURLNoQuery() . '?' . http_build_query($query);
 
     $params = [
         'ForceAuthn' => $forceAuthn,
@@ -227,12 +227,12 @@ if (isset($serviceUrl)) {
             echo '<pre>' . htmlspecialchars($casResponse) . '</pre>';
         }
     } elseif ($redirect) {
-        HTTP::redirectTrustedURL(HTTP::addURLParameters($serviceUrl, $parameters));
+        $httpUtils->redirectTrustedURL($httpUtils->addURLParameters($serviceUrl, $parameters));
     } else {
-        HTTP::submitPOSTData($serviceUrl, $parameters);
+        $httpUtils->submitPOSTData($serviceUrl, $parameters);
     }
 } else {
-    HTTP::redirectTrustedURL(
-        HTTP::addURLParameters(Module::getModuleURL('casserver/loggedIn.php'), $parameters)
+    $httpUtils->redirectTrustedURL(
+        $httpUtils->addURLParameters(Module::getModuleURL('casserver/loggedIn.php'), $parameters)
     );
 }

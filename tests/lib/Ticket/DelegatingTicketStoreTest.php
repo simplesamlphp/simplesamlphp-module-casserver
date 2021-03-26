@@ -9,7 +9,7 @@ use SimpleSAML\Configuration;
 use SimpleSAML\Module\casserver\Cas\Ticket\DelegatingTicketStore;
 use SimpleSAML\Module\casserver\Cas\Ticket\FileSystemTicketStore;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
-use SimpleSAML\Utils\Config;
+use SimpleSAML\Utils;
 
 class DelegatingTicketStoreTest extends TestCase
 {
@@ -33,8 +33,9 @@ class DelegatingTicketStoreTest extends TestCase
      */
     public function setup(): void
     {
+        $configUtils = new Utils\Config();
         putenv('SIMPLESAMLPHP_CONFIG_DIR=' . dirname(dirname(__DIR__)) . '/config');
-        Configuration::setConfigDir(Config::getConfigDir());
+        Configuration::setConfigDir($configUtils->getConfigDir());
         $this->ticketstoreConfig = array(
             'delegateTo' => 'all',
             'ticketStores' => [

@@ -135,7 +135,8 @@ class AuthnResponse
             $this->validator->validateFingerprint($certFingerprints);
         } elseif ($md->hasValue('caFile')) {
             // Validate against CA
-            $this->validator->validateCA(Utils\Config::getCertPath($md->getString('caFile')));
+            $configUtils = new Utils\Config();
+            $this->validator->validateCA($configUtils->getCertPath($md->getString('caFile')));
         } else {
             throw new Error\Exception(
                 'Missing certificate in Shibboleth 1.3 IdP Remote metadata for identity provider [' . $issuer . '].'
@@ -354,15 +355,17 @@ class AuthnResponse
             $scopedAttributes = [];
         }
 
-        $id = Utils\Random::generateID();
+        $randomUtils = new Utils\Random();
+        $timeUtils = new Utils\Time();
 
-        $issueInstant = Utils\Time::generateTimestamp();
+        $id = $randomUtils->generateID();
+        $issueInstant = $timeUtils->generateTimestamp();
 
         // 30 seconds timeskew back in time to allow differing clocks
-        $notBefore = Utils\Time::generateTimestamp(time() - 30);
+        $notBefore = $timeUtils->generateTimestamp(time() - 30);
 
-        $assertionExpire = Utils\Time::generateTimestamp(time() + 300); // 5 minutes
-        $assertionid = Utils\Random::generateID();
+        $assertionExpire = $timeUtils->generateTimestamp(time() + 300); // 5 minutes
+        $assertionid = $randomUtils->generateID();
 
         $spEntityId = $sp->getString('entityid');
 
@@ -370,7 +373,7 @@ class AuthnResponse
         $base64 = $sp->getBoolean('base64attributes', false);
 
         $namequalifier = $sp->getString('NameQualifier', $spEntityId);
-        $nameid = Utils\Random::generateID();
+        $nameid = $randomUtils->generateID();
         $subjectNode =
             '<Subject>' .
             '<NameIdentifier' .
