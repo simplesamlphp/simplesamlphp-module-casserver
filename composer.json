@@ -26,10 +26,10 @@
 
         "simplesamlphp/composer-module-installer": "~1.1",
         "simplesamlphp/simplesamlphp": "dev-master",
-        "simplesamlphp/xml-common": "^0.0.12"
+        "simplesamlphp/xml-common": "^0.8.1"
     },
     "require-dev": {
-        "simplesamlphp/simplesamlphp-test-framework": "~1.1.0"
+        "simplesamlphp/simplesamlphp-test-framework": "~1.1.5"
     },
     "support": {
         "issues": "https://github.com/simplesamlphp/simplesamlphp-module-casserver/issues",
