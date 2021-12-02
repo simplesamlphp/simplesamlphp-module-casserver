@@ -1,14 +1,8 @@
-{% set pagetitle = '{casserver:casserver:loggedin_header}'|trans %}
+{% set pagetitle = 'Logged in'|trans %}
 {% extends "base.twig" %}
 
 {% block content %}
     <h2>{{ pagetitle }}</h2>
 
-    <p>{{ '{casserver:casserver:loggedin_description}'|trans }}</p>
-{% endblock %}
-
-{% block postload %}
-{% if autofocus %}
-    <script type="text/javascript">window.onload = function() {document.getElementById('{{ autofocus }}').focus();}</script>
-{% endif %}
+    <p>{{ 'You are logged in.'|trans }}</p>
 {% endblock %}

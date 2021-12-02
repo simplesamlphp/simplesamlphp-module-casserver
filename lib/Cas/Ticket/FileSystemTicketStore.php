@@ -21,6 +21,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
 use Exception;
@@ -29,12 +31,11 @@ use SimpleSAML\Configuration;
 class FileSystemTicketStore extends TicketStore
 {
     /** @var string $pathToTicketDirectory */
-    private $pathToTicketDirectory;
+    private string $pathToTicketDirectory;
 
 
     /**
      * @param \SimpleSAML\Configuration $config
-     * @return void
      * @throws \Exception
      */
     public function __construct(Configuration $config)
@@ -63,7 +64,7 @@ class FileSystemTicketStore extends TicketStore
      * @param string $ticketId
      * @return array|null
      */
-    public function getTicket($ticketId)
+    public function getTicket(string $ticketId): ?array
     {
         $filename = $this->pathToTicketDirectory . '/' . $ticketId;
 
@@ -79,9 +80,8 @@ class FileSystemTicketStore extends TicketStore
 
     /**
      * @param array $ticket
-     * @return void
      */
-    public function addTicket(array $ticket)
+    public function addTicket(array $ticket): void
     {
         $filename = $this->pathToTicketDirectory . '/' . $ticket['id'];
         file_put_contents($filename, serialize($ticket));
@@ -90,9 +90,8 @@ class FileSystemTicketStore extends TicketStore
 
     /**
      * @param string $ticketId
-     * @return void
      */
-    public function deleteTicket($ticketId)
+    public function deleteTicket(string $ticketId): void
     {
         $filename = $this->pathToTicketDirectory . '/' . $ticketId;
 

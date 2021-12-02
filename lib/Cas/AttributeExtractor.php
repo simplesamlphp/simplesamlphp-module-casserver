@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\casserver\Cas;
 
 use SimpleSAML\Configuration;
@@ -26,7 +28,7 @@ class AttributeExtractor
      * @param \SimpleSAML\Configuration $casconfig
      * @return array
      */
-    public function extractUserAndAttributes(array $attributes, Configuration $casconfig)
+    public function extractUserAndAttributes(array $attributes, Configuration $casconfig): array
     {
         if ($casconfig->hasValue('authproc')) {
             $attributes = $this->invokeAuthProc($attributes, $casconfig);
@@ -34,8 +36,10 @@ class AttributeExtractor
 
         $casUsernameAttribute = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
 
-        //TODO: how should a missing userName be handled?
         $userName = $attributes[$casUsernameAttribute][0];
+        if (empty($userName)) {
+            throw new \Exception("No cas user defined for attribute $casUsernameAttribute");
+        }
 
         if ($casconfig->getValue('attributes', true)) {
             $attributesToTransfer = $casconfig->getValue('attributes_to_transfer', []);
@@ -70,7 +74,7 @@ class AttributeExtractor
      * @param \SimpleSAML\Configuration $casconfig The cas configuration
      * @return array The attributes post processing.
      */
-    private function invokeAuthProc(array $attributes, Configuration $casconfig)
+    private function invokeAuthProc(array $attributes, Configuration $casconfig): array
     {
         $filters = $casconfig->getArray('authproc', []);
 

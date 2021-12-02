@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $projectRootDirectory = dirname(__DIR__);
 $projectConfigDirectory = $projectRootDirectory . '/tests/config';
 $casserverModulePath = $projectRootDirectory . '/vendor/simplesamlphp/simplesamlphp/modules/casserver';
@@ -8,6 +10,10 @@ $ticketCacheDir = $projectRootDirectory . '/tests/ticketcache';
 if (!file_exists($ticketCacheDir)) {
     mkdir($ticketCacheDir);
 }
+$ticketCacheDirAlt = $projectRootDirectory . '/tests/ticketcacheAlt';
+if (!file_exists($ticketCacheDirAlt)) {
+    mkdir($ticketCacheDirAlt);
+}
 /** @psalm-suppress UnresolvableInclude */
 require_once($projectRootDirectory . '/vendor/autoload.php');
 
@@ -15,7 +21,6 @@ require_once($projectRootDirectory . '/vendor/autoload.php');
  * Sets a link in the simplesamlphp vendor directory
  * @param string $target
  * @param string $link
- * @return void
  */
 function symlinkModulePathInVendorDirectory($target, $link)
 {

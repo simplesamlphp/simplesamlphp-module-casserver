@@ -21,6 +21,8 @@
  *
  */
 
+declare(strict_types=1);
+
 use SimpleSAML\Configuration;
 use SimpleSAML\Module\casserver\Cas\ServiceValidator;
 use SimpleSAML\Module\casserver\Cas\TicketValidator;
@@ -32,7 +34,7 @@ use SimpleSAML\Module\casserver\Cas\TicketValidator;
  * @param array $legal_service_urls
  * @return bool
  */
-function checkServiceURL($service, array $legal_service_urls)
+function checkServiceURL(string $service, array $legal_service_urls): bool
 {
     //delegate to ServiceValidator until all references to this can be cleaned up
     $config = Configuration::loadFromArray(['legal_service_urls' => $legal_service_urls]);
@@ -45,7 +47,7 @@ function checkServiceURL($service, array $legal_service_urls)
  * @param string $parameter
  * @return string
  */
-function sanitize($parameter)
+function sanitize(string $parameter): string
 {
     return TicketValidator::sanitize($parameter);
 }

@@ -51,7 +51,7 @@ $session = \SimpleSAML\Session::getSession();
 
 if (!is_null($session)) {
     $ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
-    $ticketStoreClass = \SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
+    $ticketStoreClass = \SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas\Ticket');
     /** @psalm-suppress InvalidStringClass */
     $ticketStore = new $ticketStoreClass($casconfig);
 

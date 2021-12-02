@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\casserver\Cas;
 
 use SimpleSAML\Configuration;
@@ -12,9 +14,9 @@ use SimpleSAML\Logger;
 class ServiceValidator
 {
     /**
-     * @var Configuration
+     * @var \SimpleSAML\Configuration
      */
-    private $mainConfig;
+    private Configuration $mainConfig;
 
     /**
      * ServiceValidator constructor.
@@ -30,7 +32,7 @@ class ServiceValidator
      * @param string $service The service url. Assume to already be url decoded
      * @return Configuration|null Return the configuration to use for this service, or null if service is not allowed
      */
-    public function checkServiceURL($service)
+    public function checkServiceURL(string $service): ?Configuration
     {
         $isValidService = false;
         $legalUrl = 'undefined';

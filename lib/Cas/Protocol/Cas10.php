@@ -21,6 +21,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\casserver\Cas\Protocol;
 
 use SimpleSAML\Configuration;
@@ -39,7 +41,7 @@ class Cas10
      * @param string $username
      * @return string
      */
-    public function getValidateSuccessResponse($username)
+    public function getValidateSuccessResponse(string $username): string
     {
         return "yes\n" . $username . "\n";
     }
@@ -48,7 +50,7 @@ class Cas10
     /**
      * @return string
      */
-    public function getValidateFailureResponse()
+    public function getValidateFailureResponse(): string
     {
         return "no\n\n";
     }

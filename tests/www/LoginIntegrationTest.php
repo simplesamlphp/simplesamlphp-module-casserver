@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Simplesamlphp\Casserver;
 
 use DOMDocument;
 use PHPUnit\Framework\TestCase;
-use SimpleSAML\Test\BuiltInServer;
+use SAML2\DOMDocumentFactory;
+use SimpleSAML\Logger;
+use SimpleSAML\TestUtils\BuiltInServer;
 
 /**
  *
@@ -17,60 +21,72 @@ use SimpleSAML\Test\BuiltInServer;
 class LoginIntegrationTest extends TestCase
 {
     /** @var string $LINK_URL */
-    private static $LINK_URL = '/module.php/casserver/login.php';
+    private static string $LINK_URL = '/module.php/casserver/login.php';
 
     /** @var string $VALIDATE_URL */
-    private static $VALIDATE_URL = '/module.php/casserver/serviceValidate.php';
+    private static string $VALIDATE_URL = '/module.php/casserver/serviceValidate.php';
 
     /**
      * @var string $SAMLVALIDATE_URL
      */
-    private static $SAMLVALIDATE_URL = '/module.php/casserver/samlValidate.php';
+    private static string $SAMLVALIDATE_URL = '/module.php/casserver/samlValidate.php';
 
     /**
-     * @var \SimpleSAML\Test\BuiltInServer
+     * @var \SimpleSAML\TestUtils\BuiltInServer
      */
-    protected $server;
+    protected BuiltInServer $server;
 
     /**
      * @var string
      */
-    protected $server_addr;
+    protected string $server_addr;
 
     /**
      * @var int
      */
-    protected $server_pid;
+    protected int $server_pid;
 
     /**
      * @var string
      */
-    protected $shared_file;
+    protected string $shared_file;
 
     /**
      * @var string
      */
-    protected $cookies_file;
+    protected string $cookies_file;
 
 
     /**
      * The setup method that is run before any tests in this class.
-     * @return void
      */
     protected function setup(): void
     {
-        $this->server = new BuiltInServer();
+        $this->server = new BuiltInServer('configLoader', dirname(dirname(dirname(__FILE__))) . '/vendor/simplesamlphp/simplesamlphp/www');
         $this->server_addr = $this->server->start();
         $this->server_pid = $this->server->getPid();
         $this->shared_file = sys_get_temp_dir() . '/' . $this->server_pid . '.lock';
         $this->cookies_file = sys_get_temp_dir() . '/' . $this->server_pid . '.cookies';
+
+
+        $this->updateConfig([
+            'baseurlpath' => '/',
+            'secretsalt' => 'abc123',
+
+            'tempdir' => sys_get_temp_dir(),
+            'loggingdir' => sys_get_temp_dir(),
+
+            'module.enable' => [
+                'casserver' => true,
+            ]
+        ]);
+
     }
 
 
     /**
      * The tear down method that is executed after all tests in this class.
      * Removes the lock file and cookies file
-     * @return void
      */
     protected function tearDown(): void
     {
@@ -81,8 +97,18 @@ class LoginIntegrationTest extends TestCase
 
 
     /**
+     * @param array $config
+     */
+    protected function updateConfig(array $config): void
+    {
+        @unlink($this->shared_file);
+        $config = "<?php\n\$config = " . var_export($config, true) . ";\n";
+        file_put_contents($this->shared_file, $config);
+    }
+
+
+    /**
      * Test authenticating to the login endpoint with no parameters.'
-     * @return void
      */
     public function testNoQueryParameters()
     {
@@ -108,7 +134,6 @@ class LoginIntegrationTest extends TestCase
 
     /**
      * Test incorrect service url
-     * @return void
      */
     public function testWrongServiceUrl()
     {
@@ -137,7 +162,6 @@ class LoginIntegrationTest extends TestCase
      * @dataProvider validServiceUrlProvider
      * @param string $serviceParam The name of the query parameter to use for the service url
      * @param string $ticketParam The name of the query parameter that will contain the ticket
-     * @return void
      */
     public function testValidServiceUrl(string $serviceParam, string $ticketParam)
     {
@@ -177,16 +201,11 @@ class LoginIntegrationTest extends TestCase
                 CURLOPT_COOKIEFILE => $this->cookies_file
             ]
         );
-        $expectedResponse = '<?xml version="1.0"?>
-<cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
-<cas:authenticationSuccess>
-<cas:user>testuser@example.com</cas:user>
-<cas:attributes>
-<cas:eduPersonPrincipalName>testuser@example.com</cas:eduPersonPrincipalName>
-<cas:base64Attributes>false</cas:base64Attributes>
-</cas:attributes>
-</cas:authenticationSuccess>
-</cas:serviceResponse>';
+
+        $expectedResponse = DOMDocumentFactory::fromFile(
+            dirname(dirname(__FILE__)) . '/resources/xml/testValidServiceUrl.xml'
+        )->saveXML();
+
         $this->assertEquals(200, $resp['code']);
         $this->assertEquals($expectedResponse, $resp['body']);
     }
@@ -201,7 +220,6 @@ class LoginIntegrationTest extends TestCase
 
     /**
      * Test changing the ticket name
-     * @return void
      */
     public function testValidTicketNameOverride()
     {
@@ -293,7 +311,6 @@ class LoginIntegrationTest extends TestCase
 
     /**
      * Test outputting user info instead of redirecting
-     * @return void
      */
     public function testDebugOutput()
     {
@@ -320,7 +337,6 @@ class LoginIntegrationTest extends TestCase
 
     /**
      * Test outputting user info instead of redirecting
-     * @return void
      */
     public function testDebugOutputSamlValidate()
     {
@@ -348,7 +364,6 @@ class LoginIntegrationTest extends TestCase
 
     /**
      * Test outputting user info instead of redirecting
-     * @return void
      */
     public function testAlternateServiceConfigUsed()
     {
@@ -379,7 +394,6 @@ class LoginIntegrationTest extends TestCase
 
     /**
      * test a valid service URL with Post
-     * @return void
      */
     public function testValidServiceUrlWithPost()
     {
@@ -412,6 +426,7 @@ class LoginIntegrationTest extends TestCase
             $this->fail('Unable to parse response.');
             return;
         }
+
         $this->assertEquals($service_url, $item->getAttribute('action'));
         $formInputs = $dom->getElementsByTagName('input');
         //note: $formInputs[0] is '<input type="submit" style="display:none;" />'. See the post.php template from SSP
@@ -433,7 +448,6 @@ class LoginIntegrationTest extends TestCase
 
 
     /**
-     * @return void
      */
     public function testSamlValidate()
     {
@@ -487,7 +501,6 @@ SOAP;
 
     /**
      * Sets up an authenticated session for the cookie $jar
-     * @return void
      */
     private function authenticate()
     {
@@ -517,6 +530,7 @@ SOAP;
         if ($resp === false) {
             throw new \Exception('curl error: ' . curl_error($ch));
         }
+
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         /** @psalm-var string $resp */
         list($header, $body) = explode("\r\n\r\n", $resp, 2);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\casserver\Cas;
 
 /**
@@ -10,18 +12,19 @@ class CasException extends \Exception
 {
     // For list of cas codes see:
     // https://apereo.github.io/cas/5.2.x/protocol/CAS-Protocol-Specification.html#253-error-codes
-    const INVALID_TICKET = 'INVALID_TICKET';
-    const INVALID_SERVICE = 'INVALID_SERVICE';
+    public const INVALID_TICKET = 'INVALID_TICKET';
+
+    public const INVALID_SERVICE = 'INVALID_SERVICE';
 
     /** @var string */
-    private $casCode;
+    private string $casCode;
 
     /**
      * CasException constructor.
      * @param string $casCode
      * @param string $message
      */
-    public function __construct($casCode, $message)
+    public function __construct(string $casCode, string $message)
     {
         parent::__construct($message);
         $this->casCode = $casCode;
@@ -30,7 +33,7 @@ class CasException extends \Exception
     /**
      * @return string
      */
-    public function getCasCode()
+    public function getCasCode(): string
     {
         return $this->casCode;
     }

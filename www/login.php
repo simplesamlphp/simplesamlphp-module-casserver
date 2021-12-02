@@ -38,7 +38,7 @@ use SimpleSAML\Module\casserver\Cas\ServiceValidator;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
 use SimpleSAML\Session;
-use SimpleSAML\Utils\HTTP;
+use SimpleSAML\Utils;
 
 require_once('utility/urlUtils.php');
 
@@ -88,16 +88,16 @@ if (array_key_exists('language', $_GET) && is_string($_GET['language'])) {
 }
 
 $ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
-$ticketStoreClass = Module::resolveClass($ticketStoreConfig['class'], 'Cas_Ticket');
+$ticketStoreClass = Module::resolveClass($ticketStoreConfig['class'], 'Cas\Ticket');
 /** @var $ticketStore TicketStore */
 /** @psalm-suppress InvalidStringClass */
 $ticketStore = new $ticketStoreClass($casconfig);
 
-$ticketFactoryClass = Module::resolveClass('casserver:TicketFactory', 'Cas_Ticket');
+$ticketFactoryClass = Module::resolveClass('casserver:TicketFactory', 'Cas\Ticket');
 /** @var $ticketFactory TicketFactory */
 /** @psalm-suppress InvalidStringClass */
 $ticketFactory = new $ticketFactoryClass($casconfig);
-
+$httpUtils = new Utils\HTTP();
 $session = Session::getSessionFromRequest();
 
 $sessionTicket = $ticketStore->getTicket($session->getSessionId());
@@ -135,7 +135,11 @@ if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewI
         $query['language'] = is_string($_GET['language']) ? $_GET['language'] : null;
     }
 
-    $returnUrl = HTTP::getSelfURLNoQuery() . '?' . http_build_query($query);
+    if (isset($_REQUEST['debugMode'])) {
+        $query['debugMode'] = $_REQUEST['debugMode'];
+    }
+
+    $returnUrl = $httpUtils->getSelfURLNoQuery() . '?' . http_build_query($query);
 
     $params = [
         'ForceAuthn' => $forceAuthn,
@@ -223,14 +227,13 @@ if (isset($serviceUrl)) {
             echo '<pre>' . htmlspecialchars($casResponse) . '</pre>';
         }
     } elseif ($redirect) {
-        $redirectUrl = casAddURLParameters($serviceUrl, $parameters);
-        HTTP::redirectTrustedURL($redirectUrl);
+        $httpUtils->redirectTrustedURL($this->casAddURLParameters($serviceUrl, $parameters));
     } else {
-        HTTP::submitPOSTData($serviceUrl, $parameters);
+        $httpUtils->submitPOSTData($serviceUrl, $parameters);
     }
 } else {
-    HTTP::redirectTrustedURL(
-        HTTP::addURLParameters(Module::getModuleURL('casserver/loggedIn.php'), $parameters)
+    $httpUtils->redirectTrustedURL(
+        $httpUtils->addURLParameters(Module::getModuleURL('casserver/loggedIn.php'), $parameters)
     );
 }
 

@@ -12,9 +12,6 @@
     <file>tests</file>
     <file>www</file>
 
-    <!-- Exclude old PHP templates (and related); they are removed in SSP 2.0 -->
-    <exclude-pattern>templates/*.tpl.php</exclude-pattern>
-
     <!-- This is the rule we inherit from. If you want to exlude some specific rules, see the docs on how to do that -->
     <rule ref="PSR12"/>
 </ruleset>

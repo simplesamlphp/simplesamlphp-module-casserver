@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Simplesamlphp\Casserver;
 
 use PHPUnit\Framework\TestCase;
@@ -8,23 +10,22 @@ use SimpleSAML\Module\casserver\Cas\CasException;
 use SimpleSAML\Module\casserver\Cas\Ticket\FileSystemTicketStore;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
 use SimpleSAML\Module\casserver\Cas\TicketValidator;
-use SimpleSAML\Utils\Random;
+use SimpleSAML\Utils;
 
 class TicketValidatorTest extends TestCase
 {
     /**
-     * @var TicketValidator
+     * @var \SimpleSAML\Module\casserver\Cas\TicketValidator
      */
-    private $ticketValidator;
+    private TicketValidator $ticketValidator;
 
     /**
-     * @var TicketStore
+     * @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore
      */
-    private $ticketStore;
+    private TicketStore $ticketStore;
 
 
     /**
-     * @return void
      */
     protected function setUp(): void
     {
@@ -43,9 +44,8 @@ class TicketValidatorTest extends TestCase
 
 
     /**
-     * @return void
      */
-    public function testNonExistantTicket()
+    public function testNonExistantTicket(): void
     {
         $id = 'no-such-ticket';
         $this->assertNull($this->ticketStore->getTicket($id));
@@ -60,9 +60,8 @@ class TicketValidatorTest extends TestCase
 
 
     /**
-     * @return void
      */
-    public function testValidTicket()
+    public function testValidTicket(): void
     {
         $serviceUrl =  'http://efh.com?a=b&';
         $serviceTicket = $this->createTicket($serviceUrl);
@@ -84,9 +83,8 @@ class TicketValidatorTest extends TestCase
 
 
     /**
-     * @return void
      */
-    public function testWrongServiceUrlTicket()
+    public function testWrongServiceUrlTicket(): void
     {
         $serviceUrl =  'http://efh.com?a=b&';
         $serviceTicket = $this->createTicket('http://otherurl.com');
@@ -108,9 +106,8 @@ class TicketValidatorTest extends TestCase
 
 
     /**
-     * @return void
      */
-    public function testExpiredTicket()
+    public function testExpiredTicket(): void
     {
         $serviceUrl =  'http://efh.com?a=b&';
         $serviceTicket = $this->createTicket($serviceUrl, -1);
@@ -131,7 +128,6 @@ class TicketValidatorTest extends TestCase
      * @dataProvider urlSanitizationProvider
      * @param string $serviceUrl The service url that will get sanitized
      * @param string $expectedSanitzedUrl The expected result
-     * @return void
      */
     public function testUrlSanitization(string $serviceUrl, string $expectedSanitzedUrl): void
     {
@@ -142,7 +138,7 @@ class TicketValidatorTest extends TestCase
      * Urls to test
      * @return array
      */
-    public function urlSanitizationProvider()
+    public function urlSanitizationProvider(): array
     {
         return [
             [
@@ -167,9 +163,10 @@ class TicketValidatorTest extends TestCase
      * @param int $expiration seconds from now that ticket should expire
      * @return array the ticket contents
      */
-    private function createTicket($serviceUrl, $expiration = 0)
+    private function createTicket(string $serviceUrl, int $expiration = 0): array
     {
-        $id = Random::generateID();
+        $randomUtils = new Utils\Random();
+        $id = $randomUtils->generateID();
         $serviceTicket = [
             'id' => $id,
             'validBefore' => time() + $expiration,

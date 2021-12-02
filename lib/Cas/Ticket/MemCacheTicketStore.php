@@ -21,6 +21,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
 use SimpleSAML\Configuration;
@@ -29,7 +31,7 @@ use SimpleSAML\Memcache;
 class MemCacheTicketStore extends TicketStore
 {
     /** @var string $prefix */
-    private $prefix = '';
+    private string $prefix = '';
 
 
     /**
@@ -51,7 +53,7 @@ class MemCacheTicketStore extends TicketStore
      * @param string $ticketId
      * @return array|null
      */
-    public function getTicket($ticketId)
+    public function getTicket(string $ticketId): ?array
     {
         $scopedTicketId = $this->scopeTicketId($ticketId);
 
@@ -61,9 +63,8 @@ class MemCacheTicketStore extends TicketStore
 
     /**
      * @param array $ticket
-     * @return void
      */
-    public function addTicket(array $ticket)
+    public function addTicket(array $ticket): void
     {
         $scopedTicketId = $this->scopeTicketId($ticket['id']);
 
@@ -73,9 +74,8 @@ class MemCacheTicketStore extends TicketStore
 
     /**
      * @param string $ticketId
-     * @return void
      */
-    public function deleteTicket($ticketId)
+    public function deleteTicket(string $ticketId): void
     {
         $scopedTicketId = $this->scopeTicketId($ticketId);
 
@@ -87,7 +87,7 @@ class MemCacheTicketStore extends TicketStore
      * @param string $ticketId
      * @return string
      */
-    private function scopeTicketId($ticketId)
+    private function scopeTicketId(string $ticketId): string
     {
         return $this->prefix . '.' . $ticketId;
     }

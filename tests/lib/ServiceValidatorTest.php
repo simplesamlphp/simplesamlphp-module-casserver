@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Simplesamlphp\Casserver;
 
+use PHPUnit\Framework\TestCase;
 use SimpleSAML\Configuration;
 use SimpleSAML\Module\casserver\Cas\ServiceValidator;
 
@@ -11,17 +14,16 @@ use SimpleSAML\Module\casserver\Cas\ServiceValidator;
  * Date: 4/8/19
  * Time: 2:58 PM
  */
-class ServiceValidatorTest extends \PHPUnit\Framework\TestCase
+class ServiceValidatorTest extends TestCase
 {
     /**
      * Test being able to override CAS configuration options per service.
      *
      * @param string $service The service url to test
      * @param array $expectedConfig The expected CAS configuration to use
-     * @return void
      * @dataProvider overridingDataProvider
      */
-    public function testOverridingServiceConfig($service, array $expectedConfig)
+    public function testOverridingServiceConfig(string $service, array $expectedConfig): void
     {
         $casConfig = [
             'attrname' => 'defaultAttribute',
@@ -67,7 +69,7 @@ class ServiceValidatorTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array
      */
-    public function overridingDataProvider()
+    public function overridingDataProvider(): array
     {
         // The expected configuration if no overrides occur
         $defaultConfig = [
@@ -134,10 +136,9 @@ class ServiceValidatorTest extends \PHPUnit\Framework\TestCase
      * Test confirming service url matching and per service configuration
      * @param string $service the service url to check
      * @param bool $allowed is the service url allowed?
-     * @return void
      * @dataProvider checkServiceURLProvider
      */
-    public function testCheckServiceURL($service, $allowed)
+    public function testCheckServiceURL(string $service, bool $allowed): void
     {
         $casConfig = [
             'legal_service_urls' => [
@@ -166,7 +167,7 @@ class ServiceValidatorTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array
      */
-    public function checkServiceURLProvider()
+    public function checkServiceURLProvider(): array
     {
         return [
             ['no-match', false],

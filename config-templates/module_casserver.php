@@ -58,6 +58,22 @@ $config = [
 
         //'class' => 'casserver:RedisTicketStore',
         //'prefix' => 'some_prefix',
+
+        // Store tickets in multiple ticket stores for redundancy or to allow
+        // transitions between data stores without downtime.
+        /*
+        'class' => 'casserver:DelegatingTicketStore',
+        'delegateTo' => 'all',
+        'ticketStores' => [
+            'oldStore' => [
+                'class' => 'casserver:RedisTicketStore',
+                'prefix' => 'cas',
+            ],
+            'newStore' => [
+                'class' => 'casserver:FileSystemTicketStore',
+                'prefix' => 'cas'
+            ]
+        ]*/
     ],
 
     'attrname' => 'eduPersonPrincipalName', // 'eduPersonPrincipalName',

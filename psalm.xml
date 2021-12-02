@@ -22,7 +22,6 @@
         <MissingReturnType errorLevel="info" />
         <MissingPropertyType errorLevel="info" />
         <InvalidDocblock errorLevel="info" />
-        <MisplacedRequiredParam errorLevel="info" />
 
         <PropertyNotSetInConstructor errorLevel="info" />
         <MissingConstructor errorLevel="info" />
@@ -37,5 +36,13 @@
                 <directory name="tests" />
             </errorLevel>
         </InternalMethod>
+
+
+        <!-- Ignore UnresolvableInclude -->
+        <UnresolvableInclude>
+            <errorLevel type="suppress">
+                <file name="tests/bootstrap.php" />
+            </errorLevel>
+        </UnresolvableInclude>
     </issueHandlers>
 </psalm>

@@ -25,10 +25,10 @@ session_cache_limiter('nocache');
 
 $globalConfig = \SimpleSAML\Configuration::getInstance();
 
-$t = new \SimpleSAML\XHTML\Template($globalConfig, 'casserver:loggedOut.php');
+$t = new \SimpleSAML\XHTML\Template($globalConfig, 'casserver:loggedOut.twig');
 
 if (array_key_exists('url', $_GET)) {
     $t->data['url'] = $_GET['url'];
 }
 
-$t->show();
+$t->send();

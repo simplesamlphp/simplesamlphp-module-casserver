@@ -21,29 +21,31 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
 use Exception;
 use PDO;
 use PDOException;
 use PDOStatement;
+use SimpleSAML\Assert\Assert;
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
-use Webmozart\Assert\Assert;
 
 class SQLTicketStore extends TicketStore
 {
     /** @var \PDO $pdo */
-    public $pdo;
+    public PDO $pdo;
 
     /** @var string $driver */
-    public $driver = 'pdo';
+    public string $driver = 'pdo';
 
     /** @var string $prefix */
-    public $prefix;
+    public string $prefix;
 
     /** @var array $tableVersions */
-    private $tableVersions = [];
+    private array $tableVersions = [];
 
 
     /**
@@ -79,7 +81,7 @@ class SQLTicketStore extends TicketStore
      * @param string $ticketId
      * @return array|null
      */
-    public function getTicket($ticketId)
+    public function getTicket(string $ticketId): ?array
     {
         $scopedTicketId = $this->scopeTicketId($ticketId);
 
@@ -89,9 +91,8 @@ class SQLTicketStore extends TicketStore
 
     /**
      * @param array $ticket
-     * @return void
      */
-    public function addTicket(array $ticket)
+    public function addTicket(array $ticket): void
     {
         $scopedTicketId = $this->scopeTicketId($ticket['id']);
 
@@ -101,9 +102,8 @@ class SQLTicketStore extends TicketStore
 
     /**
      * @param string $ticketId
-     * @return void
      */
-    public function deleteTicket($ticketId)
+    public function deleteTicket(string $ticketId): void
     {
         $scopedTicketId = $this->scopeTicketId($ticketId);
 
@@ -115,18 +115,16 @@ class SQLTicketStore extends TicketStore
      * @param string $ticketId
      * @return string
      */
-    private function scopeTicketId($ticketId)
+    private function scopeTicketId(string $ticketId): string
     {
         return $this->prefix . '.' . $ticketId;
     }
 
 
     /**
-     * @return void
      */
-    private function initTableVersionTable()
+    private function initTableVersionTable(): void
     {
-
         $this->tableVersions = [];
 
         try {
@@ -144,9 +142,8 @@ class SQLTicketStore extends TicketStore
 
 
     /**
-     * @return void
      */
-    private function initKVTable()
+    private function initKVTable(): void
     {
         if ($this->getTableVersion('kvstore') === 1) {
             /* Table initialized. */
@@ -168,10 +165,8 @@ class SQLTicketStore extends TicketStore
      * @param string $name
      * @return int
      */
-    private function getTableVersion($name)
+    private function getTableVersion(string $name): int
     {
-        Assert::string($name);
-
         if (!isset($this->tableVersions[$name])) {
             return 0;
         }
@@ -183,13 +178,9 @@ class SQLTicketStore extends TicketStore
     /**
      * @param string $name
      * @param int $version
-     * @return void
      */
-    private function setTableVersion($name, $version)
+    private function setTableVersion(string $name, int $version): void
     {
-        Assert::string($name);
-        Assert::integer($version);
-
         $this->insertOrUpdate(
             $this->prefix . '_tableVersion',
             ['_name'],
@@ -206,12 +197,9 @@ class SQLTicketStore extends TicketStore
      * @param string $table
      * @param array $keys
      * @param array $data
-     * @return void
      */
-    private function insertOrUpdate($table, array $keys, array $data)
+    private function insertOrUpdate(string $table, array $keys, array $data): void
     {
-        Assert::string($table);
-
         $colNames = '(' . implode(', ', array_keys($data)) . ')';
         $values = 'VALUES(:' . implode(', :', array_keys($data)) . ')';
 
@@ -247,9 +235,8 @@ class SQLTicketStore extends TicketStore
      * @param array $keys
      * @param array $data
      * @param \PDOStatement $insertQuery
-     * @return void
      */
-    private function insertOrUpdateFallback($table, array $keys, array $data, PDOStatement $insertQuery)
+    private function insertOrUpdateFallback(string $table, array $keys, array $data, PDOStatement $insertQuery): void
     {
         try {
             $insertQuery->execute($data);
@@ -285,9 +272,8 @@ class SQLTicketStore extends TicketStore
 
 
     /**
-     * @return void
      */
-    private function cleanKVStore()
+    private function cleanKVStore(): void
     {
         $query = 'DELETE FROM ' . $this->prefix . '_kvstore WHERE _expire < :now';
         $params = ['now' => gmdate('Y-m-d H:i:s')];
@@ -301,10 +287,8 @@ class SQLTicketStore extends TicketStore
      * @param string $key
      * @return array|null
      */
-    private function get($key)
+    private function get(string $key): ?array
     {
-        Assert::string($key);
-
         if (strlen($key) > 50) {
             $key = sha1($key);
         }
@@ -340,9 +324,8 @@ class SQLTicketStore extends TicketStore
      * @param string $key
      * @param array $value
      * @param int|null $expire
-     * @return void
      */
-    private function set($key, $value, $expire = null)
+    private function set(string $key, array $value, int $expire = null): void
     {
         Assert::string($key);
         Assert::nullOrInteger($expire);
@@ -375,9 +358,8 @@ class SQLTicketStore extends TicketStore
 
     /**
      * @param string $key
-     * @return void
      */
-    private function delete($key)
+    private function delete(string $key): void
     {
         Assert::string($key);
 
