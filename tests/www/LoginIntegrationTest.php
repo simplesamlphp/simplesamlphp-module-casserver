@@ -236,13 +236,76 @@ class LoginIntegrationTest extends TestCase
                 CURLOPT_COOKIEFILE => $this->cookies_file
             ]
         );
-        $this->assertEquals(302, $resp['code']);
+        $this->assertEquals(302, $resp['code'], $resp['body']);
 
         $this->assertStringStartsWith(
             $service_url . '?myTicket=ST-',
             $resp['headers']['Location'],
             'Ticket should be part of the redirect.'
         );
+    }
+
+    /**
+     * Some clients urls:
+     * 1. Incorrectly encode query parameters or fragments
+     * 2. Encode spaces as %20 which php rencodes to +
+     * 3. Special characters url encoded to lower case hexadecimal (some .net versions) are changed to upper case.
+     *
+     * Test to confirm these type of urls work
+     * @dataProvider encodingIssueProvider
+     * @param string $service_url The service url submitted by the client
+     * @param string $expectedStartsWith The redirect location is expected to start with this.
+     * @param string $expectedEndsWith The redirect location is expected to end with this. Used for testing #fragments.
+     * @return void
+     */
+    public function testEncodingIssued($service_url, $expectedStartsWith, $expectedEndsWith)
+    {
+        $this->authenticate();
+
+        /** @var array $resp */
+        $resp = $this->server->get(
+            self::$LINK_URL,
+            ['service' => $service_url],
+            [
+                CURLOPT_COOKIEJAR => $this->cookies_file,
+                CURLOPT_COOKIEFILE => $this->cookies_file
+            ]
+        );
+        $this->assertEquals(302, $resp['code'], $resp['body']);
+
+        $this->assertStringStartsWith(
+            $expectedStartsWith,
+            $resp['headers']['Location'],
+            'Ticket should be part of the redirect.'
+        );
+        if (!empty($expectedEndsWith)) {
+            $this->assertStringEndsWith(
+                $expectedEndsWith,
+                $resp['headers']['Location'],
+                'url fragments happen after the query params'
+            );
+        }
+    }
+
+    public function encodingIssueProvider(): array
+    {
+        $urlWithQuery = 'https://encoding.edu/bug/portal.do?solo&ct=Search%20Prot&curl=https://kc.edu/IRB.do?se=1875*&rs=1';
+        $urlNoQuery = 'https://encoding.edu/bug';
+        $urlMultiKeys = 'https://encoding.edu/bug?a=val1&a=val2';
+        $urlWithCaseDifference = 'https://encoding.edu?url=https%3a%2f%2Fencoding.edu%3Fa%3Db';
+        $urlWithSpace = 'https://encoding.edu?a=a%20space';
+        $urlWithRepeatParams = 'https://encoding.edu?a=b&a=c';
+        return [
+            [$urlWithQuery, $urlWithQuery . '&ticket=ST-', ''],
+            [$urlWithQuery . '#fragment', $urlWithQuery . '&ticket=ST-', '#fragment'],
+            [$urlMultiKeys, $urlMultiKeys . '&ticket=ST-', ''],
+            [$urlMultiKeys . '#fragment', $urlMultiKeys . '&ticket=ST-', '#fragment'],
+            [$urlNoQuery, $urlNoQuery. '?ticket=ST-', ''],
+            [$urlNoQuery . '#fragment', $urlNoQuery . '?ticket=ST-', '#fragment'],
+            [$urlWithCaseDifference, $urlWithCaseDifference. '&ticket=ST-', ''],
+            [$urlWithSpace, $urlWithSpace. '&ticket=ST-', ''],
+            [$urlWithRepeatParams, $urlWithRepeatParams. '&ticket=ST-', ''],
+        ];
     }
 
 

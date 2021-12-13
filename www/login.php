@@ -28,15 +28,15 @@
  *  language
  */
 
+use SimpleSAML\Configuration;
+use SimpleSAML\Locale\Language;
+use SimpleSAML\Logger;
+use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Cas\AttributeExtractor;
 use SimpleSAML\Module\casserver\Cas\Protocol\SamlValidateResponder;
 use SimpleSAML\Module\casserver\Cas\ServiceValidator;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
-use SimpleSAML\Configuration;
-use SimpleSAML\Locale\Language;
-use SimpleSAML\Logger;
-use SimpleSAML\Module;
 use SimpleSAML\Session;
 use SimpleSAML\Utils;
 
@@ -227,7 +227,7 @@ if (isset($serviceUrl)) {
             echo '<pre>' . htmlspecialchars($casResponse) . '</pre>';
         }
     } elseif ($redirect) {
-        $httpUtils->redirectTrustedURL($httpUtils->addURLParameters($serviceUrl, $parameters));
+        $httpUtils->redirectTrustedURL($this->casAddURLParameters($serviceUrl, $parameters));
     } else {
         $httpUtils->submitPOSTData($serviceUrl, $parameters);
     }
@@ -235,4 +235,31 @@ if (isset($serviceUrl)) {
     $httpUtils->redirectTrustedURL(
         $httpUtils->addURLParameters(Module::getModuleURL('casserver/loggedIn.php'), $parameters)
     );
+}
+
+
+/**
+ * CAS wants to ensure that a service url provided in login matches exactly that provided in service validate.
+ * This method avoids SSP's built in redirect which can change that url in certain ways, such as
+ * * changing how a ' ' is encoded
+ * * not correctly handling url fragments (e.g. #)
+ * * not correctly handling query param keys occurring multiple times
+ * * changing lower case hexadecimal to upper case
+ * * some buggy clients don't encode query params correctly
+ * which results in either the wrong url being returned to the client, or a service mismatch
+ * @param string $url The url to adjust
+ * @param array $params The query parameters to add.
+ * @return string The url to return
+ */
+function casAddURLParameters($url, $params)
+{
+    $url_fragment = explode("#", $url);
+    if (strpos($url_fragment[0], "?") === false) {
+        $url_fragment[0] .= "?";
+    } else {
+        $url_fragment[0] .= "&";
+    }
+    $url_fragment[0] .= http_build_query($params);
+    $url = implode("#", $url_fragment);
+    return $url;
 }
