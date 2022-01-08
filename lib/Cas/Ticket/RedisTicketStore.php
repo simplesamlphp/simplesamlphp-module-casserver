@@ -26,15 +26,15 @@ declare(strict_types=1);
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
 use SimpleSAML\Configuration;
-use SimpleSAML\Store\Redis;
+use SimpleSAML\Store\RedisStore;
 
 class RedisTicketStore extends TicketStore
 {
     /** @var string $prefix */
     private string $prefix = '';
 
-    /** @var \SimpleSAML\Store\Redis $redis */
-    private Redis $redis;
+    /** @var \SimpleSAML\Store\RedisStore $redis */
+    private RedisStore $redis;
 
 
     /**
@@ -50,7 +50,7 @@ class RedisTicketStore extends TicketStore
             $this->prefix = $storeConfig['prefix'];
         }
 
-        $this->redis = new Redis();
+        $this->redis = new RedisStore();
     }
 
 
