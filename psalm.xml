@@ -42,6 +42,7 @@
         <UnresolvableInclude>
             <errorLevel type="suppress">
                 <file name="tests/bootstrap.php" />
+                <file name="tests/routers/configLoader.php" />
             </errorLevel>
         </UnresolvableInclude>
     </issueHandlers>
