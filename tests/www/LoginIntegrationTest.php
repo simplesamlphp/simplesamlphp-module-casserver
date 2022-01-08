@@ -178,7 +178,7 @@ class LoginIntegrationTest extends TestCase
                 CURLOPT_COOKIEFILE => $this->cookies_file
             ]
         );
-        $this->assertEquals(302, $resp['code']);
+        $this->assertEquals(303, $resp['code']);
 
         $this->assertStringStartsWith(
             $service_url . '?' . $ticketParam . '=ST-',
@@ -236,7 +236,7 @@ class LoginIntegrationTest extends TestCase
                 CURLOPT_COOKIEFILE => $this->cookies_file
             ]
         );
-        $this->assertEquals(302, $resp['code']);
+        $this->assertEquals(303, $resp['code']);
 
         $this->assertStringStartsWith(
             $service_url . '?myTicket=ST-',
@@ -400,7 +400,7 @@ class LoginIntegrationTest extends TestCase
                 CURLOPT_COOKIEFILE => $this->cookies_file
             ]
         );
-        $this->assertEquals(302, $resp['code']);
+        $this->assertEquals(303, $resp['code']);
 
         $this->assertStringStartsWith(
             $service_url . '?ticket=ST-',
