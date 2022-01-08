@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Simplesamlphp\Casserver;
+namespace SimpleSAML\Casserver;
 
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Configuration;

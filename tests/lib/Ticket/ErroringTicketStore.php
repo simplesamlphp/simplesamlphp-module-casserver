@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Simplesamlphp\Casserver\Ticket;
+namespace SimpleSAML\Casserver\Ticket;
 
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
 

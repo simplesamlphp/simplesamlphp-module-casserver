@@ -17,12 +17,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Simplesamlphp\\Module\\casserver\\": "lib"
+            "SimpleSAML\\Module\\casserver\\": "lib"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Simplesamlphp\\Casserver\\": "tests/lib"
+            "SimpleSAML\\Casserver\\": "tests/lib"
         }
     },
     "require": {

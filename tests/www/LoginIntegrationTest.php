@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Simplesamlphp\Casserver;
+namespace SimpleSAML\Casserver;
 
 use DOMDocument;
 use PHPUnit\Framework\TestCase;
@@ -16,7 +16,7 @@ use SimpleSAML\TestUtils\BuiltInServer;
  *
  * The embedded server is authenticating users user exampleauth::static to automatically log users in.
  *
- * @package Simplesamlphp\Casserver
+ * @package simplesamlphp\simplesamlphp-module-casserver
  */
 class LoginIntegrationTest extends TestCase
 {

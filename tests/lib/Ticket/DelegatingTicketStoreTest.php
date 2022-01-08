@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Simplesamlphp\Casserver\Ticket;
+namespace SimpleSAML\Casserver\Ticket;
 
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Configuration;
