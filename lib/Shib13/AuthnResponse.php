@@ -208,10 +208,9 @@ class AuthnResponse
      */
     public function getSessionIndex(): ?string
     {
-        Assert::isInstanceOf($node, DOMNode::class);
-
         $query = '/shibp:Response/shib:Assertion/shib:AuthnStatement';
         $nodelist = $this->doXPathQuery($query);
+
         if ($node = $nodelist->item(0)) {
             return $node->getAttribute('SessionIndex');
         }
