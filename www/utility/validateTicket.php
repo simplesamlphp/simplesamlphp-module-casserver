@@ -102,8 +102,9 @@ if (isset($serviceUrl) && array_key_exists('ticket', $_GET)) {
                             'proxies' => array_merge([$serviceUrl], $serviceTicket['proxies']),
                             'sessionId' => $serviceTicket['sessionId']
                         ]);
+                        $httpUtils = new Utils\HTTP();
                         try {
-                            Utils\HTTP::fetch($pgtUrl . '?pgtIou=' . $proxyGrantingTicket['iou'] .
+                            $httpUtils->fetch($pgtUrl . '?pgtIou=' . $proxyGrantingTicket['iou'] .
                                 '&pgtId=' . $proxyGrantingTicket['id']);
 
                             $protocol->setProxyGrantingTicketIOU($proxyGrantingTicket['iou']);
