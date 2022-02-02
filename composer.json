@@ -11,13 +11,13 @@
             "*": "dist"
         },
         "allow-plugins": {
-            "composer/package-versions-deprecated": true
+            "composer/package-versions-deprecated": true,
+            "simplesamlphp/composer-module-installer": true
         }
     },
     "require": {
-        "php": ">=5.6|<7.0",
-        "simplesamlphp/composer-module-installer": "~1.1",
-        "webmozart/assert": "1.4"
+        "php": ">=7.1",
+        "simplesamlphp/composer-module-installer": "~1.1"
     },
     "autoload-dev": {
         "psr-4": {
@@ -25,8 +25,8 @@
         }
     },
     "require-dev": {
-        "simplesamlphp/simplesamlphp": "^1.17.7",
-        "simplesamlphp/simplesamlphp-test-framework": "~0.0.15"
+        "simplesamlphp/simplesamlphp": "^1.19",
+        "simplesamlphp/simplesamlphp-test-framework": "~0.1.2"
     },
     "support": {
         "issues": "https://github.com/simplesamlphp/simplesamlphp-module-casserver/issues",
