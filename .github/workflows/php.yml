@@ -22,7 +22,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           tools: composer:v2
-          extensions: ldap, mbstring, xml
+          extensions: intl, mbstring, xml
           coverage: pcov
 
       - name: Setup problem matchers for PHP
