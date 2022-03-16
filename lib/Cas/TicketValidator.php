@@ -36,7 +36,7 @@ class TicketValidator
     public function __construct(Configuration $casconfig)
     {
         $this->casconfig = $casconfig;
-        $ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
+        $ticketStoreConfig = $casconfig->getOptionalValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
         $ticketStoreClass = Module::resolveClass($ticketStoreConfig['class'], 'Cas\Ticket');
         /**
          * @psalm-suppress InvalidStringClass

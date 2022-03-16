@@ -40,7 +40,7 @@ class FileSystemTicketStore extends TicketStore
      */
     public function __construct(Configuration $config)
     {
-        $storeConfig = $config->getValue('ticketstore', ['directory' => 'ticketcache']);
+        $storeConfig = $config->getOptionalValue('ticketstore', ['directory' => 'ticketcache']);
 
         if (!is_string($storeConfig['directory'])) {
             throw new Exception('Invalid directory option in config.');

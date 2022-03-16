@@ -55,9 +55,9 @@ class Cas20
      */
     public function __construct(Configuration $config)
     {
-        $this->sendAttributes = $config->getValue('attributes', false);
-        $this->base64EncodeAttributes = $config->getValue('base64attributes', false);
-        $this->base64IndicatorAttribute = $config->getValue('base64_attributes_indicator_attribute', null);
+        $this->sendAttributes = $config->getOptionalValue('attributes', false);
+        $this->base64EncodeAttributes = $config->getOptionalValue('base64attributes', false);
+        $this->base64IndicatorAttribute = $config->getOptionalValue('base64_attributes_indicator_attribute', null);
     }
 
 

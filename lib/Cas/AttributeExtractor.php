@@ -34,15 +34,15 @@ class AttributeExtractor
             $attributes = $this->invokeAuthProc($attributes, $casconfig);
         }
 
-        $casUsernameAttribute = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
+        $casUsernameAttribute = $casconfig->getOptionalValue('attrname', 'eduPersonPrincipalName');
 
         $userName = $attributes[$casUsernameAttribute][0];
         if (empty($userName)) {
             throw new \Exception("No cas user defined for attribute $casUsernameAttribute");
         }
 
-        if ($casconfig->getValue('attributes', true)) {
-            $attributesToTransfer = $casconfig->getValue('attributes_to_transfer', []);
+        if ($casconfig->getOptionalValue('attributes', true)) {
+            $attributesToTransfer = $casconfig->getOptionalValue('attributes_to_transfer', []);
 
             if (sizeof($attributesToTransfer) > 0) {
                 $casAttributes = [];
@@ -76,7 +76,7 @@ class AttributeExtractor
      */
     private function invokeAuthProc(array $attributes, Configuration $casconfig): array
     {
-        $filters = $casconfig->getArray('authproc', []);
+        $filters = $casconfig->getOptionalArray('authproc', []);
 
         $state = [
             'Attributes' => $attributes

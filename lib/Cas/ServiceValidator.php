@@ -37,7 +37,7 @@ class ServiceValidator
         $isValidService = false;
         $legalUrl = 'undefined';
         $configOverride = null;
-        foreach ($this->mainConfig->getArray('legal_service_urls', []) as $index => $value) {
+        foreach ($this->mainConfig->getOptionalArray('legal_service_urls', []) as $index => $value) {
             // Support two styles:  0 => 'https://example' and 'https://example' => [ extra config ]
             if (is_int($index)) {
                 $legalUrl = $value;

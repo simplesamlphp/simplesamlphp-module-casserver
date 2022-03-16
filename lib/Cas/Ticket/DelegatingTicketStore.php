@@ -39,7 +39,7 @@ class DelegatingTicketStore extends TicketStore
     public function __construct(Configuration $casConfig)
     {
         $config = $casConfig->getConfigItem('ticketstore');
-        $this->delegateTo = $config->getString('delegateTo', 'all');
+        $this->delegateTo = $config->getOptionalString('delegateTo', 'all');
         foreach ($config->getArray('ticketStores') as $name => $storeArray) {
             // TicketStore expects the store config to be in a specific item
             $storeConfig = Configuration::loadFromArray(['ticketstore' => $storeArray]);

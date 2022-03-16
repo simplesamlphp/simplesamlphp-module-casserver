@@ -34,13 +34,13 @@ $protocolClass = \SimpleSAML\Module::resolveClass('casserver:Cas20', 'Cas\Protoc
 /** @psalm-suppress InvalidStringClass */
 $protocol = new $protocolClass($casconfig);
 
-$legal_target_service_urls = $casconfig->getValue('legal_target_service_urls', []);
+$legal_target_service_urls = $casconfig->getOptionalValue('legal_target_service_urls', []);
 
 if (
     array_key_exists('targetService', $_GET) &&
     checkServiceURL(sanitize($_GET['targetService']), $legal_target_service_urls) && array_key_exists('pgt', $_GET)
 ) {
-    $ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
+    $ticketStoreConfig = $casconfig->getOptionalValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
     $ticketStoreClass = \SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas\Ticket');
     /** @psalm-suppress InvalidStringClass */
     $ticketStore = new $ticketStoreClass($casconfig);

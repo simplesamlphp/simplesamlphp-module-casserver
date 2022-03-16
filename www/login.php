@@ -70,7 +70,7 @@ if (isset($serviceUrl)) {
 $as = new \SimpleSAML\Auth\Simple($casconfig->getValue('authsource'));
 
 if (array_key_exists('scope', $_GET) && is_string($_GET['scope'])) {
-    $scopes = $casconfig->getValue('scopes', []);
+    $scopes = $casconfig->getOptionalValue('scopes', []);
 
     if (array_key_exists($_GET['scope'], $scopes)) {
         $idpList = $scopes[$_GET['scope']];
@@ -87,7 +87,7 @@ if (array_key_exists('language', $_GET) && is_string($_GET['language'])) {
     Language::setLanguageCookie($_GET['language']);
 }
 
-$ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
+$ticketStoreConfig = $casconfig->getOptionalValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
 $ticketStoreClass = Module::resolveClass($ticketStoreConfig['class'], 'Cas\Ticket');
 /** @var $ticketStore TicketStore */
 /** @psalm-suppress InvalidStringClass */
@@ -186,7 +186,7 @@ if (array_key_exists('language', $_GET)) {
 
 if (isset($serviceUrl)) {
     $defaultTicketName = isset($_GET['service']) ? 'ticket' : 'SAMLart';
-    $ticketName = $casconfig->getValue('ticketName', $defaultTicketName);
+    $ticketName = $casconfig->getOptionalValue('ticketName', $defaultTicketName);
 
     $attributeExtractor = new AttributeExtractor();
     $mappedAttributes = $attributeExtractor->extractUserAndAttributes($as->getAttributes(), $casconfig);
@@ -208,7 +208,7 @@ if (isset($serviceUrl)) {
     if (
         array_key_exists('debugMode', $_GET) &&
         in_array($_GET['debugMode'], $validDebugModes) &&
-        $casconfig->getBoolean('debugMode', false)
+        $casconfig->getOptionalBoolean('debugMode', false)
     ) {
         if ($_GET['debugMode'] === 'samlValidate') {
             $samlValidate = new SamlValidateResponder();

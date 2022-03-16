@@ -60,8 +60,8 @@ class SQLTicketStore extends TicketStore
         $dsn = $storeConfig->getString('dsn');
         $username = $storeConfig->getString('username');
         $password = $storeConfig->getString('password');
-        $options = $storeConfig->getArray('options', []);
-        $this->prefix = $storeConfig->getString('prefix', '');
+        $options = $storeConfig->getOptionalArray('options', []);
+        $this->prefix = $storeConfig->getOptionalString('prefix', '');
 
         $this->pdo = new PDO($dsn, $username, $password, $options);
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

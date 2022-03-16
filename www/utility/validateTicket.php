@@ -54,7 +54,7 @@ if (isset($serviceUrl) && array_key_exists('ticket', $_GET)) {
     $forceAuthn = isset($_GET['renew']) && $_GET['renew'];
 
     try {
-        $ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
+        $ticketStoreConfig = $casconfig->getOptionalValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
         $ticketStoreClass = Module::resolveClass($ticketStoreConfig['class'], 'Cas\Ticket');
         /** @var TicketStore $ticketStore */
         /** @psalm-suppress InvalidStringClass */

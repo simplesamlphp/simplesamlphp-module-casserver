@@ -16,12 +16,14 @@ use DOMNodeList;
 use DOMXpath;
 use Exception;
 use SAML2\DOMDocumentFactory;
+use SAML2\Utils as SAML2_UTILS;
 use SimpleSAML\Assert\Assert;
 use SimpleSAML\Configuration;
 use SimpleSAML\Error;
 use SimpleSAML\Metadata\MetaDataStorageHandler;
 use SimpleSAML\Utils;
 use SimpleSAML\XML\Validator;
+use SimpleXMLElement;
 
 class AuthnResponse
 {
@@ -165,7 +167,7 @@ class AuthnResponse
         }
 
         // Convert the node to a DOM node if it is an element from SimpleXML
-        if ($node instanceof \SimpleXMLElement) {
+        if ($node instanceof SimpleXMLElement) {
             $node = dom_import_simplexml($node);
         }
 
@@ -368,10 +370,10 @@ class AuthnResponse
 
         $spEntityId = $sp->getString('entityid');
 
-        $audience = $sp->getString('audience', $spEntityId);
-        $base64 = $sp->getBoolean('base64attributes', false);
+        $audience = $sp->getOptionalString('audience', $spEntityId);
+        $base64 = $sp->getOptionalBoolean('base64attributes', false);
 
-        $namequalifier = $sp->getString('NameQualifier', $spEntityId);
+        $namequalifier = $sp->getOptionalString('NameQualifier', $spEntityId);
         $nameid = $randomUtils->generateID();
         $subjectNode =
             '<Subject>' .
@@ -493,14 +495,14 @@ class AuthnResponse
         $currentTime = time();
 
         if (!empty($start)) {
-            $startTime = \SAML2\Utils::xsDateTimeToTimestamp($start);
+            $startTime = SAML2_Utils::xsDateTimeToTimestamp($start);
             // allow for a 10 minute difference in time
             if (($startTime < 0) || (($startTime - 600) > $currentTime)) {
                 return false;
             }
         }
         if (!empty($end)) {
-            $endTime = \SAML2\Utils::xsDateTimeToTimestamp($end);
+            $endTime = SAML2_Utils::xsDateTimeToTimestamp($end);
             if (($endTime < 0) || ($endTime <= $currentTime)) {
                 return false;
             }

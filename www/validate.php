@@ -41,7 +41,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
 
     try {
         /* Instantiate ticket store */
-        $ticketStoreConfig = $casconfig->getValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
+        $ticketStoreConfig = $casconfig->getOptionalValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
         $ticketStoreClass = \SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas\Ticket');
         /** @psalm-suppress InvalidStringClass */
         $ticketStore = new $ticketStoreClass($casconfig);
@@ -55,7 +55,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
         if (!is_null($serviceTicket) && $ticketFactory->isServiceTicket($serviceTicket)) {
             $ticketStore->deleteTicket($_GET['ticket']);
 
-            $usernameField = $casconfig->getValue('attrname', 'eduPersonPrincipalName');
+            $usernameField = $casconfig->getOptionalValue('attrname', 'eduPersonPrincipalName');
 
             if (
                 !$ticketFactory->isExpired($serviceTicket) &&

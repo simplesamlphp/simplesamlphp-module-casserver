@@ -45,9 +45,9 @@ class TicketFactory
      */
     public function __construct(Configuration $config)
     {
-        $this->serviceTicketExpireTime = $config->getValue('service_ticket_expire_time', 5);
-        $this->proxyGrantingTicketExpireTime = $config->getValue('proxy_granting_ticket_expire_time', 3600);
-        $this->proxyTicketExpireTime = $config->getValue('proxy_ticket_expire_time', 5);
+        $this->serviceTicketExpireTime = $config->getOptionalValue('service_ticket_expire_time', 5);
+        $this->proxyGrantingTicketExpireTime = $config->getOptionalValue('proxy_granting_ticket_expire_time', 3600);
+        $this->proxyTicketExpireTime = $config->getOptionalValue('proxy_ticket_expire_time', 5);
     }
 
 
