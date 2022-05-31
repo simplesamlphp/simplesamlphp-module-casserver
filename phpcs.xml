@@ -7,7 +7,7 @@
     </description>
 
     <file>config-templates</file>
-    <file>lib</file>
+    <file>src</file>
     <file>templates</file>
     <file>tests</file>
     <file>www</file>

@@ -17,23 +17,23 @@
     },
     "autoload": {
         "psr-4": {
-            "SimpleSAML\\Module\\casserver\\": "lib"
+            "SimpleSAML\\Module\\casserver\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "SimpleSAML\\Casserver\\": "tests/lib"
+            "SimpleSAML\\Casserver\\": "tests/src"
         }
     },
     "require": {
         "php": ">=7.4 || ^8.0",
 
         "simplesamlphp/composer-module-installer": "~1.1",
-        "simplesamlphp/simplesamlphp": "^2.0.0-beta.2",
-        "simplesamlphp/xml-common": "^0.8.1"
+        "simplesamlphp/simplesamlphp": "^2.0.0-beta.10",
+        "simplesamlphp/xml-common": "^0.8.8"
     },
     "require-dev": {
-        "simplesamlphp/simplesamlphp-test-framework": "~1.1.4"
+        "simplesamlphp/simplesamlphp-test-framework": "~1.2.1"
     },
     "support": {
         "issues": "https://github.com/simplesamlphp/simplesamlphp-module-casserver/issues",
