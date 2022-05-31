@@ -114,7 +114,6 @@ class LoginIntegrationTest extends TestCase
      */
     public function testNoQueryParameters(): void
     {
-        /** @var array $resp */
         $resp = $this->server->get(
             self::$LINK_URL,
             [],
@@ -139,7 +138,6 @@ class LoginIntegrationTest extends TestCase
      */
     public function testWrongServiceUrl(): void
     {
-        /** @var array $resp */
         $resp = $this->server->get(
             self::$LINK_URL,
             ['service' => 'http://not-legal'],
@@ -171,7 +169,6 @@ class LoginIntegrationTest extends TestCase
 
         $this->authenticate();
 
-        /** @var array $resp */
         $resp = $this->server->get(
             self::$LINK_URL,
             [$serviceParam => $service_url],
@@ -229,7 +226,6 @@ class LoginIntegrationTest extends TestCase
 
         $this->authenticate();
 
-        /** @var array $resp */
         $resp = $this->server->get(
             self::$LINK_URL,
             ['TARGET' => $service_url],
@@ -255,7 +251,6 @@ class LoginIntegrationTest extends TestCase
     {
         $service_url = 'http://host1.domain:1234/path1';
         $this->authenticate();
-        /** @var array $resp */
         $resp = $this->server->get(
             self::$LINK_URL,
             ['service' => $service_url, 'debugMode' => 'true'],
@@ -281,7 +276,6 @@ class LoginIntegrationTest extends TestCase
     {
         $service_url = 'http://host1.domain:1234/path1';
         $this->authenticate();
-        /** @var array $resp */
         $resp = $this->server->get(
             self::$LINK_URL,
             ['service' => $service_url, 'debugMode' => 'samlValidate'],
@@ -308,7 +302,6 @@ class LoginIntegrationTest extends TestCase
     {
         $service_url = 'https://override.example.com/somepath';
         $this->authenticate();
-        /** @var array $resp */
         $resp = $this->server->get(
             self::$LINK_URL,
             ['service' => $service_url, 'debugMode' => 'true'],
@@ -339,7 +332,6 @@ class LoginIntegrationTest extends TestCase
         $service_url = 'http://host1.domain:1234/path1';
 
         $this->authenticate();
-        /** @var array $resp */
         $resp = $this->server->get(
             self::$LINK_URL,
             [
@@ -393,7 +385,6 @@ class LoginIntegrationTest extends TestCase
         $service_url = 'http://host1.domain:1234/path1';
         $this->authenticate();
 
-        /** @var array $resp */
         $resp = $this->server->get(
             self::$LINK_URL,
             ['service' => $service_url],
@@ -444,7 +435,6 @@ SOAP;
     private function authenticate(): void
     {
         // Use cookies Jar to store auth session cookies
-        /** @var array $resp */
         $resp = $this->server->get(
             self::$LINK_URL,
             [],
@@ -471,7 +461,6 @@ SOAP;
         }
 
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        /** @psalm-var string $resp */
         list($header, $body) = explode("\r\n\r\n", $resp, 2);
         $raw_headers = explode("\r\n", $header);
         array_shift($raw_headers);
