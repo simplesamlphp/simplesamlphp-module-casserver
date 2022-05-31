@@ -112,7 +112,7 @@ class LoginIntegrationTest extends TestCase
     /**
      * Test authenticating to the login endpoint with no parameters.'
      */
-    public function testNoQueryParameters()
+    public function testNoQueryParameters(): void
     {
         /** @var array $resp */
         $resp = $this->server->get(
@@ -137,7 +137,7 @@ class LoginIntegrationTest extends TestCase
     /**
      * Test incorrect service url
      */
-    public function testWrongServiceUrl()
+    public function testWrongServiceUrl(): void
     {
         /** @var array $resp */
         $resp = $this->server->get(
@@ -165,7 +165,7 @@ class LoginIntegrationTest extends TestCase
      * @param string $serviceParam The name of the query parameter to use for the service url
      * @param string $ticketParam The name of the query parameter that will contain the ticket
      */
-    public function testValidServiceUrl(string $serviceParam, string $ticketParam)
+    public function testValidServiceUrl(string $serviceParam, string $ticketParam): void
     {
         $service_url = 'http://host1.domain:1234/path1';
 
@@ -223,7 +223,7 @@ class LoginIntegrationTest extends TestCase
     /**
      * Test changing the ticket name
      */
-    public function testValidTicketNameOverride()
+    public function testValidTicketNameOverride(): void
     {
         $service_url = 'http://changeTicketParam/abc';
 
@@ -251,7 +251,7 @@ class LoginIntegrationTest extends TestCase
     /**
      * Test outputting user info instead of redirecting
      */
-    public function testDebugOutput()
+    public function testDebugOutput(): void
     {
         $service_url = 'http://host1.domain:1234/path1';
         $this->authenticate();
@@ -277,7 +277,7 @@ class LoginIntegrationTest extends TestCase
     /**
      * Test outputting user info instead of redirecting
      */
-    public function testDebugOutputSamlValidate()
+    public function testDebugOutputSamlValidate(): void
     {
         $service_url = 'http://host1.domain:1234/path1';
         $this->authenticate();
@@ -304,7 +304,7 @@ class LoginIntegrationTest extends TestCase
     /**
      * Test outputting user info instead of redirecting
      */
-    public function testAlternateServiceConfigUsed()
+    public function testAlternateServiceConfigUsed(): void
     {
         $service_url = 'https://override.example.com/somepath';
         $this->authenticate();
@@ -334,7 +334,7 @@ class LoginIntegrationTest extends TestCase
     /**
      * test a valid service URL with Post
      */
-    public function testValidServiceUrlWithPost()
+    public function testValidServiceUrlWithPost(): void
     {
         $service_url = 'http://host1.domain:1234/path1';
 
@@ -388,7 +388,7 @@ class LoginIntegrationTest extends TestCase
 
     /**
      */
-    public function testSamlValidate()
+    public function testSamlValidate(): void
     {
         $service_url = 'http://host1.domain:1234/path1';
         $this->authenticate();
@@ -441,7 +441,7 @@ SOAP;
     /**
      * Sets up an authenticated session for the cookie $jar
      */
-    private function authenticate()
+    private function authenticate(): void
     {
         // Use cookies Jar to store auth session cookies
         /** @var array $resp */
@@ -463,7 +463,7 @@ SOAP;
      * @param resource $ch
      * @return array
      */
-    private function execAndHandleCurlResponse($ch)
+    private function execAndHandleCurlResponse($ch): array
     {
         $resp = curl_exec($ch);
         if ($resp === false) {
@@ -497,7 +497,7 @@ SOAP;
      * @param array $curlopts Additional curl options
      * @return array The response code, headers and body
      */
-    public function post($query, $body, $parameters = [], $curlopts = [])
+    public function post($query, $body, $parameters = [], $curlopts = []): array
     {
         $ch = curl_init();
         $url = 'http://' . $this->server_addr . $query;

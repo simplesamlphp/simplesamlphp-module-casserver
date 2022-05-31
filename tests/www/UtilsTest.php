@@ -22,7 +22,7 @@ class UtilsTest extends TestCase
      * @param bool $allowed is the service url allowed?
      * @dataProvider checkServiceURLProvider
      */
-    public function testCheckServiceURL($service, $allowed)
+    public function testCheckServiceURL(string $service, bool $allowed): void
     {
         $legalServices = [
             // Regular prefix match
@@ -49,7 +49,7 @@ class UtilsTest extends TestCase
     /**
      * @return array
      */
-    public function checkServiceURLProvider()
+    public function checkServiceURLProvider(): array
     {
         return [
             ['no-match', false],

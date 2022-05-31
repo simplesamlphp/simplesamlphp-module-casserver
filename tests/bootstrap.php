@@ -21,7 +21,7 @@ require_once($projectRootDirectory . '/vendor/autoload.php');
  * @param string $target
  * @param string $link
  */
-function symlinkModulePathInVendorDirectory($target, $link)
+function symlinkModulePathInVendorDirectory(string $target, string $link): void
 {
     if (file_exists($link) === false) {
         // If the link is invalid, remove it.
