@@ -12,9 +12,21 @@
 
 Install with composer
 
-    composer require simplesamlphp/simplesamlphp-module-casserver
+```bash
+composer require simplesamlphp/simplesamlphp-module-casserver
+```
 
 ## Configuration
+
+Next thing you need to do is to enable the module: in `config.php`,
+search for the `module.enable` key and set `casserver` to true:
+
+```php
+'module.enable' => [
+    'casserver' => true,
+    …
+],
+```
 
 See the `config-templates` folder for examples of configuring this module
 
