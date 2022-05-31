@@ -4,6 +4,7 @@
  * Configuration for the module casserver.
  *
  */
+
 $config = [
     'authsource' => 'casserver',
 
@@ -59,9 +60,11 @@ $config = [
     'attributes_to_transfer' => ['eduPersonPrincipalName'], // set of attributes to transfer, defaults to all
 
     'base64attributes' => false, //base64 encode transferred attributes, defaults to false
-    'base64_attributes_indicator_attribute' => 'base64Attributes', /*add an attribute with the value of the base64attributes
-                                                                     configuration parameter to the set of transferred attributes.
-                                                                     Defaults to not adding an indicator attribute. */
+    /* add an attribute with the value of the base64attributes
+     * configuration parameter to the set of transferred attributes.
+     * Defaults to not adding an indicator attribute.
+     */
+    'base64_attributes_indicator_attribute' => 'base64Attributes',
 
     'enable_logout' => true, //enable CAS logout, defaults to false
     'skip_logout_page' => true, /*perform a redirect instead of showing a logout page with a link to the location
@@ -69,7 +72,8 @@ $config = [
                                   url query parameter to CAS logout mandatory for obvious reasons.*/
 
     'service_ticket_expire_time' => 5, //how many seconds service tickets are valid for, defaults to 5
-    'proxy_granting_ticket_expire_time' => 600, //how many seconds proxy granting tickets are valid for at most, defaults to 3600
+     //how many seconds proxy granting tickets are valid for at most, defaults to 3600
+    'proxy_granting_ticket_expire_time' => 600,
     'proxy_ticket_expire_time' => 5, //how many seconds proxy tickets are valid for, defaults to 5
 
     'debugMode' => true,

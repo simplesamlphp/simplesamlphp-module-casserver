@@ -41,7 +41,10 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
 
     try {
         /* Instantiate ticket store */
-        $ticketStoreConfig = $casconfig->getOptionalValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
+        $ticketStoreConfig = $casconfig->getOptionalValue(
+            'ticketstore',
+            ['class' => 'casserver:FileSystemTicketStore']
+        );
         $ticketStoreClass = \SimpleSAML\Module::resolveClass($ticketStoreConfig['class'], 'Cas\Ticket');
         /** @psalm-suppress InvalidStringClass */
         $ticketStore = new $ticketStoreClass($casconfig);
@@ -66,8 +69,10 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                 echo $protocol->getValidateSuccessResponse($serviceTicket['attributes'][$usernameField][0]);
             } else {
                 if (!array_key_exists($usernameField, $serviceTicket['attributes'])) {
-                    \SimpleSAML\Logger::error('casserver:validate: internal server error. Missing user name attribute: ' .
-                        var_export($usernameField, true));
+                    \SimpleSAML\Logger::error(sprintf(
+                        'casserver:validate: internal server error. Missing user name attribute: %s',
+                        var_export($usernameField, true)
+                    );
 
                     echo $protocol->getValidateFailureResponse();
                 } else {

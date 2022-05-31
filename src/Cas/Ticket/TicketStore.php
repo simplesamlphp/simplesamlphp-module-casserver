@@ -53,5 +53,5 @@ abstract class TicketStore
     /**
      * @param string $ticketId
      */
-    abstract public function deleteTicket(string $ticketId) : void;
+    abstract public function deleteTicket(string $ticketId): void;
 }

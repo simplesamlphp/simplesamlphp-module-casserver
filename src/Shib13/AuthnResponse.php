@@ -2,12 +2,6 @@
 
 declare(strict_types=1);
 
-/**
- * A Shibboleth 1.3 authentication response.
- *
- * @package SimpleSAMLphp
- */
-
 namespace SimpleSAML\Module\casserver\Shib13;
 
 use DOMDocument;
@@ -25,6 +19,11 @@ use SimpleSAML\Utils;
 use SimpleSAML\XML\Validator;
 use SimpleXMLElement;
 
+/**
+ * A Shibboleth 1.3 authentication response.
+ *
+ * @package SimpleSAMLphp
+ */
 class AuthnResponse
 {
     /**
@@ -82,7 +81,7 @@ class AuthnResponse
     /**
      * @param string|null $relayState
      */
-    public function setRelayState(?string $relayState) : void
+    public function setRelayState(?string $relayState): void
     {
         $this->relayState = $relayState;
     }

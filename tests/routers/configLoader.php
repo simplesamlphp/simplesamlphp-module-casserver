@@ -43,4 +43,3 @@ if (isset($config)) {
 // let the script proceed
 // see: http://php.net/manual/en/features.commandline.webserver.php
 return false;
-

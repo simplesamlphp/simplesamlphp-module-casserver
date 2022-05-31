@@ -265,7 +265,9 @@ class SQLTicketStore extends TicketStore
             }
         }
 
-        $updateQuery = 'UPDATE ' . $table . ' SET ' . implode(',', $updateCols) . ' WHERE ' . implode(' AND ', $condCols);
+        $updateCols = implode(',', $updateCols);
+        $condCols = implode(' AND ', $condCols);
+        $updateQuery = 'UPDATE ' . $table . ' SET ' . $updateCols . ' WHERE ' . $condCols;
         $updateQuery = $this->pdo->prepare($updateQuery);
         $updateQuery->execute($data);
     }

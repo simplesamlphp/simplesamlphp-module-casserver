@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 $projectRootDirectory = dirname(__DIR__);
 $projectConfigDirectory = $projectRootDirectory . '/tests/config';
-$casserverModulePath = $projectRootDirectory . '/vendor/simplesamlphp/simplesamlphp/modules/casserver';
 $simplesamlphpConfig = $projectRootDirectory . '/vendor/simplesamlphp/simplesamlphp/config';
 $ticketCacheDir = $projectRootDirectory . '/tests/ticketcache';
 if (!file_exists($ticketCacheDir)) {
@@ -41,5 +40,4 @@ function symlinkModulePathInVendorDirectory($target, $link)
     }
 }
 
-symlinkModulePathInVendorDirectory($projectRootDirectory, $casserverModulePath);
 symlinkModulePathInVendorDirectory($projectConfigDirectory, $simplesamlphpConfig);

@@ -1,10 +1,11 @@
 <?php
 
-use SimpleSAML\Logger;
-
 /**
  * Config file to use during integration testing
  */
+
+use SimpleSAML\Logger;
+
 $config = [
     'baseurlpath' => '/',
     'tempdir' => '/tmp/simplesaml',

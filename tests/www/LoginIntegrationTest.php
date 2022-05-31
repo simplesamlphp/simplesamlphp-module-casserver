@@ -62,7 +62,10 @@ class LoginIntegrationTest extends TestCase
      */
     protected function setup(): void
     {
-        $this->server = new BuiltInServer('configLoader', dirname(dirname(dirname(__FILE__))) . '/vendor/simplesamlphp/simplesamlphp/www');
+        $this->server = new BuiltInServer(
+            'configLoader',
+            dirname(dirname(dirname(__FILE__))) . '/vendor/simplesamlphp/simplesamlphp/www'
+        );
         $this->server_addr = $this->server->start();
         $this->server_pid = $this->server->getPid();
         $this->shared_file = sys_get_temp_dir() . '/' . $this->server_pid . '.lock';
@@ -80,7 +83,6 @@ class LoginIntegrationTest extends TestCase
                 'casserver' => true,
             ]
         ]);
-
     }
 
 
@@ -414,12 +416,12 @@ class LoginIntegrationTest extends TestCase
         $ticket = $matches[1];
         $soapRequest = <<<SOAP
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
-	<SOAP-ENV:Header/>
-	<SOAP-ENV:Body>
-		<samlp:Request xmlns:samlp="urn:oasis:names:tc:SAML:1.0:protocol" MajorVersion="1" MinorVersion="1" RequestID="_192.168.16.51.1024506224022" IssueInstant="2002-06-19T17:03:44.022Z">
-			<samlp:AssertionArtifact>$ticket</samlp:AssertionArtifact>
-		</samlp:Request>
-	</SOAP-ENV:Body>
+  <SOAP-ENV:Header/>
+  <SOAP-ENV:Body>
+    <samlp:Request xmlns:samlp="urn:oasis:names:tc:SAML:1.0:protocol" MajorVersion="1" MinorVersion="1" RequestID="_192.168.16.51.1024506224022" IssueInstant="2002-06-19T17:03:44.022Z">
+      <samlp:AssertionArtifact>$ticket</samlp:AssertionArtifact>
+    </samlp:Request>
+  </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 SOAP;
 
