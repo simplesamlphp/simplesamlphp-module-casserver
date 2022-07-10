@@ -44,7 +44,7 @@ final class Cas20Test extends TestCase
             // ':' will get turn to '_'
             'urn:oid:0.9.2342.19200300.100.1.1' => ['someValue'],
             'urn:oid:1.3.6.1.4.1.34199.1.7.1.5.2' => [
-                'CN=Some-Service,OU=Non-Privileged,OU=Groups,DC=exmple,DC=com',
+                'CN=Some-Service,OU=Non-Privileged,OU=Groups,DC=example,DC=com',
                 'CN=Other Servics,OU=Non-Privileged,OU=Groups,DC=example,DC=com'
             ],
         ];

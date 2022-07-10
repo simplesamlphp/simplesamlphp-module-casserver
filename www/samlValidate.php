@@ -7,7 +7,7 @@ use SimpleSAML\Module\casserver\Cas\Protocol\SamlValidateResponder;
 
 $target = $_GET['TARGET'];
 
-// From SAML2\SOAP::recieve()
+// From SAML2\SOAP::receive()
 $postBody = file_get_contents('php://input');
 if (empty($postBody)) {
     throw new \Exception('samlValidate expects a soap body.');

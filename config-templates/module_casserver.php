@@ -91,7 +91,7 @@ $config = [
             'oid2name',
             'urn:example' => 'example'
         ],
-        // Additonal authproc filter
+        // Additional authproc filter
     ],
 
     'base64attributes' => true, // base64 encode transferred attributes, defaults to false
