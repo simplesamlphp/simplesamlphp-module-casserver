@@ -72,7 +72,7 @@ if (array_key_exists('service', $_GET) && array_key_exists('ticket', $_GET)) {
                     \SimpleSAML\Logger::error(sprintf(
                         'casserver:validate: internal server error. Missing user name attribute: %s',
                         var_export($usernameField, true)
-                    );
+                    ));
 
                     echo $protocol->getValidateFailureResponse();
                 } else {
