@@ -6,6 +6,7 @@ namespace SimpleSAML\Casserver\Ticket;
 
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Configuration;
+use SimpleSAML\Logger;
 use SimpleSAML\Module\casserver\Cas\Ticket\DelegatingTicketStore;
 use SimpleSAML\Module\casserver\Cas\Ticket\FileSystemTicketStore;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
@@ -13,6 +14,9 @@ use SimpleSAML\Utils;
 
 class DelegatingTicketStoreTest extends TestCase
 {
+    /** @var \SimpleSAML\Configuration */
+    protected Configuration $config;
+
     /**
      * @var array The configuration of the ticket store
      */
@@ -33,9 +37,33 @@ class DelegatingTicketStoreTest extends TestCase
      */
     public function setup(): void
     {
-        $configUtils = new Utils\Config();
-        putenv('SIMPLESAMLPHP_CONFIG_DIR=' . dirname(dirname(__DIR__)) . '/config');
-        Configuration::setConfigDir($configUtils->getConfigDir());
+        parent::setUp();
+
+        $this->config = Configuration::loadFromArray(
+            [
+                'baseurlpath' => '/',
+                'tempdir' => '/tmp/simplesaml',
+                'loggingdir' => '/tmp/simplesaml',
+                'secretsalt' => 'salty',
+
+                'metadata.sources' => [
+                    ['type' => 'flatfile', 'directory' =>  dirname(dirname(__DIR__)) . '/metadata'],
+                ],
+
+                'module.enable' => [
+                    'casserver' => true,
+                    'exampleauth' => true
+                ],
+
+                'debug' => true,
+                'logging.level' => Logger::DEBUG,
+                'logging.handler' => 'errorlog',
+            ],
+            '[ARRAY]',
+            'simplesaml'
+        );
+        Configuration::setPreLoadedConfig($this->config, 'config.php');
+
         $this->ticketstoreConfig = array(
             'delegateTo' => 'all',
             'ticketStores' => [
