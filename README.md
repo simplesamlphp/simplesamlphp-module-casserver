@@ -6,7 +6,8 @@
 [![Type Coverage](https://shepherd.dev/github/simplesamlphp/simplesamlphp-module-casserver/coverage.svg)](https://shepherd.dev/github/simplesamlphp/simplesamlphp-module-casserver)
 [![Psalm Level](https://shepherd.dev/github/simplesamlphp/simplesamlphp-module-casserver/level.svg)](https://shepherd.dev/github/simplesamlphp/simplesamlphp-module-casserver)
 
-# Usage
+SimpleSAMLphp-casserver is a CAS 1.0 and 2.0 compliant CAS server in the form
+of a SimpleSAMLphp module.
 
 ## Install
 
@@ -32,10 +33,13 @@ See the `config-templates` folder for examples of configuring this module
 
 ## Debug
 
-To aid in debugging you can print out the CAS ticket xml rather then returning a ticket id.
-Enable `debugMode` in `module_casserver.php` and then add a query parameter `debugMode=true` to the CAS login url.
+To aid in debugging you can print out the CAS ticket xml rather then returning
+a ticket id. Enable `debugMode` in `module_casserver.php` and then add a query
+parameter `debugMode=true` to the CAS login url.
 
-Logging in to https://cas.example.com/cas/login?debugMode=true&service=http://localhost/ would now print the xml for that service.
+Logging in to
+`https://cas.example.com/cas/login?debugMode=true&service=http://localhost/`
+would now print the xml for that service.
 
 ```xml
 <?xml version="1.0">
@@ -50,35 +54,51 @@ Logging in to https://cas.example.com/cas/login?debugMode=true&service=http://lo
 </cas:serviceResponse>
 ```
 
-# Development
+## Development
 
 Run `phpcs` to check code style
 
-    phpcs --standard=PSR2 lib/ tests/ www/ templates/
+```shell
+phpcs --standard=PSR12 lib/ tests/ www/ templates/
+```
 
 Run `phpunit` to test
 
-    ./vendor/bin/phpunit
-    
+```shell
+./vendor/bin/phpunit
+```
+
 Use docker php image to easily test between versions
 
-    docker run -ti --rm -v "$PWD":/usr/src/myapp  -w /usr/src/myapp php:7.1-cli ./vendor/bin/phpunit
+```shell
+docker run -ti --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp php:7.1-cli ./vendor/bin/phpunit
+```
 
+You can auto correct some findings from phpcs. It is recommended you do this
+after stage your changes (or maybe even commit) since there is a non-trivial
+chance it will just mess up your code.
 
-You can auto correct some findings from phpcs. It is recommended you do this after stage your changes (or maybe even commit) since there is a non-trivial chance it will just mess up your code.
+```shell
+phpcbf --ignore=somefile.php --standard=PSR12 lib/ tests/ www/ templates/
+```
 
-    phpcbf --ignore=somefile.php --standard=PSR2 lib/ tests/ www/ templates/
-    
-# History
+## History
+
 CAS 1.0 and 2.0 compliant CAS server module for simpleSAMLphp
 
-This is the simpleSAMLphp CAS server module developed at the State and University Library in Aarhus Denmark.
-The module is a fork of an old version of the CAS module shipped with simpleSAMLphp which has undergone a couple of
-iterations of refactoring, bugfixes and enhancements. For details see the ChangeLog in the doc directory.
+This is the simpleSAMLphp CAS server module developed at the State and
+University Library in Aarhus Denmark. The module is a fork of an old version
+of the CAS module shipped with simpleSAMLphp which has undergone a couple of
+iterations of refactoring, bugfixes and enhancements.
+For details see the ChangeLog in the doc directory.
 
-All files are rewritten based on work by Dubravko Voncina. See Google Groups discussion in this thread:
-http://groups.google.com/group/simplesamlphp/browse_thread/thread/4c655d169532650a
+All files are rewritten based on work by Dubravko Voncina.
+See Google Groups discussion in [this thread][1].
 
-# License
-This work is licensed under a Creative Commons GNU Lesser General Public License License.
+[1]: http://groups.google.com/group/simplesamlphp/browse_thread/thread/4c655d169532650a
+
+### License
+
+This work is licensed under a Creative Commons GNU Lesser General Public
+License License.
 
