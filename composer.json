@@ -29,7 +29,7 @@
         "php": ">=7.4 || ^8.0",
 
         "simplesamlphp/composer-module-installer": "~1.1",
-        "simplesamlphp/simplesamlphp": "^2.0.0-rc1",
+        "simplesamlphp/simplesamlphp": "^2.0.0-rc2",
         "simplesamlphp/xml-common": "^0.8.9"
     },
     "require-dev": {
