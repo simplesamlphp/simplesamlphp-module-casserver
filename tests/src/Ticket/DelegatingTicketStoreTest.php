@@ -47,7 +47,7 @@ class DelegatingTicketStoreTest extends TestCase
                 'secretsalt' => 'salty',
 
                 'metadata.sources' => [
-                    ['type' => 'flatfile', 'directory' =>  dirname(dirname(__DIR__)) . '/metadata'],
+                    ['type' => 'flatfile', 'directory' =>  dirname(__DIR__, 2) . '/metadata'],
                 ],
 
                 'module.enable' => [
@@ -69,14 +69,14 @@ class DelegatingTicketStoreTest extends TestCase
             'ticketStores' => [
                 'name1' => [
                     'class' => 'casserver:FileSystemTicketStore',
-                    'directory' => dirname(dirname(__DIR__)) . '/ticketcacheAlt',
+                    'directory' => dirname(__DIR__, 2) . '/ticketcacheAlt',
                 ],
                 'error' => [
                     'class' => ErroringTicketStore::class
                 ],
                 'name2' => [
                     'class' => 'casserver:FileSystemTicketStore',
-                    'directory' => dirname(dirname(__DIR__)) . '/ticketcache',
+                    'directory' => dirname(__DIR__, 2) . '/ticketcache',
                 ],
                 'misconfigured' => [
                     'class' => 'casserver:FileSystemTicketStore',

@@ -64,7 +64,7 @@ class LoginIntegrationTest extends TestCase
     {
         $this->server = new BuiltInServer(
             'configLoader',
-            dirname(dirname(dirname(__FILE__))) . '/vendor/simplesamlphp/simplesamlphp/www'
+            dirname(__FILE__, 3) . '/vendor/simplesamlphp/simplesamlphp/www'
         );
         $this->server_addr = $this->server->start();
         $this->server_pid = $this->server->getPid();
@@ -202,7 +202,7 @@ class LoginIntegrationTest extends TestCase
         );
 
         $expectedResponse = DOMDocumentFactory::fromFile(
-            dirname(dirname(__FILE__)) . '/resources/xml/testValidServiceUrl.xml'
+            dirname(__FILE__, 2) . '/resources/xml/testValidServiceUrl.xml'
         )->saveXML();
 
         $this->assertEquals(200, $resp['code']);
