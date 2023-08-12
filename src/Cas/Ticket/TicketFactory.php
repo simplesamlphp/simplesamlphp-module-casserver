@@ -26,7 +26,7 @@ declare(strict_types=1);
 namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
 use SimpleSAML\Configuration;
-use SimpleSAML\Utils;
+use SimpleSAML\XML\Utils\Random;
 
 class TicketFactory
 {
@@ -58,7 +58,7 @@ class TicketFactory
      */
     public function createSessionTicket(string $sessionId, int $expiresAt): array
     {
-        $randomUtils = new Utils\Random();
+        $randomUtils = new Random();
         return [
             'id' => $sessionId,
             'validBefore' => $expiresAt,
@@ -73,7 +73,7 @@ class TicketFactory
      */
     public function createServiceTicket(array $content): array
     {
-        $randomUtils = new Utils\Random();
+        $randomUtils = new Random();
         $id = str_replace('_', 'ST-', $randomUtils->generateID());
         $expiresAt = time() + $this->serviceTicketExpireTime;
 
@@ -87,7 +87,7 @@ class TicketFactory
      */
     public function createProxyGrantingTicket(array $content): array
     {
-        $randomUtils = new Utils\Random();
+        $randomUtils = new Random();
         $id = str_replace('_', 'PGT-', $randomUtils->generateID());
         $iou = str_replace('_', 'PGTIOU-', $randomUtils->generateID());
 
@@ -103,7 +103,7 @@ class TicketFactory
      */
     public function createProxyTicket(array $content): array
     {
-        $randomUtils = new Utils\Random();
+        $randomUtils = Random();
         $id = str_replace('_', 'PT-', $randomUtils->generateID());
         $expiresAt = time() + $this->proxyTicketExpireTime;
 

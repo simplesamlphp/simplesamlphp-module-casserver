@@ -9,13 +9,14 @@ use DOMNode;
 use DOMNodeList;
 use DOMXpath;
 use Exception;
-use SAML2\DOMDocumentFactory;
-use SAML2\Utils as SAML2_UTILS;
 use SimpleSAML\Assert\Assert;
 use SimpleSAML\Configuration;
 use SimpleSAML\Error;
 use SimpleSAML\Metadata\MetaDataStorageHandler;
 use SimpleSAML\Utils;
+use SimpleSAML\XML\DOMDocumentFactory;
+use SimpleSAML\XML\Utils as XMLUtils;
+use SimpleSAML\XML\Utils\Random;
 use SimpleSAML\XML\Validator;
 use SimpleXMLElement;
 
@@ -355,7 +356,7 @@ class AuthnResponse
             $scopedAttributes = [];
         }
 
-        $randomUtils = new Utils\Random();
+        $randomUtils = new Random();
         $timeUtils = new Utils\Time();
 
         $id = $randomUtils->generateID();
@@ -494,14 +495,14 @@ class AuthnResponse
         $currentTime = time();
 
         if (!empty($start)) {
-            $startTime = SAML2_Utils::xsDateTimeToTimestamp($start);
+            $startTime = XMLUtils::xsDateTimeToTimestamp($start);
             // allow for a 10 minute difference in time
             if (($startTime < 0) || (($startTime - 600) > $currentTime)) {
                 return false;
             }
         }
         if (!empty($end)) {
-            $endTime = SAML2_Utils::xsDateTimeToTimestamp($end);
+            $endTime = XMLUtils::xsDateTimeToTimestamp($end);
             if (($endTime < 0) || ($endTime <= $currentTime)) {
                 return false;
             }

@@ -10,7 +10,6 @@ use SimpleSAML\Logger;
 use SimpleSAML\Module\casserver\Cas\Ticket\DelegatingTicketStore;
 use SimpleSAML\Module\casserver\Cas\Ticket\FileSystemTicketStore;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
-use SimpleSAML\Utils;
 
 class DelegatingTicketStoreTest extends TestCase
 {

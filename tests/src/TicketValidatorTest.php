@@ -10,7 +10,7 @@ use SimpleSAML\Module\casserver\Cas\CasException;
 use SimpleSAML\Module\casserver\Cas\Ticket\FileSystemTicketStore;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
 use SimpleSAML\Module\casserver\Cas\TicketValidator;
-use SimpleSAML\Utils;
+use SimpleSAML\XML\Utils\Random;
 
 class TicketValidatorTest extends TestCase
 {
@@ -165,7 +165,7 @@ class TicketValidatorTest extends TestCase
      */
     private function createTicket(string $serviceUrl, int $expiration = 0): array
     {
-        $randomUtils = new Utils\Random();
+        $randomUtils = new Random();
         $id = $randomUtils->generateID();
         $serviceTicket = [
             'id' => $id,
