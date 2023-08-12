@@ -6,6 +6,11 @@ namespace SimpleSAML\Module\casserver\Cas\Protocol;
 
 use SimpleSAML\Configuration;
 use SimpleSAML\Module\casserver\Shib13\AuthnResponse;
+use SimpleSAML\XML\Chunk;
+use SimpleSAML\XML\DOMDocumentFactory;
+use SimpleSAML\XML\SerializableElementInterface;
+use SimpleSAML\XML\SOAP11\XML\env\Body;
+use SimpleSAML\XML\SOAP11\XML\env\Envelope;
 
 class SamlValidateResponder
 {
@@ -13,9 +18,9 @@ class SamlValidateResponder
      * Converts a ticket to saml1 response. Caller likely needs wrap in SOAP
      * to return to a client.
      * @param array $ticket The cas ticket
-     * @return string The saml 1 xml for the CAS response
+     * @return \SimpleSAML\XML\Chunk The saml 1 xml for the CAS response
      */
-    public function convertToSaml(array $ticket): string
+    public function convertToSaml(array $ticket): Chunk
     {
         $serviceUrl = $ticket['service'];
         $attributes = $ticket['attributes'];
@@ -51,23 +56,19 @@ class SamlValidateResponder
             'http://www.ja-sig.org/products/cas/',
             $ret
         );
-        return $ret;
+
+        $doc = DOMDocumentFactory::fromString($ret);
+        return new Chunk($doc->documentElement);
     }
 
 
     /**
-     * @param string $samlResponse
-     * @return string
+     * @param \SimpleSAML\XML\SerializableElementInterface $samlResponse
+     * @return \SimpleSAML\XML\SOAP11\XML\env\Envelope
      */
-    public function wrapInSoap(string $samlResponse): string
+    public function wrapInSoap(SerializableElementInterface $samlResponse): Envelope
     {
-        $envelope = <<<SOAP
-<?xml version="1.0" encoding="utf-8"?>
-<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
-    <SOAP-ENV:Header />
-    <SOAP-ENV:Body>$samlResponse</SOAP-ENV:Body>
-</SOAP-ENV:Envelope>
-SOAP;
-        return $envelope;
+        $body = new Body([$samlResponse]);
+        return new Envelope($body);
     }
 }

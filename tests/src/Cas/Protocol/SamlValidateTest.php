@@ -6,6 +6,7 @@ namespace SimpleSAML\Casserver;
 
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Module\casserver\Cas\Protocol\SamlValidateResponder;
+use SimpleSAML\SOAP11\XML\env\Envelope;
 use SimpleXMLElement;
 
 class SamlValidateTest extends TestCase
@@ -17,16 +18,16 @@ class SamlValidateTest extends TestCase
         $serviceUrl = 'http://jellyfish.greatvalleyu.com:7777/ssomanager/c/SSB';
         $udcValue = '2F10C881AC7D55942329E149405DC2F5';
         $ticket = [
-          'userName' => 'saisusr',
-          'attributes' => [
-            'UDC_IDENTIFIER' => [$udcValue]
-          ],
+            'userName' => 'saisusr',
+            'attributes' => [
+                'UDC_IDENTIFIER' => [$udcValue]
+            ],
             'service' => $serviceUrl,
         ];
 
         $samlValidate = new SamlValidateResponder();
         $xmlString = $samlValidate->convertToSaml($ticket);
-        $response = new SimpleXMLElement($xmlString);
+        $response = new SimpleXMLElement(strval($xmlString));
         /** @psalm-suppress PossiblyNullPropertyFetch */
         $this->assertEquals($serviceUrl, $response->attributes()->Recipient);
         $this->assertEquals('samlp:Success', $response->Status->StatusCode->attributes()->Value);
@@ -46,13 +47,8 @@ class SamlValidateTest extends TestCase
 
         $asSoap = $samlValidate->wrapInSoap($xmlString);
 
-        $soapPrefix = <<< EOF
-<?xml version="1.0" encoding="utf-8"?>
-<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
-    <SOAP-ENV:Header />
-    <SOAP-ENV:Body>
-EOF;
-
-        $this->assertStringStartsWith($soapPrefix, $asSoap);
+        $this->assertInstanceOf($asSoap, Envelope::class);
+        $this->assertNull($asSoap->getHeader());
+        $this->assertNotEmpty($asSoap->getBody());
     }
 }

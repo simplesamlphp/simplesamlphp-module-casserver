@@ -214,7 +214,7 @@ if (isset($serviceUrl)) {
             $samlValidate = new SamlValidateResponder();
             $samlResponse = $samlValidate->convertToSaml($serviceTicket);
             $soap = $samlValidate->wrapInSoap($samlResponse);
-            echo '<pre>' . htmlspecialchars($soap) . '</pre>';
+            echo '<pre>' . htmlspecialchars(strval($soap)) . '</pre>';
         } else {
             $method = 'serviceValidate';
             // Fake some options for validateTicket

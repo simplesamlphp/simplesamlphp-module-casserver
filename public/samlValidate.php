@@ -31,4 +31,4 @@ $samlValidator = new SamlValidateResponder();
 $response = $samlValidator->convertToSaml($ticket);
 $soap = $samlValidator->wrapInSoap($response);
 
-echo $soap;
+echo strval($soap);

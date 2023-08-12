@@ -29,9 +29,12 @@ use DOMDocument;
 use DOMElement;
 use DOMException;
 use SimpleSAML\CAS\XML\cas\Attributes;
+use SimpleSAML\CAS\XML\cas\AuthenticationDate;
 use SimpleSAML\CAS\XML\cas\AuthenticationFailure;
 use SimpleSAML\CAS\XML\cas\AuthenticationSuccess;
 use SimpleSAML\CAS\XML\cas\Code;
+use SimpleSAML\CAS\XML\cas\IsFromNewLogin;
+use SimpleSAML\CAS\XML\cas\LongTermAuthenticationRequestTokenUsed;
 use SimpleSAML\CAS\XML\cas\ProxyFailure;
 use SimpleSAML\CAS\XML\cas\ProxyGrantingTicket;
 use SimpleSAML\CAS\XML\cas\ProxySuccess;
@@ -118,9 +121,9 @@ class Cas20
 
     /**
      * @param string $username
-     * @return string
+     * @return \SimpleSAML\CAS\XML\cas\AuthenticationSuccess
      */
-    public function getValidateSuccessResponse(string $username): string
+    public function getValidateSuccessResponse(string $username): AuthenticationSuccess
     {
         $user = new User($username);
 
@@ -129,14 +132,14 @@ class Cas20
             $proxyGrantingTicket = new ProxyGrantingTicket($this->proxyGrantingTicketIOU);
         }
 
-        $attributes = [];
+        $attr = [];
         if ($this->sendAttributes && count($this->attributes) > 0) {
             foreach ($this->attributes as $name => $values) {
                 // Fix the most common cause of invalid XML elements
                 $_name = str_replace(':', '_', $name);
                 if ($this->isValidXmlName($_name) === true) {
                     foreach ($values as $value) {
-                        $attributes[] = $this->generateCas20Attribute($_name, $value);
+                        $attr[] = $this->generateCas20Attribute($_name, $value);
                     }
                 } else {
                     Logger::warning("DOMException creating attribute '$_name'. Continuing without attribute'");
@@ -144,60 +147,67 @@ class Cas20
             }
 
             if (!is_null($this->base64IndicatorAttribute)) {
-                $attributes[] = $this->generateCas20Attribute(
+                $attr[] = $this->generateCas20Attribute(
                     $this->base64IndicatorAttribute,
                     $this->base64EncodeAttributes ? "true" : "false"
                 );
             }
         }
 
+        $attributes = new Attributes(
+            new AuthenticationDate(gmdate('Y-m-d\TH:i:s\Z', time())),
+            new LongTermAuthenticationRequestTokenUsed('true'),
+            new IsFromNewLogin('true'),
+            $attr,
+        );
+
         $authenticationSucces = new AuthenticationSuccess($user, $attributes, $proxyGrantingTicket);
 
-        return strval($authenticationSucces);
+        return $authenticationSucces;
     }
 
 
     /**
      * @param string $errorCode
      * @param string $explanation
-     * @return string
+     * @return \SimpleSAML\CAS\XML\cas\ServiceResponse
      */
-    public function getValidateFailureResponse(string $errorCode, string $explanation): string
+    public function getValidateFailureResponse(string $errorCode, string $explanation): ServiceResponse
     {
         $code = new Code($errorCode);
         $authenticationFailure = new AuthenticationFailure($explanation, $code);
         $serviceResponse = new ServiceResponse($authenticationFailure);
 
-        return strval($serviceResponse);
+        return $serviceResponse;
     }
 
 
     /**
      * @param string $proxyTicketId
-     * @return string
+     * @return \SimpleSAML\CAS\XML\cas\ServiceResponse
      */
-    public function getProxySuccessResponse(string $proxyTicketId): string
+    public function getProxySuccessResponse(string $proxyTicketId): ServiceResponse
     {
         $proxyTicket = new ProxyTicket($proxyTicketId);
         $proxySucces = new ProxySuccess($proxyTicket);
         $serviceResponse = new ServiceResponse($proxySuccess);
 
-        return strval($serviceResponse);
+        return $serviceResponse;
     }
 
 
     /**
      * @param string $errorCode
      * @param string $explanation
-     * @return string
+     * @return \SimpleSAML\CAS\XML\cas\ServiceResponse
      */
-    public function getProxyFailureResponse(string $errorCode, string $explanation): string
+    public function getProxyFailureResponse(string $errorCode, string $explanation): ServiceResponse
     {
         $code = new Code($errorCode);
         $proxyFailure = new ProxyFailure($explanation, $code);
         $serviceResponse = new ServiceResponse($proxyFailure);
 
-        return strval($serviceResponse);
+        return $serviceResponse;
     }
 
 

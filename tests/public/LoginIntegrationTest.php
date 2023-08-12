@@ -6,6 +6,7 @@ namespace SimpleSAML\Casserver;
 
 use DOMDocument;
 use PHPUnit\Framework\TestCase;
+use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
 use SimpleSAML\TestUtils\BuiltInServer;
 use SimpleSAML\XML\DOMDocumentFactory;
@@ -64,7 +65,7 @@ class LoginIntegrationTest extends TestCase
     {
         $this->server = new BuiltInServer(
             'configLoader',
-            dirname(__FILE__, 3) . '/vendor/simplesamlphp/simplesamlphp/www'
+            dirname(__FILE__, 3) . '/vendor/simplesamlphp/simplesamlphp/public'
         );
         $this->server_addr = $this->server->start();
         $this->server_pid = $this->server->getPid();
@@ -104,8 +105,10 @@ class LoginIntegrationTest extends TestCase
     protected function updateConfig(array $config): void
     {
         @unlink($this->shared_file);
-        $config = "<?php\n\$config = " . var_export($config, true) . ";\n";
-        file_put_contents($this->shared_file, $config);
+        $file = "<?php\n\$config = " . var_export($config, true) . ";\n";
+        file_put_contents($this->shared_file, $file);
+
+        Configuration::setPreloadedConfig(Configuration::loadFromArray($config));
     }
 
 

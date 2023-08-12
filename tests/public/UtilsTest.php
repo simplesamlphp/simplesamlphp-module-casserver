@@ -13,7 +13,7 @@ namespace SimpleSAML\Casserver;
 
 use PHPUnit\Framework\TestCase;
 
-require_once dirname(__DIR__, 2) . '/www/utility/urlUtils.php';
+require_once dirname(__DIR__, 2) . '/public/utility/urlUtils.php';
 
 class UtilsTest extends TestCase
 {

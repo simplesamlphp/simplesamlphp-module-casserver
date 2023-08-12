@@ -12,7 +12,6 @@
   </coverage>
   <testsuites>
     <testsuite name="The project's test suite">
-      <directory>./vendor/simplesamlphp/simplesamlphp-test-framework/tests/</directory>
       <directory>tests/</directory>
     </testsuite>
   </testsuites>
