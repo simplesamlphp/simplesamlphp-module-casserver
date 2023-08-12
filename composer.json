@@ -30,6 +30,7 @@
 
         "simplesamlphp/composer-module-installer": "^1.3.4",
         "simplesamlphp/simplesamlphp": "^3@dev",
+        "simplesamlphp/xml-cas": "^1.0.3",
         "simplesamlphp/xml-common": "^1.12.2"
     },
     "require-dev": {
