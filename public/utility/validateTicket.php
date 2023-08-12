@@ -37,6 +37,7 @@ use SimpleSAML\Module\casserver\Cas\Protocol\Cas20;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
 use SimpleSAML\Utils;
+use SimpleSAML\XML\CAS\Constants as C;
 
 require_once('urlUtils.php');
 
@@ -126,7 +127,7 @@ if (isset($serviceUrl) && array_key_exists('ticket', $_GET)) {
 
                     Logger::debug('casserver:' . $message);
 
-                    echo $protocol->getValidateFailureResponse('INVALID_TICKET', $message);
+                    echo $protocol->getValidateFailureResponse(C::ERR_INVALID_TICKET, $message);
                 } else {
                     if (sanitize($serviceTicket['service']) != sanitize($serviceUrl)) {
                         $message = 'Mismatching service parameters: expected ' .
@@ -135,18 +136,18 @@ if (isset($serviceUrl) && array_key_exists('ticket', $_GET)) {
 
                         Logger::debug('casserver:' . $message);
 
-                        echo $protocol->getValidateFailureResponse('INVALID_SERVICE', $message);
+                        echo $protocol->getValidateFailureResponse(C::ERR_INVALID_SERVICE, $message);
                     } else {
                         if ($serviceTicket['forceAuthn'] != $forceAuthn) {
                             $message = 'Ticket was issue from single sign on session';
 
                             Logger::debug('casserver:' . $message);
 
-                            echo $protocol->getValidateFailureResponse('INVALID_TICKET', $message);
+                            echo $protocol->getValidateFailureResponse(C::ERR_INVALID_TICKET, $message);
                         } else {
                             Logger::error('casserver:' . $method . ': internal server error.');
 
-                            echo $protocol->getValidateFailureResponse('INTERNAL_ERROR', 'Unknown internal error');
+                            echo $protocol->getValidateFailureResponse(C::ERR_INTERNAL_ERROR, 'Unknown internal error');
                         }
                     }
                 }
@@ -157,7 +158,7 @@ if (isset($serviceUrl) && array_key_exists('ticket', $_GET)) {
 
                 Logger::debug('casserver:' . $message);
 
-                echo $protocol->getValidateFailureResponse('INVALID_TICKET', $message);
+                echo $protocol->getValidateFailureResponse(C::ERR_INVALID_TICKET, $message);
             } else {
                 /**
                  * @psalm-suppress UndefinedGlobalVariable
@@ -170,13 +171,13 @@ if (isset($serviceUrl) && array_key_exists('ticket', $_GET)) {
 
                     Logger::debug('casserver:' . $message);
 
-                    echo $protocol->getValidateFailureResponse('INVALID_TICKET', $message);
+                    echo $protocol->getValidateFailureResponse(C::ERR_INVALID_TICKET, $message);
                 } else {
                     $message = 'Ticket ' . var_export($_GET['ticket'], true) . ' is not a service ticket';
 
                     Logger::debug('casserver:' . $message);
 
-                    echo $protocol->getValidateFailureResponse('INVALID_TICKET', $message);
+                    echo $protocol->getValidateFailureResponse(C::ERR_INVALID_TICKET, $message);
                 }
             }
         }
@@ -185,7 +186,7 @@ if (isset($serviceUrl) && array_key_exists('ticket', $_GET)) {
             'casserver:serviceValidate: internal server error. ' . var_export($e->getMessage(), true)
         );
 
-        echo $protocol->getValidateFailureResponse('INTERNAL_ERROR', $e->getMessage());
+        echo $protocol->getValidateFailureResponse(C::ERR_INTERNAL_ERROR, $e->getMessage());
     }
 } else {
     if (!array_key_exists('service', $_GET)) {
@@ -193,12 +194,12 @@ if (isset($serviceUrl) && array_key_exists('ticket', $_GET)) {
 
         Logger::debug('casserver:' . $message);
 
-        echo $protocol->getValidateFailureResponse('INVALID_REQUEST', $message);
+        echo $protocol->getValidateFailureResponse(C::ERR_INVALID_REQUEST, $message);
     } else {
         $message = 'Missing ticket parameter: [ticket]';
 
         Logger::debug('casserver:' . $message);
 
-        echo $protocol->getValidateFailureResponse('INVALID_REQUEST', $message);
+        echo $protocol->getValidateFailureResponse(C::ERR_INVALID_REQUEST, $message);
     }
 }

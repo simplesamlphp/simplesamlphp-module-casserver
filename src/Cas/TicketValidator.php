@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\casserver\Cas;
 
+use InvalidArgumentException;
 use SimpleSAML\Configuration;
 use SimpleSAML\Error\BadRequest;
 use SimpleSAML\Logger;
@@ -11,6 +12,7 @@ use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Cas\CasException;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
+use SimpleSAML\XML\CAS\Constants as C;
 
 class TicketValidator
 {
@@ -22,11 +24,6 @@ class TicketValidator
 
     /** @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory */
     private TicketFactory $ticketFactory;
-
-    /**
-     * The ticket id doesn't match a ticket
-     */
-    public const INVALID_TICKET = 'INVALID_TICKET';
 
 
     /**
@@ -65,17 +62,17 @@ class TicketValidator
     public function validateAndDeleteTicket(string $ticket, string $service)
     {
         if (empty($ticket)) {
-            throw new \InvalidArgumentException('Missing ticket parameter: [ticket]');
+            throw new InvalidArgumentException('Missing ticket parameter: [ticket]');
         }
         if (empty($service)) {
-            throw new \InvalidArgumentException('Missing service parameter: [service]');
+            throw new InvalidArgumentException('Missing service parameter: [service]');
         }
 
         $serviceTicket = $this->ticketStore->getTicket($ticket);
         if ($serviceTicket == null) {
             $message = 'Ticket ' . var_export($ticket, true) . ' not recognized';
             Logger::debug('casserver:' . $message);
-            throw new CasException(CasException::INVALID_TICKET, $message);
+            throw new CasException(C::ERR_INVALID_TICKET, $message);
         }
 
         // TODO: do proxy vs non proxy ticket check
@@ -84,7 +81,7 @@ class TicketValidator
         if ($this->ticketFactory->isExpired($serviceTicket)) {
             $message = 'Ticket ' . var_export($ticket, true) . ' has expired';
             Logger::debug('casserver:' . $message);
-            throw new CasException(CasException::INVALID_TICKET, $message);
+            throw new CasException(C::ERR_INVALID_TICKET, $message);
         }
 
         if (self::sanitize($serviceTicket['service']) !== self::sanitize($service)) {
@@ -93,7 +90,7 @@ class TicketValidator
                 ' but was: ' . var_export($service, true);
 
             Logger::debug('casserver:' . $message);
-            throw new CasException(CasException::INVALID_SERVICE, $message);
+            throw new CasException(C::ERR_INVALID_SERVICE, $message);
         }
 
 

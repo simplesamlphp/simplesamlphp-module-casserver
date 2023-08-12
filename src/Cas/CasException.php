@@ -4,18 +4,14 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\casserver\Cas;
 
+use Exception;
+
 /**
  * CasException correspond to different cas error codes
  * @package SimpleSAML\Module\casserver\Cas
  */
-class CasException extends \Exception
+class CasException extends Exception
 {
-    // For list of cas codes see:
-    // https://apereo.github.io/cas/5.2.x/protocol/CAS-Protocol-Specification.html#253-error-codes
-    public const INVALID_TICKET = 'INVALID_TICKET';
-
-    public const INVALID_SERVICE = 'INVALID_SERVICE';
-
     /** @var string */
     private string $casCode;
 
