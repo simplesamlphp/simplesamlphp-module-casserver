@@ -1,0 +1,3 @@
+casserver-cas10-validate:
+    path:       /validate
+    defaults:   { _controller: 'SimpleSAML\Module\casserver\Controller\Cas10::validate' }
