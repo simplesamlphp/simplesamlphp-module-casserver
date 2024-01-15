@@ -25,6 +25,8 @@
  *
  */
 
+declare(strict_types=1);
+
 require_once('utility/urlUtils.php');
 
 $casconfig = \SimpleSAML\Configuration::getConfig('module_casserver.php');

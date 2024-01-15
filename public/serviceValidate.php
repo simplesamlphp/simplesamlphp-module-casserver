@@ -26,6 +26,8 @@
  *  pgtUrl
  */
 
+declare(strict_types=1);
+
 $method = 'serviceValidate';
 
 require_once('utility/validateTicket.php');

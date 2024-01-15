@@ -7,7 +7,6 @@ namespace SimpleSAML\Casserver;
 use DOMDocument;
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Configuration;
-use SimpleSAML\Logger;
 use SimpleSAML\TestUtils\BuiltInServer;
 use SimpleSAML\XML\DOMDocumentFactory;
 

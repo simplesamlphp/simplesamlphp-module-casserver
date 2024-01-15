@@ -21,6 +21,8 @@
  *
  */
 
+declare(strict_types=1);
+
 session_cache_limiter('nocache');
 
 $globalConfig = \SimpleSAML\Configuration::getInstance();

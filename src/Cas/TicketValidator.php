@@ -6,7 +6,6 @@ namespace SimpleSAML\Module\casserver\Cas;
 
 use InvalidArgumentException;
 use SimpleSAML\Configuration;
-use SimpleSAML\Error\BadRequest;
 use SimpleSAML\Logger;
 use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Cas\CasException;

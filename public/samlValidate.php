@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use SimpleSAML\Logger;
 use SimpleSAML\Module\casserver\Cas\Protocol\SamlValidateResponder;
 

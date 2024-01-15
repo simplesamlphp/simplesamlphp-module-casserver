@@ -23,6 +23,8 @@
  *  url     - optional if a logout page is displayed
  */
 
+declare(strict_types=1);
+
 /* Load simpleSAMLphp, configuration and metadata */
 $casconfig = \SimpleSAML\Configuration::getConfig('module_casserver.php');
 

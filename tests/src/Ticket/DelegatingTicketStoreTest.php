@@ -63,7 +63,7 @@ class DelegatingTicketStoreTest extends TestCase
         );
         Configuration::setPreLoadedConfig($this->config, 'config.php');
 
-        $this->ticketstoreConfig = array(
+        $this->ticketstoreConfig = [
             'delegateTo' => 'all',
             'ticketStores' => [
                 'name1' => [
@@ -82,7 +82,7 @@ class DelegatingTicketStoreTest extends TestCase
                     'directory' => 'does-not-exist',
                 ],
             ]
-        );
+        ];
 
         $this->fileStore1 = new FileSystemTicketStore(
             Configuration::loadFromArray(['ticketstore' => $this->ticketstoreConfig['ticketStores']['name1']])
@@ -176,14 +176,14 @@ class DelegatingTicketStoreTest extends TestCase
      */
     public function testDelegateErrorsIfNoSuccess(): void
     {
-        $config = array(
+        $config = [
             'delegateTo' => 'all',
             'ticketStores' => [
                 'error' => [
                     'class' => ErroringTicketStore::class
                 ]
             ]
-        );
+        ];
 
         $ticketStore = new DelegatingTicketStore(Configuration::loadFromArray(['ticketstore' => $config]));
         try {

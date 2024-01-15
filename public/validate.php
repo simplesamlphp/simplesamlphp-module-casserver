@@ -26,6 +26,8 @@
  *
  */
 
+declare(strict_types=1);
+
 require_once('utility/urlUtils.php');
 
 /* Load simpleSAMLphp, configuration and metadata */

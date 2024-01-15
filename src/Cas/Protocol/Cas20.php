@@ -25,9 +25,6 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\casserver\Cas\Protocol;
 
-use DOMDocument;
-use DOMElement;
-use DOMException;
 use SimpleSAML\CAS\XML\cas\Attributes;
 use SimpleSAML\CAS\XML\cas\AuthenticationDate;
 use SimpleSAML\CAS\XML\cas\AuthenticationFailure;
@@ -51,7 +48,6 @@ use function count;
 use function filter_var;
 use function is_null;
 use function is_string;
-use function strval;
 use function str_replace;
 
 class Cas20

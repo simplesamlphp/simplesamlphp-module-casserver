@@ -26,6 +26,8 @@
  *  pgtUrl
  */
 
+declare(strict_types=1);
+
 $method = 'proxyValidate';
 
 require_once('utility/validateTicket.php');

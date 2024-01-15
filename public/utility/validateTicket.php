@@ -33,9 +33,6 @@ use Exception;
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
 use SimpleSAML\Module;
-use SimpleSAML\Module\casserver\Cas\Protocol\Cas20;
-use SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory;
-use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
 use SimpleSAML\Utils;
 use SimpleSAML\XML\CAS\Constants as C;
 

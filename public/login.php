@@ -28,15 +28,15 @@
  *  language
  */
 
-use SimpleSAML\Module\casserver\Cas\AttributeExtractor;
-use SimpleSAML\Module\casserver\Cas\Protocol\SamlValidateResponder;
-use SimpleSAML\Module\casserver\Cas\ServiceValidator;
-use SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory;
-use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
+declare(strict_types=1);
+
 use SimpleSAML\Configuration;
 use SimpleSAML\Locale\Language;
 use SimpleSAML\Logger;
 use SimpleSAML\Module;
+use SimpleSAML\Module\casserver\Cas\AttributeExtractor;
+use SimpleSAML\Module\casserver\Cas\Protocol\SamlValidateResponder;
+use SimpleSAML\Module\casserver\Cas\ServiceValidator;
 use SimpleSAML\Session;
 use SimpleSAML\Utils;
 

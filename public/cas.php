@@ -26,6 +26,8 @@
  *
  */
 
+declare(strict_types=1);
+
 $validFunctions = [
     'login' => 'login',
     'validate' => 'validate',
