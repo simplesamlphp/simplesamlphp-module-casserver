@@ -1,5 +1,7 @@
+.phpunit.cache/
 .phpunit.result.cache
 composer.phar
+phpunit.xml.bak
 /tests/ticketcache
 /vendor/
 
