@@ -1,4 +1,5 @@
 {
   "symbol-whitelist": [
+    "ext-PDO"
   ]
 }
