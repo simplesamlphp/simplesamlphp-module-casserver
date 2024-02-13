@@ -3,7 +3,7 @@
     "description": "CAS 1.0 and 2.0 compliant CAS server module for simpleSAMLphp",
     "keywords": [ "cas", "server", "cas 1.0","cas 2.0" ],
     "homepage": "https://github.com/simplesamlphp/simplesamlphp-module-casserver",
-    "license": "LGPL-2.1",
+    "license": "LGPL-2.1-or-later",
     "type": "simplesamlphp-module",
     "config": {
         "preferred-install": {
@@ -46,7 +46,7 @@
         "issues": "https://github.com/simplesamlphp/simplesamlphp-module-casserver/issues",
         "source": "https://github.com/simplesamlphp/simplesamlphp-module-casserver"
     },
-    "suggests": {
-        "ext-PDO": "*"
+    "suggest": {
+        "ext-pdo": "*"
     }
 }
