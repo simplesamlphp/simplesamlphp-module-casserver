@@ -31,7 +31,7 @@
         "ext-ctype": "*",
         "ext-dom": "*",
         "ext-filter": "*",
-        "ext-libxml": "*",
+        "ext-SimpleXML": "*",
 
         "simplesamlphp/assert": "^1.0",
         "simplesamlphp/composer-module-installer": "^1.3.4",

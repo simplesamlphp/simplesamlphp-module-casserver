@@ -7,7 +7,7 @@ namespace SimpleSAML\Module\casserver\Shib13;
 use DOMDocument;
 use DOMNode;
 use DOMNodeList;
-use DOMXpath;
+use DOMXPath;
 use Exception;
 use SimpleSAML\Assert\Assert;
 use SimpleSAML\Configuration;
