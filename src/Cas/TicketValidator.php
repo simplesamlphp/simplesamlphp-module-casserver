@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace SimpleSAML\Module\casserver\Cas;
 
 use InvalidArgumentException;
+use SimpleSAML\CAS\Constants as C;
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
 use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Cas\CasException;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
-use SimpleSAML\XML\CAS\Constants as C;
 
 class TicketValidator
 {

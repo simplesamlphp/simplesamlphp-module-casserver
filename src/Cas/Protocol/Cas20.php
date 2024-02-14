@@ -29,7 +29,6 @@ use SimpleSAML\CAS\XML\cas\Attributes;
 use SimpleSAML\CAS\XML\cas\AuthenticationDate;
 use SimpleSAML\CAS\XML\cas\AuthenticationFailure;
 use SimpleSAML\CAS\XML\cas\AuthenticationSuccess;
-use SimpleSAML\CAS\XML\cas\Code;
 use SimpleSAML\CAS\XML\cas\IsFromNewLogin;
 use SimpleSAML\CAS\XML\cas\LongTermAuthenticationRequestTokenUsed;
 use SimpleSAML\CAS\XML\cas\ProxyFailure;
@@ -170,8 +169,7 @@ class Cas20
      */
     public function getValidateFailureResponse(string $errorCode, string $explanation): ServiceResponse
     {
-        $code = new Code($errorCode);
-        $authenticationFailure = new AuthenticationFailure($explanation, $code);
+        $authenticationFailure = new AuthenticationFailure($explanation, $errorCode);
         $serviceResponse = new ServiceResponse($authenticationFailure);
 
         return $serviceResponse;
@@ -199,8 +197,7 @@ class Cas20
      */
     public function getProxyFailureResponse(string $errorCode, string $explanation): ServiceResponse
     {
-        $code = new Code($errorCode);
-        $proxyFailure = new ProxyFailure($explanation, $code);
+        $proxyFailure = new ProxyFailure($explanation, $errorCode);
         $serviceResponse = new ServiceResponse($proxyFailure);
 
         return $serviceResponse;

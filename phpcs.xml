@@ -15,6 +15,7 @@
     <!-- Ignore files with side effects that we cannot fix -->
     <rule ref="PSR1.Files.SideEffects">
         <exclude-pattern>tests/bootstrap.php</exclude-pattern>
+        <exclude-pattern>tests/public/UtilsTest.php</exclude-pattern>
         <exclude-pattern>tests/www/UtilsTest.php</exclude-pattern>
     </rule>
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Casserver;
 
+use CurlHandle;
 use DOMDocument;
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Configuration;
@@ -452,10 +453,10 @@ SOAP;
 
     /**
      * TODO: migrate into BuiltInServer
-     * @param resource $ch
+     * @param \CurlHandle $ch
      * @return array
      */
-    private function execAndHandleCurlResponse($ch): array
+    private function execAndHandleCurlResponse(CurlHandle $ch): array
     {
         $resp = curl_exec($ch);
         if ($resp === false) {

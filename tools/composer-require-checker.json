@@ -1,5 +1,7 @@
 {
   "symbol-whitelist": [
-    "ext-PDO"
+    "PDO",
+    "PDOException",
+    "PDOStatement"
   ]
 }
