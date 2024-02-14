@@ -34,7 +34,7 @@ use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
 use SimpleSAML\Module;
 use SimpleSAML\Utils;
-use SimpleSAML\XML\CAS\Constants as C;
+use SimpleSAML\CAS\Constants as C;
 
 require_once('urlUtils.php');
 

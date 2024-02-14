@@ -6,11 +6,11 @@ namespace SimpleSAML\Module\casserver\Cas\Protocol;
 
 use SimpleSAML\Configuration;
 use SimpleSAML\Module\casserver\Shib13\AuthnResponse;
+use SimpleSAML\SOAP11\XML\env\Body;
+use SimpleSAML\SOAP11\XML\env\Envelope;
 use SimpleSAML\XML\Chunk;
 use SimpleSAML\XML\DOMDocumentFactory;
 use SimpleSAML\XML\SerializableElementInterface;
-use SimpleSAML\XML\SOAP11\XML\env\Body;
-use SimpleSAML\XML\SOAP11\XML\env\Envelope;
 
 class SamlValidateResponder
 {
