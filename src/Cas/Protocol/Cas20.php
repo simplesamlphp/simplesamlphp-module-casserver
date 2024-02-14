@@ -150,7 +150,7 @@ class Cas20
         }
 
         $attributes = new Attributes(
-            new AuthenticationDate(gmdate('Y-m-d\TH:i:s\Z', time())),
+            new AuthenticationDate(new DateTimeImmutable('now')),
             new LongTermAuthenticationRequestTokenUsed('true'),
             new IsFromNewLogin('true'),
             $attr,
