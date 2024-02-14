@@ -64,7 +64,7 @@ class SamlValidateResponder
 
     /**
      * @param \SimpleSAML\XML\SerializableElementInterface $samlResponse
-     * @return \SimpleSAML\XML\SOAP11\XML\env\Envelope
+     * @return \SimpleSAML\SOAP11\XML\env\Envelope
      */
     public function wrapInSoap(SerializableElementInterface $samlResponse): Envelope
     {

@@ -6,9 +6,9 @@
     reportMixedIssues="false"
 >
     <projectFiles>
-        <directory name="config-templates" />
+        <directory name="config" />
+        <directory name="public" />
         <directory name="src" />
-        <directory name="www" />
     </projectFiles>
 
     <issueHandlers>
