@@ -30,11 +30,11 @@
 declare(strict_types=1);
 
 use Exception;
+use SimpleSAML\CAS\Constants as C;
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
 use SimpleSAML\Module;
 use SimpleSAML\Utils;
-use SimpleSAML\CAS\Constants as C;
 
 require_once('urlUtils.php');
 
