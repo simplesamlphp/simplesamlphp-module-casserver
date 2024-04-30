@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\casserver\Cas\Protocol;
 
+use DateTimeImmutable;
 use SimpleSAML\CAS\XML\cas\Attributes;
 use SimpleSAML\CAS\XML\cas\AuthenticationDate;
 use SimpleSAML\CAS\XML\cas\AuthenticationFailure;
