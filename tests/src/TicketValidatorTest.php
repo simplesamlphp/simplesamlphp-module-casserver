@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Casserver;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Configuration;
 use SimpleSAML\Module\casserver\Cas\CasException;
@@ -125,10 +126,10 @@ class TicketValidatorTest extends TestCase
     }
 
     /**
-     * @dataProvider urlSanitizationProvider
      * @param string $serviceUrl The service url that will get sanitized
      * @param string $expectedSanitzedUrl The expected result
      */
+    #[DataProvider('urlSanitizationProvider')]
     public function testUrlSanitization(string $serviceUrl, string $expectedSanitzedUrl): void
     {
         $this->assertEquals($expectedSanitzedUrl, TicketValidator::sanitize($serviceUrl));
@@ -159,6 +160,7 @@ class TicketValidatorTest extends TestCase
 
     /**
      * Create a ticket to use for testing
+     *
      * @param string $serviceUrl The service url for this ticket
      * @param int $expiration seconds from now that ticket should expire
      * @return array the ticket contents

@@ -6,6 +6,7 @@ namespace SimpleSAML\Casserver;
 
 use CurlHandle;
 use DOMDocument;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Configuration;
 use SimpleSAML\TestUtils\BuiltInServer;
@@ -162,10 +163,10 @@ class LoginIntegrationTest extends TestCase
 
     /**
      * Test a valid service URL
-     * @dataProvider validServiceUrlProvider
      * @param string $serviceParam The name of the query parameter to use for the service url
      * @param string $ticketParam The name of the query parameter that will contain the ticket
      */
+    #[DataProvider('validServiceUrlProvider')]
     public function testValidServiceUrl(string $serviceParam, string $ticketParam): void
     {
         $service_url = 'http://host1.domain:1234/path1';

@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Casserver;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 require_once dirname(__DIR__, 2) . '/public/utility/urlUtils.php';
@@ -20,8 +21,8 @@ class UtilsTest extends TestCase
     /**
      * @param string $service the service url to check
      * @param bool $allowed is the service url allowed?
-     * @dataProvider checkServiceURLProvider
      */
+    #[DataProvider('checkServiceURLProvider')]
     public function testCheckServiceURL(string $service, bool $allowed): void
     {
         $legalServices = [

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Casserver;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Configuration;
 use SimpleSAML\Module\casserver\Cas\ServiceValidator;
@@ -21,8 +22,8 @@ class ServiceValidatorTest extends TestCase
      *
      * @param string $service The service url to test
      * @param array $expectedConfig The expected CAS configuration to use
-     * @dataProvider overridingDataProvider
      */
+    #[DataProvider('overridingDataProvider')]
     public function testOverridingServiceConfig(string $service, array $expectedConfig): void
     {
         $casConfig = [
@@ -136,8 +137,8 @@ class ServiceValidatorTest extends TestCase
      * Test confirming service url matching and per service configuration
      * @param string $service the service url to check
      * @param bool $allowed is the service url allowed?
-     * @dataProvider checkServiceURLProvider
      */
+    #[DataProvider('checkServiceURLProvider')]
     public function testCheckServiceURL(string $service, bool $allowed): void
     {
         $casConfig = [
