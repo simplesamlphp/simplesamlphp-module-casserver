@@ -83,7 +83,7 @@ class LoginIntegrationTest extends TestCase
 
             'module.enable' => [
                 'casserver' => true,
-            ]
+            ],
         ]);
     }
 
@@ -124,8 +124,8 @@ class LoginIntegrationTest extends TestCase
             [
                 CURLOPT_COOKIEJAR => $this->cookies_file,
                 CURLOPT_COOKIEFILE => $this->cookies_file,
-                CURLOPT_FOLLOWLOCATION => true
-            ]
+                CURLOPT_FOLLOWLOCATION => true,
+            ],
         );
         $this->assertEquals(200, $resp['code']);
 
@@ -148,15 +148,15 @@ class LoginIntegrationTest extends TestCase
             [
                 CURLOPT_COOKIEJAR => $this->cookies_file,
                 CURLOPT_COOKIEFILE => $this->cookies_file,
-                CURLOPT_FOLLOWLOCATION => true
-            ]
+                CURLOPT_FOLLOWLOCATION => true,
+            ],
         );
         $this->assertEquals(500, $resp['code']);
 
         $this->assertStringContainsString(
             'CAS server is not listed as a legal service',
             $resp['body'],
-            'Illegal cas service urls should be rejected'
+            'Illegal cas service urls should be rejected',
         );
     }
 
@@ -178,15 +178,15 @@ class LoginIntegrationTest extends TestCase
             [$serviceParam => $service_url],
             [
                 CURLOPT_COOKIEJAR => $this->cookies_file,
-                CURLOPT_COOKIEFILE => $this->cookies_file
-            ]
+                CURLOPT_COOKIEFILE => $this->cookies_file,
+            ],
         );
         $this->assertEquals(303, $resp['code']);
 
         $this->assertStringStartsWith(
             $service_url . '?' . $ticketParam . '=ST-',
             $resp['headers']['Location'],
-            'Ticket should be part of the redirect.'
+            'Ticket should be part of the redirect.',
         );
 
         // Config ticket can be validated
@@ -198,11 +198,11 @@ class LoginIntegrationTest extends TestCase
             [
                 $serviceParam => $service_url,
                 'ticket' => $ticket,
-                ],
+            ],
             [
                 CURLOPT_COOKIEJAR => $this->cookies_file,
-                CURLOPT_COOKIEFILE => $this->cookies_file
-            ]
+                CURLOPT_COOKIEFILE => $this->cookies_file,
+            ],
         );
 
         $expectedResponse = DOMDocumentFactory::fromFile(
@@ -217,7 +217,7 @@ class LoginIntegrationTest extends TestCase
     {
         return [
             ['service', 'ticket'],
-            ['TARGET', 'SAMLart']
+            ['TARGET', 'SAMLart'],
         ];
     }
 
@@ -235,15 +235,15 @@ class LoginIntegrationTest extends TestCase
             ['TARGET' => $service_url],
             [
                 CURLOPT_COOKIEJAR => $this->cookies_file,
-                CURLOPT_COOKIEFILE => $this->cookies_file
-            ]
+                CURLOPT_COOKIEFILE => $this->cookies_file,
+            ],
         );
         $this->assertEquals(303, $resp['code']);
 
         $this->assertStringStartsWith(
             $service_url . '?myTicket=ST-',
             $resp['headers']['Location'],
-            'Ticket should be part of the redirect.'
+            'Ticket should be part of the redirect.',
         );
     }
 
@@ -260,15 +260,15 @@ class LoginIntegrationTest extends TestCase
             ['service' => $service_url, 'debugMode' => 'true'],
             [
                 CURLOPT_COOKIEJAR => $this->cookies_file,
-                CURLOPT_COOKIEFILE => $this->cookies_file
-            ]
+                CURLOPT_COOKIEFILE => $this->cookies_file,
+            ],
         );
         $this->assertEquals(200, $resp['code']);
 
         $this->assertStringContainsString(
             '&lt;cas:eduPersonPrincipalName&gt;testuser@example.com&lt;/cas:eduPersonPrincipalName&gt;',
             $resp['body'],
-            'Attributes should have been printed.'
+            'Attributes should have been printed.',
         );
     }
 
@@ -285,8 +285,8 @@ class LoginIntegrationTest extends TestCase
             ['service' => $service_url, 'debugMode' => 'samlValidate'],
             [
                 CURLOPT_COOKIEJAR => $this->cookies_file,
-                CURLOPT_COOKIEFILE => $this->cookies_file
-            ]
+                CURLOPT_COOKIEFILE => $this->cookies_file,
+            ],
         );
         $this->assertEquals(200, $resp['code']);
 
@@ -294,7 +294,7 @@ class LoginIntegrationTest extends TestCase
         $this->assertStringContainsString(
             'testuser@example.com&lt;/NameIdentifier',
             $resp['body'],
-            'Attributes should have been printed.'
+            'Attributes should have been printed.',
         );
     }
 
@@ -311,19 +311,19 @@ class LoginIntegrationTest extends TestCase
             ['service' => $service_url, 'debugMode' => 'true'],
             [
                 CURLOPT_COOKIEJAR => $this->cookies_file,
-                CURLOPT_COOKIEFILE => $this->cookies_file
-            ]
+                CURLOPT_COOKIEFILE => $this->cookies_file,
+            ],
         );
         $this->assertEquals(200, $resp['code']);
         $this->assertStringContainsString(
             '&lt;cas:user&gt;testuser&lt;/cas:user&gt;',
             $resp['body'],
-            'cas:user attribute should have been overridden'
+            'cas:user attribute should have been overridden',
         );
         $this->assertStringContainsString(
             '&lt;cas:cn&gt;Test User&lt;/cas:cn&gt;',
             $resp['body'],
-            'Attributes should have been printed with alternate attribute release'
+            'Attributes should have been printed with alternate attribute release',
         );
     }
 
@@ -344,8 +344,8 @@ class LoginIntegrationTest extends TestCase
             ],
             [
                 CURLOPT_COOKIEJAR => $this->cookies_file,
-                CURLOPT_COOKIEFILE => $this->cookies_file
-            ]
+                CURLOPT_COOKIEFILE => $this->cookies_file,
+            ],
         );
 
         // POST responds with a form that is uses JavaScript to submit
@@ -372,12 +372,12 @@ class LoginIntegrationTest extends TestCase
         }
         $this->assertEquals(
             'ticket',
-            $item->getAttribute('name')
+            $item->getAttribute('name'),
         );
         $this->assertStringStartsWith(
             'ST-',
             $item->getAttribute('value'),
-            ''
+            '',
         );
     }
 
@@ -394,15 +394,15 @@ class LoginIntegrationTest extends TestCase
             ['service' => $service_url],
             [
                 CURLOPT_COOKIEJAR => $this->cookies_file,
-                CURLOPT_COOKIEFILE => $this->cookies_file
-            ]
+                CURLOPT_COOKIEFILE => $this->cookies_file,
+            ],
         );
         $this->assertEquals(303, $resp['code']);
 
         $this->assertStringStartsWith(
             $service_url . '?ticket=ST-',
             $resp['headers']['Location'],
-            'Ticket should be part of the redirect.'
+            'Ticket should be part of the redirect.',
         );
 
         $location =  $resp['headers']['Location'];
@@ -425,7 +425,7 @@ SOAP;
             $soapRequest,
             [
                 'TARGET' => $service_url,
-            ]
+            ],
         );
 
         $this->assertEquals(200, $resp['code']);
@@ -445,8 +445,8 @@ SOAP;
             [
                 CURLOPT_COOKIEJAR => $this->cookies_file,
                 CURLOPT_COOKIEFILE => $this->cookies_file,
-                CURLOPT_FOLLOWLOCATION => true
-            ]
+                CURLOPT_FOLLOWLOCATION => true,
+            ],
         );
         $this->assertEquals(200, $resp['code'], $resp['body']);
     }

@@ -21,12 +21,12 @@ class AttributeExtractorTest extends TestCase
 
         $attributes = [
             'eduPersonPrincipalName' => ['testuser@example.com'],
-            'additionalAttribute' => ['Taco Club']
+            'additionalAttribute' => ['Taco Club'],
         ];
         $attributeExtractor = new AttributeExtractor();
         $result = $attributeExtractor->extractUserAndAttributes(
             $attributes,
-            Configuration::loadFromArray($casConfig)
+            Configuration::loadFromArray($casConfig),
         );
 
         $this->assertEquals('testuser@example.com', $result['user']);
@@ -40,17 +40,17 @@ class AttributeExtractorTest extends TestCase
     public function testNoAttributeCopying(): void
     {
         $casConfig = [
-            'attributes' => false
+            'attributes' => false,
         ];
 
         $attributes = [
             'eduPersonPrincipalName' => ['testuser@example.com'],
-            'additionalAttribute' => ['Taco Club']
+            'additionalAttribute' => ['Taco Club'],
         ];
         $attributeExtractor = new AttributeExtractor();
         $result = $attributeExtractor->extractUserAndAttributes(
             $attributes,
-            Configuration::loadFromArray($casConfig)
+            Configuration::loadFromArray($casConfig),
         );
 
         $this->assertEquals('testuser@example.com', $result['user']);
@@ -67,18 +67,18 @@ class AttributeExtractorTest extends TestCase
             'attrname' => 'userNameAttribute',
             'attributes_to_transfer' => [
                 'exampleAttribute',
-                'additionalAttribute'
-            ]
+                'additionalAttribute',
+            ],
         ];
 
         $attributes = [
             'userNameAttribute' => ['testuser@example.com'],
-            'additionalAttribute' => ['Taco Club']
+            'additionalAttribute' => ['Taco Club'],
         ];
         $attributeExtractor = new AttributeExtractor();
         $result = $attributeExtractor->extractUserAndAttributes(
             $attributes,
-            Configuration::loadFromArray($casConfig)
+            Configuration::loadFromArray($casConfig),
         );
 
         $this->assertEquals('testuser@example.com', $result['user']);
@@ -103,7 +103,7 @@ class AttributeExtractorTest extends TestCase
         $attributeExtractor = new AttributeExtractor();
         $result = $attributeExtractor->extractUserAndAttributes(
             $attributes,
-            Configuration::loadFromArray($casConfig)
+            Configuration::loadFromArray($casConfig),
         );
 
         $this->assertEquals('testuser@example.com', $result['user']);
@@ -124,30 +124,30 @@ class AttributeExtractorTest extends TestCase
                 [
                     'class' => 'core:AttributeMap',
                     'oid2name',
-                    'urn:example' => 'additionalAttribute'
-                ]
+                    'urn:example' => 'additionalAttribute',
+                ],
             ],
             'attributes_to_transfer' => [
                 'not-affected-by-authproc',
-                'additionalAttribute'
-            ]
+                'additionalAttribute',
+            ],
         ];
 
         $attributes = [
             'urn:oid:1.3.6.1.4.1.5923.1.1.1.6' => ['testuser@example.com'],
             'urn:example' => ['Taco Club'],
-            'not-affected-by-authproc' => ['Value']
+            'not-affected-by-authproc' => ['Value'],
         ];
         $attributeExtractor = new AttributeExtractor();
         // The authproc filters will remap the attributes prior to mapping them to CAS attributes
         $result = $attributeExtractor->extractUserAndAttributes(
             $attributes,
-            Configuration::loadFromArray($casConfig)
+            Configuration::loadFromArray($casConfig),
         );
 
         $expectedAttributes = [
             'additionalAttribute' => ['Taco Club'],
-            'not-affected-by-authproc' => ['Value']
+            'not-affected-by-authproc' => ['Value'],
         ];
         $this->assertEquals('testuser@example.com', $result['user']);
         $this->assertEquals($expectedAttributes, $result['attributes']);

@@ -33,7 +33,7 @@ class ServiceValidatorTest extends TestCase
                 [
                     'class' => 'core:AttributeMap',
                     'oid2name',
-                    'urn:example' => 'example'
+                    'urn:example' => 'example',
                 ],
             ],
             'legal_service_urls' => [
@@ -49,11 +49,11 @@ class ServiceValidatorTest extends TestCase
                         [
                             'class' => 'core:AttributeMap',
                             'oid2custom',
-                            'urn:example' => 'example'
+                            'urn:example' => 'example',
                         ],
                     ],
                 ],
-            ]
+            ],
         ];
 
         $serviceValidator = new ServiceValidator(Configuration::loadFromArray($casConfig));
@@ -80,9 +80,9 @@ class ServiceValidatorTest extends TestCase
                 [
                     'class' => 'core:AttributeMap',
                     'oid2name',
-                    'urn:example' => 'example'
+                    'urn:example' => 'example',
                 ],
-            ]
+            ],
         ];
         return [
             [
@@ -90,18 +90,18 @@ class ServiceValidatorTest extends TestCase
                 [
                     'casService' => [
                         'matchingUrl' => 'https://myservice.com',
-                        'serviceUrl' => 'https://myservice.com/abcd'
-                    ]
-                ] + $defaultConfig
+                        'serviceUrl' => 'https://myservice.com/abcd',
+                    ],
+                ] + $defaultConfig,
             ],
             [
                 'https://default.subdomain.com/abcd',
                 [
                     'casService' => [
                         'matchingUrl' => '|^https://.*\.subdomain.com/|',
-                        'serviceUrl' => 'https://default.subdomain.com/abcd'
-                    ]
-                ] + $defaultConfig
+                        'serviceUrl' => 'https://default.subdomain.com/abcd',
+                    ],
+                ] + $defaultConfig,
             ],
             [
                 'http://override.config.com/xyz',
@@ -109,9 +109,9 @@ class ServiceValidatorTest extends TestCase
                     'attrname' => 'alternateAttribute',
                     'casService' => [
                         'matchingUrl' => 'http://override.config.com/',
-                        'serviceUrl' => 'http://override.config.com/xyz'
-                    ]
-                ] + $defaultConfig
+                        'serviceUrl' => 'http://override.config.com/xyz',
+                    ],
+                ] + $defaultConfig,
             ],
             [
                 'https://override.more.com/avd/qrx',
@@ -121,14 +121,14 @@ class ServiceValidatorTest extends TestCase
                         [
                             'class' => 'core:AttributeMap',
                             'oid2custom',
-                            'urn:example' => 'example'
+                            'urn:example' => 'example',
                         ],
                     ],
                     'casService' => [
                         'matchingUrl' => '@^https://override.more.com/avd@',
-                        'serviceUrl' => 'https://override.more.com/avd/qrx'
-                    ]
-                ] + $defaultConfig
+                        'serviceUrl' => 'https://override.more.com/avd/qrx',
+                    ],
+                ] + $defaultConfig,
             ],
         ];
     }
@@ -157,7 +157,7 @@ class ServiceValidatorTest extends TestCase
                 // Invalid settings don't blow up
                 '|invalid-regex',
                 '',
-            ]
+            ],
         ];
         $serviceValidator = new ServiceValidator(Configuration::loadFromArray($casConfig));
         $config = $serviceValidator->checkServiceURL(urldecode($service));

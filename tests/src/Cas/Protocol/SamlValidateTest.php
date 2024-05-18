@@ -20,7 +20,7 @@ class SamlValidateTest extends TestCase
         $ticket = [
             'userName' => 'saisusr',
             'attributes' => [
-                'UDC_IDENTIFIER' => [$udcValue]
+                'UDC_IDENTIFIER' => [$udcValue],
             ],
             'service' => $serviceUrl,
         ];

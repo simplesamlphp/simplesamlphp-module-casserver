@@ -29,7 +29,7 @@ class SamlValidateResponder
         $ar = new AuthnResponse();
         $idpMetadata = [
             // CAS doesn't seem to care what this is, however SSP code requires it to be set
-            'entityid' => 'localhost'
+            'entityid' => 'localhost',
         ];
         $spMetadata = [
             'entityid' => $serviceUrl,

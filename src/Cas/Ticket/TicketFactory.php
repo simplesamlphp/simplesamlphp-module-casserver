@@ -62,7 +62,7 @@ class TicketFactory
         return [
             'id' => $sessionId,
             'validBefore' => $expiresAt,
-            'renewId' => $randomUtils->generateID()
+            'renewId' => $randomUtils->generateID(),
         ];
     }
 

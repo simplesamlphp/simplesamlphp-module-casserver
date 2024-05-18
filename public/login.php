@@ -197,7 +197,7 @@ if (isset($serviceUrl)) {
         'userName' => $mappedAttributes['user'],
         'attributes' => $mappedAttributes['attributes'],
         'proxies' => [],
-        'sessionId' => $sessionTicket['id']
+        'sessionId' => $sessionTicket['id'],
     ]);
 
     $ticketStore->addTicket($serviceTicket);

@@ -66,7 +66,7 @@ if (
                     'forceAuthn' => $proxyGrantingTicket['forceAuthn'],
                     'attributes' => $proxyGrantingTicket['attributes'],
                     'proxies' => $proxyGrantingTicket['proxies'],
-                    'sessionId' => $proxyGrantingTicket['sessionId']
+                    'sessionId' => $proxyGrantingTicket['sessionId'],
                 ]
             );
 

@@ -61,7 +61,7 @@ class AttributeExtractor
 
         return [
             'user' => $userName,
-            'attributes' => $casAttributes
+            'attributes' => $casAttributes,
         ];
     }
 
@@ -79,7 +79,7 @@ class AttributeExtractor
         $filters = $casconfig->getOptionalArray('authproc', []);
 
         $state = [
-            'Attributes' => $attributes
+            'Attributes' => $attributes,
         ];
         foreach ($filters as $config) {
             $className = Module::resolveClass(

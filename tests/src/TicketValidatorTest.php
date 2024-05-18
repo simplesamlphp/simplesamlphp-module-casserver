@@ -153,7 +153,7 @@ class TicketValidatorTest extends TestCase
             [
                 'https://k.edu/kc/portal.do;jsessionid=99AC064A127?ct=Search&cu=https://k.edu/kc/as.do?ssf=456*&rsol=1',
                 'https://k.edu/kc/portal.do?ct=Search&cu=https://k.edu/kc/as.do?ssf=456*&rsol=1',
-            ]
+            ],
         ];
     }
 
@@ -177,7 +177,7 @@ class TicketValidatorTest extends TestCase
             'userName' => 'bob',
             'attributes' => [],
             'proxies' => [],
-            'sessionId' => 'sesId'
+            'sessionId' => 'sesId',
         ];
         $this->ticketStore->addTicket($serviceTicket);
         return $serviceTicket;

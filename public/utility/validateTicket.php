@@ -101,7 +101,7 @@ if (isset($serviceUrl) && array_key_exists('ticket', $_GET)) {
                             'attributes' => $attributes,
                             'forceAuthn' => false,
                             'proxies' => array_merge([$serviceUrl], $serviceTicket['proxies']),
-                            'sessionId' => $serviceTicket['sessionId']
+                            'sessionId' => $serviceTicket['sessionId'],
                         ]);
                         $httpUtils = new Utils\HTTP();
                         try {

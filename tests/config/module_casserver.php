@@ -15,12 +15,12 @@ $config = [
     'scopes' => [
         'mobile' => [
             'https://idp1.domain:1234/saml2/idp/metadata.php',
-            'https://idp2.domain:5678/saml2/idp/metadata.php'
+            'https://idp2.domain:5678/saml2/idp/metadata.php',
         ],
         'desktop' => [
              'https://idp3.domain:1234/saml2/idp/metadata.php',
-             'https://idp4.domain:5678/saml2/idp/metadata.php'
-        ]
+             'https://idp4.domain:5678/saml2/idp/metadata.php',
+        ],
     ],
 
     'legal_service_urls' => [
@@ -33,7 +33,7 @@ $config = [
         ],
         'http://changeTicketParam' => [
             'ticketName' => 'myTicket',
-        ]
+        ],
     ],
 
     'legal_target_service_urls' => [

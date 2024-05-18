@@ -185,8 +185,8 @@ class SQLTicketStore extends TicketStore
             ['_name'],
             [
                 '_name' => $name,
-                '_version' => $version
-            ]
+                '_version' => $version,
+            ],
         );
         $this->tableVersions[$name] = $version;
     }

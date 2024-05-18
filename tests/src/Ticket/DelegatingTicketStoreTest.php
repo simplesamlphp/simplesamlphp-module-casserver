@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Casserver\Ticket;
 
+use Exception;
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
@@ -51,7 +52,7 @@ class DelegatingTicketStoreTest extends TestCase
 
                 'module.enable' => [
                     'casserver' => true,
-                    'exampleauth' => true
+                    'exampleauth' => true,
                 ],
 
                 'debug' => true,
@@ -71,7 +72,7 @@ class DelegatingTicketStoreTest extends TestCase
                     'directory' => dirname(__DIR__, 2) . '/ticketcacheAlt',
                 ],
                 'error' => [
-                    'class' => ErroringTicketStore::class
+                    'class' => ErroringTicketStore::class,
                 ],
                 'name2' => [
                     'class' => 'casserver:FileSystemTicketStore',
@@ -81,7 +82,7 @@ class DelegatingTicketStoreTest extends TestCase
                     'class' => 'casserver:FileSystemTicketStore',
                     'directory' => 'does-not-exist',
                 ],
-            ]
+            ],
         ];
 
         $this->fileStore1 = new FileSystemTicketStore(
@@ -180,22 +181,22 @@ class DelegatingTicketStoreTest extends TestCase
             'delegateTo' => 'all',
             'ticketStores' => [
                 'error' => [
-                    'class' => ErroringTicketStore::class
-                ]
-            ]
+                    'class' => ErroringTicketStore::class,
+                ],
+            ],
         ];
 
         $ticketStore = new DelegatingTicketStore(Configuration::loadFromArray(['ticketstore' => $config]));
         try {
             $ticketStore->getTicket('abc');
             $this->fail('Exceptione expected');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals('Sample get error', $e->getMessage());
         }
         try {
             $ticketStore->addTicket(['a' => 'b']);
             $this->fail('Exceptione expected');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals('Sample add error', $e->getMessage());
         }
     }
