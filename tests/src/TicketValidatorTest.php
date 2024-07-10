@@ -54,7 +54,7 @@ class TicketValidatorTest extends TestCase
             $this->ticketValidator->validateAndDeleteTicket($id, 'efg');
             $this->fail('exception expected');
         } catch (CasException $e) {
-            $this->assertEquals('INVALID_TICKET', $e->getCasCode());
+            $this->assertEquals(C::ERR_INVALID_TICKET, $e->getCasCode());
             $this->assertEquals('Ticket \'' . $id . '\' not recognized', $e->getMessage());
         }
     }
@@ -77,7 +77,7 @@ class TicketValidatorTest extends TestCase
             $this->ticketValidator->validateAndDeleteTicket($id, $serviceUrl);
             $this->fail('exception expected');
         } catch (CasException $e) {
-            $this->assertEquals('INVALID_TICKET', $e->getCasCode());
+            $this->assertEquals(C::ERR_INVALID_TICKET, $e->getCasCode());
             $this->assertEquals('Ticket \'' . $id . '\' not recognized', $e->getMessage());
         }
     }
@@ -95,7 +95,7 @@ class TicketValidatorTest extends TestCase
             $this->ticketValidator->validateAndDeleteTicket($id, $serviceUrl);
             $this->fail('exception expected');
         } catch (CasException $e) {
-            $this->assertEquals('INVALID_SERVICE', $e->getCasCode());
+            $this->assertEquals(C::ERR_INVALID_SERVICE, $e->getCasCode());
             $this->assertEquals(
                 "Mismatching service parameters: expected 'http://otherurl.com' but was: 'http://efh.com?a=b&'",
                 $e->getMessage()
@@ -118,7 +118,7 @@ class TicketValidatorTest extends TestCase
             $this->ticketValidator->validateAndDeleteTicket($id, $serviceUrl);
             $this->fail('exception expected');
         } catch (CasException $e) {
-            $this->assertEquals('INVALID_TICKET', $e->getCasCode());
+            $this->assertEquals(C::ERR_INVALID_TICKET, $e->getCasCode());
             $this->assertEquals('Ticket \'' . $id . '\' has expired', $e->getMessage());
         }
         // ensure ticket deleted after validation

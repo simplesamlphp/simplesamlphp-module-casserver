@@ -98,18 +98,18 @@ if (
 
     \SimpleSAML\Logger::debug('casserver:' . $message);
 
-    echo $protocol->getProxyFailureResponse('INVALID_REQUEST', $message);
+    echo $protocol->getProxyFailureResponse(C::ERR_INVALID_REQUEST, $message);
 } elseif (!checkServiceURL(sanitize($_GET['targetService']), $legal_target_service_urls)) {
     $message = 'Target service parameter not listed as a legal service: [targetService] = ' .
         var_export($_GET['targetService'], true);
 
     \SimpleSAML\Logger::debug('casserver:' . $message);
 
-    echo $protocol->getProxyFailureResponse('INVALID_REQUEST', $message);
+    echo $protocol->getProxyFailureResponse(C::ERR_INVALID_REQUEST, $message);
 } else {
     $message = 'Missing proxy granting ticket parameter: [pgt]';
 
     \SimpleSAML\Logger::debug('casserver:' . $message);
 
-    echo $protocol->getProxyFailureResponse('INVALID_REQUEST', $message);
+    echo $protocol->getProxyFailureResponse(C::ERR_INVALID_REQUEST, $message);
 }
