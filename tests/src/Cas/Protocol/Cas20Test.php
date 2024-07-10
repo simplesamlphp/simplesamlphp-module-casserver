@@ -21,7 +21,7 @@ final class Cas20Test extends TestCase
     protected function setUp(): void
     {
         $this->document = DOMDocumentFactory::fromFile(
-            dirname(__FILE__, 4) . '/resources/xml/testAttributeToXmlConversion.xml'
+            dirname(__FILE__, 4) . '/resources/xml/testAttributeToXmlConversion.xml',
         );
     }
 

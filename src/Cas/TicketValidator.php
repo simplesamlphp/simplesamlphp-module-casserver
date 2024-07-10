@@ -34,7 +34,7 @@ class TicketValidator
         $this->casconfig = $casconfig;
         $ticketStoreConfig = $casconfig->getOptionalValue(
             'ticketstore',
-            ['class' => 'casserver:FileSystemTicketStore']
+            ['class' => 'casserver:FileSystemTicketStore'],
         );
         $ticketStoreClass = Module::resolveClass($ticketStoreConfig['class'], 'Cas\Ticket');
         /**
@@ -108,7 +108,7 @@ class TicketValidator
         return preg_replace(
             '/;jsessionid=.*[^?].*$/U',
             '',
-            preg_replace('/;jsessionid=.*[?]/U', '?', urldecode($parameter))
+            preg_replace('/;jsessionid=.*[?]/U', '?', urldecode($parameter)),
         );
     }
 }

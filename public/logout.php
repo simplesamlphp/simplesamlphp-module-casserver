@@ -71,8 +71,8 @@ if ($as->isAuthenticated()) {
         $as->logout(
             $httpUtils->addURLParameters(
                 \SimpleSAML\Module::getModuleURL('casserver/loggedOut.php'),
-                array_key_exists('url', $_GET) ? ['url' => $_GET['url']] : []
-            )
+                array_key_exists('url', $_GET) ? ['url' => $_GET['url']] : [],
+            ),
         );
     }
 } else {
@@ -84,8 +84,8 @@ if ($as->isAuthenticated()) {
         $httpUtils->redirectTrustedURL(
             $httpUtils->addURLParameters(
                 \SimpleSAML\Module::getModuleURL('casserver/loggedOut.php'),
-                array_key_exists('url', $_GET) ? ['url' => $_GET['url']] : []
-            )
+                array_key_exists('url', $_GET) ? ['url' => $_GET['url']] : [],
+            ),
         );
     }
 }

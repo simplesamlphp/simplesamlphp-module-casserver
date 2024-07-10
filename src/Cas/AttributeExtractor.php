@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\casserver\Cas;
 
+use SimpleSAML\Auth;
 use SimpleSAML\Configuration;
 use SimpleSAML\Module;
 
@@ -85,7 +86,7 @@ class AttributeExtractor
             $className = Module::resolveClass(
                 $config['class'],
                 'Auth\Process',
-                \SimpleSAML\Auth\ProcessingFilter::class
+                Auth\ProcessingFilter::class,
             );
             // Unset 'class' to prevent the filter from interpreting it as an option
             unset($config['class']);

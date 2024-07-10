@@ -67,7 +67,7 @@ if (
                     'attributes' => $proxyGrantingTicket['attributes'],
                     'proxies' => $proxyGrantingTicket['proxies'],
                     'sessionId' => $proxyGrantingTicket['sessionId'],
-                ]
+                ],
             );
 
             $ticketStore->addTicket($proxyTicket);

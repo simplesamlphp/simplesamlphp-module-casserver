@@ -60,7 +60,7 @@ class DelegatingTicketStoreTest extends TestCase
                 'logging.handler' => 'errorlog',
             ],
             '[ARRAY]',
-            'simplesaml'
+            'simplesaml',
         );
         Configuration::setPreLoadedConfig($this->config, 'config.php');
 
@@ -86,10 +86,10 @@ class DelegatingTicketStoreTest extends TestCase
         ];
 
         $this->fileStore1 = new FileSystemTicketStore(
-            Configuration::loadFromArray(['ticketstore' => $this->ticketstoreConfig['ticketStores']['name1']])
+            Configuration::loadFromArray(['ticketstore' => $this->ticketstoreConfig['ticketStores']['name1']]),
         );
         $this->fileStore2 = new FileSystemTicketStore(
-            Configuration::loadFromArray(['ticketstore' => $this->ticketstoreConfig['ticketStores']['name2']])
+            Configuration::loadFromArray(['ticketstore' => $this->ticketstoreConfig['ticketStores']['name2']]),
         );
     }
 
@@ -101,7 +101,7 @@ class DelegatingTicketStoreTest extends TestCase
     {
         $this->ticketstoreConfig['delegateTo'] = 'all';
         $ticketStore = new DelegatingTicketStore(
-            Configuration::loadFromArray(['ticketstore' => $this->ticketstoreConfig])
+            Configuration::loadFromArray(['ticketstore' => $this->ticketstoreConfig]),
         );
 
         $ticket = ['a' => 'b', 'id' => '1'];
@@ -130,7 +130,7 @@ class DelegatingTicketStoreTest extends TestCase
     {
         $this->ticketstoreConfig['delegateTo'] = 'first';
         $ticketStore = new DelegatingTicketStore(
-            Configuration::loadFromArray(['ticketstore' => $this->ticketstoreConfig])
+            Configuration::loadFromArray(['ticketstore' => $this->ticketstoreConfig]),
         );
 
         $ticket = ['a' => 'b', 'id' => '1'];
@@ -153,7 +153,7 @@ class DelegatingTicketStoreTest extends TestCase
     {
         $this->ticketstoreConfig['delegateTo'] = 'name2';
         $ticketStore = new DelegatingTicketStore(
-            Configuration::loadFromArray(['ticketstore' => $this->ticketstoreConfig])
+            Configuration::loadFromArray(['ticketstore' => $this->ticketstoreConfig]),
         );
 
         $ticket = ['a' => 'b', 'id' => '1'];

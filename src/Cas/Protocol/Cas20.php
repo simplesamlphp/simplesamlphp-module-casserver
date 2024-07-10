@@ -145,7 +145,7 @@ class Cas20
             if (!is_null($this->base64IndicatorAttribute)) {
                 $attr[] = $this->generateCas20Attribute(
                     $this->base64IndicatorAttribute,
-                    $this->base64EncodeAttributes ? "true" : "false"
+                    $this->base64EncodeAttributes ? "true" : "false",
                 );
             }
         }
@@ -212,7 +212,7 @@ class Cas20
      */
     private function generateCas20Attribute(
         string $attributeName,
-        string $attributeValue
+        string $attributeValue,
     ): Chunk {
         $xmlDocument = DOMDocumentFactory::create();
 
@@ -241,7 +241,7 @@ class Cas20
         return filter_var(
             $name,
             FILTER_VALIDATE_REGEXP,
-            ['options' => ['regexp' => '/^[a-zA-Z_][\w.-]*$/']]
+            ['options' => ['regexp' => '/^[a-zA-Z_][\w.-]*$/']],
         ) === true;
     }
 }

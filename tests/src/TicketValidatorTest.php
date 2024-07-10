@@ -6,6 +6,7 @@ namespace SimpleSAML\Casserver;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use SimpleSAML\CAS\Constants as C;
 use SimpleSAML\Configuration;
 use SimpleSAML\Module\casserver\Cas\CasException;
 use SimpleSAML\Module\casserver\Cas\Ticket\FileSystemTicketStore;
@@ -98,7 +99,7 @@ class TicketValidatorTest extends TestCase
             $this->assertEquals(C::ERR_INVALID_SERVICE, $e->getCasCode());
             $this->assertEquals(
                 "Mismatching service parameters: expected 'http://otherurl.com' but was: 'http://efh.com?a=b&'",
-                $e->getMessage()
+                $e->getMessage(),
             );
         }
         // ensure ticket deleted after validation

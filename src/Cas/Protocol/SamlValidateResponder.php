@@ -39,14 +39,14 @@ class SamlValidateResponder
             Configuration::loadFromArray($idpMetadata),
             Configuration::loadFromArray($spMetadata),
             $shire,
-            $attributes
+            $attributes,
         );
 
         // replace NameIdentifier with actually username
         $ret = preg_replace(
             '|<NameIdentifier(.*)>.*</NameIdentifier>|',
             '<NameIdentifier$1>' . htmlspecialchars($user) . '</NameIdentifier>',
-            $authnResponseXML
+            $authnResponseXML,
         );
         // CAS seems to prefer this type of assertiond
         $ret = str_replace('urn:oasis:names:tc:SAML:1.0:cm:bearer', 'urn:oasis:names:tc:SAML:1.0:cm:artifact', $ret);
@@ -54,7 +54,7 @@ class SamlValidateResponder
         $ret = str_replace(
             'urn:mace:shibboleth:1.0:attributeNamespace:uri',
             'http://www.ja-sig.org/products/cas/',
-            $ret
+            $ret,
         );
 
         $doc = DOMDocumentFactory::fromString($ret);

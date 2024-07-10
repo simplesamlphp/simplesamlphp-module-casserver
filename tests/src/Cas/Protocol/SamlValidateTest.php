@@ -37,7 +37,7 @@ class SamlValidateTest extends TestCase
         $this->assertEquals('saisusr', $attributeStatement->Subject->NameIdentifier);
         $this->assertEquals(
             'urn:oasis:names:tc:SAML:1.0:cm:artifact',
-            $attributeStatement->Subject->SubjectConfirmation->ConfirmationMethod
+            $attributeStatement->Subject->SubjectConfirmation->ConfirmationMethod,
         );
 
         $attribute = $attributeStatement->Attribute;

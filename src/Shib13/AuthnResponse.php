@@ -141,7 +141,7 @@ class AuthnResponse
             $this->validator->validateCA($configUtils->getCertPath($md->getString('caFile')));
         } else {
             throw new Error\Exception(
-                'Missing certificate in Shibboleth 1.3 IdP Remote metadata for identity provider [' . $issuer . '].'
+                'Missing certificate in Shibboleth 1.3 IdP Remote metadata for identity provider [' . $issuer . '].',
             );
         }
 
@@ -261,7 +261,7 @@ class AuthnResponse
 
             $attribute_nodes = $this->doXPathQuery(
                 'shib:AttributeStatement/shib:Attribute/shib:AttributeValue',
-                $assertion
+                $assertion,
             );
 
             foreach ($attribute_nodes as $attribute) {

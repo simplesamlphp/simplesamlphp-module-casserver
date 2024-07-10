@@ -233,6 +233,6 @@ if (isset($serviceUrl)) {
     }
 } else {
     $httpUtils->redirectTrustedURL(
-        $httpUtils->addURLParameters(Module::getModuleURL('casserver/loggedIn.php'), $parameters)
+        $httpUtils->addURLParameters(Module::getModuleURL('casserver/loggedIn.php'), $parameters),
     );
 }

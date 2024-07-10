@@ -66,7 +66,7 @@ class LoginIntegrationTest extends TestCase
     {
         $this->server = new BuiltInServer(
             'configLoader',
-            dirname(__FILE__, 3) . '/vendor/simplesamlphp/simplesamlphp/public'
+            dirname(__FILE__, 3) . '/vendor/simplesamlphp/simplesamlphp/public',
         );
         $this->server_addr = $this->server->start();
         $this->server_pid = $this->server->getPid();
@@ -132,7 +132,7 @@ class LoginIntegrationTest extends TestCase
         $this->assertStringContainsString(
             'You are logged in.',
             $resp['body'],
-            'Login with no query parameters should make you authenticate and then take you to the login page.'
+            'Login with no query parameters should make you authenticate and then take you to the login page.',
         );
     }
 
@@ -206,7 +206,7 @@ class LoginIntegrationTest extends TestCase
         );
 
         $expectedResponse = DOMDocumentFactory::fromFile(
-            dirname(__FILE__, 2) . '/resources/xml/testValidServiceUrl.xml'
+            dirname(__FILE__, 2) . '/resources/xml/testValidServiceUrl.xml',
         )->saveXML();
 
         $this->assertEquals(200, $resp['code']);

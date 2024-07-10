@@ -54,7 +54,7 @@ if (isset($serviceUrl) && array_key_exists('ticket', $_GET)) {
     try {
         $ticketStoreConfig = $casconfig->getOptionalValue(
             'ticketstore',
-            ['class' => 'casserver:FileSystemTicketStore']
+            ['class' => 'casserver:FileSystemTicketStore'],
         );
         $ticketStoreClass = Module::resolveClass($ticketStoreConfig['class'], 'Cas\Ticket');
         /** @var TicketStore $ticketStore */
@@ -180,7 +180,7 @@ if (isset($serviceUrl) && array_key_exists('ticket', $_GET)) {
         }
     } catch (Exception $e) {
         Logger::error(
-            'casserver:serviceValidate: internal server error. ' . var_export($e->getMessage(), true)
+            'casserver:serviceValidate: internal server error. ' . var_export($e->getMessage(), true),
         );
 
         echo $protocol->getValidateFailureResponse(C::ERR_INTERNAL_ERROR, $e->getMessage());
