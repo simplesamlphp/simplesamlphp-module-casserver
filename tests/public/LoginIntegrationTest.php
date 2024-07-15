@@ -213,7 +213,7 @@ class LoginIntegrationTest extends TestCase
         $this->assertEquals($expectedResponse, $resp['body']);
     }
 
-    public function validServiceUrlProvider(): array
+    public static function validServiceUrlProvider(): array
     {
         return [
             ['service', 'ticket'],

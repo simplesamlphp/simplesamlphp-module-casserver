@@ -50,7 +50,7 @@ class UtilsTest extends TestCase
     /**
      * @return array
      */
-    public function checkServiceURLProvider(): array
+    public static function checkServiceURLProvider(): array
     {
         return [
             ['no-match', false],

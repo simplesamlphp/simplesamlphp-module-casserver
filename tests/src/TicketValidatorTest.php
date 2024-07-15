@@ -140,7 +140,7 @@ class TicketValidatorTest extends TestCase
      * Urls to test
      * @return array
      */
-    public function urlSanitizationProvider(): array
+    public static function urlSanitizationProvider(): array
     {
         return [
             [

@@ -70,7 +70,7 @@ class ServiceValidatorTest extends TestCase
     /**
      * @return array
      */
-    public function overridingDataProvider(): array
+    public static function overridingDataProvider(): array
     {
         // The expected configuration if no overrides occur
         $defaultConfig = [
@@ -168,7 +168,7 @@ class ServiceValidatorTest extends TestCase
     /**
      * @return array
      */
-    public function checkServiceURLProvider(): array
+    public static function checkServiceURLProvider(): array
     {
         return [
             ['no-match', false],
