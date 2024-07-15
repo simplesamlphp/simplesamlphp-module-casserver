@@ -117,9 +117,9 @@ class Cas20
 
     /**
      * @param string $username
-     * @return \SimpleSAML\CAS\XML\cas\AuthenticationSuccess
+     * @return \SimpleSAML\CAS\XML\cas\ServiceResponse
      */
-    public function getValidateSuccessResponse(string $username): AuthenticationSuccess
+    public function getValidateSuccessResponse(string $username): ServiceResponse
     {
         $user = new User($username);
 
@@ -157,9 +157,10 @@ class Cas20
             $attr,
         );
 
-        $authenticationSucces = new AuthenticationSuccess($user, $attributes, $proxyGrantingTicket);
+        $authenticationSuccess = new AuthenticationSuccess($user, $attributes, $proxyGrantingTicket);
+        $serviceResponse = new ServiceResponse($authenticationSuccess);
 
-        return $authenticationSucces;
+        return $serviceResponse;
     }
 
 
@@ -217,8 +218,7 @@ class Cas20
         $xmlDocument = DOMDocumentFactory::create();
 
         $attributeValue = $this->base64EncodeAttributes ? base64_encode($attributeValue) : $attributeValue;
-        $attributeElement = $xmlDocument->createElement('cas:' . $attributeName);
-        $attributeElement->appendChild($attributeValueNode);
+        $attributeElement = $xmlDocument->createElementNS(Attributes::NS, 'cas:' . $attributeName, $attributeValue);
 
         return new Chunk($attributeElement);
     }
@@ -242,6 +242,6 @@ class Cas20
             $name,
             FILTER_VALIDATE_REGEXP,
             ['options' => ['regexp' => '/^[a-zA-Z_][\w.-]*$/']],
-        ) === true;
+        ) !== false;
     }
 }

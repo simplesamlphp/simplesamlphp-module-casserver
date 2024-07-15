@@ -2,6 +2,9 @@
   <cas:authenticationSuccess>
     <cas:user>myUser</cas:user>
     <cas:attributes>
+      <cas:authenticationDate>2024-07-16T22:31:00Z</cas:authenticationDate>
+      <cas:longTermAuthenticationRequestTokenUsed>true</cas:longTermAuthenticationRequestTokenUsed>
+      <cas:isFromNewLogin>true</cas:isFromNewLogin>
       <cas:lastName>lasty</cas:lastName>
       <cas:valuesAreEscaped>&gt;abc&lt;blah&gt;</cas:valuesAreEscaped>
       <cas:urn_oid_0.9.2342.19200300.100.1.1>someValue</cas:urn_oid_0.9.2342.19200300.100.1.1>

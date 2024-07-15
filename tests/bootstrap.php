@@ -16,6 +16,13 @@ if (!file_exists($ticketCacheDirAlt)) {
 /** @psalm-suppress UnresolvableInclude */
 require_once($projectRootDirectory . '/vendor/autoload.php');
 
+// Symlink module into ssp vendor lib so that templates and urls can resolve correctly
+$linkPath = $projectRootDirectory . '/vendor/simplesamlphp/simplesamlphp/modules/casserver';
+if (file_exists($linkPath) === false) {
+    echo "Linking '$linkPath' to '$projectRootDirectory'\n";
+    symlink($projectRootDirectory, $linkPath);
+}
+
 /**
  * Sets a link in the simplesamlphp vendor directory
  * @param string $target
