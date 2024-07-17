@@ -62,17 +62,18 @@ class LoginIntegrationTest extends TestCase
     /**
      * The setup method that is run before any tests in this class.
      */
-    protected function setup(): void
+    protected function setUp(): void
     {
         $this->server = new BuiltInServer(
+/*
             'configLoader',
             dirname(__FILE__, 3) . '/vendor/simplesamlphp/simplesamlphp/public',
+*/
         );
         $this->server_addr = $this->server->start();
         $this->server_pid = $this->server->getPid();
         $this->shared_file = sys_get_temp_dir() . '/' . $this->server_pid . '.lock';
         $this->cookies_file = sys_get_temp_dir() . '/' . $this->server_pid . '.cookies';
-
 
         $this->updateConfig([
             'baseurlpath' => '/',
