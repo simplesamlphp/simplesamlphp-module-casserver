@@ -37,13 +37,13 @@
 
         "simplesamlphp/assert": "^1.1",
         "simplesamlphp/composer-module-installer": "^1.3",
-        "simplesamlphp/simplesamlphp": "^2.1",
+        "simplesamlphp/simplesamlphp": "^2.2",
         "simplesamlphp/xml-cas": "^1.2",
         "simplesamlphp/xml-common": "^1.16",
         "simplesamlphp/xml-soap": "^1.4"
     },
     "require-dev": {
-        "simplesamlphp/simplesamlphp-test-framework": "^1.5"
+        "simplesamlphp/simplesamlphp-test-framework": "^1.7"
     },
     "support": {
         "issues": "https://github.com/simplesamlphp/simplesamlphp-module-casserver/issues",
