@@ -2,6 +2,7 @@
 .phpunit.result.cache
 composer.phar
 phpunit.xml.bak
+/super-linter-output/
 /tests/ticketcache
 /vendor/
 
