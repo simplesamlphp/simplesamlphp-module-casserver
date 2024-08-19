@@ -65,10 +65,8 @@ class LoginIntegrationTest extends TestCase
     protected function setUp(): void
     {
         $this->server = new BuiltInServer(
-/*
             'configLoader',
             dirname(__FILE__, 3) . '/vendor/simplesamlphp/simplesamlphp/public',
-*/
         );
         $this->server_addr = $this->server->start();
         $this->server_pid = $this->server->getPid();
@@ -81,9 +79,11 @@ class LoginIntegrationTest extends TestCase
 
             'tempdir' => sys_get_temp_dir(),
             'loggingdir' => sys_get_temp_dir(),
+            'logging.handler' => 'file',
 
             'module.enable' => [
                 'casserver' => true,
+                'exampleauth' => true,
             ],
         ]);
     }
