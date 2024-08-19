@@ -65,10 +65,8 @@ class LoginIntegrationTest extends TestCase
     protected function setUp(): void
     {
         $this->server = new BuiltInServer(
-/*
             'configLoader',
             dirname(__FILE__, 3) . '/vendor/simplesamlphp/simplesamlphp/public',
-*/
         );
         $this->server_addr = $this->server->start();
         $this->server_pid = $this->server->getPid();
@@ -81,9 +79,11 @@ class LoginIntegrationTest extends TestCase
 
             'tempdir' => sys_get_temp_dir(),
             'loggingdir' => sys_get_temp_dir(),
+            'logging.handler' => 'file',
 
             'module.enable' => [
                 'casserver' => true,
+                'exampleauth' => true,
             ],
         ]);
     }
@@ -293,7 +293,7 @@ class LoginIntegrationTest extends TestCase
 
 
         $this->assertStringContainsString(
-            'testuser@example.com&lt;/NameIdentifier',
+            'testuser@example.com&lt;/saml:NameIdentifier',
             $resp['body'],
             'Attributes should have been printed.',
         );
@@ -430,7 +430,7 @@ SOAP;
         );
 
         $this->assertEquals(200, $resp['code']);
-        $this->assertStringContainsString('testuser@example.com</NameIdentifier>', $resp['body']);
+        $this->assertStringContainsString('testuser@example.com</saml:NameIdentifier>', $resp['body']);
     }
 
 

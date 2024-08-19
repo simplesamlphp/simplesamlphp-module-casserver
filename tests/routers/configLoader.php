@@ -37,7 +37,7 @@ require_once(dirname(__FILE__, 3) . '/vendor/autoload.php');
 
 // initialize configuration
 if (isset($config)) {
-    Configuration::loadFromArray($config, '[ARRAY]', 'simplesaml');
+    Configuration::setPreLoadedConfig(Configuration::loadFromArray($config, '[ARRAY]', 'simplesaml'));
 }
 
 // let the script proceed
