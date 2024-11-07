@@ -5,14 +5,32 @@ declare(strict_types=1);
 namespace SimpleSAML\Module\casserver\Cas;
 
 use SimpleSAML\Auth;
+use SimpleSAML\Auth\ProcessingChain;
 use SimpleSAML\Configuration;
+use SimpleSAML\Error\Exception;
+use SimpleSAML\Error\NoState;
 use SimpleSAML\Module;
+use SimpleSAML\Module\casserver\Cas\Factories\ProcessingChainFactory;
 
 /**
  * Extract the user and any mapped attributes from the AuthSource attributes
  */
 class AttributeExtractor
 {
+    /** @var Configuration */
+    private readonly Configuration $casconfig;
+
+    /** @var ProcessingChainFactory  */
+    private readonly ProcessingChainFactory $processingChainFactory;
+
+    public function __construct(
+        Configuration $casconfig,
+        ProcessingChainFactory $processingChainFactory
+    ) {
+        $this->casconfig = $casconfig;
+        $this->processingChainFactory = $processingChainFactory;
+    }
+
     /**
      * Determine the user and any CAS attributes based on the attributes from the
      * authsource and the CAS configuration.
@@ -24,32 +42,34 @@ class AttributeExtractor
      *    // any attributes
      * ]
      *
-     * If no CAS attributes are configured then the attributes array is empty
-     * @param array $attributes
-     * @param \SimpleSAML\Configuration $casconfig
+     * If no CAS attributes are configured, then the attributes' array is empty
+     *
+     * @param   array  $attributes
+     *
      * @return array
+     * @throws \Exception
      */
-    public function extractUserAndAttributes(array $attributes, Configuration $casconfig): array
+    public function extractUserAndAttributes(array $attributes): array
     {
-        if ($casconfig->hasValue('authproc')) {
-            $attributes = $this->invokeAuthProc($attributes, $casconfig);
+        if ($this->casconfig->hasValue('authproc')) {
+            $attributes = $this->runAuthProcs($attributes);
         }
 
-        $casUsernameAttribute = $casconfig->getOptionalValue('attrname', 'eduPersonPrincipalName');
+        $casUsernameAttribute = $this->casconfig->getOptionalValue('attrname', 'eduPersonPrincipalName');
 
         $userName = $attributes[$casUsernameAttribute][0];
         if (empty($userName)) {
             throw new \Exception("No cas user defined for attribute $casUsernameAttribute");
         }
 
-        if ($casconfig->getOptionalValue('attributes', true)) {
-            $attributesToTransfer = $casconfig->getOptionalValue('attributes_to_transfer', []);
+        if ($this->casconfig->getOptionalValue('attributes', true)) {
+            $attributesToTransfer = $this->casconfig->getOptionalValue('attributes_to_transfer', []);
 
             if (sizeof($attributesToTransfer) > 0) {
                 $casAttributes = [];
 
                 foreach ($attributesToTransfer as $key) {
-                    if (array_key_exists($key, $attributes)) {
+                    if (\array_key_exists($key, $attributes)) {
                         $casAttributes[$key] = $attributes[$key];
                     }
                 }
@@ -66,35 +86,74 @@ class AttributeExtractor
         ];
     }
 
+    /**
+     * Run authproc filters with the processing chain
+     * Creating the ProcessingChain require metadata.
+     * - For the idp metadata use the OIDC issuer as the entityId (and the authprocs from the main config file)
+     * - For the sp metadata use the client id as the entityId (and don’t set authprocs).
+     *
+     * @param   array  $state
+     *
+     * @return void
+     * @throws Exception
+     * @throws Error\UnserializableException
+     * @throws \Exception
+     */
+    protected function runAuthProcs(array &$state): void
+    {
+        $filters = $this->casconfig->getOptionalArray('authproc', []);
+        $idpMetadata = [
+            'entityid' => $state['Source']['entityid'] ?? '',
+            // ProcessChain needs to know the list of authproc filters we defined in module_oidc configuration
+            'authproc' => $filters,
+        ];
+        $spMetadata = [
+            'entityid' => $state['Destination']['entityid'] ?? '',
+        ];
+
+        $state['ReturnURL'] = Module::getModuleURL('casserver/login.php');
+        $state['Destination'] = $spMetadata;
+        $state['Source'] = $idpMetadata;
+
+        $this->processingChainFactory->build($state)->processState($state);
+    }
 
     /**
-     * Process any authproc filters defined in the configuration. The Authproc filters must only
-     * rely on 'Attributes' being available and not on additional SAML state.
-     * @see \SimpleSAML_Auth_ProcessingChain::parseFilter() For the original, SAML side implementation
-     * @param array $attributes The current attributes
-     * @param \SimpleSAML\Configuration $casconfig The cas configuration
-     * @return array The attributes post processing.
+     * This is a wrapper around Auth/State::loadState that facilitates testing by
+     * hiding the static method
+     *
+     * @param   array  $queryParameters
+     *
+     * @return array|null
+     * @throws NoState
      */
-    private function invokeAuthProc(array $attributes, Configuration $casconfig): array
+    public function manageState(array $queryParameters): ?array
     {
-        $filters = $casconfig->getOptionalArray('authproc', []);
-
-        $state = [
-            'Attributes' => $attributes,
-        ];
-        foreach ($filters as $config) {
-            $className = Module::resolveClass(
-                $config['class'],
-                'Auth\Process',
-                Auth\ProcessingFilter::class,
-            );
-            // Unset 'class' to prevent the filter from interpreting it as an option
-            unset($config['class']);
-            /** @psalm-suppress InvalidStringClass */
-            $filter = new $className($config, null);
-            $filter->process($state);
+        if (empty($queryParameters[ProcessingChain::AUTHPARAM])) {
+            throw new NoState();
         }
 
-        return $state['Attributes'];
+        $stateId = (string)$queryParameters[ProcessingChain::AUTHPARAM];
+        $state = $this->loadState($stateId, ProcessingChain::COMPLETED_STAGE);
+
+        if (!empty($state['authSourceId'])) {
+            $this->authSourceId = (string)$state['authSourceId'];
+            unset($state['authSourceId']);
+        }
+
+        return $state;
+    }
+
+    /**
+     * @param   string  $id
+     * @param   string  $stage
+     * @param   bool    $allowMissing
+     *
+     * @return array|null
+     * @throws \SimpleSAML\Error\NoState
+     */
+    public function loadState(string $id, string $stage, bool $allowMissing = false): ?array
+    {
+        return $this->authState::loadState($id, $stage, $allowMissing);
     }
 }

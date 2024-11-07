@@ -30,6 +30,7 @@
 
 declare(strict_types=1);
 
+use SimpleSAML\Auth\Simple;
 use SimpleSAML\Configuration;
 use SimpleSAML\Locale\Language;
 use SimpleSAML\Logger;
@@ -44,8 +45,8 @@ require_once('utility/urlUtils.php');
 
 $forceAuthn = isset($_GET['renew']) && $_GET['renew'];
 $isPassive = isset($_GET['gateway']) && $_GET['gateway'];
-// Determine if client wants us to post or redirect the response. Default is redirect.
-$redirect = !(isset($_GET['method']) && 'POST' === $_GET['method']);
+// Determine if the client wants us to post or redirect the response. Default is redirect.
+$redirect = !(isset($_GET['method']) && $_GET['method'] === 'POST');
 
 $casconfig = Configuration::getConfig('module_casserver.php');
 $serviceValidator = new ServiceValidator($casconfig);
@@ -66,9 +67,6 @@ if (isset($serviceUrl)) {
     }
 }
 
-
-$as = new \SimpleSAML\Auth\Simple($casconfig->getValue('authsource'));
-
 if (array_key_exists('scope', $_GET) && is_string($_GET['scope'])) {
     $scopes = $casconfig->getOptionalValue('scopes', []);
 
@@ -87,16 +85,34 @@ if (array_key_exists('language', $_GET) && is_string($_GET['language'])) {
     Language::setLanguageCookie($_GET['language']);
 }
 
+/** Initializations */
+
+// AuthSource Simple
+$as = new Simple($casconfig->getValue('authsource'));
+
+// Ticket Store
 $ticketStoreConfig = $casconfig->getOptionalValue('ticketstore', ['class' => 'casserver:FileSystemTicketStore']);
 $ticketStoreClass = Module::resolveClass($ticketStoreConfig['class'], 'Cas\Ticket');
 /** @var $ticketStore TicketStore */
 /** @psalm-suppress InvalidStringClass */
 $ticketStore = new $ticketStoreClass($casconfig);
 
-$ticketFactoryClass = Module::resolveClass('casserver:TicketFactory', 'Cas\Ticket');
+// Ticket Factory
+$ticketFactoryClass = Module::resolveClass('casserver:TicketFactory', 'Cas\Factories');
 /** @var $ticketFactory TicketFactory */
 /** @psalm-suppress InvalidStringClass */
 $ticketFactory = new $ticketFactoryClass($casconfig);
+
+// Processing Chain Factory
+$processingChaingFactoryClass = Module::resolveClass('casserver:ProcessingChainFactory', 'Cas\Factories');
+/** @var $processingChainFactory ProcessingChainFactory */
+/** @psalm-suppress InvalidStringClass */
+$processingChainFactory = new $processingChaingFactoryClass($casconfig);
+
+// Attribute Extractor
+$attributeExtractor = new AttributeExtractor($casconfig, $processingChainFactory);
+
+// HTTP Utils
 $httpUtils = new Utils\HTTP();
 $session = Session::getSessionFromRequest();
 
@@ -177,10 +193,8 @@ if (array_key_exists('language', $_GET)) {
 
     if (isset($oldLanguagePreferred)) {
         $parameters['language'] = $oldLanguagePreferred;
-    } else {
-        if (is_string($_GET['language'])) {
-            $parameters['language'] = $_GET['language'];
-        }
+    } elseif (is_string($_GET['language'])) {
+        $parameters['language'] = $_GET['language'];
     }
 }
 
@@ -188,8 +202,7 @@ if (isset($serviceUrl)) {
     $defaultTicketName = isset($_GET['service']) ? 'ticket' : 'SAMLart';
     $ticketName = $casconfig->getOptionalValue('ticketName', $defaultTicketName);
 
-    $attributeExtractor = new AttributeExtractor();
-    $mappedAttributes = $attributeExtractor->extractUserAndAttributes($as->getAttributes(), $casconfig);
+        $mappedAttributes = $attributeExtractor->extractUserAndAttributes($as->getAttributes());
 
     $serviceTicket = $ticketFactory->createServiceTicket([
         'service' => $serviceUrl,
@@ -207,7 +220,7 @@ if (isset($serviceUrl)) {
     $validDebugModes = ['true', 'samlValidate'];
     if (
         array_key_exists('debugMode', $_GET) &&
-        in_array($_GET['debugMode'], $validDebugModes) &&
+        in_array($_GET['debugMode'], $validDebugModes, true) &&
         $casconfig->getOptionalBoolean('debugMode', false)
     ) {
         if ($_GET['debugMode'] === 'samlValidate') {
@@ -229,7 +242,11 @@ if (isset($serviceUrl)) {
     } elseif ($redirect) {
         $httpUtils->redirectTrustedURL($httpUtils->addURLParameters($serviceUrl, $parameters));
     } else {
-        $httpUtils->submitPOSTData($serviceUrl, $parameters);
+        try {
+            $httpUtils->submitPOSTData($serviceUrl, $parameters);
+        } catch (\SimpleSAML\Error\Exception $e) {
+
+        }
     }
 } else {
     $httpUtils->redirectTrustedURL(

@@ -7,6 +7,7 @@ namespace SimpleSAML\Casserver;
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Configuration;
 use SimpleSAML\Module\casserver\Cas\AttributeExtractor;
+use SimpleSAML\Module\casserver\Cas\Factories\ProcessingChainFactory;
 
 class AttributeExtractorTest extends TestCase
 {
@@ -23,11 +24,13 @@ class AttributeExtractorTest extends TestCase
             'eduPersonPrincipalName' => ['testuser@example.com'],
             'additionalAttribute' => ['Taco Club'],
         ];
-        $attributeExtractor = new AttributeExtractor();
-        $result = $attributeExtractor->extractUserAndAttributes(
-            $attributes,
-            Configuration::loadFromArray($casConfig),
+        $loadedConfig = Configuration::loadFromArray($casConfig);
+        $attributeExtractor = new AttributeExtractor(
+            $loadedConfig,
+            new ProcessingChainFactory($loadedConfig)
         );
+
+        $result = $attributeExtractor->extractUserAndAttributes($attributes);
 
         $this->assertEquals('testuser@example.com', $result['user']);
         $this->assertEquals($attributes, $result['attributes']);
@@ -47,11 +50,13 @@ class AttributeExtractorTest extends TestCase
             'eduPersonPrincipalName' => ['testuser@example.com'],
             'additionalAttribute' => ['Taco Club'],
         ];
-        $attributeExtractor = new AttributeExtractor();
-        $result = $attributeExtractor->extractUserAndAttributes(
-            $attributes,
-            Configuration::loadFromArray($casConfig),
+        $loadedConfig = Configuration::loadFromArray($casConfig);
+        $attributeExtractor = new AttributeExtractor(
+            $loadedConfig,
+            new ProcessingChainFactory($loadedConfig)
         );
+
+        $result = $attributeExtractor->extractUserAndAttributes($attributes);
 
         $this->assertEquals('testuser@example.com', $result['user']);
         $this->assertEquals([], $result['attributes']);
@@ -75,11 +80,13 @@ class AttributeExtractorTest extends TestCase
             'userNameAttribute' => ['testuser@example.com'],
             'additionalAttribute' => ['Taco Club'],
         ];
-        $attributeExtractor = new AttributeExtractor();
-        $result = $attributeExtractor->extractUserAndAttributes(
-            $attributes,
-            Configuration::loadFromArray($casConfig),
+        $loadedConfig = Configuration::loadFromArray($casConfig);
+        $attributeExtractor = new AttributeExtractor(
+            $loadedConfig,
+            new ProcessingChainFactory($loadedConfig)
         );
+
+        $result = $attributeExtractor->extractUserAndAttributes($attributes);
 
         $this->assertEquals('testuser@example.com', $result['user']);
         $this->assertEquals(['additionalAttribute' => ['Taco Club']], $result['attributes']);
@@ -100,11 +107,13 @@ class AttributeExtractorTest extends TestCase
             'additionalAttribute' => ['Taco Club'],
             'authproc' => [],
         ];
-        $attributeExtractor = new AttributeExtractor();
-        $result = $attributeExtractor->extractUserAndAttributes(
-            $attributes,
-            Configuration::loadFromArray($casConfig),
+        $loadedConfig = Configuration::loadFromArray($casConfig);
+        $attributeExtractor = new AttributeExtractor(
+            $loadedConfig,
+            new ProcessingChainFactory($loadedConfig)
         );
+
+        $result = $attributeExtractor->extractUserAndAttributes($attributes);
 
         $this->assertEquals('testuser@example.com', $result['user']);
         $this->assertEquals($attributes, $result['attributes']);
@@ -138,12 +147,13 @@ class AttributeExtractorTest extends TestCase
             'urn:example' => ['Taco Club'],
             'not-affected-by-authproc' => ['Value'],
         ];
-        $attributeExtractor = new AttributeExtractor();
-        // The authproc filters will remap the attributes prior to mapping them to CAS attributes
-        $result = $attributeExtractor->extractUserAndAttributes(
-            $attributes,
-            Configuration::loadFromArray($casConfig),
+        $loadedConfig = Configuration::loadFromArray($casConfig);
+        $attributeExtractor = new AttributeExtractor(
+            $loadedConfig,
+            new ProcessingChainFactory($loadedConfig)
         );
+        // The authproc filters will remap the attributes prior to mapping them to CAS attributes
+        $result = $attributeExtractor->extractUserAndAttributes($attributes);
 
         $expectedAttributes = [
             'additionalAttribute' => ['Taco Club'],
