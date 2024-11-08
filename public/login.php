@@ -47,11 +47,10 @@ $forceAuthn = isset($_GET['renew']) && $_GET['renew'];
 $isPassive = isset($_GET['gateway']) && $_GET['gateway'];
 // Determine if the client wants us to post or redirect the response. Default is redirect.
 $redirect = !(isset($_GET['method']) && $_GET['method'] === 'POST');
+$serviceUrl = $_GET['service'] ?? $_GET['TARGET'] ?? null;
 
 $casconfig = Configuration::getConfig('module_casserver.php');
 $serviceValidator = new ServiceValidator($casconfig);
-
-$serviceUrl = $_GET['service'] ?? $_GET['TARGET'] ?? null;
 
 if (isset($serviceUrl)) {
     $serviceCasConfig = $serviceValidator->checkServiceURL(sanitize($serviceUrl));
@@ -198,58 +197,67 @@ if (array_key_exists('language', $_GET)) {
     }
 }
 
-if (isset($serviceUrl)) {
-    $defaultTicketName = isset($_GET['service']) ? 'ticket' : 'SAMLart';
-    $ticketName = $casconfig->getOptionalValue('ticketName', $defaultTicketName);
-
-        $mappedAttributes = $attributeExtractor->extractUserAndAttributes($as->getAttributes());
-
-    $serviceTicket = $ticketFactory->createServiceTicket([
-        'service' => $serviceUrl,
-        'forceAuthn' => $forceAuthn,
-        'userName' => $mappedAttributes['user'],
-        'attributes' => $mappedAttributes['attributes'],
-        'proxies' => [],
-        'sessionId' => $sessionTicket['id'],
-    ]);
-
-    $ticketStore->addTicket($serviceTicket);
-
-    $parameters[$ticketName] = $serviceTicket['id'];
-
-    $validDebugModes = ['true', 'samlValidate'];
-    if (
-        array_key_exists('debugMode', $_GET) &&
-        in_array($_GET['debugMode'], $validDebugModes, true) &&
-        $casconfig->getOptionalBoolean('debugMode', false)
-    ) {
-        if ($_GET['debugMode'] === 'samlValidate') {
-            $samlValidate = new SamlValidateResponder();
-            $samlResponse = $samlValidate->convertToSaml($serviceTicket);
-            $soap = $samlValidate->wrapInSoap($samlResponse);
-            echo '<pre>' . htmlspecialchars(strval($soap)) . '</pre>';
-        } else {
-            $method = 'serviceValidate';
-            // Fake some options for validateTicket
-            $_GET[$ticketName] = $serviceTicket['id'];
-            // We want to capture the output from echo used in validateTicket
-            ob_start();
-            require_once 'utility/validateTicket.php';
-            $casResponse = ob_get_contents();
-            ob_end_clean();
-            echo '<pre>' . htmlspecialchars($casResponse) . '</pre>';
-        }
-    } elseif ($redirect) {
-        $httpUtils->redirectTrustedURL($httpUtils->addURLParameters($serviceUrl, $parameters));
-    } else {
-        try {
-            $httpUtils->submitPOSTData($serviceUrl, $parameters);
-        } catch (\SimpleSAML\Error\Exception $e) {
-
-        }
-    }
-} else {
+// I am already logged in. Redirect to the logged in endpoint
+if(!isset($serviceUrl)) {
+    // LOGGED IN
     $httpUtils->redirectTrustedURL(
         $httpUtils->addURLParameters(Module::getModuleURL('casserver/loggedIn.php'), $parameters),
     );
+}
+
+
+
+$defaultTicketName = isset($_GET['service']) ? 'ticket' : 'SAMLart';
+$ticketName = $casconfig->getOptionalValue('ticketName', $defaultTicketName);
+
+$mappedAttributes = $attributeExtractor->extractUserAndAttributes($as->getAuthDataArray());
+
+$serviceTicket = $ticketFactory->createServiceTicket([
+                                                         'service' => $serviceUrl,
+                                                         'forceAuthn' => $forceAuthn,
+                                                         'userName' => $mappedAttributes['user'],
+                                                         'attributes' => $mappedAttributes['attributes'],
+                                                         'proxies' => [],
+                                                         'sessionId' => $sessionTicket['id'],
+                                                     ]);
+
+$ticketStore->addTicket($serviceTicket);
+
+$parameters[$ticketName] = $serviceTicket['id'];
+
+$validDebugModes = ['true', 'samlValidate'];
+
+// DEBUG MODE
+if (
+    array_key_exists('debugMode', $_GET) &&
+    in_array($_GET['debugMode'], $validDebugModes, true) &&
+    $casconfig->getOptionalBoolean('debugMode', false)
+) {
+    if ($_GET['debugMode'] === 'samlValidate') {
+        $samlValidate = new SamlValidateResponder();
+        $samlResponse = $samlValidate->convertToSaml($serviceTicket);
+        $soap = $samlValidate->wrapInSoap($samlResponse);
+        echo '<pre>' . htmlspecialchars(strval($soap)) . '</pre>';
+    } else {
+        $method = 'serviceValidate';
+        // Fake some options for validateTicket
+        $_GET[$ticketName] = $serviceTicket['id'];
+        // We want to capture the output from echo used in validateTicket
+        ob_start();
+        require_once 'utility/validateTicket.php';
+        $casResponse = ob_get_contents();
+        ob_end_clean();
+        echo '<pre>' . htmlspecialchars($casResponse) . '</pre>';
+    }
+} elseif ($redirect) {
+    // GET
+    $httpUtils->redirectTrustedURL($httpUtils->addURLParameters($serviceUrl, $parameters));
+} else {
+    // POST
+    try {
+        $httpUtils->submitPOSTData($serviceUrl, $parameters);
+    } catch (\SimpleSAML\Error\Exception $e) {
+        // somehting happened
+        var_export($e, true);
+    }
 }

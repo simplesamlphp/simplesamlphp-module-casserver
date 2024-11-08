@@ -44,16 +44,19 @@ class AttributeExtractor
      *
      * If no CAS attributes are configured, then the attributes' array is empty
      *
-     * @param   array  $attributes
+     * @param   array|null  $state
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
-    public function extractUserAndAttributes(array $attributes): array
+    public function extractUserAndAttributes(?array $state): array
     {
         if ($this->casconfig->hasValue('authproc')) {
-            $attributes = $this->runAuthProcs($attributes);
+            $this->runAuthProcs($state);
         }
+
+        // Get the attributes from the state
+        $attributes = $state['Attributes'];
 
         $casUsernameAttribute = $this->casconfig->getOptionalValue('attrname', 'eduPersonPrincipalName');
 
