@@ -30,6 +30,7 @@
 
 declare(strict_types=1);
 
+use SimpleSAML\Auth\ProcessingChain;
 use SimpleSAML\Auth\Simple;
 use SimpleSAML\Configuration;
 use SimpleSAML\Locale\Language;
@@ -45,6 +46,7 @@ require_once('utility/urlUtils.php');
 
 $forceAuthn = isset($_GET['renew']) && $_GET['renew'];
 $isPassive = isset($_GET['gateway']) && $_GET['gateway'];
+$authProcId = $_GET[ProcessingChain::AUTHPARAM] ?? null;
 // Determine if the client wants us to post or redirect the response. Default is redirect.
 $redirect = !(isset($_GET['method']) && $_GET['method'] === 'POST');
 $serviceUrl = $_GET['service'] ?? $_GET['TARGET'] ?? null;
@@ -210,7 +212,18 @@ if(!isset($serviceUrl)) {
 $defaultTicketName = isset($_GET['service']) ? 'ticket' : 'SAMLart';
 $ticketName = $casconfig->getOptionalValue('ticketName', $defaultTicketName);
 
-$mappedAttributes = $attributeExtractor->extractUserAndAttributes($as->getAuthDataArray());
+// Get the state. If we come from an authproc filter we will load the state from
+// the stateId. If not we will get the state from the AuthSource Data
+try {
+    $state = $authProcId !== null ?
+        $attributeExtractor->manageState($authProcId) :
+        $as->getAuthDataArray();
+} catch (\SimpleSAML\Error\NoState $e) {
+    var_export($e, true);
+    die();
+}
+// Attribute Handler
+$mappedAttributes = $attributeExtractor->extractUserAndAttributes($state);
 
 $serviceTicket = $ticketFactory->createServiceTicket([
                                                          'service' => $serviceUrl,
@@ -257,7 +270,7 @@ if (
     try {
         $httpUtils->submitPOSTData($serviceUrl, $parameters);
     } catch (\SimpleSAML\Error\Exception $e) {
-        // somehting happened
         var_export($e, true);
+        die();
     }
 }

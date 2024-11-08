@@ -23,6 +23,11 @@ class AttributeExtractor
     /** @var ProcessingChainFactory  */
     private readonly ProcessingChainFactory $processingChainFactory;
 
+    /**
+     * ID of the Authentication Source used during authn.
+     */
+    private ?string $authSourceId = null;
+
     public function __construct(
         Configuration $casconfig,
         ProcessingChainFactory $processingChainFactory
@@ -125,18 +130,17 @@ class AttributeExtractor
      * This is a wrapper around Auth/State::loadState that facilitates testing by
      * hiding the static method
      *
-     * @param   array  $queryParameters
+     * @param   string  $stateId
      *
      * @return array|null
      * @throws NoState
      */
-    public function manageState(array $queryParameters): ?array
+    public function manageState(string $stateId): ?array
     {
-        if (empty($queryParameters[ProcessingChain::AUTHPARAM])) {
+        if (empty($stateId)) {
             throw new NoState();
         }
 
-        $stateId = (string)$queryParameters[ProcessingChain::AUTHPARAM];
         $state = $this->loadState($stateId, ProcessingChain::COMPLETED_STAGE);
 
         if (!empty($state['authSourceId'])) {
@@ -155,7 +159,7 @@ class AttributeExtractor
      * @return array|null
      * @throws \SimpleSAML\Error\NoState
      */
-    public function loadState(string $id, string $stage, bool $allowMissing = false): ?array
+    protected function loadState(string $id, string $stage, bool $allowMissing = false): ?array
     {
         return $this->authState::loadState($id, $stage, $allowMissing);
     }
