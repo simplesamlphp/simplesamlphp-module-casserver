@@ -119,45 +119,16 @@ $session = Session::getSessionFromRequest();
 
 $sessionTicket = $ticketStore->getTicket($session->getSessionId());
 $sessionRenewId = $sessionTicket ? $sessionTicket['renewId'] : null;
-$requestRenewId = isset($_REQUEST['renewId']) ? $_REQUEST['renewId'] : null;
+$requestRenewId = $_REQUEST['renewId'] ?? null;
+// Parse the query parameters and return them in an array
+$query = parseQueryParameters($sessionTicket);
+// Construct the ReturnTo URL
+$returnUrl = $httpUtils->getSelfURLNoQuery() . '?' . http_build_query($query);
 
-if (!$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewId)) {
-    $query = [];
-
-    if ($sessionRenewId && $forceAuthn) {
-        $query['renewId'] = $sessionRenewId;
-    }
-
-    if (isset($_REQUEST['service'])) {
-        $query['service'] = $_REQUEST['service'];
-    }
-
-    if (isset($_REQUEST['TARGET'])) {
-        $query['TARGET'] = $_REQUEST['TARGET'];
-    }
-
-    if (isset($_REQUEST['method'])) {
-        $query['method'] = $_REQUEST['method'];
-    }
-
-    if (isset($_REQUEST['renew'])) {
-        $query['renew'] = $_REQUEST['renew'];
-    }
-
-    if (isset($_REQUEST['gateway'])) {
-        $query['gateway'] = $_REQUEST['gateway'];
-    }
-
-    if (array_key_exists('language', $_GET)) {
-        $query['language'] = is_string($_GET['language']) ? $_GET['language'] : null;
-    }
-
-    if (isset($_REQUEST['debugMode'])) {
-        $query['debugMode'] = $_REQUEST['debugMode'];
-    }
-
-    $returnUrl = $httpUtils->getSelfURLNoQuery() . '?' . http_build_query($query);
-
+// Authenticate
+if (
+    !$as->isAuthenticated() || ($forceAuthn && $sessionRenewId != $requestRenewId)
+) {
     $params = [
         'ForceAuthn' => $forceAuthn,
         'isPassive' => $isPassive,
@@ -183,7 +154,6 @@ $sessionExpiry = $as->getAuthData('Expire');
 
 if (!is_array($sessionTicket) || $forceAuthn) {
     $sessionTicket = $ticketFactory->createSessionTicket($session->getSessionId(), $sessionExpiry);
-
     $ticketStore->addTicket($sessionTicket);
 }
 
@@ -200,20 +170,19 @@ if (array_key_exists('language', $_GET)) {
 }
 
 // I am already logged in. Redirect to the logged in endpoint
-if(!isset($serviceUrl)) {
+if(!isset($serviceUrl) && $authProcId === null) {
     // LOGGED IN
     $httpUtils->redirectTrustedURL(
         $httpUtils->addURLParameters(Module::getModuleURL('casserver/loggedIn.php'), $parameters),
     );
 }
 
-
-
 $defaultTicketName = isset($_GET['service']) ? 'ticket' : 'SAMLart';
 $ticketName = $casconfig->getOptionalValue('ticketName', $defaultTicketName);
 
-// Get the state. If we come from an authproc filter we will load the state from
-// the stateId. If not we will get the state from the AuthSource Data
+// Get the state.
+// If we come from an authproc filter, we will load the state from the stateId.
+// If not, we will get the state from the AuthSource Data
 try {
     $state = $authProcId !== null ?
         $attributeExtractor->manageState($authProcId) :
@@ -223,7 +192,16 @@ try {
     die();
 }
 // Attribute Handler
-$mappedAttributes = $attributeExtractor->extractUserAndAttributes($state);
+$state['ReturnTo'] = $returnUrl;
+if($authProcId !== null) {
+    $state[ProcessingChain::AUTHPARAM] = $authProcId;
+}
+try {
+    $mappedAttributes = $attributeExtractor->extractUserAndAttributes($state);
+} catch (\SimpleSAML\Error\Exception $e) {
+    var_export($e, true);
+    die();
+}
 
 $serviceTicket = $ticketFactory->createServiceTicket([
                                                          'service' => $serviceUrl,

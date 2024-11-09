@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\casserver\Cas;
 
-use SimpleSAML\Auth;
 use SimpleSAML\Auth\ProcessingChain;
+use SimpleSAML\Auth\State;
 use SimpleSAML\Configuration;
 use SimpleSAML\Error\Exception;
 use SimpleSAML\Error\NoState;
@@ -23,6 +23,9 @@ class AttributeExtractor
     /** @var ProcessingChainFactory  */
     private readonly ProcessingChainFactory $processingChainFactory;
 
+    /** @var State */
+    private State $authState;
+
     /**
      * ID of the Authentication Source used during authn.
      */
@@ -34,6 +37,7 @@ class AttributeExtractor
     ) {
         $this->casconfig = $casconfig;
         $this->processingChainFactory = $processingChainFactory;
+        $this->authState = new State();
     }
 
     /**
@@ -56,7 +60,10 @@ class AttributeExtractor
      */
     public function extractUserAndAttributes(?array $state): array
     {
-        if ($this->casconfig->hasValue('authproc')) {
+        if (
+            !isset($state[ProcessingChain::AUTHPARAM])
+            && $this->casconfig->hasValue('authproc')
+        ) {
             $this->runAuthProcs($state);
         }
 
@@ -119,7 +126,8 @@ class AttributeExtractor
             'entityid' => $state['Destination']['entityid'] ?? '',
         ];
 
-        $state['ReturnURL'] = Module::getModuleURL('casserver/login.php');
+        // Get the ReturnTo from the state or fallback to the login page
+        $state['ReturnURL'] = $state['ReturnTo'] ?? Module::getModuleURL('casserver/login.php');
         $state['Destination'] = $spMetadata;
         $state['Source'] = $idpMetadata;
 
