@@ -20,20 +20,20 @@ class AttributeExtractorTest extends TestCase
             // Default is to use eppn and copy all attributes
         ];
 
-        $attributes = [
+        $state['Attributes'] = [
             'eduPersonPrincipalName' => ['testuser@example.com'],
             'additionalAttribute' => ['Taco Club'],
         ];
         $loadedConfig = Configuration::loadFromArray($casConfig);
         $attributeExtractor = new AttributeExtractor(
             $loadedConfig,
-            new ProcessingChainFactory($loadedConfig)
+            new ProcessingChainFactory($loadedConfig),
         );
 
-        $result = $attributeExtractor->extractUserAndAttributes($attributes);
+        $result = $attributeExtractor->extractUserAndAttributes($state);
 
         $this->assertEquals('testuser@example.com', $result['user']);
-        $this->assertEquals($attributes, $result['attributes']);
+        $this->assertEquals($state['Attributes'], $result['attributes']);
     }
 
 
@@ -46,17 +46,17 @@ class AttributeExtractorTest extends TestCase
             'attributes' => false,
         ];
 
-        $attributes = [
+        $state['Attributes'] = [
             'eduPersonPrincipalName' => ['testuser@example.com'],
             'additionalAttribute' => ['Taco Club'],
         ];
         $loadedConfig = Configuration::loadFromArray($casConfig);
         $attributeExtractor = new AttributeExtractor(
             $loadedConfig,
-            new ProcessingChainFactory($loadedConfig)
+            new ProcessingChainFactory($loadedConfig),
         );
 
-        $result = $attributeExtractor->extractUserAndAttributes($attributes);
+        $result = $attributeExtractor->extractUserAndAttributes($state);
 
         $this->assertEquals('testuser@example.com', $result['user']);
         $this->assertEquals([], $result['attributes']);
@@ -76,17 +76,17 @@ class AttributeExtractorTest extends TestCase
             ],
         ];
 
-        $attributes = [
+        $state['Attributes'] = [
             'userNameAttribute' => ['testuser@example.com'],
             'additionalAttribute' => ['Taco Club'],
         ];
         $loadedConfig = Configuration::loadFromArray($casConfig);
         $attributeExtractor = new AttributeExtractor(
             $loadedConfig,
-            new ProcessingChainFactory($loadedConfig)
+            new ProcessingChainFactory($loadedConfig),
         );
 
-        $result = $attributeExtractor->extractUserAndAttributes($attributes);
+        $result = $attributeExtractor->extractUserAndAttributes($state);
 
         $this->assertEquals('testuser@example.com', $result['user']);
         $this->assertEquals(['additionalAttribute' => ['Taco Club']], $result['attributes']);
@@ -102,7 +102,7 @@ class AttributeExtractorTest extends TestCase
             // Default is to use eppn and copy all attributes
         ];
 
-        $attributes = [
+        $state['Attributes'] = [
             'eduPersonPrincipalName' => ['testuser@example.com'],
             'additionalAttribute' => ['Taco Club'],
             'authproc' => [],
@@ -110,13 +110,13 @@ class AttributeExtractorTest extends TestCase
         $loadedConfig = Configuration::loadFromArray($casConfig);
         $attributeExtractor = new AttributeExtractor(
             $loadedConfig,
-            new ProcessingChainFactory($loadedConfig)
+            new ProcessingChainFactory($loadedConfig),
         );
 
-        $result = $attributeExtractor->extractUserAndAttributes($attributes);
+        $result = $attributeExtractor->extractUserAndAttributes($state);
 
         $this->assertEquals('testuser@example.com', $result['user']);
-        $this->assertEquals($attributes, $result['attributes']);
+        $this->assertEquals($state['Attributes'], $result['attributes']);
     }
 
 
@@ -142,7 +142,7 @@ class AttributeExtractorTest extends TestCase
             ],
         ];
 
-        $attributes = [
+        $state['Attributes'] = [
             'urn:oid:1.3.6.1.4.1.5923.1.1.1.6' => ['testuser@example.com'],
             'urn:example' => ['Taco Club'],
             'not-affected-by-authproc' => ['Value'],
@@ -150,10 +150,10 @@ class AttributeExtractorTest extends TestCase
         $loadedConfig = Configuration::loadFromArray($casConfig);
         $attributeExtractor = new AttributeExtractor(
             $loadedConfig,
-            new ProcessingChainFactory($loadedConfig)
+            new ProcessingChainFactory($loadedConfig),
         );
         // The authproc filters will remap the attributes prior to mapping them to CAS attributes
-        $result = $attributeExtractor->extractUserAndAttributes($attributes);
+        $result = $attributeExtractor->extractUserAndAttributes($state);
 
         $expectedAttributes = [
             'additionalAttribute' => ['Taco Club'],

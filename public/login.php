@@ -170,7 +170,7 @@ if (array_key_exists('language', $_GET)) {
 }
 
 // I am already logged in. Redirect to the logged in endpoint
-if(!isset($serviceUrl) && $authProcId === null) {
+if (!isset($serviceUrl) && $authProcId === null) {
     // LOGGED IN
     $httpUtils->redirectTrustedURL(
         $httpUtils->addURLParameters(Module::getModuleURL('casserver/loggedIn.php'), $parameters),
@@ -193,7 +193,7 @@ try {
 }
 // Attribute Handler
 $state['ReturnTo'] = $returnUrl;
-if($authProcId !== null) {
+if ($authProcId !== null) {
     $state[ProcessingChain::AUTHPARAM] = $authProcId;
 }
 try {

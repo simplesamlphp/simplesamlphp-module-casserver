@@ -6,8 +6,8 @@ namespace SimpleSAML\Module\casserver\Cas\Protocol;
 
 use SimpleSAML\Configuration;
 use SimpleSAML\Module\casserver\Shib13\AuthnResponse;
-use SimpleSAML\SOAP11\XML\env\Body;
-use SimpleSAML\SOAP11\XML\env\Envelope;
+use SimpleSAML\SOAP\XML\env_200305\Body;
+use SimpleSAML\SOAP\XML\env_200305\Envelope;
 use SimpleSAML\XML\Chunk;
 use SimpleSAML\XML\DOMDocumentFactory;
 use SimpleSAML\XML\SerializableElementInterface;
@@ -64,11 +64,11 @@ class SamlValidateResponder
 
     /**
      * @param \SimpleSAML\XML\SerializableElementInterface $samlResponse
-     * @return \SimpleSAML\SOAP11\XML\env\Envelope
+     * @return \SimpleSAML\SOAP\XML\env\Envelope
      */
     public function wrapInSoap(SerializableElementInterface $samlResponse): Envelope
     {
-        $body = new Body([$samlResponse]);
+        $body = new Body(null, [$samlResponse]);
         return new Envelope($body);
     }
 }

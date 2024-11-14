@@ -52,8 +52,20 @@ final class Cas20Test extends TestCase
         $casProtocol = new Cas20($casConfig);
         $casProtocol->setAttributes($userAttributes);
 
+        // We will remove the cas:authenticationDate element since we know that it will fail. The dates will not match
         $xml = $casProtocol->getValidateSuccessResponse('myUser');
+        $actualXml = simplexml_load_string((string)$xml);
 
-        $this->assertEquals($this->document->saveXML($this->document->documentElement), strval($xml));
+        $expectedXml = simplexml_load_string($this->document->saveXML($this->document->documentElement));
+
+        // We will remove the cas:authenticationDate element since we know that it will fail. The dates will not match
+        $authenticationNodeToDeleteExpected = $expectedXml->xpath('//cas:authenticationDate')[0];
+        $authenticationNodeToDeleteActual = $actualXml->xpath('//cas:authenticationDate')[0];
+        unset($authenticationNodeToDeleteExpected[0], $authenticationNodeToDeleteActual[0]);
+
+        $this->assertEquals(
+            $expectedXml->asXML(),
+            $actualXml->asXML(),
+        );
     }
 }

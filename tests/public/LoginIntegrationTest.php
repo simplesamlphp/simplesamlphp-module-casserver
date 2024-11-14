@@ -10,7 +10,6 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Configuration;
 use SimpleSAML\TestUtils\BuiltInServer;
-use SimpleSAML\XML\DOMDocumentFactory;
 
 /**
  *
@@ -206,12 +205,23 @@ class LoginIntegrationTest extends TestCase
             ],
         );
 
-        $expectedResponse = DOMDocumentFactory::fromFile(
-            dirname(__FILE__, 2) . '/resources/xml/testValidServiceUrl.xml',
-        )->saveXML();
+        $expectedXml = simplexml_load_string(
+            file_get_contents(\dirname(__FILE__, 2) . '/resources/xml/testValidServiceUrl.xml'),
+        );
+
+        $actualXml = simplexml_load_string($resp['body']);
+
+        // We will remove the cas:authenticationDate element since we know that it will fail. The dates will not match
+        $authenticationNodeToDeleteExpected = $expectedXml->xpath('//cas:authenticationDate')[0];
+        $authenticationNodeToDeleteActual = $actualXml->xpath('//cas:authenticationDate')[0];
+        unset($authenticationNodeToDeleteExpected[0], $authenticationNodeToDeleteActual[0]);
 
         $this->assertEquals(200, $resp['code']);
-        $this->assertEquals($expectedResponse, $resp['body']);
+
+        $this->assertEquals(
+            $expectedXml->xpath('//cas:serviceResponse')[0]->asXML(),
+            $actualXml->xpath('//cas:serviceResponse')[0]->asXML(),
+        );
     }
 
     public static function validServiceUrlProvider(): array
@@ -414,7 +424,11 @@ class LoginIntegrationTest extends TestCase
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
   <SOAP-ENV:Header/>
   <SOAP-ENV:Body>
-    <samlp:Request xmlns:samlp="urn:oasis:names:tc:SAML:1.0:protocol" MajorVersion="1" MinorVersion="1" RequestID="_192.168.16.51.1024506224022" IssueInstant="2002-06-19T17:03:44.022Z">
+    <samlp:Request xmlns:samlp="urn:oasis:names:tc:SAML:1.0:protocol"
+                   MajorVersion="1"
+                   MinorVersion="1"
+                   RequestID="_192.168.16.51.1024506224022"
+                   IssueInstant="2002-06-19T17:03:44.022Z">
       <samlp:AssertionArtifact>$ticket</samlp:AssertionArtifact>
     </samlp:Request>
   </SOAP-ENV:Body>

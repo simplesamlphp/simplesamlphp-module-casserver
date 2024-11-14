@@ -7,7 +7,6 @@ namespace SimpleSAML\Module\casserver\Cas;
 use SimpleSAML\Auth\ProcessingChain;
 use SimpleSAML\Auth\State;
 use SimpleSAML\Configuration;
-use SimpleSAML\Error\Exception;
 use SimpleSAML\Error\NoState;
 use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Cas\Factories\ProcessingChainFactory;
