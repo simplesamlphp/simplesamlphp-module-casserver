@@ -6,7 +6,7 @@ namespace SimpleSAML\Casserver;
 
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Module\casserver\Cas\Protocol\SamlValidateResponder;
-use SimpleSAML\SOAP\XML\env_200305\Envelope;
+use SimpleSAML\SOAP\XML\env_200106\Envelope;
 
 class SamlValidateTest extends TestCase
 {

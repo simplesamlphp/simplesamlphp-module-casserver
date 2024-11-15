@@ -183,25 +183,16 @@ $ticketName = $casconfig->getOptionalValue('ticketName', $defaultTicketName);
 // Get the state.
 // If we come from an authproc filter, we will load the state from the stateId.
 // If not, we will get the state from the AuthSource Data
-try {
-    $state = $authProcId !== null ?
-        $attributeExtractor->manageState($authProcId) :
-        $as->getAuthDataArray();
-} catch (\SimpleSAML\Error\NoState $e) {
-    var_export($e, true);
-    die();
-}
+$state = $authProcId !== null ?
+    $attributeExtractor->manageState($authProcId) :
+    $as->getAuthDataArray();
+
 // Attribute Handler
 $state['ReturnTo'] = $returnUrl;
 if ($authProcId !== null) {
     $state[ProcessingChain::AUTHPARAM] = $authProcId;
 }
-try {
-    $mappedAttributes = $attributeExtractor->extractUserAndAttributes($state);
-} catch (\SimpleSAML\Error\Exception $e) {
-    var_export($e, true);
-    die();
-}
+$mappedAttributes = $attributeExtractor->extractUserAndAttributes($state);
 
 $serviceTicket = $ticketFactory->createServiceTicket([
                                                          'service' => $serviceUrl,
@@ -245,10 +236,5 @@ if (
     $httpUtils->redirectTrustedURL($httpUtils->addURLParameters($serviceUrl, $parameters));
 } else {
     // POST
-    try {
-        $httpUtils->submitPOSTData($serviceUrl, $parameters);
-    } catch (\SimpleSAML\Error\Exception $e) {
-        var_export($e, true);
-        die();
-    }
+    $httpUtils->submitPOSTData($serviceUrl, $parameters);
 }

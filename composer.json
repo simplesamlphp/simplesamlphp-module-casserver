@@ -39,7 +39,7 @@
         "simplesamlphp/composer-module-installer": "^1.3",
         "simplesamlphp/simplesamlphp": "^2.2",
         "simplesamlphp/xml-cas": "^v1.3",
-        "simplesamlphp/xml-common": "^v1.18",
+        "simplesamlphp/xml-common": "^v1.17",
         "simplesamlphp/xml-soap": "^v1.5"
     },
     "require-dev": {
@@ -54,5 +54,14 @@
     },
     "suggest": {
         "ext-pdo": "*"
+    },
+    "scripts": {
+        "validate": [
+            "vendor/bin/phpunit --no-coverage --testdox",
+            "vendor/bin/phpcs -p"
+        ],
+        "tests": [
+            "vendor/bin/phpunit --no-coverage"
+        ]
     }
 }

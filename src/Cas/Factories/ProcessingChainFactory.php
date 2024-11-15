@@ -31,18 +31,9 @@ class ProcessingChainFactory
      */
     public function build(array $state): ProcessingChain
     {
-        $idpMetadata = [
-            'entityid' => $state['Source']['entityid'] ?? '',
-            // ProcessChain needs to know the list of authproc filters we defined in casserver configuration
-            'authproc' => $this->casconfig->getOptionalArray('authproc', []),
-        ];
-        $spMetadata = [
-            'entityid' => $state['Destination']['entityid'] ?? '',
-        ];
-
         return new ProcessingChain(
-            $idpMetadata,
-            $spMetadata,
+            $state['Source'],
+            $state['Destination'],
             'casserver',
         );
     }

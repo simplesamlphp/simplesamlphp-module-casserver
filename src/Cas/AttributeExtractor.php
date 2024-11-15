@@ -32,7 +32,7 @@ class AttributeExtractor
 
     public function __construct(
         Configuration $casconfig,
-        ProcessingChainFactory $processingChainFactory
+        ProcessingChainFactory $processingChainFactory,
     ) {
         $this->casconfig = $casconfig;
         $this->processingChainFactory = $processingChainFactory;
