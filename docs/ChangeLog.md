@@ -143,4 +143,4 @@ Unreleased
   hi-jacking the casserver "namespace". Therefore the
   `config-templates/module_casserver.php` has been renamed to
   module_sbcasserver.php
-* The files in www has all beed changed to use the new "namespace".
+* The files in www has all been changed to use the new "namespace".
