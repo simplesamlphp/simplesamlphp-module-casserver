@@ -17,10 +17,10 @@ use SimpleSAML\Module\casserver\Cas\Factories\ProcessingChainFactory;
 class AttributeExtractor
 {
     /** @var Configuration */
-    private readonly Configuration $casconfig;
+    private Configuration $casconfig;
 
     /** @var ProcessingChainFactory  */
-    private readonly ProcessingChainFactory $processingChainFactory;
+    private ProcessingChainFactory $processingChainFactory;
 
     /** @var State */
     private State $authState;

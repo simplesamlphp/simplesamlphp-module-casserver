@@ -17,7 +17,7 @@ use SimpleSAML\Configuration;
 class ProcessingChainFactory
 {
     /** @var Configuration */
-    private readonly Configuration $casconfig;
+    private Configuration $casconfig;
 
     public function __construct(
         Configuration $casconfig,
