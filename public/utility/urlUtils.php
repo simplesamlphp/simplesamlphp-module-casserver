@@ -51,3 +51,53 @@ function sanitize(string $parameter): string
 {
     return TicketValidator::sanitize($parameter);
 }
+
+
+/**
+ * Parse the query Parameters from $_GET global and return them in an array.
+ *
+ * @param   array|null  $sessionTicket
+ *
+ * @return array
+ */
+function parseQueryParameters(?array $sessionTicket): array
+{
+    $forceAuthn = isset($_GET['renew']) && $_GET['renew'];
+    $sessionRenewId = $sessionTicket ? $sessionTicket['renewId'] : null;
+
+    $query = [];
+
+    if ($sessionRenewId && $forceAuthn) {
+        $query['renewId'] = $sessionRenewId;
+    }
+
+    if (isset($_REQUEST['service'])) {
+        $query['service'] = $_REQUEST['service'];
+    }
+
+    if (isset($_REQUEST['TARGET'])) {
+        $query['TARGET'] = $_REQUEST['TARGET'];
+    }
+
+    if (isset($_REQUEST['method'])) {
+        $query['method'] = $_REQUEST['method'];
+    }
+
+    if (isset($_REQUEST['renew'])) {
+        $query['renew'] = $_REQUEST['renew'];
+    }
+
+    if (isset($_REQUEST['gateway'])) {
+        $query['gateway'] = $_REQUEST['gateway'];
+    }
+
+    if (array_key_exists('language', $_GET)) {
+        $query['language'] = is_string($_GET['language']) ? $_GET['language'] : null;
+    }
+
+    if (isset($_REQUEST['debugMode'])) {
+        $query['debugMode'] = $_REQUEST['debugMode'];
+    }
+
+    return $query;
+}

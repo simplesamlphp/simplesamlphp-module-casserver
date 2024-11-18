@@ -82,6 +82,30 @@ chance it will just mess up your code.
 phpcbf --ignore=somefile.php --standard=PSR12 lib/ tests/ www/ templates/
 ```
 
+### Local testing with docker
+
+To explore the module using docker run the below command. This will run an SSP image, with the current git checkout
+of the `casserver` module mounted in the container, along with some configuration files. Any code changes you make to your git checkout are
+"live" in the container, allowing you to test and iterate different things.
+
+```bash
+# Note: this currently errors on this module requiring a newer version of `simplesamlphp/xml-common` than what is in the base image
+docker run --name ssp-casserver-dev \
+   --mount type=bind,source="$(pwd)",target=/var/simplesamlphp/staging-modules/casserver,readonly \
+  -e STAGINGCOMPOSERREPOS=casserver \
+  -e COMPOSER_REQUIRE="simplesamlphp/simplesamlphp-module-casserver:@dev simplesamlphp/simplesamlphp-module-preprodwarning"
+  -e SSP_ADMIN_PASSWORD=secret1 \
+  --mount type=bind,source="$(pwd)/docker/ssp/module_casserver.php",target=/var/simplesamlphp/config/module_casserver.php,readonly \
+  --mount type=bind,source="$(pwd)/docker/ssp/authsources.php",target=/var/simplesamlphp/config/authsources.php,readonly \
+  --mount type=bind,source="$(pwd)/docker/ssp/config-override.php",target=/var/simplesamlphp/config/config-override.php,readonly \
+  --mount type=bind,source="$(pwd)/docker/apache-override.cf",target=/etc/apache2/sites-enabled/ssp-override.cf,readonly \
+   -p 443:443 cirrusid/simplesamlphp:v2.3.2
+```
+
+Visit [https://localhost/simplesaml/](https://localhost/simplesaml/) and confirm you get the default page.
+Then navigate to [casserver debug](https://localhost/cas/login?service=http://host1.domain:1234/path1&debugMode=true), authenticate and confirm
+use see what a ticket would look like. To see what a CAS v1 saml response looks like set [debugMode=samlValidate](https://localhost/cas/login?service=http://host1.domain:1234/path1&debugMode=samlValidate)
+
 ## History
 
 CAS 1.0 and 2.0 compliant CAS server module for simpleSAMLphp
@@ -101,4 +125,3 @@ See Google Groups discussion in [this thread][1].
 
 This work is licensed under a Creative Commons GNU Lesser General Public
 License License.
-

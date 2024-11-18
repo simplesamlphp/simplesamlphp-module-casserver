@@ -61,7 +61,7 @@ if (isset($serviceUrl) && array_key_exists('ticket', $_GET)) {
         /** @psalm-suppress InvalidStringClass */
         $ticketStore = new $ticketStoreClass($casconfig);
 
-        $ticketFactoryClass = Module::resolveClass('casserver:TicketFactory', 'Cas\Ticket');
+        $ticketFactoryClass = Module::resolveClass('casserver:TicketFactory', 'Cas\Factories');
         /** @var TicketFactory $ticketFactory */
         /** @psalm-suppress InvalidStringClass */
         $ticketFactory = new $ticketFactoryClass($casconfig);

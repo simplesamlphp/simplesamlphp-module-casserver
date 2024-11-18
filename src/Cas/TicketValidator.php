@@ -10,7 +10,7 @@ use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
 use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Cas\CasException;
-use SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory;
+use SimpleSAML\Module\casserver\Cas\Factories\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
 
 class TicketValidator
@@ -21,7 +21,7 @@ class TicketValidator
     /** @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore */
     private TicketStore $ticketStore;
 
-    /** @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory */
+    /** @var \SimpleSAML\Module\casserver\Cas\Factories\TicketFactory */
     private TicketFactory $ticketFactory;
 
 
@@ -42,10 +42,10 @@ class TicketValidator
          * @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore
          */
         $this->ticketStore = new $ticketStoreClass($casconfig);
-        $ticketFactoryClass = Module::resolveClass('casserver:TicketFactory', 'Cas\Ticket');
+        $ticketFactoryClass = Module::resolveClass('casserver:TicketFactory', 'Cas\Factories');
         /**
          * @psalm-suppress InvalidStringClass
-         * @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketFactory
+         * @var \SimpleSAML\Module\casserver\Cas\Factories\TicketFactory
          */
         $this->ticketFactory = new $ticketFactoryClass($casconfig);
     }

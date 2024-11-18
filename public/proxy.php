@@ -47,7 +47,7 @@ if (
     /** @psalm-suppress InvalidStringClass */
     $ticketStore = new $ticketStoreClass($casconfig);
 
-    $ticketFactoryClass = \SimpleSAML\Module::resolveClass('casserver:TicketFactory', 'Cas\Ticket');
+    $ticketFactoryClass = \SimpleSAML\Module::resolveClass('casserver:TicketFactory', 'Cas\Factories');
     /** @psalm-suppress InvalidStringClass */
     $ticketFactory = new $ticketFactoryClass($casconfig);
 
