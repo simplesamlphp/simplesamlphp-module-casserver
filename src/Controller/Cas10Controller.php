@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\casserver\Controller;
 
-use Exception;
-use Module\casserver\Cas\Factories;
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
 use SimpleSAML\Module\casserver\Cas\Factories\TicketFactory;
@@ -47,8 +45,8 @@ class Cas10Controller
      *
      * @throws Exception
      */
-    public function __construct(
-    ) {
+    public function __construct()
+    {
         $this->casConfig = Configuration::getConfig('module_casserver.php');
         $this->cas10Protocol = new Cas10($this->casConfig);
         /* Instantiate ticket factory */
@@ -58,7 +56,7 @@ class Cas10Controller
             'ticketstore',
             ['class' => 'casserver:FileSystemTicketStore'],
         );
-        $ticketStoreClass ='SimpleSAML\\Module\\casserver\\Cas\\Ticket\\'
+        $ticketStoreClass = 'SimpleSAML\\Module\\casserver\\Cas\\Ticket\\'
             . explode(':', $ticketStoreConfig['class'])[1];
         /** @psalm-suppress InvalidStringClass */
         $this->ticketStore = new $ticketStoreClass($this->casConfig);
@@ -72,17 +70,17 @@ class Cas10Controller
     public function validate(Request $request): Response
     {
         // Check if any of the required query parameters are missing
-        if(!$request->query->has('service')) {
+        if (!$request->query->has('service')) {
             Logger::debug('casserver: Missing service parameter: [service]');
             return new Response(
                 $this->cas10Protocol->getValidateFailureResponse(),
-                Response::HTTP_BAD_REQUEST
+                Response::HTTP_BAD_REQUEST,
             );
-        } else if(!$request->query->has('ticket')) {
+        } elseif (!$request->query->has('ticket')) {
             Logger::debug('casserver: Missing service parameter: [ticket]');
             return new Response(
                 $this->cas10Protocol->getValidateFailureResponse(),
-                Response::HTTP_BAD_REQUEST
+                Response::HTTP_BAD_REQUEST,
             );
         }
 
@@ -102,7 +100,7 @@ class Cas10Controller
             Logger::error('casserver:validate: internal server error. ' . var_export($e->getMessage(), true));
             return new Response(
                 $this->cas10Protocol->getValidateFailureResponse(),
-                Response::HTTP_INTERNAL_SERVER_ERROR
+                Response::HTTP_INTERNAL_SERVER_ERROR,
             );
         }
 
@@ -113,19 +111,19 @@ class Cas10Controller
             $message = 'ticket: ' . var_export($ticket, true) . ' not recognized';
             $failed = true;
             // This is not a service ticket
-        } else if (!$this->ticketFactory->isServiceTicket($serviceTicket)){
+        } elseif (!$this->ticketFactory->isServiceTicket($serviceTicket)) {
             $message = 'ticket: ' . var_export($ticket, true) . ' is not a service ticket';
             $failed = true;
             // the ticket has expired
-        } else if ($this->ticketFactory->isExpired($serviceTicket)) {
+        } elseif ($this->ticketFactory->isExpired($serviceTicket)) {
             $message = 'Ticket has ' . var_export($ticket, true) . ' expired';
             $failed = true;
-        } else if ($this->sanitize($serviceTicket['service']) === $this->sanitize($service)) {
+        } elseif ($this->sanitize($serviceTicket['service']) === $this->sanitize($service)) {
             $message = 'Mismatching service parameters: expected ' .
                 var_export($serviceTicket['service'], true) .
                 ' but was: ' . var_export($service, true);
             $failed = true;
-        } else if ($forceAuthn && isset($serviceTicket['forceAuthn']) && $serviceTicket['forceAuthn']) {
+        } elseif ($forceAuthn && isset($serviceTicket['forceAuthn']) && $serviceTicket['forceAuthn']) {
             $message = 'Ticket was issued from single sign on session';
             $failed = true;
         }
@@ -134,7 +132,7 @@ class Cas10Controller
             Logger::error('casserver:validate: ' . $message, true);
             return new Response(
                 $this->cas10Protocol->getValidateFailureResponse(),
-                Response::HTTP_BAD_REQUEST
+                Response::HTTP_BAD_REQUEST,
             );
         }
 
@@ -147,13 +145,12 @@ class Cas10Controller
                 'casserver:validate: internal server error. Missing user name attribute: '
                 . var_export($usernameField, true),
             );
-
         }
 
         // Successful validation
         return new Response(
             $this->cas10Protocol->getValidateSuccessResponse($serviceTicket['attributes'][$usernameField][0]),
-            Response::HTTP_OK
+            Response::HTTP_OK,
         );
     }
 }
