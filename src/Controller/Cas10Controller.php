@@ -43,7 +43,6 @@ class Cas10Controller
      *
      * It initializes the global configuration for the controllers implemented here.
      *
-     * @throws Exception
      */
     public function __construct()
     {
