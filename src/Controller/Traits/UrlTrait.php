@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\casserver\Controller\Traits;
 
+use SimpleSAML\Configuration;
 use SimpleSAML\Module\casserver\Cas\ServiceValidator;
 use SimpleSAML\Module\casserver\Cas\TicketValidator;
 use Symfony\Component\HttpFoundation\Request;
