@@ -7,12 +7,16 @@ namespace SimpleSAML\Module\casserver\Controller;
 use SimpleSAML\Auth\Simple;
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
+use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Cas\Factories\TicketFactory;
 use SimpleSAML\Module\casserver\Controller\Traits\UrlTrait;
 use SimpleSAML\Session;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 
+#[AsController]
 class LogoutController
 {
     use UrlTrait;
@@ -57,11 +61,13 @@ class LogoutController
 
     /**
      *
+     * @param   Request      $request
      * @param   string|null  $url
      *
      * @return RedirectResponse|null
      */
     public function logout(
+        Request $request,
         #[MapQueryParameter] ?string $url = null,
     ): RedirectResponse|null {
         if (!$this->casConfig->getOptionalValue('enable_logout', false)) {
@@ -76,8 +82,13 @@ class LogoutController
         }
 
         // Construct the logout redirect url
-        $logoutRedirectUrl =  ($skipLogoutPage || $url === null) ? $url
-            : $url . '?' . http_build_query(['url' => $url]);
+        if ($skipLogoutPage) {
+            $logoutRedirectUrl = $url;
+        } else {
+            $loggedOutUrl = Module::getModuleURL('casserver/loggedOut.php');
+            $logoutRedirectUrl =  $url === null ? $loggedOutUrl
+                : $loggedOutUrl . '?' . http_build_query(['url' => $url]);
+        }
 
         // Delete the ticket from the session
         $session = $this->getSession();

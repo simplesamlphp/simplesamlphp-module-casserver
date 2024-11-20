@@ -40,8 +40,7 @@
         "simplesamlphp/simplesamlphp": "^2.2",
         "simplesamlphp/xml-cas": "^v1.3",
         "simplesamlphp/xml-common": "^v1.17",
-        "simplesamlphp/xml-soap": "^v1.5",
-        "symfony/cache": "^6.0|^5.0|^4.3|^3.4"
+        "simplesamlphp/xml-soap": "^v1.5"
     },
     "require-dev": {
         "simplesamlphp/simplesamlphp-test-framework": "^1.7",

@@ -11,14 +11,9 @@ use SimpleSAML\Module\casserver\Cas\Protocol\Cas10;
 use SimpleSAML\Module\casserver\Controller\Traits\UrlTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 
-/**
- * Controller class for the casserver module.
- *
- * This class serves the different views available in the module.
- *
- * @package SimpleSAML\Module\casserver
- */
+#[AsController]
 class Cas10Controller
 {
     use UrlTrait;
