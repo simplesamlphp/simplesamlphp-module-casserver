@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SimpleSAML\Module\casserver\Controller;
 
 use SimpleSAML\Auth\Simple;
+use SimpleSAML\Compat\SspContainer;
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
 use SimpleSAML\Module;
@@ -33,19 +34,28 @@ class LogoutController
     /** @var Simple  */
     protected Simple $authSource;
 
+    /** @var SspContainer */
+    protected SspContainer $container;
+
     // this could be any configured ticket store
     /** @var mixed */
     protected mixed $ticketStore;
 
+
     /**
-     * Controller constructor.
+     * @param   Configuration|null  $casConfig
+     * @param   Simple|null         $source
+     * @param   SspContainer|null   $container
      *
-     * It initializes the global configuration for the controllers implemented here.
-     *
+     * @throws \Exception
      */
-    public function __construct()
-    {
-        $this->casConfig = Configuration::getConfig('module_casserver.php');
+    public function __construct(
+        // Facilitate testing
+        Configuration $casConfig = null,
+        Simple $source = null,
+        SspContainer $container = null,
+    ) {
+        $this->casConfig = $casConfig ?? Configuration::getConfig('module_casserver.php');
         /* Instantiate ticket factory */
         $this->ticketFactory = new TicketFactory($this->casConfig);
         /* Instantiate ticket store */
@@ -56,7 +66,8 @@ class LogoutController
         $ticketStoreClass = 'SimpleSAML\\Module\\casserver\\Cas\\Ticket\\'
             . explode(':', $ticketStoreConfig['class'])[1];
         $this->ticketStore = new $ticketStoreClass($this->casConfig);
-        $this->authSource = new Simple($this->casConfig->getValue('authsource'));
+        $this->authSource = $source ?? new Simple($this->casConfig->getValue('authsource'));
+        $this->container = $container ?? new SspContainer();
     }
 
     /**
@@ -84,10 +95,11 @@ class LogoutController
         // Construct the logout redirect url
         if ($skipLogoutPage) {
             $logoutRedirectUrl = $url;
+            $params = [];
         } else {
-            $loggedOutUrl = Module::getModuleURL('casserver/loggedOut.php');
-            $logoutRedirectUrl =  $url === null ? $loggedOutUrl
-                : $loggedOutUrl . '?' . http_build_query(['url' => $url]);
+            $logoutRedirectUrl = Module::getModuleURL('casserver/loggedOut.php');
+            $params =  $url === null ? []
+                : ['url' => $url];
         }
 
         // Delete the ticket from the session
@@ -98,7 +110,7 @@ class LogoutController
 
         // Redirect
         if (!$this->authSource->isAuthenticated()) {
-            $this->redirect($logoutRedirectUrl);
+            $this->container->redirect($logoutRedirectUrl, $params);
         }
 
         // Logout and redirect
