@@ -82,8 +82,9 @@ class LogoutControllerTest extends TestCase
         $config = Configuration::loadFromArray($this->moduleConfig);
 
         // Unauthenticated
+        /** @psalm-suppress UndefinedMethod */
         $this->authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(false);
-
+        /** @psalm-suppress UndefinedMethod */
         $this->sspContainer->expects($this->once())->method('redirect')->with(
             $this->equalTo('http://localhost/module.php/casserver/loggedOut.php'),
             [],
