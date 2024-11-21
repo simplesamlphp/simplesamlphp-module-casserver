@@ -56,6 +56,9 @@ class LogoutController
         SspContainer $container = null,
     ) {
         $this->casConfig = $casConfig ?? Configuration::getConfig('module_casserver.php');
+        $this->authSource = $source ?? new Simple($this->casConfig->getValue('authsource'));
+        $this->container = $container ?? new SspContainer();
+
         /* Instantiate ticket factory */
         $this->ticketFactory = new TicketFactory($this->casConfig);
         /* Instantiate ticket store */
@@ -66,8 +69,6 @@ class LogoutController
         $ticketStoreClass = 'SimpleSAML\\Module\\casserver\\Cas\\Ticket\\'
             . explode(':', $ticketStoreConfig['class'])[1];
         $this->ticketStore = new $ticketStoreClass($this->casConfig);
-        $this->authSource = $source ?? new Simple($this->casConfig->getValue('authsource'));
-        $this->container = $container ?? new SspContainer();
     }
 
     /**
@@ -118,6 +119,14 @@ class LogoutController
 
         // We should never get here
         return null;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTicketStore(): mixed
+    {
+        return $this->ticketStore;
     }
 
     /**
