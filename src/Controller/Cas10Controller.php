@@ -12,6 +12,7 @@ use SimpleSAML\Module\casserver\Controller\Traits\UrlTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 
 #[AsController]
 class Cas10Controller
