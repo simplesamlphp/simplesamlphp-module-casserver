@@ -34,14 +34,16 @@ class Cas10Controller
     protected mixed $ticketStore;
 
     /**
-     * Controller constructor.
+     * @param   Configuration|null  $casConfig
+     * @param                       $ticketStore
      *
-     * It initializes the global configuration for the controllers implemented here.
-     *
+     * @throws \Exception
      */
-    public function __construct()
-    {
-        $this->casConfig = Configuration::getConfig('module_casserver.php');
+    public function __construct(
+        Configuration $casConfig = null,
+        $ticketStore = null,
+    ) {
+        $this->casConfig = $casConfig ?? Configuration::getConfig('module_casserver.php');
         $this->cas10Protocol = new Cas10($this->casConfig);
         /* Instantiate ticket factory */
         $this->ticketFactory = new TicketFactory($this->casConfig);
@@ -53,40 +55,39 @@ class Cas10Controller
         $ticketStoreClass = 'SimpleSAML\\Module\\casserver\\Cas\\Ticket\\'
             . explode(':', $ticketStoreConfig['class'])[1];
         /** @psalm-suppress InvalidStringClass */
-        $this->ticketStore = new $ticketStoreClass($this->casConfig);
+        $this->ticketStore = $ticketStore ?? new $ticketStoreClass($this->casConfig);
     }
 
     /**
-     * @param   Request  $request
+     * @param   Request      $request
+     * @param   bool         $renew
+     * @param   string|null  $ticket
+     * @param   string|null  $service
      *
      * @return Response
      */
-    public function validate(Request $request): Response
-    {
+    public function validate(
+        Request $request,
+        #[MapQueryParameter] bool $renew = false,
+        #[MapQueryParameter] ?string $ticket = null,
+        #[MapQueryParameter] ?string $service = null,
+    ): Response {
+
+        $forceAuthn = $renew;
         // Check if any of the required query parameters are missing
-        if (!$request->query->has('service')) {
-            Logger::debug('casserver: Missing service parameter: [service]');
-            return new Response(
-                $this->cas10Protocol->getValidateFailureResponse(),
-                Response::HTTP_BAD_REQUEST,
-            );
-        } elseif (!$request->query->has('ticket')) {
-            Logger::debug('casserver: Missing service parameter: [ticket]');
+        if ($service === null || $ticket === null) {
+            $messagePostfix = $service === null ? 'service' : 'ticket';
+            Logger::debug("casserver: Missing service parameter: [{$messagePostfix}]");
             return new Response(
                 $this->cas10Protocol->getValidateFailureResponse(),
                 Response::HTTP_BAD_REQUEST,
             );
         }
 
-        // Check if we are required to force an authentication
-        $forceAuthn = $request->query->has('renew') && $request->query->get('renew');
-        // Get the ticket
-        $ticket = $request->query->get('ticket');
-        // Get the service
-        $service = $request->query->get('service');
-
         try {
             // Get the service ticket
+            // `getTicket` uses the unserializable method and Objects may throw Throwables in their
+            // unserialization handlers.
             $serviceTicket = $this->ticketStore->getTicket($ticket);
             // Delete the ticket
             $this->ticketStore->deleteTicket($ticket);
@@ -112,12 +113,14 @@ class Cas10Controller
         } elseif ($this->ticketFactory->isExpired($serviceTicket)) {
             $message = 'Ticket has ' . var_export($ticket, true) . ' expired';
             $failed = true;
-        } elseif ($this->sanitize($serviceTicket['service']) === $this->sanitize($service)) {
+        } elseif ($this->sanitize($serviceTicket['service']) !== $this->sanitize($service)) {
+            // The service we pass to the query parameters does not match the one in the ticket.
             $message = 'Mismatching service parameters: expected ' .
                 var_export($serviceTicket['service'], true) .
                 ' but was: ' . var_export($service, true);
             $failed = true;
-        } elseif ($forceAuthn && isset($serviceTicket['forceAuthn']) && $serviceTicket['forceAuthn']) {
+        } elseif ($forceAuthn) {
+            // If the forceAuthn/renew is true
             $message = 'Ticket was issued from single sign on session';
             $failed = true;
         }
@@ -139,6 +142,10 @@ class Cas10Controller
                 'casserver:validate: internal server error. Missing user name attribute: '
                 . var_export($usernameField, true),
             );
+            return new Response(
+                $this->cas10Protocol->getValidateFailureResponse(),
+                Response::HTTP_BAD_REQUEST,
+            );
         }
 
         // Successful validation
@@ -146,5 +153,13 @@ class Cas10Controller
             $this->cas10Protocol->getValidateSuccessResponse($serviceTicket['attributes'][$usernameField][0]),
             Response::HTTP_OK,
         );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTicketStore(): mixed
+    {
+        return $this->ticketStore;
     }
 }
