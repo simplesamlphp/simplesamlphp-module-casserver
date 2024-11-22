@@ -102,26 +102,26 @@ class Cas10Controller
 
         $failed = false;
         $message = '';
-        // No ticket
-        if ($serviceTicket === null) {
+        if (empty($serviceTicket)) {
+            // No ticket
             $message = 'ticket: ' . var_export($ticket, true) . ' not recognized';
             $failed = true;
-            // This is not a service ticket
         } elseif (!$this->ticketFactory->isServiceTicket($serviceTicket)) {
+            // This is not a service ticket
             $message = 'ticket: ' . var_export($ticket, true) . ' is not a service ticket';
             $failed = true;
-            // the ticket has expired
         } elseif ($this->ticketFactory->isExpired($serviceTicket)) {
+            // the ticket has expired
             $message = 'Ticket has ' . var_export($ticket, true) . ' expired';
             $failed = true;
         } elseif ($this->sanitize($serviceTicket['service']) !== $this->sanitize($service)) {
-            // The service we pass to the query parameters does not match the one in the ticket.
+            // The service url we passed to the query parameters does not match the one in the ticket.
             $message = 'Mismatching service parameters: expected ' .
                 var_export($serviceTicket['service'], true) .
                 ' but was: ' . var_export($service, true);
             $failed = true;
-        } elseif ($forceAuthn) {
-            // If the forceAuthn/renew is true
+        } elseif ($forceAuthn && !$serviceTicket['forceAuthn']) {
+            // If `forceAuthn` is required but not set in the ticket
             $message = 'Ticket was issued from single sign on session';
             $failed = true;
         }
@@ -157,6 +157,8 @@ class Cas10Controller
     }
 
     /**
+     * Used by the unit tests
+     *
      * @return mixed
      */
     public function getTicketStore(): mixed
