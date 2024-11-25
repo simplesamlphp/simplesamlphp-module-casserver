@@ -28,6 +28,9 @@ class LogoutController
     /** @var Configuration */
     protected Configuration $casConfig;
 
+    /** @var Configuration */
+    protected Configuration $sspConfig;
+
     /** @var TicketFactory */
     protected TicketFactory $ticketFactory;
 
@@ -50,11 +53,13 @@ class LogoutController
      * @throws \Exception
      */
     public function __construct(
+        Configuration $sspConfig = null,
         // Facilitate testing
         Configuration $casConfig = null,
         Simple $source = null,
         SspContainer $container = null,
     ) {
+        $this->sspConfig = $sspConfig ?? Configuration::getInstance();
         $this->casConfig = $casConfig ?? Configuration::getConfig('module_casserver.php');
         $this->authSource = $source ?? new Simple($this->casConfig->getValue('authsource'));
         $this->container = $container ?? new SspContainer();

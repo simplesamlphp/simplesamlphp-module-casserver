@@ -23,8 +23,11 @@ class Cas10ControllerTest extends TestCase
 
     private string $sessionId;
 
+    private Configuration $sspConfig;
+
     protected function setUp(): void
     {
+        $this->sspConfig = Configuration::getConfig('config.php');
         $this->sessionId = session_create_id();
         $this->moduleConfig = [
             'ticketstore' => [
@@ -95,7 +98,7 @@ class Cas10ControllerTest extends TestCase
             parameters: $params,
         );
 
-        $cas10Controller = new Cas10Controller($config);
+        $cas10Controller = new Cas10Controller($this->sspConfig, $config);
         $response = $cas10Controller->validate($request, ...$params);
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -122,7 +125,7 @@ class Cas10ControllerTest extends TestCase
             }
         };
 
-        $cas10Controller = new Cas10Controller($config, $ticketStore);
+        $cas10Controller = new Cas10Controller($this->sspConfig, $config, $ticketStore);
         $response = $cas10Controller->validate($request, ...$params);
 
         $this->assertEquals(500, $response->getStatusCode());
@@ -142,7 +145,7 @@ class Cas10ControllerTest extends TestCase
             parameters: $params,
         );
 
-        $cas10Controller = new Cas10Controller($config);
+        $cas10Controller = new Cas10Controller($this->sspConfig, $config);
         $response = $cas10Controller->validate($request, ...$params);
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -162,7 +165,7 @@ class Cas10ControllerTest extends TestCase
             parameters: $params,
         );
 
-        $cas10Controller = new Cas10Controller($config);
+        $cas10Controller = new Cas10Controller($this->sspConfig, $config);
         $ticketStore = $cas10Controller->getTicketStore();
         $ticketStore->addTicket($this->ticket);
         $response = $cas10Controller->validate($request, ...$params);
@@ -186,7 +189,7 @@ class Cas10ControllerTest extends TestCase
             parameters: $params,
         );
 
-        $cas10Controller = new Cas10Controller($config);
+        $cas10Controller = new Cas10Controller($this->sspConfig, $config);
         $ticketStore = $cas10Controller->getTicketStore();
         $ticketStore->addTicket($this->ticket);
         $response = $cas10Controller->validate($request, ...$params);
@@ -210,7 +213,7 @@ class Cas10ControllerTest extends TestCase
             parameters: $params,
         );
 
-        $cas10Controller = new Cas10Controller($config);
+        $cas10Controller = new Cas10Controller($this->sspConfig, $config);
         $ticketStore = $cas10Controller->getTicketStore();
         $ticketStore->addTicket($this->ticket);
         $response = $cas10Controller->validate($request, ...$params);
@@ -234,7 +237,7 @@ class Cas10ControllerTest extends TestCase
             parameters: $params,
         );
 
-        $cas10Controller = new Cas10Controller($config);
+        $cas10Controller = new Cas10Controller($this->sspConfig, $config);
         $ticketStore = $cas10Controller->getTicketStore();
         $ticketStore->addTicket($this->ticket);
         $response = $cas10Controller->validate($request, ...$params);
@@ -258,7 +261,7 @@ class Cas10ControllerTest extends TestCase
             parameters: $params,
         );
 
-        $cas10Controller = new Cas10Controller($config);
+        $cas10Controller = new Cas10Controller($this->sspConfig, $config);
         $ticketStore = $cas10Controller->getTicketStore();
         $ticketStore->addTicket($this->ticket);
         $response = $cas10Controller->validate($request, ...$params);
@@ -282,7 +285,7 @@ class Cas10ControllerTest extends TestCase
             parameters: $params,
         );
 
-        $cas10Controller = new Cas10Controller($config);
+        $cas10Controller = new Cas10Controller($this->sspConfig, $config);
         $ticketStore = $cas10Controller->getTicketStore();
         $ticketStore->addTicket($this->ticket);
         $response = $cas10Controller->validate($request, ...$params);

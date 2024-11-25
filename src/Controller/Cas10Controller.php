@@ -25,6 +25,9 @@ class Cas10Controller
     /** @var Configuration */
     protected Configuration $casConfig;
 
+    /** @var Configuration */
+    protected Configuration $sspConfig;
+
     /** @var Cas10 */
     protected Cas10 $cas10Protocol;
 
@@ -35,15 +38,18 @@ class Cas10Controller
     protected mixed $ticketStore;
 
     /**
+     * @param   Configuration|null  $sspConfig
      * @param   Configuration|null  $casConfig
-     * @param                       $ticketStore
+     * @param   null                $ticketStore
      *
      * @throws \Exception
      */
     public function __construct(
+        Configuration $sspConfig = null,
         Configuration $casConfig = null,
         $ticketStore = null,
     ) {
+        $this->sspConfig = $sspConfig ?? Configuration::getInstance();
         $this->casConfig = $casConfig ?? Configuration::getConfig('module_casserver.php');
         $this->cas10Protocol = new Cas10($this->casConfig);
         /* Instantiate ticket factory */
@@ -127,7 +133,7 @@ class Cas10Controller
         }
 
         if ($failed) {
-            Logger::error('casserver:validate: ' . $message, true);
+            Logger::error('casserver:validate: ' . $message);
             return new Response(
                 $this->cas10Protocol->getValidateFailureResponse(),
                 Response::HTTP_BAD_REQUEST,

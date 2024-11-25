@@ -21,6 +21,8 @@ class LogoutControllerTest extends TestCase
 
     private SspContainer $sspContainer;
 
+    private Configuration $sspConfig;
+
     protected function setUp(): void
     {
         $this->authSimpleMock = $this->getMockBuilder(Simple::class)
@@ -39,6 +41,8 @@ class LogoutControllerTest extends TestCase
                 'directory' => __DIR__ . '../../../../tests/ticketcache',
             ],
         ];
+
+        $this->sspConfig = Configuration::getConfig('config.php');
     }
 
     public static function setUpBeforeClass(): void
@@ -60,7 +64,7 @@ class LogoutControllerTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Logout not allowed');
 
-        $controller = new LogoutController($config, $this->authSimpleMock);
+        $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock);
         $controller->logout(Request::create('/'));
     }
 
@@ -73,7 +77,7 @@ class LogoutControllerTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Required URL query parameter [url] not provided. (CAS Server)');
 
-        $controller = new LogoutController($config, $this->authSimpleMock);
+        $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock);
         $controller->logout(Request::create('/'));
     }
 
@@ -93,7 +97,7 @@ class LogoutControllerTest extends TestCase
             [],
         );
 
-        $controller = new LogoutController($config, $this->authSimpleMock, $this->sspContainer);
+        $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock, $this->sspContainer);
 
         $logoutUrl = Module::getModuleURL('casserver/logout.php');
 
@@ -119,7 +123,7 @@ class LogoutControllerTest extends TestCase
             [],
         );
 
-        $controller = new LogoutController($config, $this->authSimpleMock, $this->sspContainer);
+        $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock, $this->sspContainer);
         $controller->logout(Request::create('/'));
     }
 
@@ -140,7 +144,7 @@ class LogoutControllerTest extends TestCase
             ['url' => $urlParam],
         );
 
-        $controller = new LogoutController($config, $this->authSimpleMock, $this->sspContainer);
+        $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock, $this->sspContainer);
         $request = Request::create(
             uri: $logoutUrl,
             parameters: ['url' => $urlParam],
@@ -161,7 +165,7 @@ class LogoutControllerTest extends TestCase
         $this->authSimpleMock->expects($this->once())->method('logout')
             ->with('http://localhost/module.php/casserver/loggedOut.php');
 
-        $controller = new LogoutController($config, $this->authSimpleMock, $this->sspContainer);
+        $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock, $this->sspContainer);
         $controller->logout(Request::create('/'));
     }
 
@@ -172,7 +176,7 @@ class LogoutControllerTest extends TestCase
         $config = Configuration::loadFromArray($this->moduleConfig);
 
         $controllerMock = $this->getMockBuilder(LogoutController::class)
-            ->setConstructorArgs([$config, $this->authSimpleMock, $this->sspContainer])
+            ->setConstructorArgs([$this->sspConfig, $config, $this->authSimpleMock, $this->sspContainer])
             ->onlyMethods(['getSession'])
             ->getMock();
 

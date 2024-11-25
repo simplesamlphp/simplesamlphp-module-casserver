@@ -18,6 +18,9 @@ services:
     SimpleSAML\Module\casserver\Controller\Cas10Controller:
         public: true
 
+    SimpleSAML\Module\casserver\Controller\Cas20Controller:
+        public: true
+
     SimpleSAML\Module\casserver\Controller\LogoutController:
         public: true
 
