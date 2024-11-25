@@ -226,7 +226,7 @@ if (
         $_GET[$ticketName] = $serviceTicket['id'];
         // We want to capture the output from echo used in validateTicket
         ob_start();
-        require_once 'utility/validateTicket.php';
+        echo casServiceValidate($serviceTicket['id'], $serviceUrl);
         $casResponse = ob_get_contents();
         ob_end_clean();
         echo '<pre>' . htmlspecialchars($casResponse) . '</pre>';

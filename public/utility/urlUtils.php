@@ -24,8 +24,10 @@
 declare(strict_types=1);
 
 use SimpleSAML\Configuration;
+use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Cas\ServiceValidator;
 use SimpleSAML\Module\casserver\Cas\TicketValidator;
+use SimpleSAML\Utils;
 
 /**
  * @deprecated
@@ -100,4 +102,24 @@ function parseQueryParameters(?array $sessionTicket): array
     }
 
     return $query;
+}
+
+/**
+ * Uses the cas service validate, this provides additional attributes
+ *
+ * @param   string  $ticket
+ * @param   string  $service
+ *
+ * @return array username and attributes
+ * @throws \SimpleSAML\Error\Exception
+ */
+function casServiceValidate(string $ticket, string $service): string
+{
+    $httpUtils = new Utils\HTTP();
+    $url = $httpUtils->addURLParameters(
+        Module::getModuleURL('casserver/serviceValidate.php'),
+        compact('ticket', 'service'),
+    );
+
+    return $httpUtils->fetch($url);
 }
