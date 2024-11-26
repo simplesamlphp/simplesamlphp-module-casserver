@@ -27,9 +27,6 @@ class Cas20Controller
     /** @var Configuration */
     protected Configuration $casConfig;
 
-    /** @var Configuration */
-    protected Configuration $sspConfig;
-
     /** @var Cas20 */
     protected Cas20 $cas20Protocol;
 
@@ -40,18 +37,22 @@ class Cas20Controller
     protected mixed $ticketStore;
 
     /**
+     * @param   Configuration       $sspConfig
      * @param   Configuration|null  $casConfig
      * @param                       $ticketStore
      *
      * @throws \Exception
      */
     public function __construct(
-        Configuration $sspConfig = null,
+        private readonly Configuration $sspConfig,
         Configuration $casConfig = null,
         $ticketStore = null,
     ) {
-        $this->sspConfig     = $sspConfig ?? Configuration::getInstance();
-        $this->casConfig     = $casConfig ?? Configuration::getConfig('module_casserver.php');
+        // We are using this work around in order to bypass Symfony's autowiring for cas configuration. Since
+        // the configuration class is the same, it loads the ssp configuration twice. Still, we need the constructor
+        // argument in order to facilitate testing
+        $this->casConfig = ($casConfig === null || $casConfig === $sspConfig)
+            ? Configuration::getConfig('module_casserver.php') : $casConfig;
         $this->cas20Protocol = new Cas20($this->casConfig);
         /* Instantiate ticket factory */
         $this->ticketFactory = new TicketFactory($this->casConfig);
@@ -62,65 +63,74 @@ class Cas20Controller
         );
         $ticketStoreClass  = 'SimpleSAML\\Module\\casserver\\Cas\\Ticket\\'
             . explode(':', $ticketStoreConfig['class'])[1];
-        /** @psalm-suppress InvalidStringClass */
         $this->ticketStore = $ticketStore ?? new $ticketStoreClass($this->casConfig);
     }
 
     /**
      * @param   Request      $request
-     * @param   bool         $renew
-     * @param   string|null  $ticket
-     * @param   string|null  $service
-     * @param   string|null  $pgtUrl
+     * @param   string       $TARGET // todo: this should go away
+     * @param   bool  $renew  [OPTIONAL] - if this parameter is set, ticket validation will only succeed
+     *                        if the service ticket was issued from the presentation of the user’s primary
+     *                        credentials. It will fail if the ticket was issued from a single sign-on session.
+     * @param   string|null  $ticket  [REQUIRED] - the service ticket issued by /login
+     * @param   string|null  $service [REQUIRED] - the identifier of the service for which the ticket was issued
+     * @param   string|null  $pgtUrl  [OPTIONAL] - the URL of the proxy callback
      *
      * @return XmlResponse
      */
     public function serviceValidate(
         Request $request,
+        #[MapQueryParameter] string $TARGET = '',
         #[MapQueryParameter] bool $renew = false,
         #[MapQueryParameter] ?string $ticket = null,
         #[MapQueryParameter] ?string $service = null,
         #[MapQueryParameter] ?string $pgtUrl = null,
     ): XmlResponse {
         return $this->validate(
-            $request,
-            'serviceValidate',
-            $renew,
-            $ticket,
-            $service,
-            $pgtUrl,
+            request: $request,
+            method:  'serviceValidate',
+            target:  $TARGET,
+            renew:   $renew,
+            ticket:  $ticket,
+            service: $service,
+            pgtUrl:  $pgtUrl,
         );
     }
 
     /**
      * @param   Request      $request
-     * @param   bool         $renew
-     * @param   string|null  $ticket
-     * @param   string|null  $service
-     * @param   string|null  $pgtUrl
-     *
+     * @param   string       $TARGET  // todo: this should go away???
+     * @param   bool  $renew  [OPTIONAL] - if this parameter is set, ticket validation will only succeed
+     *                        if the service ticket was issued from the presentation of the user’s primary
+     *                        credentials. It will fail if the ticket was issued from a single sign-on session.
+     * @param   string|null  $ticket  [REQUIRED] - the service ticket issued by /login
+     * @param   string|null  $service  [REQUIRED] - the identifier of the service for which the ticket was issued
+     * @param   string|null  $pgtUrl  [OPTIONAL] - the URL of the proxy callback
      * @return XmlResponse
      */
     public function proxyValidate(
         Request $request,
+        #[MapQueryParameter] string $TARGET = '',
         #[MapQueryParameter] bool $renew = false,
         #[MapQueryParameter] ?string $ticket = null,
         #[MapQueryParameter] ?string $service = null,
         #[MapQueryParameter] ?string $pgtUrl = null,
     ): XmlResponse {
         return $this->validate(
-            $request,
-            'proxyValidate',
-            $renew,
-            $ticket,
-            $service,
-            $pgtUrl,
+            request: $request,
+            method:  'proxyValidate',
+            target:  $TARGET,
+            renew:   $renew,
+            ticket:  $ticket,
+            service: $service,
+            pgtUrl:  $pgtUrl,
         );
     }
 
     /**
      * @param   Request      $request
      * @param   string       $method
+     * @param   string       $target
      * @param   bool         $renew
      * @param   string|null  $ticket
      * @param   string|null  $service
@@ -131,13 +141,15 @@ class Cas20Controller
     public function validate(
         Request $request,
         string $method,
+        string $target,
         bool $renew = false,
         ?string $ticket = null,
         ?string $service = null,
         ?string $pgtUrl = null,
     ): XmlResponse {
         $forceAuthn = $renew;
-        $serviceUrl = $service ?? $_GET['TARGET'] ?? null;
+        // todo: According to the protocol, there is no target??? Why are we using it?
+        $serviceUrl = $service ?? $target ?? null;
 
         // Check if any of the required query parameters are missing
         if ($serviceUrl === null || $ticket === null) {
@@ -250,12 +262,13 @@ class Cas20Controller
                     $this->cas20Protocol->setProxyGrantingTicketIOU($proxyGrantingTicket['iou']);
 
                     $this->ticketStore->addTicket($proxyGrantingTicket);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     // Fall through
                 }
             }
         }
 
+        // TODO: Replace with string casting
         ob_start();
         echo $this->cas20Protocol->getValidateSuccessResponse($serviceTicket['userName']);
         $successContent = ob_get_clean();

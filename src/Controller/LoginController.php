@@ -10,6 +10,7 @@ use SimpleSAML\Configuration;
 use SimpleSAML\Locale\Language;
 use SimpleSAML\Logger;
 use SimpleSAML\Module;
+use SimpleSAML\Module\casserver\Cas\AttributeExtractor;
 use SimpleSAML\Module\casserver\Cas\Factories\ProcessingChainFactory;
 use SimpleSAML\Module\casserver\Cas\Factories\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Protocol\SamlValidateResponder;
@@ -175,7 +176,7 @@ class LoginController
     public function getReturnUrl(?array $sessionTicket): string
     {
         // Parse the query parameters and return them in an array
-        $query = parseQueryParameters($sessionTicket);
+        $query = $this->parseQueryParameters($sessionTicket);
         // Construct the ReturnTo URL
         return $this->httpUtils->getSelfURLNoQuery() . '?' . http_build_query($query);
     }
@@ -193,7 +194,7 @@ class LoginController
         if ($serviceUrl === null) {
             return;
         }
-        $serviceCasConfig = $this->serviceValidator->checkServiceURL(sanitize($serviceUrl));
+        $serviceCasConfig = $this->serviceValidator->checkServiceURL($this->sanitize($serviceUrl));
         if (!isset($serviceCasConfig)) {
             $message = 'Service parameter provided to CAS server is not listed as a legal service: [service] = ' .
                 var_export($serviceUrl, true);

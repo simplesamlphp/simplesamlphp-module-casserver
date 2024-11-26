@@ -28,9 +28,6 @@ class LogoutController
     /** @var Configuration */
     protected Configuration $casConfig;
 
-    /** @var Configuration */
-    protected Configuration $sspConfig;
-
     /** @var TicketFactory */
     protected TicketFactory $ticketFactory;
 
@@ -53,14 +50,17 @@ class LogoutController
      * @throws \Exception
      */
     public function __construct(
-        Configuration $sspConfig = null,
+        private readonly Configuration $sspConfig,
         // Facilitate testing
         Configuration $casConfig = null,
         Simple $source = null,
         SspContainer $container = null,
     ) {
-        $this->sspConfig = $sspConfig ?? Configuration::getInstance();
-        $this->casConfig = $casConfig ?? Configuration::getConfig('module_casserver.php');
+        // We are using this work around in order to bypass Symfony's autowiring for cas configuration. Since
+        // the configuration class is the same, it loads the ssp configuration twice. Still, we need the constructor
+        // argument in order to facilitate testin.
+        $this->casConfig = ($casConfig === null || $casConfig === $sspConfig)
+            ? Configuration::getConfig('module_casserver.php') : $casConfig;
         $this->authSource = $source ?? new Simple($this->casConfig->getValue('authsource'));
         $this->container = $container ?? new SspContainer();
 

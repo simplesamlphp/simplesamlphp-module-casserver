@@ -25,9 +25,6 @@ class Cas10Controller
     /** @var Configuration */
     protected Configuration $casConfig;
 
-    /** @var Configuration */
-    protected Configuration $sspConfig;
-
     /** @var Cas10 */
     protected Cas10 $cas10Protocol;
 
@@ -38,19 +35,22 @@ class Cas10Controller
     protected mixed $ticketStore;
 
     /**
-     * @param   Configuration|null  $sspConfig
+     * @param   Configuration       $sspConfig
      * @param   Configuration|null  $casConfig
      * @param   null                $ticketStore
      *
      * @throws \Exception
      */
     public function __construct(
-        Configuration $sspConfig = null,
+        private readonly Configuration $sspConfig,
         Configuration $casConfig = null,
         $ticketStore = null,
     ) {
-        $this->sspConfig = $sspConfig ?? Configuration::getInstance();
-        $this->casConfig = $casConfig ?? Configuration::getConfig('module_casserver.php');
+        // We are using this work around in order to bypass Symfony's autowiring for cas configuration. Since
+        // the configuration class is the same, it loads the ssp configuration twice. Still, we need the constructor
+        // argument in order to facilitate testin.
+        $this->casConfig = ($casConfig === null || $casConfig === $sspConfig)
+            ? Configuration::getConfig('module_casserver.php') : $casConfig;
         $this->cas10Protocol = new Cas10($this->casConfig);
         /* Instantiate ticket factory */
         $this->ticketFactory = new TicketFactory($this->casConfig);
@@ -67,21 +67,25 @@ class Cas10Controller
 
     /**
      * @param   Request      $request
-     * @param   bool         $renew
-     * @param   string|null  $ticket
-     * @param   string|null  $service
+     * @param   bool  $renew  [OPTIONAL] - if this parameter is set, ticket validation will only succeed
+     *                        if the service ticket was issued from the presentation of the user’s primary credentials.
+     *                        It will fail if the ticket was issued from a single sign-on session.
+     * @param   string|null  $ticket  [REQUIRED] - the service ticket issued by /login.
+     * @param   string|null  $service [REQUIRED] - the identifier of the service for which the ticket was issued
      *
      * @return Response
      */
     public function validate(
         Request $request,
-        #[MapQueryParameter] bool $renew = false,
         #[MapQueryParameter] ?string $ticket = null,
+        #[MapQueryParameter] bool $renew = false,
         #[MapQueryParameter] ?string $service = null,
     ): Response {
-
         $forceAuthn = $renew;
         // Check if any of the required query parameters are missing
+        // Even though we can delegate the check to Symfony's `MapQueryParameter` we cannot return
+        // the failure response needed. As a result, we allow a default value, and we handle the missing
+        // values afterwards.
         if ($service === null || $ticket === null) {
             $messagePostfix = $service === null ? 'service' : 'ticket';
             Logger::debug("casserver: Missing service parameter: [{$messagePostfix}]");

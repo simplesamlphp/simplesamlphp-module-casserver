@@ -37,6 +37,7 @@
         "ext-SimpleXML": "*",
         "ext-pdo": "*",
         "ext-session": "*",
+        "ext-xml": "*",
 
         "simplesamlphp/assert": "^1.1",
         "simplesamlphp/composer-module-installer": "^1.3",

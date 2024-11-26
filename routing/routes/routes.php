@@ -10,6 +10,7 @@ use SimpleSAML\Module\casserver\Codebooks\LegacyRoutesEnum;
 use SimpleSAML\Module\casserver\Codebooks\RoutesEnum;
 use SimpleSAML\Module\casserver\Controller\Cas10Controller;
 use SimpleSAML\Module\casserver\Controller\Cas20Controller;
+use SimpleSAML\Module\casserver\Controller\Cas30Controller;
 use SimpleSAML\Module\casserver\Controller\LoggedInController;
 use SimpleSAML\Module\casserver\Controller\LoggedOutController;
 use SimpleSAML\Module\casserver\Controller\LogoutController;
@@ -28,6 +29,9 @@ return static function (RoutingConfigurator $routes): void {
     $routes->add(RoutesEnum::ProxyValidate->name, RoutesEnum::ProxyValidate->value)
         ->controller([Cas20Controller::class, 'proxyValidate'])
         ->methods(['GET']);
+    $routes->add(RoutesEnum::SamlValidate->name, RoutesEnum::SamlValidate->value)
+        ->controller([Cas30Controller::class, 'samlValidate'])
+        ->methods(['POST']);
     $routes->add(RoutesEnum::Logout->name, RoutesEnum::Logout->value)
         ->controller([LogoutController::class, 'logout']);
     $routes->add(RoutesEnum::LoggedOut->name, RoutesEnum::LoggedOut->value)
@@ -44,6 +48,9 @@ return static function (RoutingConfigurator $routes): void {
     $routes->add(LegacyRoutesEnum::LegacyProxyValidate->name, LegacyRoutesEnum::LegacyProxyValidate->value)
         ->controller([Cas20Controller::class, 'proxyValidate'])
         ->methods(['GET']);
+    $routes->add(LegacyRoutesEnum::LegacySamlValidate->name, LegacyRoutesEnum::LegacySamlValidate->value)
+        ->controller([Cas30Controller::class, 'samlValidate'])
+        ->methods(['POST']);
     $routes->add(LegacyRoutesEnum::LegacyLogout->name, LegacyRoutesEnum::LegacyLogout->value)
         ->controller([LogoutController::class, 'logout']);
     $routes->add(LegacyRoutesEnum::LegacyLoggedOut->name, LegacyRoutesEnum::LegacyLoggedOut->value)
