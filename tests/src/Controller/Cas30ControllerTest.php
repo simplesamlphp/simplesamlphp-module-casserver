@@ -33,7 +33,7 @@ class Cas30ControllerTest extends TestCase
     private array $ticket;
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     protected function setUp(): void
     {
@@ -80,6 +80,10 @@ class Cas30ControllerTest extends TestCase
         ];
     }
 
+    /**
+     * @return void
+     * @throws \Exception
+     */
     public function testNoSoapBody(): void
     {
         $casconfig = Configuration::loadFromArray($this->moduleConfig);
@@ -106,6 +110,10 @@ class Cas30ControllerTest extends TestCase
         $cas30Controller->samlValidate($this->samlValidateRequest, $target);
     }
 
+    /**
+     * @return void
+     * @throws \Exception
+     */
     public function testSoapBodyMissingRequestIdAttribute(): void
     {
         $casconfig = Configuration::loadFromArray($this->moduleConfig);
@@ -145,6 +153,10 @@ SOAP;
         $cas30Controller->samlValidate($this->samlValidateRequest, $target);
     }
 
+    /**
+     * @return void
+     * @throws \Exception
+     */
     public function testSoapBodyMissingIssueInstantAttribute(): void
     {
         $casconfig = Configuration::loadFromArray($this->moduleConfig);
@@ -184,6 +196,10 @@ SOAP;
         $cas30Controller->samlValidate($this->samlValidateRequest, $target);
     }
 
+    /**
+     * @return void
+     * @throws \Exception
+     */
     public function testSoapBodyMissingTicketId(): void
     {
         $casconfig = Configuration::loadFromArray($this->moduleConfig);
@@ -224,6 +240,11 @@ SOAP;
         $cas30Controller->samlValidate($this->samlValidateRequest, $target);
     }
 
+
+    /**
+     * @return void
+     * @throws \Exception
+     */
     public function testCasValidateAndDeleteTicketThrowsException(): void
     {
         $casconfig = Configuration::loadFromArray($this->moduleConfig);
@@ -252,6 +273,7 @@ SOAP;
             content:    $samlRequest,
         );
 
+        /** @psalm-suppress UndefinedMethod */
         $this->ticketValidatorMock
             ->expects($this->once())
             ->method('validateAndDeleteTicket')
@@ -270,6 +292,10 @@ SOAP;
         $cas30Controller->samlValidate($this->samlValidateRequest, $target);
     }
 
+    /**
+     * @return void
+     * @throws \Exception
+     */
     public function testUnableToLoadTicket(): void
     {
         $this->ticketStore->addTicket(['id' => $this->ticket['id']]);
@@ -300,6 +326,7 @@ SOAP;
             content:    $samlRequest,
         );
 
+        /** @psalm-suppress UndefinedMethod */
         $this->ticketValidatorMock
             ->expects($this->once())
             ->method('validateAndDeleteTicket')
@@ -318,6 +345,10 @@ SOAP;
         $cas30Controller->samlValidate($this->samlValidateRequest, $target);
     }
 
+    /**
+     * @return void
+     * @throws \Exception
+     */
     public function testSuccessfullValidation(): void
     {
         $this->ticketStore->addTicket($this->ticket);
