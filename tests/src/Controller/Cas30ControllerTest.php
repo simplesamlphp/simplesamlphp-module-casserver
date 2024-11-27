@@ -62,7 +62,6 @@ class Cas30ControllerTest extends TestCase
         $this->ticket = [
             'id' => 'ST-' . $this->sessionId,
             'validBefore' => 9999999999,
-            // phpcs:ignore Generic.Files.LineLength.TooLong
             'service' => 'https://myservice.com/abcd',
             'forceAuthn' => false,
             'userName' => 'username@google.com',

@@ -68,7 +68,7 @@ class Cas20Controller
 
     /**
      * @param   Request      $request
-     * @param   string       $TARGET // todo: this should go away
+     * @param   string       $TARGET
      * @param   bool  $renew  [OPTIONAL] - if this parameter is set, ticket validation will only succeed
      *                        if the service ticket was issued from the presentation of the user’s primary
      *                        credentials. It will fail if the ticket was issued from a single sign-on session.
@@ -94,6 +94,94 @@ class Cas20Controller
             ticket:  $ticket,
             service: $service,
             pgtUrl:  $pgtUrl,
+        );
+    }
+
+    /**
+     * /proxy provides proxy tickets to services that have
+     * acquired proxy-granting tickets and will be proxying authentication to back-end services.
+     *
+     * @param   Request      $request
+     * @param   string|null  $targetService [REQUIRED] - the service identifier of the back-end service.
+     * @param   string|null  $pgt  [REQUIRED] - the proxy-granting ticket acquired by the service
+     *                             during service ticket or proxy ticket validation.
+     *
+     * @return XmlResponse
+     */
+    public function proxy(
+        Request $request,
+        #[MapQueryParameter] ?string $targetService = null,
+        #[MapQueryParameter] ?string $pgt = null,
+    ): XmlResponse {
+        $legal_target_service_urls = $this->casConfig->getOptionalValue('legal_target_service_urls', []);
+        // Fail if
+        $message = match (true) {
+            // targetService pareameter is not defined
+            $targetService === null => 'Missing target service parameter [targetService]',
+            // pgt parameter is not defined
+            $pgt === null => 'Missing proxy granting ticket parameter: [pgt]',
+            !$this->checkServiceURL($this->sanitize($targetService), $legal_target_service_urls) =>
+                "Target service parameter not listed as a legal service: [targetService] = {$targetService}",
+            default => null,
+        };
+
+        if (!empty($message)) {
+            return new XmlResponse(
+                (string)$this->cas20Protocol->getValidateFailureResponse(C::ERR_INVALID_REQUEST, $message),
+                Response::HTTP_BAD_REQUEST,
+            );
+        }
+
+        // Get the ticket
+        $proxyGrantingTicket = $this->ticketStore->getTicket($pgt);
+        $message = match (true) {
+            // targetService parameter is not defined
+            $proxyGrantingTicket === null => "Ticket {$pgt} not recognized",
+            // pgt parameter is not defined
+            !$this->ticketFactory->isProxyGrantingTicket($proxyGrantingTicket)
+            => "Not a valid proxy granting ticket id: {$pgt}",
+            default => null,
+        };
+
+        if (!empty($message)) {
+            return new XmlResponse(
+                (string)$this->cas20Protocol->getValidateFailureResponse('BAD_PGT', $message),
+                Response::HTTP_BAD_REQUEST,
+            );
+        }
+
+        // Get the session id from the ticket
+        $sessionTicket = $this->ticketStore->getTicket($proxyGrantingTicket['sessionId']);
+
+        if (
+            $sessionTicket === null
+            || $this->ticketFactory->isSessionTicket($sessionTicket) === false
+            || $this->ticketFactory->isExpired($sessionTicket)
+        ) {
+            $message = "Ticket {$pgt} has expired";
+            Logger::debug('casserver:' . $message);
+
+            return new XmlResponse(
+                (string)$this->cas20Protocol->getValidateFailureResponse('BAD_PGT', $message),
+                Response::HTTP_BAD_REQUEST,
+            );
+        }
+
+        $proxyTicket = $this->ticketFactory->createProxyTicket(
+            [
+                'service' => $targetService,
+                'forceAuthn' => $proxyGrantingTicket['forceAuthn'],
+                'attributes' => $proxyGrantingTicket['attributes'],
+                'proxies' => $proxyGrantingTicket['proxies'],
+                'sessionId' => $proxyGrantingTicket['sessionId'],
+                ],
+        );
+
+        $this->ticketStore->addTicket($proxyTicket);
+
+        return new XmlResponse(
+            (string)$this->cas20Protocol->getProxySuccessResponse($proxyTicket['id']),
+            Response::HTTP_OK,
         );
     }
 
@@ -157,12 +245,8 @@ class Cas20Controller
             $message        = "casserver: Missing service parameter: [{$messagePostfix}]";
             Logger::debug($message);
 
-            ob_start();
-            echo $this->cas20Protocol->getValidateFailureResponse(C::ERR_INVALID_SERVICE, $message);
-            $responseContent = ob_get_clean();
-
             return new XmlResponse(
-                $responseContent,
+                (string)$this->cas20Protocol->getValidateFailureResponse(C::ERR_INVALID_SERVICE, $message),
                 Response::HTTP_BAD_REQUEST,
             );
         }
@@ -178,12 +262,8 @@ class Cas20Controller
             $message = 'casserver:serviceValidate: internal server error. ' . var_export($e->getMessage(), true);
             Logger::error($message);
 
-            ob_start();
-            echo $this->cas20Protocol->getValidateFailureResponse(C::ERR_INVALID_SERVICE, $message);
-            $responseContent = ob_get_clean();
-
             return new XmlResponse(
-                $responseContent,
+                (string)$this->cas20Protocol->getValidateFailureResponse(C::ERR_INVALID_SERVICE, $message),
                 Response::HTTP_INTERNAL_SERVER_ERROR,
             );
         }
@@ -222,12 +302,8 @@ class Cas20Controller
             $finalMessage = 'casserver:validate: ' . $message;
             Logger::error($finalMessage);
 
-            ob_start();
-            echo $this->cas20Protocol->getValidateFailureResponse(C::ERR_INVALID_SERVICE, $message);
-            $responseContent = ob_get_clean();
-
             return new XmlResponse(
-                $responseContent,
+                (string)$this->cas20Protocol->getValidateFailureResponse(C::ERR_INVALID_SERVICE, $message),
                 Response::HTTP_BAD_REQUEST,
             );
         }
@@ -268,13 +344,8 @@ class Cas20Controller
             }
         }
 
-        // TODO: Replace with string casting
-        ob_start();
-        echo $this->cas20Protocol->getValidateSuccessResponse($serviceTicket['userName']);
-        $successContent = ob_get_clean();
-
         return new XmlResponse(
-            $successContent,
+            (string)$this->cas20Protocol->getValidateSuccessResponse($serviceTicket['userName']),
             Response::HTTP_OK,
         );
     }

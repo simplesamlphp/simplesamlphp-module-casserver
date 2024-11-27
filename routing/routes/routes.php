@@ -29,6 +29,9 @@ return static function (RoutingConfigurator $routes): void {
     $routes->add(RoutesEnum::ProxyValidate->name, RoutesEnum::ProxyValidate->value)
         ->controller([Cas20Controller::class, 'proxyValidate'])
         ->methods(['GET']);
+    $routes->add(RoutesEnum::Proxy->name, RoutesEnum::Proxy->value)
+        ->controller([Cas20Controller::class, 'proxy'])
+        ->methods(['GET']);
     $routes->add(RoutesEnum::SamlValidate->name, RoutesEnum::SamlValidate->value)
         ->controller([Cas30Controller::class, 'samlValidate'])
         ->methods(['POST']);
@@ -47,6 +50,9 @@ return static function (RoutingConfigurator $routes): void {
         ->methods(['GET']);
     $routes->add(LegacyRoutesEnum::LegacyProxyValidate->name, LegacyRoutesEnum::LegacyProxyValidate->value)
         ->controller([Cas20Controller::class, 'proxyValidate'])
+        ->methods(['GET']);
+    $routes->add(LegacyRoutesEnum::LegacyProxy->name, LegacyRoutesEnum::LegacyProxy->value)
+        ->controller([Cas20Controller::class, 'proxy'])
         ->methods(['GET']);
     $routes->add(LegacyRoutesEnum::LegacySamlValidate->name, LegacyRoutesEnum::LegacySamlValidate->value)
         ->controller([Cas30Controller::class, 'samlValidate'])
