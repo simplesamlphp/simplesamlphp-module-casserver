@@ -33,3 +33,6 @@ services:
 
     SimpleSAML\Module\casserver\Controller\LoggedInController:
         public: true
+
+    SimpleSAML\Module\casserver\Controller\LoginController:
+        public: true

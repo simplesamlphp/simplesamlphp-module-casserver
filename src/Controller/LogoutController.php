@@ -103,7 +103,7 @@ class LogoutController
             $logoutRedirectUrl = $url;
             $params = [];
         } else {
-            $logoutRedirectUrl = Module::getModuleURL('casserver/loggedOut.php');
+            $logoutRedirectUrl = Module::getModuleURL('casserver/loggedOut');
             $params =  $url === null ? []
                 : ['url' => $url];
         }

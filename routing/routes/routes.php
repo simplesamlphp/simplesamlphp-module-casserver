@@ -13,6 +13,7 @@ use SimpleSAML\Module\casserver\Controller\Cas20Controller;
 use SimpleSAML\Module\casserver\Controller\Cas30Controller;
 use SimpleSAML\Module\casserver\Controller\LoggedInController;
 use SimpleSAML\Module\casserver\Controller\LoggedOutController;
+use SimpleSAML\Module\casserver\Controller\LoginController;
 use SimpleSAML\Module\casserver\Controller\LogoutController;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
@@ -39,6 +40,8 @@ return static function (RoutingConfigurator $routes): void {
         ->controller([LogoutController::class, 'logout']);
     $routes->add(RoutesEnum::LoggedOut->name, RoutesEnum::LoggedOut->value)
         ->controller([LoggedOutController::class, 'main']);
+    $routes->add(RoutesEnum::Login->name, RoutesEnum::Login->value)
+        ->controller([LoginController::class, 'login']);
     $routes->add(RoutesEnum::LoggedIn->name, RoutesEnum::LoggedIn->value)
         ->controller([LoggedInController::class, 'main']);
 
@@ -61,6 +64,8 @@ return static function (RoutingConfigurator $routes): void {
         ->controller([LogoutController::class, 'logout']);
     $routes->add(LegacyRoutesEnum::LegacyLoggedOut->name, LegacyRoutesEnum::LegacyLoggedOut->value)
         ->controller([LoggedOutController::class, 'main']);
+    $routes->add(LegacyRoutesEnum::LegacyLogin->name, LegacyRoutesEnum::LegacyLogin->value)
+        ->controller([LoginController::class, 'login']);
     $routes->add(LegacyRoutesEnum::LegacyLoggedIn->name, LegacyRoutesEnum::LegacyLoggedIn->value)
         ->controller([LoggedInController::class, 'main']);
 };
