@@ -119,7 +119,7 @@ class LogoutControllerTest extends TestCase
         $this->authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(false);
         /** @psalm-suppress UndefinedMethod */
         $this->sspContainer->expects($this->once())->method('redirect')->with(
-            $this->equalTo('http://localhost/module.php/casserver/loggedOut.php'),
+            $this->equalTo('http://localhost/module.php/casserver/loggedOut'),
             [],
         );
 
@@ -133,7 +133,7 @@ class LogoutControllerTest extends TestCase
         $this->moduleConfig['skip_logout_page'] = false;
         $config = Configuration::loadFromArray($this->moduleConfig);
         $urlParam = 'https://example.com/test';
-        $logoutUrl = Module::getModuleURL('casserver/loggedOut.php');
+        $logoutUrl = Module::getModuleURL('casserver/loggedOut');
 
         // Unauthenticated
         /** @psalm-suppress UndefinedMethod */
@@ -163,7 +163,7 @@ class LogoutControllerTest extends TestCase
         $this->authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(true);
         /** @psalm-suppress UndefinedMethod */
         $this->authSimpleMock->expects($this->once())->method('logout')
-            ->with('http://localhost/module.php/casserver/loggedOut.php');
+            ->with('http://localhost/module.php/casserver/loggedOut');
 
         $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock, $this->sspContainer);
         $controller->logout(Request::create('/'));
