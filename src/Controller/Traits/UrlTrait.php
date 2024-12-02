@@ -50,7 +50,7 @@ trait UrlTrait
     public function parseQueryParameters(Request $request, ?array $sessionTicket): array
     {
         $forceAuthn = $this->getRequestParam($request, 'renew');
-        $sessionRenewId = $sessionTicket ? $sessionTicket['renewId'] : null;
+        $sessionRenewId = !empty($sessionTicket['renewId']) ? $sessionTicket['renewId'] : null;
 
         $queryParameters = $request->query->all();
         $requestParameters = $request->request->all();

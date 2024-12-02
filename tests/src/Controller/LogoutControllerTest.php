@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\casserver\Tests\Controller;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Auth\Simple;
 use SimpleSAML\Compat\SspContainer;
@@ -17,9 +18,9 @@ class LogoutControllerTest extends TestCase
 {
     private array $moduleConfig;
 
-    private Simple $authSimpleMock;
+    private Simple|MockObject $authSimpleMock;
 
-    private SspContainer $sspContainer;
+    private SspContainer|MockObject $sspContainer;
 
     private Configuration $sspConfig;
 
@@ -89,9 +90,7 @@ class LogoutControllerTest extends TestCase
         $urlParam = 'https://example.com/test';
 
         // Unauthenticated
-        /** @psalm-suppress UndefinedMethod */
         $this->authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(false);
-        /** @psalm-suppress UndefinedMethod */
         $this->sspContainer->expects($this->once())->method('redirect')->with(
             $this->equalTo($urlParam),
             [],
@@ -115,9 +114,7 @@ class LogoutControllerTest extends TestCase
         $config = Configuration::loadFromArray($this->moduleConfig);
 
         // Unauthenticated
-        /** @psalm-suppress UndefinedMethod */
         $this->authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(false);
-        /** @psalm-suppress UndefinedMethod */
         $this->sspContainer->expects($this->once())->method('redirect')->with(
             $this->equalTo('http://localhost/module.php/casserver/loggedOut'),
             [],
@@ -136,9 +133,7 @@ class LogoutControllerTest extends TestCase
         $logoutUrl = Module::getModuleURL('casserver/loggedOut');
 
         // Unauthenticated
-        /** @psalm-suppress UndefinedMethod */
         $this->authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(false);
-        /** @psalm-suppress UndefinedMethod */
         $this->sspContainer->expects($this->once())->method('redirect')->with(
             $this->equalTo($logoutUrl),
             ['url' => $urlParam],
@@ -159,9 +154,7 @@ class LogoutControllerTest extends TestCase
         $config = Configuration::loadFromArray($this->moduleConfig);
 
         // Unauthenticated
-        /** @psalm-suppress UndefinedMethod */
         $this->authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(true);
-        /** @psalm-suppress UndefinedMethod */
         $this->authSimpleMock->expects($this->once())->method('logout')
             ->with('http://localhost/module.php/casserver/loggedOut');
 

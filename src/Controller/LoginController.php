@@ -147,6 +147,11 @@ class LoginController
         $serviceUrl = $service ?? $TARGET ?? null;
         $redirect = !(isset($method) && $method === 'POST');
 
+        // Set initial configurations, or fail
+        $this->handleServiceConfiguration($serviceUrl);
+        $this->handleScope($scope);
+        $this->handleLanguage($language);
+
         // Get the ticket from the session
         $session = $this->getSession();
         $sessionTicket = $this->ticketStore->getTicket($session->getSessionId());
@@ -154,10 +159,6 @@ class LoginController
         $requestRenewId = $this->getRequestParam($request, 'renewId');
         // if this parameter is true, single sign-on will be bypassed and authentication will be enforced
         $requestForceAuthenticate = $forceAuthn && $sessionRenewId !== $requestRenewId;
-
-        $this->handleServiceConfiguration($serviceUrl);
-        $this->handleScope($scope);
-        $this->handleLanguage($language);
 
         if ($request->query->has(ProcessingChain::AUTHPARAM)) {
             $this->authProcId = $request->query->get(ProcessingChain::AUTHPARAM);
@@ -193,12 +194,14 @@ class LoginController
              *  REDIRECT TO AUTHSOURCE LOGIN
              * */
             $this->authSource->login($params);
+            // We should never get here.This is to facilitate testing.
+            return null;
         }
 
         // We are Authenticated.
 
         $sessionExpiry = $this->authSource->getAuthData('Expire');
-        // Create a new ticket if we do not have one alreday or if we are in a forced Authentitcation mode
+        // Create a new ticket if we do not have one alreday, or if we are in a forced Authentitcation mode
         if (!\is_array($sessionTicket) || $forceAuthn) {
             $sessionTicket = $this->ticketFactory->createSessionTicket($session->getSessionId(), $sessionExpiry);
             $this->ticketStore->addTicket($sessionTicket);
@@ -213,6 +216,8 @@ class LoginController
                 $this->postAuthUrlParameters,
             );
             $this->httpUtils->redirectTrustedURL($urlParameters);
+            // We should never get here.This is to facilitate testing.
+            return null;
         }
 
         // Get the state.
@@ -246,9 +251,12 @@ class LoginController
             $this->httpUtils->redirectTrustedURL(
                 $this->httpUtils->addURLParameters($serviceUrl, $this->postAuthUrlParameters),
             );
+            // We should never get here.This is to facilitate testing.
+            return null;
         }
         // POST
         $this->httpUtils->submitPOSTData($serviceUrl, $this->postAuthUrlParameters);
+        // We should never get here.This is to facilitate testing.
         return null;
     }
 
@@ -338,7 +346,7 @@ class LoginController
      * @param   string|null  $serviceUrl
      *
      * @return void
-     * @throws \Exception
+     * @throws \RuntimeException
      */
     public function handleServiceConfiguration(?string $serviceUrl): void
     {
@@ -351,7 +359,7 @@ class LoginController
                 var_export($serviceUrl, true);
             Logger::debug('casserver:' . $message);
 
-            throw new \Exception($message);
+            throw new \RuntimeException($message);
         }
 
         // Override the cas configuration to use for this service
@@ -377,7 +385,7 @@ class LoginController
      * @param   string|null  $scope
      *
      * @return void
-     * @throws \Exception
+     * @throws \RuntimeException
      */
     public function handleScope(?string $scope): void
     {
@@ -392,10 +400,10 @@ class LoginController
         // Fail
         if (!isset($scopes[$scope])) {
             $message = 'Scope parameter provided to CAS server is not listed as legal scope: [scope] = ' .
-                var_export($_GET['scope'], true);
+                var_export($scope, true);
             Logger::debug('casserver:' . $message);
 
-            throw new \Exception($message);
+            throw new \RuntimeException($message);
         }
 
         // Set the idplist from the scopes
@@ -408,8 +416,16 @@ class LoginController
      * @return Session|null
      * @throws \Exception
      */
-    protected function getSession(): ?Session
+    public function getSession(): ?Session
     {
         return Session::getSessionFromRequest();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTicketStore(): mixed
+    {
+        return $this->ticketStore;
     }
 }
