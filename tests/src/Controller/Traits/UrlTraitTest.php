@@ -1,23 +1,17 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: patrick
- * Date: 5/5/17
- * Time: 3:57 PM
- */
-
 declare(strict_types=1);
 
-namespace SimpleSAML\Casserver;
+namespace SimpleSAML\Module\casserver\Tests\Controller\Trait;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use SimpleSAML\Module\casserver\Controller\Traits\UrlTrait;
 
-require_once dirname(__DIR__, 2) . '/public/utility/urlUtils.php';
-
-class UtilsTest extends TestCase
+class UrlTraitTest extends TestCase
 {
+    use UrlTrait;
+
     /**
      * @param string $service the service url to check
      * @param bool $allowed is the service url allowed?
@@ -43,7 +37,11 @@ class UtilsTest extends TestCase
             '',
         ];
 
-        $this->assertEquals($allowed, checkServiceURL(sanitize($service), $legalServices), "$service validated wrong");
+        $this->assertEquals(
+            $allowed,
+            $this->checkServiceURL($this->sanitize($service), $legalServices),
+            "$service validated wrong",
+        );
     }
 
 
