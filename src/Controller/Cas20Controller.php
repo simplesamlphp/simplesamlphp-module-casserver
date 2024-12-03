@@ -80,7 +80,7 @@ class Cas20Controller
      */
     public function serviceValidate(
         Request $request,
-        #[MapQueryParameter] string $TARGET = '',
+        #[MapQueryParameter] string $TARGET = null,
         #[MapQueryParameter] bool $renew = false,
         #[MapQueryParameter] ?string $ticket = null,
         #[MapQueryParameter] ?string $service = null,
@@ -198,7 +198,7 @@ class Cas20Controller
      */
     public function proxyValidate(
         Request $request,
-        #[MapQueryParameter] string $TARGET = '',
+        #[MapQueryParameter] string $TARGET = null,
         #[MapQueryParameter] bool $renew = false,
         #[MapQueryParameter] ?string $ticket = null,
         #[MapQueryParameter] ?string $service = null,
@@ -213,5 +213,15 @@ class Cas20Controller
             service: $service,
             pgtUrl:  $pgtUrl,
         );
+    }
+
+    /**
+     * Used by the unit tests
+     *
+     * @return mixed
+     */
+    public function getTicketStore(): mixed
+    {
+        return $this->ticketStore;
     }
 }

@@ -72,9 +72,9 @@ trait UrlTrait
      * @param   Request  $request
      * @param   string   $paramName
      *
-     * @return string|int|array|null
+     * @return mixed
      */
-    public function getRequestParam(Request $request, string $paramName): string|int|array|null
+    public function getRequestParam(Request $request, string $paramName): mixed
     {
         return $request->query->get($paramName) ?? $request->request->get($paramName) ?? null;
     }
@@ -122,7 +122,11 @@ trait UrlTrait
             // Delete the ticket
             $this->ticketStore->deleteTicket($ticket);
         } catch (\Exception $e) {
-            $message = 'casserver:serviceValidate: internal server error. ' . var_export($e->getMessage(), true);
+            $messagePostfix = '';
+            if (!empty($e->getMessage())) {
+                $messagePostfix = ': ' . var_export($e->getMessage(), true);
+            }
+            $message = 'casserver:serviceValidate: internal server error' . $messagePostfix;
             Logger::error($message);
 
             return new XmlResponse(
@@ -135,19 +139,19 @@ trait UrlTrait
         $message = '';
         if (empty($serviceTicket)) {
             // No ticket
-            $message = 'ticket: ' . var_export($ticket, true) . ' not recognized';
+            $message = 'Ticket ' . var_export($ticket, true) . ' not recognized';
             $failed  = true;
         } elseif ($method === 'serviceValidate' && $this->ticketFactory->isProxyTicket($serviceTicket)) {
-            $message = 'Ticket ' . var_export($_GET['ticket'], true) .
+            $message = 'Ticket ' . var_export($ticket, true) .
                 ' is a proxy ticket. Use proxyValidate instead.';
             $failed  = true;
         } elseif (!$this->ticketFactory->isServiceTicket($serviceTicket)) {
             // This is not a service ticket
-            $message = 'ticket: ' . var_export($ticket, true) . ' is not a service ticket';
+            $message = 'Ticket ' . var_export($ticket, true) . ' is not a service ticket';
             $failed  = true;
         } elseif ($this->ticketFactory->isExpired($serviceTicket)) {
             // the ticket has expired
-            $message = 'Ticket has ' . var_export($ticket, true) . ' expired';
+            $message = 'Ticket ' . var_export($ticket, true) . ' has expired';
             $failed  = true;
         } elseif ($this->sanitize($serviceTicket['service']) !== $this->sanitize($serviceUrl)) {
             // The service url we passed to the query parameters does not match the one in the ticket.
