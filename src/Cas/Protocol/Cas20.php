@@ -185,7 +185,7 @@ class Cas20
     public function getProxySuccessResponse(string $proxyTicketId): ServiceResponse
     {
         $proxyTicket = new ProxyTicket($proxyTicketId);
-        $proxySucces = new ProxySuccess($proxyTicket);
+        $proxySuccess = new ProxySuccess($proxyTicket);
         $serviceResponse = new ServiceResponse($proxySuccess);
 
         return $serviceResponse;
