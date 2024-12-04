@@ -198,15 +198,28 @@ trait UrlTrait
                     ],
                 );
                 try {
-                    $this->httpUtils->fetch(
+                    // Here we assume that the fetch will throw on any error.
+                    // The generation of the proxy-granting-ticket or the corresponding proxy granting ticket IOU may
+                    // fail due to the proxy callback url failing to meet the minimum security requirements such as
+                    // failure to establish trust between peers or unresponsiveness of the endpoint, etc.
+                    // In case of failure, no proxy-granting ticket will be issued and the CAS service response
+                    // as described in Section 2.5.2 MUST NOT contain a <proxyGrantingTicket> block.
+                    // At this point, the issuance of a proxy-granting ticket is halted and service ticket
+                    // validation will fail.
+                    $data = $this->httpUtils->fetch(
                         $pgtUrl . '?pgtIou=' . $proxyGrantingTicket['iou'] . '&pgtId=' . $proxyGrantingTicket['id'],
                     );
-
+                    Logger::debug(__METHOD__ . '::data: ' . var_export($data, true));
                     $this->cas20Protocol->setProxyGrantingTicketIOU($proxyGrantingTicket['iou']);
-
                     $this->ticketStore->addTicket($proxyGrantingTicket);
                 } catch (\Exception $e) {
-                    // Fall through
+                    return new XmlResponse(
+                        (string)$this->cas20Protocol->getValidateFailureResponse(
+                            C::ERR_INVALID_SERVICE,
+                            'Proxy callback url is failing.',
+                        ),
+                        Response::HTTP_BAD_REQUEST,
+                    );
                 }
             }
         }

@@ -11,6 +11,7 @@ use SimpleSAML\Module\casserver\Cas\Factories\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Protocol\Cas20;
 use SimpleSAML\Module\casserver\Controller\Traits\UrlTrait;
 use SimpleSAML\Module\casserver\Http\XmlResponse;
+use SimpleSAML\Utils;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -23,6 +24,9 @@ class Cas20Controller
 
     /** @var Logger */
     protected Logger $logger;
+
+    /** @var Utils\HTTP */
+    protected Utils\HTTP $httpUtils;
 
     /** @var Configuration */
     protected Configuration $casConfig;
@@ -47,6 +51,7 @@ class Cas20Controller
         private readonly Configuration $sspConfig,
         Configuration $casConfig = null,
         $ticketStore = null,
+        Utils\HTTP $httpUtils = null,
     ) {
         // We are using this work around in order to bypass Symfony's autowiring for cas configuration. Since
         // the configuration class is the same, it loads the ssp configuration twice. Still, we need the constructor
@@ -64,6 +69,7 @@ class Cas20Controller
         $ticketStoreClass  = 'SimpleSAML\\Module\\casserver\\Cas\\Ticket\\'
             . explode(':', $ticketStoreConfig['class'])[1];
         $this->ticketStore = $ticketStore ?? new $ticketStoreClass($this->casConfig);
+        $this->httpUtils = $httpUtils ?? new Utils\HTTP();
     }
 
     /**

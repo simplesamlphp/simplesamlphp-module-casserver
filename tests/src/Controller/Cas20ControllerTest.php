@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SimpleSAML\Module\casserver\Tests\Controller;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\CAS\Constants as C;
 use SimpleSAML\Configuration;
@@ -14,6 +15,7 @@ use SimpleSAML\Module\casserver\Cas\Ticket\FileSystemTicketStore;
 use SimpleSAML\Module\casserver\Cas\TicketValidator;
 use SimpleSAML\Module\casserver\Controller\Cas20Controller;
 use SimpleSAML\Session;
+use SimpleSAML\Utils;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -32,6 +34,8 @@ class Cas20ControllerTest extends TestCase
     private FileSystemTicketStore $ticketStore;
 
     private TicketValidator $ticketValidatorMock;
+
+    private Utils\HTTP|MockObject $utilsHttpMock;
 
     private array $ticket;
 
@@ -60,6 +64,11 @@ class Cas20ControllerTest extends TestCase
         $this->sessionMock = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getSessionId'])
+            ->getMock();
+
+        $this->utilsHttpMock = $this->getMockBuilder(Utils\HTTP::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['fetch'])
             ->getMock();
 
         $this->ticket = [
@@ -489,6 +498,49 @@ class Cas20ControllerTest extends TestCase
 
         $message = "Mismatching service parameters: expected 'https://myservice.com/abcd'" .
             " but was: 'https://myservice.com/failservice'";
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        $this->assertStringContainsString($message, $response->getContent());
+        $xml = simplexml_load_string($response->getContent());
+        $xml->registerXPathNamespace('cas', 'serviceResponse');
+        $this->assertEquals('serviceResponse', $xml->getName());
+        $this->assertEquals(
+            C::ERR_INVALID_SERVICE,
+            $xml->xpath('//cas:authenticationFailure')[0]->attributes()['code'],
+        );
+    }
+
+    public function testThrowOnProxyServiceIdentityFail(): void
+    {
+        $config = Configuration::loadFromArray($this->moduleConfig);
+        $params = [
+            'ticket' => 'ST-' . $this->sessionId,
+            'service' => 'https://myservice.com/abcd',
+            'pgtUrl' => 'https://myservice.com/proxy',
+        ];
+        $this->ticket['validBefore'] = 9999999999;
+        $sessionTicket = $this->ticket;
+        $sessionTicket['id'] = $this->sessionId;
+
+        $request = Request::create(
+            uri: 'http://localhost',
+            parameters: $params,
+        );
+
+        $this->utilsHttpMock->expects($this->once())
+            ->method('fetch')
+            ->willThrowException(new \Exception());
+
+        $cas20Controller = new Cas20Controller(
+            sspConfig: $this->sspConfig,
+            casConfig: $config,
+            httpUtils: $this->utilsHttpMock,
+        );
+        $ticketStore = $cas20Controller->getTicketStore();
+        $ticketStore->addTicket($this->ticket);
+        $ticketStore->addTicket($sessionTicket);
+        $response = $cas20Controller->serviceValidate($request, ...$params);
+
+        $message = 'Proxy callback url is failing.';
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
         $this->assertStringContainsString($message, $response->getContent());
         $xml = simplexml_load_string($response->getContent());
