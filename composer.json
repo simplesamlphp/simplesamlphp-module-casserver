@@ -70,6 +70,9 @@
         ],
         "tests": [
             "vendor/bin/phpunit --no-coverage"
+        ],
+        "propose-fix": [
+            "vendor/bin/phpcs --report=diff"
         ]
     }
 }

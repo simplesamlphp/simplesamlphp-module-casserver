@@ -91,6 +91,40 @@ class Cas20ControllerTest extends TestCase
         ];
     }
 
+    public function testProxyValidatePassesTheCorrectMethodToValidate(): void
+    {
+        $casconfig = Configuration::loadFromArray($this->moduleConfig);
+        $requestParameters = [
+            'renew' => false,
+            'service' => 'https://myservice.com/abcd',
+            'ticket' => 'ST-' . $this->sessionId,
+        ];
+
+        $request = Request::create(
+            uri:        'https://myservice.com/abcd',
+            parameters: $requestParameters,
+        );
+
+        $expectedArguments = [
+            'request' => $request,
+            'method' => 'proxyValidate',
+            'renew' => false,
+            'target' => null,
+            'ticket' => 'ST-' . $this->sessionId,
+            'service' => 'https://myservice.com/abcd',
+            'pgtUrl' => null,
+        ];
+
+        $controllerMock = $this->getMockBuilder(Cas20Controller::class)
+            ->setConstructorArgs([$this->sspConfig, $casconfig])
+            ->onlyMethods(['validate'])
+            ->getMock();
+
+        $controllerMock->expects($this->once())->method('validate')
+            ->with(...$expectedArguments);
+        $controllerMock->proxyValidate($request, ...$requestParameters);
+    }
+
     public static function queryParameterValues(): array
     {
         return [
