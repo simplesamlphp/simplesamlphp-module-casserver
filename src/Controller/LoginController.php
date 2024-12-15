@@ -102,8 +102,7 @@ class LoginController
             'ticketstore',
             ['class' => 'casserver:FileSystemTicketStore'],
         );
-        $ticketStoreClass = 'SimpleSAML\\Module\\casserver\\Cas\\Ticket\\'
-            . explode(':', $ticketStoreConfig['class'])[1];
+        $ticketStoreClass = Module::resolveClass($ticketStoreConfig['class'], 'Cas\Ticket');
         // Ticket Store
         $this->ticketStore = new $ticketStoreClass($this->casConfig);
         // Processing Chain Factory

@@ -7,6 +7,7 @@ namespace SimpleSAML\Module\casserver\Controller;
 use SimpleSAML\CAS\Constants as C;
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
+use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Cas\Factories\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Protocol\Cas20;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
@@ -68,8 +69,7 @@ class Cas20Controller
             'ticketstore',
             ['class' => 'casserver:FileSystemTicketStore'],
         );
-        $ticketStoreClass  = 'SimpleSAML\\Module\\casserver\\Cas\\Ticket\\'
-            . explode(':', $ticketStoreConfig['class'])[1];
+        $ticketStoreClass = Module::resolveClass($ticketStoreConfig['class'], 'Cas\Ticket');
         $this->ticketStore = $ticketStore ?? new $ticketStoreClass($this->casConfig);
         $this->httpUtils = $httpUtils ?? new Utils\HTTP();
     }
