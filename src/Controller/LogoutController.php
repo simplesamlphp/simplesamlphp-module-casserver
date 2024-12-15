@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace SimpleSAML\Module\casserver\Controller;
 
 use SimpleSAML\Auth\Simple;
-use SimpleSAML\Compat\SspContainer;
 use SimpleSAML\Configuration;
+use SimpleSAML\HTTP\RunnableResponse;
 use SimpleSAML\Logger;
 use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Cas\Factories\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
 use SimpleSAML\Module\casserver\Controller\Traits\UrlTrait;
 use SimpleSAML\Session;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use SimpleSAML\Utils;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
@@ -35,17 +35,18 @@ class LogoutController
     /** @var Simple  */
     protected Simple $authSource;
 
-    /** @var SspContainer */
-    protected SspContainer $container;
+    /** @var Utils\HTTP */
+    protected Utils\HTTP $httpUtils;
 
     /** @var TicketStore */
     protected TicketStore $ticketStore;
 
 
     /**
+     * @param   Configuration       $sspConfig
      * @param   Configuration|null  $casConfig
      * @param   Simple|null         $source
-     * @param   SspContainer|null   $container
+     * @param   Utils\HTTP|null     $httpUtils
      *
      * @throws \Exception
      */
@@ -54,7 +55,7 @@ class LogoutController
         // Facilitate testing
         Configuration $casConfig = null,
         Simple $source = null,
-        SspContainer $container = null,
+        Utils\HTTP $httpUtils = null,
     ) {
         // We are using this work around in order to bypass Symfony's autowiring for cas configuration. Since
         // the configuration class is the same, it loads the ssp configuration twice. Still, we need the constructor
@@ -62,7 +63,7 @@ class LogoutController
         $this->casConfig = ($casConfig === null || $casConfig === $sspConfig)
             ? Configuration::getConfig('module_casserver.php') : $casConfig;
         $this->authSource = $source ?? new Simple($this->casConfig->getValue('authsource'));
-        $this->container = $container ?? new SspContainer();
+        $this->httpUtils = $httpUtils ?? new Utils\HTTP();
 
         /* Instantiate ticket factory */
         $this->ticketFactory = new TicketFactory($this->casConfig);
@@ -80,12 +81,12 @@ class LogoutController
      * @param   Request      $request
      * @param   string|null  $url
      *
-     * @return RedirectResponse|null
+     * @return RunnableResponse|null
      */
     public function logout(
         Request $request,
         #[MapQueryParameter] ?string $url = null,
-    ): RedirectResponse|null {
+    ): RunnableResponse|null {
         if (!$this->casConfig->getOptionalValue('enable_logout', false)) {
             $this->handleExceptionThrown('Logout not allowed');
         }
@@ -115,7 +116,7 @@ class LogoutController
 
         // Redirect
         if (!$this->authSource->isAuthenticated()) {
-            $this->container->redirect($logoutRedirectUrl, $params);
+            return new RunnableResponse([$this->httpUtils, 'redirectTrustedURL'], [$logoutRedirectUrl, $params]);
         }
 
         // Logout and redirect
