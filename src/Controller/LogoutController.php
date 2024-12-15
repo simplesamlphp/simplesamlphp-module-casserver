@@ -10,6 +10,7 @@ use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
 use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Cas\Factories\TicketFactory;
+use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
 use SimpleSAML\Module\casserver\Controller\Traits\UrlTrait;
 use SimpleSAML\Session;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -37,9 +38,8 @@ class LogoutController
     /** @var SspContainer */
     protected SspContainer $container;
 
-    // this could be any configured ticket store
-    /** @var mixed */
-    protected mixed $ticketStore;
+    /** @var TicketStore */
+    protected TicketStore $ticketStore;
 
 
     /**

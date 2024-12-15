@@ -15,6 +15,7 @@ use SimpleSAML\Module\casserver\Cas\Factories\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Protocol\Cas20;
 use SimpleSAML\Module\casserver\Cas\Protocol\SamlValidateResponder;
 use SimpleSAML\Module\casserver\Cas\ServiceValidator;
+use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
 use SimpleSAML\Module\casserver\Controller\Traits\UrlTrait;
 use SimpleSAML\Module\casserver\Http\XmlResponse;
 use SimpleSAML\Session;
@@ -48,9 +49,8 @@ class LoginController
     /** @var Cas20 */
     protected Cas20 $cas20Protocol;
 
-    // this could be any configured ticket store
-    /** @var mixed */
-    protected mixed $ticketStore;
+    /** @var TicketStore */
+    protected TicketStore $ticketStore;
 
     /** @var ServiceValidator */
     protected ServiceValidator $serviceValidator;
@@ -76,7 +76,7 @@ class LoginController
      * @param   Configuration       $sspConfig
      * @param   Configuration|null  $casConfig
      * @param   Simple|null         $source
-     * @param   HTTP|null           $httpUtils
+     * @param   Utils\HTTP|null           $httpUtils
      *
      * @throws \Exception
      */

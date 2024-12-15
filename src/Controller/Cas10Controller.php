@@ -8,6 +8,7 @@ use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
 use SimpleSAML\Module\casserver\Cas\Factories\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Protocol\Cas10;
+use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
 use SimpleSAML\Module\casserver\Controller\Traits\UrlTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,20 +32,20 @@ class Cas10Controller
     /** @var TicketFactory */
     protected TicketFactory $ticketFactory;
 
-    // this could be any configured ticket store
-    protected mixed $ticketStore;
+    /** @var TicketStore */
+    protected TicketStore $ticketStore;
 
     /**
      * @param   Configuration       $sspConfig
      * @param   Configuration|null  $casConfig
-     * @param   null                $ticketStore
+     * @param   TicketStore|null    $ticketStore
      *
      * @throws \Exception
      */
     public function __construct(
         private readonly Configuration $sspConfig,
         Configuration $casConfig = null,
-        $ticketStore = null,
+        TicketStore $ticketStore = null,
     ) {
         // We are using this work around in order to bypass Symfony's autowiring for cas configuration. Since
         // the configuration class is the same, it loads the ssp configuration twice. Still, we need the constructor

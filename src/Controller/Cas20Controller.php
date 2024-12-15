@@ -9,6 +9,7 @@ use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
 use SimpleSAML\Module\casserver\Cas\Factories\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Protocol\Cas20;
+use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
 use SimpleSAML\Module\casserver\Controller\Traits\UrlTrait;
 use SimpleSAML\Module\casserver\Http\XmlResponse;
 use SimpleSAML\Utils;
@@ -37,20 +38,21 @@ class Cas20Controller
     /** @var TicketFactory */
     protected TicketFactory $ticketFactory;
 
-    // this could be any configured ticket store
-    protected mixed $ticketStore;
+    /** @var TicketStore */
+    protected TicketStore $ticketStore;
 
     /**
      * @param   Configuration       $sspConfig
      * @param   Configuration|null  $casConfig
-     * @param                       $ticketStore
+     * @param   TicketStore|null    $ticketStore
+     * @param   Utils\HTTP|null           $httpUtils
      *
      * @throws \Exception
      */
     public function __construct(
         private readonly Configuration $sspConfig,
         Configuration $casConfig = null,
-        $ticketStore = null,
+        TicketStore $ticketStore = null,
         Utils\HTTP $httpUtils = null,
     ) {
         // We are using this work around in order to bypass Symfony's autowiring for cas configuration. Since
