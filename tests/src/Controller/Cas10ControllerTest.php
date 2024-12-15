@@ -88,6 +88,12 @@ class Cas10ControllerTest extends TestCase
         ];
     }
 
+    /**
+     * @param   array  $params
+     *
+     * @return void
+     * @throws Exception
+     */
     #[DataProvider('queryParameterValues')]
     public function testReturnBadRequestOnEmptyServiceOrTicket(array $params): void
     {
@@ -105,6 +111,10 @@ class Cas10ControllerTest extends TestCase
         $this->assertEquals("no\n\n", $response->getContent());
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function testReturn500OnDeleteTicketThatThrows(): void
     {
         $config = Configuration::loadFromArray($this->moduleConfig);
@@ -133,6 +143,10 @@ class Cas10ControllerTest extends TestCase
         $this->assertEquals("no\n\n", $response->getContent());
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function testReturnBadRequestOnTicketNotExist(): void
     {
         $config = Configuration::loadFromArray($this->moduleConfig);
@@ -153,6 +167,10 @@ class Cas10ControllerTest extends TestCase
         $this->assertEquals("no\n\n", $response->getContent());
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function testReturnBadRequestOnTicketExpired(): void
     {
         $config = Configuration::loadFromArray($this->moduleConfig);
@@ -175,6 +193,10 @@ class Cas10ControllerTest extends TestCase
         $this->assertEquals("no\n\n", $response->getContent());
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function testReturnBadRequestOnTicketNotService(): void
     {
         $config = Configuration::loadFromArray($this->moduleConfig);
@@ -199,6 +221,10 @@ class Cas10ControllerTest extends TestCase
         $this->assertEquals("no\n\n", $response->getContent());
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function testReturnBadRequestOnTicketMissingUsernameField(): void
     {
         $config = Configuration::loadFromArray($this->moduleConfig);
@@ -223,6 +249,10 @@ class Cas10ControllerTest extends TestCase
         $this->assertEquals("no\n\n", $response->getContent());
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function testReturnBadRequestOnTicketServiceQueryAndTicketMismatch(): void
     {
         $config = Configuration::loadFromArray($this->moduleConfig);
@@ -247,6 +277,10 @@ class Cas10ControllerTest extends TestCase
         $this->assertEquals("no\n\n", $response->getContent());
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function testReturnBadRequestOnTicketIssuedBySingleSignOnSession(): void
     {
         $config = Configuration::loadFromArray($this->moduleConfig);
@@ -271,6 +305,10 @@ class Cas10ControllerTest extends TestCase
         $this->assertEquals("no\n\n", $response->getContent());
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function testSuccessfullValidation(): void
     {
         $config = Configuration::loadFromArray($this->moduleConfig);
