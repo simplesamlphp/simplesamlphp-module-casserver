@@ -85,7 +85,7 @@ class Cas10Controller
         // Check if any of the required query parameters are missing
         // Even though we can delegate the check to Symfony's `MapQueryParameter` we cannot return
         // the failure response needed. As a result, we allow a default value, and we handle the missing
-        // values afterwards.
+        // values afterward.
         if ($service === null || $ticket === null) {
             $messagePostfix = $service === null ? 'service' : 'ticket';
             Logger::debug("casserver: Missing service parameter: [{$messagePostfix}]");
