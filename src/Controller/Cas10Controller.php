@@ -147,8 +147,8 @@ class Cas10Controller
         // Get the username field
         $usernameField = $this->casConfig->getOptionalValue('attrname', 'eduPersonPrincipalName');
 
-        // Fail if the username field is not present in the attribute list
-        if (!\array_key_exists($usernameField, $serviceTicket['attributes'])) {
+        // Fail if the username is not present in the ticket
+        if (empty($serviceTicket['userName'])) {
             Logger::error(
                 'casserver:validate: internal server error. Missing user name attribute: '
                 . var_export($usernameField, true),
@@ -161,7 +161,7 @@ class Cas10Controller
 
         // Successful validation
         return new Response(
-            $this->cas10Protocol->getValidateSuccessResponse($serviceTicket['attributes'][$usernameField][0]),
+            $this->cas10Protocol->getValidateSuccessResponse($serviceTicket['userName']),
             Response::HTTP_OK,
         );
     }

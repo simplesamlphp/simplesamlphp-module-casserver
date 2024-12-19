@@ -233,7 +233,7 @@ class Cas10ControllerTest extends TestCase
             'service' => 'https://myservice.com/abcd',
         ];
         $this->ticket['validBefore'] = 9999999999;
-        $this->ticket['attributes'] = [];
+        $this->ticket['userName'] = '';
 
         $request = Request::create(
             uri: 'http://localhost',
@@ -330,6 +330,6 @@ class Cas10ControllerTest extends TestCase
         $response = $cas10Controller->validate($request, ...$params);
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("yes\neduPersonPrincipalName@google.com\n", $response->getContent());
+        $this->assertEquals("yes\nusername@google.com\n", $response->getContent());
     }
 }

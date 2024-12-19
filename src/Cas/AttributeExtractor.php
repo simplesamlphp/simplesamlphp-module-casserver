@@ -55,7 +55,7 @@ class AttributeExtractor
      * @param   array|null  $state
      *
      * @return array
-     * @throws Exception
+     * @throws \Exception
      */
     public function extractUserAndAttributes(?array $state): array
     {
@@ -76,12 +76,11 @@ class AttributeExtractor
             throw new \Exception("No cas user defined for attribute $casUsernameAttribute");
         }
 
+        $casAttributes = [];
         if ($this->casconfig->getOptionalValue('attributes', true)) {
             $attributesToTransfer = $this->casconfig->getOptionalValue('attributes_to_transfer', []);
 
             if (sizeof($attributesToTransfer) > 0) {
-                $casAttributes = [];
-
                 foreach ($attributesToTransfer as $key) {
                     if (\array_key_exists($key, $attributes)) {
                         $casAttributes[$key] = $attributes[$key];
@@ -90,8 +89,6 @@ class AttributeExtractor
             } else {
                 $casAttributes = $attributes;
             }
-        } else {
-            $casAttributes = [];
         }
 
         return [
