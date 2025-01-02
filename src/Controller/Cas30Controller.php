@@ -37,8 +37,9 @@ class Cas30Controller
     protected SamlValidateResponder $validateResponder;
 
     /**
-     * @param   Configuration       $sspConfig
-     * @param   Configuration|null  $casConfig
+     * @param   Configuration         $sspConfig
+     * @param   Configuration|null    $casConfig
+     * @param   TicketValidator|null  $ticketValidator
      *
      * @throws \Exception
      */

@@ -38,6 +38,7 @@ class Cas20ControllerTest extends TestCase
     private Utils\HTTP|MockObject $utilsHttpMock;
 
     private array $ticket;
+    private array $proxyTicket;
 
     /**
      * @throws \Exception
@@ -73,6 +74,25 @@ class Cas20ControllerTest extends TestCase
 
         $this->ticket = [
             'id'          => 'ST-' . $this->sessionId,
+            'validBefore' => 1731111111,
+            'service'     => 'https://myservice.com/abcd',
+            'forceAuthn'  => false,
+            'userName'    => 'username@google.com',
+            'attributes'  =>
+                [
+                    'eduPersonPrincipalName' =>
+                        [
+                            0 => 'eduPersonPrincipalName@google.com',
+                        ],
+                ],
+            'proxies'     =>
+                [
+                ],
+            'sessionId'   => $this->sessionId,
+        ];
+
+        $this->proxyTicket = [
+            'id'          => 'PT-' . $this->sessionId,
             'validBefore' => 1731111111,
             'service'     => 'https://myservice.com/abcd',
             'forceAuthn'  => false,
@@ -333,11 +353,11 @@ class Cas20ControllerTest extends TestCase
             ],
             'Ticket is empty but Service is not' => [
                 ['service' => 'http://localhost'],
-                'casserver: Missing service parameter: [ticket]',
+                'casserver: Missing ticket parameter: [ticket]',
             ],
             'Ticket is empty but TARGET is not' => [
                 ['TARGET' => 'http://localhost'],
-                'casserver: Missing service parameter: [ticket]',
+                'casserver: Missing ticket parameter: [ticket]',
             ],
         ];
     }
@@ -407,7 +427,7 @@ class Cas20ControllerTest extends TestCase
     {
         $sessionId = session_create_id();
         return [
-            'Returns Bad Request on Ticket Not Recogniged/Exists' => [
+            'Returns Bad Request on Ticket Not Recognised/Exists' => [
                 [
                     'ticket' => $sessionId,
                     'service' => 'https://myservice.com/abcd',
@@ -420,7 +440,7 @@ class Cas20ControllerTest extends TestCase
                     'ticket' => 'PT-' . $sessionId,
                     'service' => 'https://myservice.com/abcd',
                 ],
-                "Ticket 'PT-{$sessionId}' is a proxy ticket. Use proxyValidate instead.",
+                "Ticket 'PT-{$sessionId}' is not a service ticket.",
                 'PT-' . $sessionId,
             ],
             'Returns Bad Request on Ticket Expired' => [
@@ -445,7 +465,7 @@ class Cas20ControllerTest extends TestCase
                     'service' => 'https://myservice.com/abcd',
                     'renew' => true,
                 ],
-                "Ticket was issued from single sign on session",
+                'Ticket was issued from single sign on session',
                 'ST-' . $sessionId,
                 9999999999,
             ],
@@ -486,6 +506,106 @@ class Cas20ControllerTest extends TestCase
         }
 
         $response = $cas20Controller->serviceValidate($request, ...$requestParams);
+
+        if ($message === 'username@google.com') {
+            $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
+            $this->assertStringContainsString($message, $response->getContent());
+            $xml = simplexml_load_string($response->getContent());
+            $xml->registerXPathNamespace('cas', 'serviceResponse');
+            $this->assertEquals('serviceResponse', $xml->getName());
+            $this->assertEquals(
+                'username@google.com',
+                $xml->xpath('//cas:authenticationSuccess/cas:user')[0][0],
+            );
+        } else {
+            $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+            $this->assertStringContainsString($message, $response->getContent());
+            $xml = simplexml_load_string($response->getContent());
+            $xml->registerXPathNamespace('cas', 'serviceResponse');
+            $this->assertEquals('serviceResponse', $xml->getName());
+            $this->assertEquals(
+                C::ERR_INVALID_SERVICE,
+                $xml->xpath('//cas:authenticationFailure')[0]->attributes()['code'],
+            );
+        }
+    }
+
+
+    public static function validateOnDifferentQueryParameterCombinationsProxyValidate(): array
+    {
+        $sessionId = session_create_id();
+        return [
+            'Returns Bad Request on Ticket Not Recognised/Exists' => [
+                [
+                    'ticket' => $sessionId,
+                    'service' => 'https://myservice.com/abcd',
+                ],
+                "Ticket '{$sessionId}' not recognized",
+                'PT-' . $sessionId,
+            ],
+            'Returns Bad Request on Ticket Expired' => [
+                [
+                    'ticket' => 'PT-' . $sessionId,
+                    'service' => 'https://myservice.com/abcd',
+                ],
+                "Ticket 'PT-{$sessionId}' has expired",
+                'PT-' . $sessionId,
+            ],
+            'Returns Bad Request on Ticket is A Service Ticket' => [
+                [
+                    'ticket' => 'ST-' . $sessionId,
+                    'service' => 'https://myservice.com/abcd',
+                ],
+                "Ticket 'ST-{$sessionId}' is not a proxy ticket.",
+                'ST-' . $sessionId,
+            ],
+            'Returns Bad Request on Ticket Issued By Single SignOn Session' => [
+                [
+                    'ticket' => 'PT-' . $sessionId,
+                    'service' => 'https://myservice.com/abcd',
+                    'renew' => true,
+                ],
+                'Ticket was issued from single sign on session',
+                'PT-' . $sessionId,
+                9999999999,
+            ],
+            'Returns Success' => [
+                [
+                    'ticket' => 'PT-' . $sessionId,
+                    'service' => 'https://myservice.com/abcd',
+                ],
+                'username@google.com',
+                'PT-' . $sessionId,
+                9999999999,
+            ],
+        ];
+    }
+
+    #[DataProvider('validateOnDifferentQueryParameterCombinationsProxyValidate')]
+    public function testProxyValidate(
+        array $requestParams,
+        string $message,
+        string $ticketId,
+        int $validBefore = 1111111111,
+    ): void {
+        $config = Configuration::loadFromArray($this->moduleConfig);
+
+        $request = Request::create(
+            uri: 'http://localhost',
+            parameters: $requestParams,
+        );
+
+        $cas20Controller = new Cas20Controller($this->sspConfig, $config);
+
+        if (!empty($ticketId)) {
+            $ticketStore = $cas20Controller->getTicketStore();
+            $ticket = $this->proxyTicket;
+            $ticket['id'] = $ticketId;
+            $ticket['validBefore'] = $validBefore;
+            $ticketStore->addTicket($ticket);
+        }
+
+        $response = $cas20Controller->proxyValidate($request, ...$requestParams);
 
         if ($message === 'username@google.com') {
             $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());

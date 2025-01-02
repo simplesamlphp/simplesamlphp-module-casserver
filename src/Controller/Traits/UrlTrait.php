@@ -105,7 +105,7 @@ trait UrlTrait
         // Check if any of the required query parameters are missing
         if ($serviceUrl === null || $ticket === null) {
             $messagePostfix = $serviceUrl === null ? 'service' : 'ticket';
-            $message        = "casserver: Missing service parameter: [{$messagePostfix}]";
+            $message        = "casserver: Missing {$messagePostfix} parameter: [{$messagePostfix}]";
             Logger::debug($message);
 
             return new XmlResponse(
@@ -117,10 +117,8 @@ trait UrlTrait
         try {
             // Get the service ticket
             // `getTicket` uses the unserializable method and Objects may throw Throwables in their
-            // unserialization handlers.
+            // un-serialization handlers.
             $serviceTicket = $this->ticketStore->getTicket($ticket);
-            // Delete the ticket
-            $this->ticketStore->deleteTicket($ticket);
         } catch (\Exception $e) {
             $messagePostfix = '';
             if (!empty($e->getMessage())) {
@@ -137,19 +135,40 @@ trait UrlTrait
 
         $failed  = false;
         $message = '';
+        // Below, we do not have a ticket or the ticket does not meet the very basic criteria that allow
+        // any further handling
         if (empty($serviceTicket)) {
             // No ticket
             $message = 'Ticket ' . var_export($ticket, true) . ' not recognized';
             $failed  = true;
-        } elseif ($method === 'serviceValidate' && $this->ticketFactory->isProxyTicket($serviceTicket)) {
-            $message = 'Ticket ' . var_export($ticket, true) .
-                ' is a proxy ticket. Use proxyValidate instead.';
+        } elseif ($method === 'proxyValidate' && !$this->ticketFactory->isProxyTicket($serviceTicket)) {
+            // proxyValidate but not a proxy ticket
+            $message = 'Ticket ' . var_export($ticket, true) . ' is not a proxy ticket.';
             $failed  = true;
-        } elseif (!$this->ticketFactory->isServiceTicket($serviceTicket)) {
-            // This is not a service ticket
-            $message = 'Ticket ' . var_export($ticket, true) . ' is not a service ticket';
+        } elseif ($method === 'serviceValidate' && !$this->ticketFactory->isServiceTicket($serviceTicket)) {
+            // serviceValidate but not a service ticket
+            $message = 'Ticket ' . var_export($ticket, true) . ' is not a service ticket.';
             $failed  = true;
-        } elseif ($this->ticketFactory->isExpired($serviceTicket)) {
+        }
+
+        if ($failed) {
+            $finalMessage = 'casserver:validate: ' . $message;
+            Logger::error($finalMessage);
+
+            return new XmlResponse(
+                (string)$this->cas20Protocol->getValidateFailureResponse(C::ERR_INVALID_SERVICE, $message),
+                Response::HTTP_BAD_REQUEST,
+            );
+        }
+
+        // Delete the ticket
+        $this->ticketStore->deleteTicket($ticket);
+
+        // Check if the ticket
+        // - has expired
+        // - does not pass sanitization
+        // - forceAutnn criteria are not met
+        if ($this->ticketFactory->isExpired($serviceTicket)) {
             // the ticket has expired
             $message = 'Ticket ' . var_export($ticket, true) . ' has expired';
             $failed  = true;

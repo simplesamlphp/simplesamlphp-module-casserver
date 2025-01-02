@@ -132,7 +132,7 @@ class LoginController
 
         // Set initial configurations, or fail
         $this->handleServiceConfiguration($serviceUrl);
-        $this->intantiateClassDependencies($this->authSource, $this->httpUtils);
+        $this->instantiateClassDependencies();
         $this->handleScope($scope);
         $this->handleLanguage($language);
 
@@ -414,13 +414,10 @@ class LoginController
     }
 
     /**
-     * @param   Simple|null      $source
-     * @param   Utils\HTTP|null  $httpUtils
-     *
      * @return void
      * @throws \Exception
      */
-    private function intantiateClassDependencies(Simple $source = null, Utils\HTTP $httpUtils = null): void
+    private function instantiateClassDependencies(): void
     {
         $this->cas20Protocol = new Cas20($this->casConfig);
 

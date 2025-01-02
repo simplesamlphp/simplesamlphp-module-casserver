@@ -76,13 +76,13 @@ class Cas20Controller
 
     /**
      * @param   Request      $request
-     * @param   string       $TARGET
-     * @param   bool  $renew  [OPTIONAL] - if this parameter is set, ticket validation will only succeed
-     *                        if the service ticket was issued from the presentation of the user’s primary
-     *                        credentials. It will fail if the ticket was issued from a single sign-on session.
-     * @param   string|null  $ticket  [REQUIRED] - the service ticket issued by /login
-     * @param   string|null  $service [REQUIRED] - the identifier of the service for which the ticket was issued
-     * @param   string|null  $pgtUrl  [OPTIONAL] - the URL of the proxy callback
+     * @param   string|null  $TARGET
+     * @param   bool         $renew    [OPTIONAL] - if this parameter is set, ticket validation will only succeed
+     *                                 if the service ticket was issued from the presentation of the user’s primary
+     *                                 credentials. It will fail if the ticket was issued from a single sign-on session.
+     * @param   string|null  $ticket   [REQUIRED] - the service ticket issued by /login
+     * @param   string|null  $service  [REQUIRED] - the identifier of the service for which the ticket was issued
+     * @param   string|null  $pgtUrl   [OPTIONAL] - the URL of the proxy callback
      *
      * @return XmlResponse
      */
@@ -195,13 +195,14 @@ class Cas20Controller
 
     /**
      * @param   Request      $request
-     * @param   string       $TARGET  // todo: this should go away???
-     * @param   bool  $renew  [OPTIONAL] - if this parameter is set, ticket validation will only succeed
-     *                        if the service ticket was issued from the presentation of the user’s primary
-     *                        credentials. It will fail if the ticket was issued from a single sign-on session.
-     * @param   string|null  $ticket  [REQUIRED] - the service ticket issued by /login
+     * @param   string|null  $TARGET
+     * @param   bool         $renew    [OPTIONAL] - if this parameter is set, ticket validation will only succeed
+     *                                 if the service ticket was issued from the presentation of the user’s primary
+     *                                 credentials. It will fail if the ticket was issued from a single sign-on session.
+     * @param   string|null  $ticket   [REQUIRED] - the service ticket issued by /login
      * @param   string|null  $service  [REQUIRED] - the identifier of the service for which the ticket was issued
-     * @param   string|null  $pgtUrl  [OPTIONAL] - the URL of the proxy callback
+     * @param   string|null  $pgtUrl   [OPTIONAL] - the URL of the proxy callback
+     *
      * @return XmlResponse
      */
     public function proxyValidate(
