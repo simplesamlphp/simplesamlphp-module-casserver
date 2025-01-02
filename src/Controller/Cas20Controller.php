@@ -76,7 +76,7 @@ class Cas20Controller
 
     /**
      * @param   Request      $request
-     * @param   string|null  $TARGET
+     * @param   string|null  $TARGET   Query parameter name for "service" used by older CAS clients'
      * @param   bool         $renew    [OPTIONAL] - if this parameter is set, ticket validation will only succeed
      *                                 if the service ticket was issued from the presentation of the user’s primary
      *                                 credentials. It will fail if the ticket was issued from a single sign-on session.
@@ -195,7 +195,7 @@ class Cas20Controller
 
     /**
      * @param   Request      $request
-     * @param   string|null  $TARGET
+     * @param   string|null  $TARGET   Query parameter name for "service" used by older CAS clients'
      * @param   bool         $renew    [OPTIONAL] - if this parameter is set, ticket validation will only succeed
      *                                 if the service ticket was issued from the presentation of the user’s primary
      *                                 credentials. It will fail if the ticket was issued from a single sign-on session.

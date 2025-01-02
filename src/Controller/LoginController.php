@@ -7,6 +7,7 @@ namespace SimpleSAML\Module\casserver\Controller;
 use SimpleSAML\Auth\ProcessingChain;
 use SimpleSAML\Auth\Simple;
 use SimpleSAML\Configuration;
+use SimpleSAML\HTTP\RunnableResponse;
 use SimpleSAML\Logger;
 use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Cas\AttributeExtractor;
@@ -20,7 +21,6 @@ use SimpleSAML\Module\casserver\Controller\Traits\UrlTrait;
 use SimpleSAML\Module\casserver\Http\XmlResponse;
 use SimpleSAML\Session;
 use SimpleSAML\Utils;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -103,16 +103,14 @@ class LoginController
      * @param   bool         $renew
      * @param   bool         $gateway
      * @param   string|null  $service
-     * @param   string|null  $TARGET
+     * @param   string|null  $TARGET  Query parameter name for "service" used by older CAS clients'
      * @param   string|null  $scope
      * @param   string|null  $language
      * @param   string|null  $entityId
      * @param   string|null  $debugMode
      * @param   string|null  $method
      *
-     * @return RedirectResponse|XmlResponse|null
-     * @throws NoState
-     * @throws \Exception
+     * @return RunnableResponse
      */
     public function login(
         Request $request,
@@ -125,13 +123,15 @@ class LoginController
         #[MapQueryParameter] ?string $entityId = null,
         #[MapQueryParameter] ?string $debugMode = null,
         #[MapQueryParameter] ?string $method = null,
-    ): RedirectResponse|XmlResponse|null {
+    ): RunnableResponse {
         $forceAuthn = $renew;
         $serviceUrl = $service ?? $TARGET ?? null;
         $redirect = !(isset($method) && $method === 'POST');
 
         // Set initial configurations, or fail
         $this->handleServiceConfiguration($serviceUrl);
+        // Instantiate the classes that rely on the override configuration.
+        // We do not do this in the constructor since we do not have the correct values yet.
         $this->instantiateClassDependencies();
         $this->handleScope($scope);
         $this->handleLanguage($language);
@@ -177,9 +177,10 @@ class LoginController
             /*
              *  REDIRECT TO AUTHSOURCE LOGIN
              * */
-            $this->authSource->login($params);
-            // We should never get here.This is to facilitate testing.
-            return null;
+            return new RunnableResponse(
+                [$this->authSource, 'login'],
+                [$params],
+            );
         }
 
         // We are Authenticated.
@@ -195,13 +196,11 @@ class LoginController
          *  We are done. REDIRECT TO LOGGEDIN
          * */
         if (!isset($serviceUrl) && $this->authProcId === null) {
-            $urlParameters = $this->httpUtils->addURLParameters(
-                Module::getModuleURL('casserver/loggedIn'),
-                $this->postAuthUrlParameters,
+            $loggedInUrl = Module::getModuleURL('casserver/loggedIn');
+            return new RunnableResponse(
+                [$this->httpUtils, 'redirectTrustedURL'],
+                [$loggedInUrl, $this->postAuthUrlParameters],
             );
-            $this->httpUtils->redirectTrustedURL($urlParameters);
-            // We should never get here.This is to facilitate testing.
-            return null;
         }
 
         // Get the state.
@@ -232,16 +231,16 @@ class LoginController
 
         // GET
         if ($redirect) {
-            $this->httpUtils->redirectTrustedURL(
-                $this->httpUtils->addURLParameters($serviceUrl, $this->postAuthUrlParameters),
+            return new RunnableResponse(
+                [$this->httpUtils, 'redirectTrustedURL'],
+                [$serviceUrl, $this->postAuthUrlParameters],
             );
-            // We should never get here.This is to facilitate testing.
-            return null;
         }
         // POST
-        $this->httpUtils->submitPOSTData($serviceUrl, $this->postAuthUrlParameters);
-        // We should never get here.This is to facilitate testing.
-        return null;
+        return new RunnableResponse(
+            [$this->httpUtils, 'submitPOSTData'],
+            [$serviceUrl, $this->postAuthUrlParameters],
+        );
     }
 
     /**

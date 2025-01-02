@@ -8,6 +8,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Auth\Simple;
 use SimpleSAML\Configuration;
+use SimpleSAML\HTTP\RunnableResponse;
 use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Controller\LogoutController;
 use SimpleSAML\Session;
@@ -160,11 +161,19 @@ class LogoutControllerTest extends TestCase
 
         // Unauthenticated
         $this->authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(true);
-        $this->authSimpleMock->expects($this->once())->method('logout')
-            ->with('http://localhost/module.php/casserver/loggedOut');
 
         $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock, $this->httpUtils);
-        $controller->logout(Request::create('/'));
+        $queryParameters = ['url' => 'http://localhost/module.php/casserver/loggedOut'];
+        $logoutRequest = Request::create(
+            uri:        Module::getModuleURL('casserver/loggedOut'),
+            parameters: $queryParameters,
+        );
+
+        $response = $controller->logout($logoutRequest, ...$queryParameters);
+
+        $this->assertInstanceOf(RunnableResponse::class, $response);
+        $callable = (array)$response->getCallable();
+        $this->assertEquals('logout', $callable[1] ?? '');
     }
 
     public function testTicketIdGetsDeletedOnLogout(): void

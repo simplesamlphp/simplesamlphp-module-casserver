@@ -81,12 +81,12 @@ class LogoutController
      * @param   Request      $request
      * @param   string|null  $url
      *
-     * @return RunnableResponse|null
+     * @return RunnableResponse
      */
     public function logout(
         Request $request,
         #[MapQueryParameter] ?string $url = null,
-    ): RunnableResponse|null {
+    ): RunnableResponse {
         if (!$this->casConfig->getOptionalValue('enable_logout', false)) {
             $this->handleExceptionThrown('Logout not allowed');
         }
@@ -120,10 +120,10 @@ class LogoutController
         }
 
         // Logout and redirect
-        $this->authSource->logout($logoutRedirectUrl);
-
-        // We should never get here
-        return null;
+        return new RunnableResponse(
+            [$this->authSource, 'logout'],
+            [$logoutRedirectUrl],
+        );
     }
 
     /**

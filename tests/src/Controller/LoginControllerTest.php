@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 use SimpleSAML\Auth\Simple;
 use SimpleSAML\Compat\SspContainer;
 use SimpleSAML\Configuration;
+use SimpleSAML\HTTP\RunnableResponse;
 use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Controller\LoginController;
 use SimpleSAML\Session;
@@ -209,11 +210,13 @@ class LoginControllerTest extends TestCase
             ->getMock();
         $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
         $this->authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(false);
-        $this->authSimpleMock->expects($this->once())->method('login')->with($loginParameters);
         $sessionId = session_create_id();
         $this->sessionMock->expects($this->once())->method('getSessionId')->willReturn($sessionId);
 
-        $controllerMock->login($loginRequest, ...$requestParameters);
+        $response = $controllerMock->login($loginRequest, ...$requestParameters);
+        $this->assertInstanceOf(RunnableResponse::class, $response);
+        $callable = (array)$response->getCallable();
+        $this->assertEquals('login', $callable[1] ?? '');
     }
 
     /**
@@ -233,14 +236,16 @@ class LoginControllerTest extends TestCase
         $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
         $this->authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(true);
         $this->authSimpleMock->expects($this->once())->method('getAuthData')->with('Expire')->willReturn(9999999999);
-        $this->httpUtils->expects($this->once())->method('redirectTrustedURL')
-            ->with('http://localhost/module.php/casserver/loggedIn?');
+
         $loginRequest = Request::create(
             uri:        Module::getModuleURL('casserver/login'),
             parameters: [],
         );
 
-        $controllerMock->login($loginRequest);
+        $response = $controllerMock->login($loginRequest);
+        $this->assertInstanceOf(RunnableResponse::class, $response);
+        $callable = (array)$response->getCallable();
+        $this->assertEquals('redirectTrustedURL', $callable[1] ?? '');
     }
 
     public static function validServiceUrlProvider(): array
@@ -300,15 +305,6 @@ class LoginControllerTest extends TestCase
 
         $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
         $this->authSimpleMock->expects($this->any())->method('isAuthenticated')->willReturn(true);
-        $this->httpUtils->expects($this->once())->method('redirectTrustedURL')
-            ->withAnyParameters()
-            ->willReturnCallback(function ($url) use ($redirectURL) {
-                $this->assertStringStartsWith(
-                    $redirectURL,
-                    $url,
-                    'Ticket should be part of the redirect.',
-                );
-            });
         $queryParameters = [$serviceParam => 'https://example.com/ssp/module.php/cas/linkback.php'];
         $loginRequest = Request::create(
             uri:        Module::getModuleURL('casserver/login'),
@@ -316,6 +312,12 @@ class LoginControllerTest extends TestCase
         );
 
         /** @psalm-suppress InvalidArgument */
-        $controllerMock->login($loginRequest, ...$queryParameters);
+        $response = $controllerMock->login($loginRequest, ...$queryParameters);
+        $this->assertInstanceOf(RunnableResponse::class, $response);
+        $arguments = $response->getArguments();
+        $this->assertEquals('https://example.com/ssp/module.php/cas/linkback.php', $arguments[0]);
+        $this->assertStringStartsWith('ST-', array_values($arguments[1])[0] ?? []);
+        $callable = (array)$response->getCallable();
+        $this->assertEquals('redirectTrustedURL', $callable[1] ?? '');
     }
 }

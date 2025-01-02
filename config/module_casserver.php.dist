@@ -26,10 +26,11 @@ $config = [
         'https://host2.domain:5678/path2/path3',
         // So is regex
         '|^https://.*\.domain.com/|',
-        // Some configuration options can be overridden
+        // The FOLLOWING configuration options can be overridden
         'https://override.example.com' => [
             'attrname' => 'uid',
             'attributes_to_transfer' => ['cn'],
+            //'authproc' => []
         ],
     ],
 
