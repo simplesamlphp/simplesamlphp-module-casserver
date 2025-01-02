@@ -76,7 +76,7 @@ class LoginController
      * @param   Configuration       $sspConfig
      * @param   Configuration|null  $casConfig
      * @param   Simple|null         $source
-     * @param   Utils\HTTP|null           $httpUtils
+     * @param   Utils\HTTP|null     $httpUtils
      *
      * @throws \Exception
      */
@@ -89,28 +89,12 @@ class LoginController
     ) {
         $this->casConfig = ($casConfig === null || $casConfig === $sspConfig)
             ? Configuration::getConfig('module_casserver.php') : $casConfig;
-
-        $this->cas20Protocol = new Cas20($this->casConfig);
-        $this->authSource = $source ?? new Simple($this->casConfig->getValue('authsource'));
-        $this->httpUtils = $httpUtils ?? new Utils\HTTP();
-
-        $this->serviceValidator = new ServiceValidator($this->casConfig);
-        /* Instantiate ticket factory */
-        $this->ticketFactory = new TicketFactory($this->casConfig);
-        /* Instantiate ticket store */
-        $ticketStoreConfig = $this->casConfig->getOptionalValue(
-            'ticketstore',
-            ['class' => 'casserver:FileSystemTicketStore'],
-        );
-        $ticketStoreClass = Module::resolveClass($ticketStoreConfig['class'], 'Cas\Ticket');
-        // Ticket Store
-        $this->ticketStore = new $ticketStoreClass($this->casConfig);
-        // Processing Chain Factory
-        $processingChainFactory = new ProcessingChainFactory($this->casConfig);
-        // Attribute Extractor
-        $this->attributeExtractor = new AttributeExtractor($this->casConfig, $processingChainFactory);
         // Saml Validate Responsder
         $this->samlValidateResponder = new SamlValidateResponder();
+        // Service Validator needs the generic casserver configuration. We do not need
+        $this->serviceValidator = new ServiceValidator($this->casConfig);
+        $this->authSource = $source ?? new Simple($this->casConfig->getValue('authsource'));
+        $this->httpUtils = $httpUtils ?? new Utils\HTTP();
     }
 
     /**
@@ -148,6 +132,7 @@ class LoginController
 
         // Set initial configurations, or fail
         $this->handleServiceConfiguration($serviceUrl);
+        $this->intantiateClassDependencies($this->authSource, $this->httpUtils);
         $this->handleScope($scope);
         $this->handleLanguage($language);
 
@@ -426,5 +411,32 @@ class LoginController
     public function getTicketStore(): TicketStore
     {
         return $this->ticketStore;
+    }
+
+    /**
+     * @param   Simple|null      $source
+     * @param   Utils\HTTP|null  $httpUtils
+     *
+     * @return void
+     * @throws \Exception
+     */
+    private function intantiateClassDependencies(Simple $source = null, Utils\HTTP $httpUtils = null): void
+    {
+        $this->cas20Protocol = new Cas20($this->casConfig);
+
+        /* Instantiate ticket factory */
+        $this->ticketFactory = new TicketFactory($this->casConfig);
+        /* Instantiate ticket store */
+        $ticketStoreConfig = $this->casConfig->getOptionalValue(
+            'ticketstore',
+            ['class' => 'casserver:FileSystemTicketStore'],
+        );
+        $ticketStoreClass = Module::resolveClass($ticketStoreConfig['class'], 'Cas\Ticket');
+        // Ticket Store
+        $this->ticketStore = new $ticketStoreClass($this->casConfig);
+        // Processing Chain Factory
+        $processingChainFactory = new ProcessingChainFactory($this->casConfig);
+        // Attribute Extractor
+        $this->attributeExtractor = new AttributeExtractor($this->casConfig, $processingChainFactory);
     }
 }

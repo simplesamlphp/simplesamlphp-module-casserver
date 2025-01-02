@@ -206,7 +206,7 @@ class Cas20Controller
      */
     public function proxyValidate(
         Request $request,
-        #[MapQueryParameter] string $TARGET = null,
+        #[MapQueryParameter] ?string $TARGET = null,
         #[MapQueryParameter] bool $renew = false,
         #[MapQueryParameter] ?string $ticket = null,
         #[MapQueryParameter] ?string $service = null,
