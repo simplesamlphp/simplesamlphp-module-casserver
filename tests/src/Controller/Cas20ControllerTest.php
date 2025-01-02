@@ -111,13 +111,28 @@ class Cas20ControllerTest extends TestCase
         ];
     }
 
-    public function testProxyValidatePassesTheCorrectMethodToValidate(): void
+    public static function validateMethods(): array
+    {
+        return [
+            'Call serviceValidate action' => [
+                'ST-',
+                'serviceValidate',
+            ],
+            'Call proxyValidate action' => [
+                'PT-',
+                'proxyValidate',
+            ],
+        ];
+    }
+
+    #[DataProvider('validateMethods')]
+    public function testProxyValidatePassesTheCorrectMethodToValidate(string $prefix, string $method): void
     {
         $casconfig = Configuration::loadFromArray($this->moduleConfig);
         $requestParameters = [
             'renew' => false,
             'service' => 'https://myservice.com/abcd',
-            'ticket' => 'ST-' . $this->sessionId,
+            'ticket' => $prefix . $this->sessionId,
         ];
 
         $request = Request::create(
@@ -127,10 +142,10 @@ class Cas20ControllerTest extends TestCase
 
         $expectedArguments = [
             'request' => $request,
-            'method' => 'proxyValidate',
+            'method' => $method,
             'renew' => false,
             'target' => null,
-            'ticket' => 'ST-' . $this->sessionId,
+            'ticket' => $prefix . $this->sessionId,
             'service' => 'https://myservice.com/abcd',
             'pgtUrl' => null,
         ];
@@ -142,7 +157,7 @@ class Cas20ControllerTest extends TestCase
 
         $controllerMock->expects($this->once())->method('validate')
             ->with(...$expectedArguments);
-        $controllerMock->proxyValidate($request, ...$requestParameters);
+        $controllerMock->$method($request, ...$requestParameters);
     }
 
     public static function queryParameterValues(): array
