@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\casserver\Controller;
 
+use DOMXPath;
+use SAML2\DOMDocumentFactory;
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
 use SimpleSAML\Module\casserver\Cas\Protocol\Cas20;
@@ -89,28 +91,27 @@ class Cas30Controller
         //  - IssueInstant [REQUIRED] - timestamp of the request
         // samlp:AssertionArtifact [REQUIRED] - the valid CAS Service
 
-        $ticketParser = xml_parser_create();
-        xml_parser_set_option($ticketParser, XML_OPTION_CASE_FOLDING, 0);
-        xml_parser_set_option($ticketParser, XML_OPTION_SKIP_WHITE, 1);
-        xml_parse_into_struct($ticketParser, $postBody, $values, $tags);
-        xml_parser_free($ticketParser);
+        $documentBody = DOMDocumentFactory::fromString($postBody);
+        $xPath = new DOMXpath($documentBody);
+        $xPath->registerNamespace('soap-env', 'http://schemas.xmlsoap.org/soap/envelope/');
+        $samlRequestAttributes = $xPath->query('/soap-env:Envelope/soap-env:Body/*');
 
         // Check for the required saml attributes
-        $samlRequestAttributes = $values[ $tags['samlp:Request'][0] ]['attributes'];
-        if (!isset($samlRequestAttributes['RequestID'])) {
+        if (!$samlRequestAttributes->item(0)->hasAttribute('RequestID')) {
             throw new \RuntimeException('Missing RequestID samlp:Request attribute.');
-        } elseif (!isset($samlRequestAttributes['IssueInstant'])) {
+        } elseif (!$samlRequestAttributes->item(0)->hasAttribute('IssueInstant')) {
             throw new \RuntimeException('Missing IssueInstant samlp:Request attribute.');
         }
 
+        $assertionArtifactNode = $samlRequestAttributes->item(0)->getElementsByTagName('AssertionArtifact');
         if (
-            !isset($tags['samlp:AssertionArtifact'])
-            || empty($values[$tags['samlp:AssertionArtifact'][0]]['value'])
+            $assertionArtifactNode->count() === 0
+            || empty($assertionArtifactNode->item(0)->nodeValue)
         ) {
             throw new \RuntimeException('Missing ticketId in AssertionArtifact');
         }
 
-        $ticketId = $values[$tags['samlp:AssertionArtifact'][0]]['value'];
+        $ticketId = $assertionArtifactNode->item(0)->nodeValue;
         Logger::debug('samlvalidate: Checking ticket ' . $ticketId);
 
         try {

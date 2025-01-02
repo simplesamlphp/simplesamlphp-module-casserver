@@ -8,7 +8,7 @@
     "config": {
         "preferred-install": {
             "simplesamlphp/simplesamlphp": "source",
-            "*": "source"
+            "*": "dist"
         },
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
@@ -36,11 +36,11 @@
         "ext-SimpleXML": "*",
         "ext-pdo": "*",
         "ext-session": "*",
-        "ext-xml": "*",
 
         "simplesamlphp/assert": "^1.1",
         "simplesamlphp/composer-module-installer": "^1.3",
-        "simplesamlphp/simplesamlphp": "^2.2",
+        "simplesamlphp/saml2": "^4.6",
+        "simplesamlphp/simplesamlphp": "^2.3",
         "simplesamlphp/xml-cas": "^1.3",
         "simplesamlphp/xml-common": "^1.17",
         "simplesamlphp/xml-soap": "^1.5",
