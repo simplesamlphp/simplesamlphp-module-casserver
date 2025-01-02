@@ -72,6 +72,9 @@ class ServiceValidator
                 }
                 $isValidService = true;
                 break;
+            } catch (\RuntimeException $e) {
+                // do nothing
+                Logger::warning($e->getMessage());
             } catch (\Exception $e) {
                 // do nothing
                 Logger::warning("Invalid CAS legal service url '$legalUrl'. Error " . preg_last_error());
