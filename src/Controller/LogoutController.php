@@ -127,9 +127,9 @@ class LogoutController
     }
 
     /**
-     * @return mixed
+     * @return TicketStore
      */
-    public function getTicketStore(): mixed
+    public function getTicketStore(): TicketStore
     {
         return $this->ticketStore;
     }

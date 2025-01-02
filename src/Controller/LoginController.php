@@ -134,13 +134,13 @@ class LoginController
         Request $request,
         #[MapQueryParameter] bool $renew = false,
         #[MapQueryParameter] bool $gateway = false,
-        #[MapQueryParameter] string $service = null,
-        #[MapQueryParameter] string $TARGET = null,
-        #[MapQueryParameter] string $scope = null,
-        #[MapQueryParameter] string $language = null,
-        #[MapQueryParameter] string $entityId = null,
-        #[MapQueryParameter] string $debugMode = null,
-        #[MapQueryParameter] string $method = null,
+        #[MapQueryParameter] ?string $service = null,
+        #[MapQueryParameter] ?string $TARGET = null,
+        #[MapQueryParameter] ?string $scope = null,
+        #[MapQueryParameter] ?string $language = null,
+        #[MapQueryParameter] ?string $entityId = null,
+        #[MapQueryParameter] ?string $debugMode = null,
+        #[MapQueryParameter] ?string $method = null,
     ): RedirectResponse|XmlResponse|null {
         $forceAuthn = $renew;
         $serviceUrl = $service ?? $TARGET ?? null;
@@ -421,9 +421,9 @@ class LoginController
     }
 
     /**
-     * @return mixed
+     * @return TicketStore
      */
-    public function getTicketStore(): mixed
+    public function getTicketStore(): TicketStore
     {
         return $this->ticketStore;
     }

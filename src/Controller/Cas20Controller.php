@@ -88,7 +88,7 @@ class Cas20Controller
      */
     public function serviceValidate(
         Request $request,
-        #[MapQueryParameter] string $TARGET = null,
+        #[MapQueryParameter] ?string $TARGET = null,
         #[MapQueryParameter] bool $renew = false,
         #[MapQueryParameter] ?string $ticket = null,
         #[MapQueryParameter] ?string $service = null,
@@ -124,7 +124,7 @@ class Cas20Controller
         $legal_target_service_urls = $this->casConfig->getOptionalValue('legal_target_service_urls', []);
         // Fail if
         $message = match (true) {
-            // targetService pareameter is not defined
+            // targetService parameter is not defined
             $targetService === null => 'Missing target service parameter [targetService]',
             // pgt parameter is not defined
             $pgt === null => 'Missing proxy granting ticket parameter: [pgt]',
@@ -226,9 +226,9 @@ class Cas20Controller
     /**
      * Used by the unit tests
      *
-     * @return mixed
+     * @return TicketStore
      */
-    public function getTicketStore(): mixed
+    public function getTicketStore(): TicketStore
     {
         return $this->ticketStore;
     }

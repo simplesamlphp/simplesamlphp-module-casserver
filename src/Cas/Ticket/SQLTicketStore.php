@@ -321,9 +321,11 @@ class SQLTicketStore extends TicketStore
 
 
     /**
-     * @param string $key
-     * @param array $value
-     * @param int|null $expire
+     * @param   string    $key
+     * @param   array     $value
+     * @param   int|null  $expire
+     *
+     * @throws Exception
      */
     private function set(string $key, array $value, int $expire = null): void
     {

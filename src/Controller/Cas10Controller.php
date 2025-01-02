@@ -144,15 +144,8 @@ class Cas10Controller
             );
         }
 
-        // Get the username field
-        $usernameField = $this->casConfig->getOptionalValue('attrname', 'eduPersonPrincipalName');
-
         // Fail if the username is not present in the ticket
         if (empty($serviceTicket['userName'])) {
-            Logger::error(
-                'casserver:validate: internal server error. Missing user name attribute: '
-                . var_export($usernameField, true),
-            );
             return new Response(
                 $this->cas10Protocol->getValidateFailureResponse(),
                 Response::HTTP_BAD_REQUEST,
@@ -169,9 +162,9 @@ class Cas10Controller
     /**
      * Used by the unit tests
      *
-     * @return mixed
+     * @return TicketStore
      */
-    public function getTicketStore(): mixed
+    public function getTicketStore(): TicketStore
     {
         return $this->ticketStore;
     }
