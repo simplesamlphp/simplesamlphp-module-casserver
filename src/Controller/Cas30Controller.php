@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\casserver\Controller;
 
-use DOMXPath;
-use SAML2\DOMDocumentFactory;
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
 use SimpleSAML\Module\casserver\Cas\Protocol\Cas20;
@@ -13,6 +11,8 @@ use SimpleSAML\Module\casserver\Cas\Protocol\SamlValidateResponder;
 use SimpleSAML\Module\casserver\Cas\TicketValidator;
 use SimpleSAML\Module\casserver\Controller\Traits\UrlTrait;
 use SimpleSAML\Module\casserver\Http\XmlResponse;
+use SimpleSAML\SOAP\XML\env_200106\Envelope;
+use SimpleSAML\XML\DOMDocumentFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -92,26 +92,28 @@ class Cas30Controller
         // samlp:AssertionArtifact [REQUIRED] - the valid CAS Service
 
         $documentBody = DOMDocumentFactory::fromString($postBody);
-        $xPath = new DOMXpath($documentBody);
-        $xPath->registerNamespace('soap-env', 'http://schemas.xmlsoap.org/soap/envelope/');
-        $samlRequestAttributes = $xPath->query('/soap-env:Envelope/soap-env:Body/*');
-
-        // Check for the required saml attributes
-        if (!$samlRequestAttributes->item(0)->hasAttribute('RequestID')) {
-            throw new \RuntimeException('Missing RequestID samlp:Request attribute.');
-        } elseif (!$samlRequestAttributes->item(0)->hasAttribute('IssueInstant')) {
-            throw new \RuntimeException('Missing IssueInstant samlp:Request attribute.');
+        $envelope = Envelope::fromXML($documentBody->documentElement);
+        foreach ($envelope->getBody()->getElements() as $element) {
+            $samlpRequestXMLElement = $element->getXML();
+            // Check for the required saml attributes
+            if ($samlpRequestXMLElement->nodeName !== 'samlp:Request') {
+                throw new \RuntimeException('Missing samlp:Request node.');
+            } elseif (!$samlpRequestXMLElement->hasAttribute('RequestID')) {
+                throw new \RuntimeException('Missing RequestID samlp:Request attribute.');
+            } elseif (!$samlpRequestXMLElement->hasAttribute('IssueInstant')) {
+                throw new \RuntimeException('Missing IssueInstant samlp:Request attribute.');
+            }
+            // Assertion Artifact Element
+            $assertionArtifactNode = $samlpRequestXMLElement->firstElementChild;
+            if (
+                $assertionArtifactNode->nodeName !== 'samlp:AssertionArtifact'
+                || empty($assertionArtifactNode->nodeValue)
+            ) {
+                throw new \RuntimeException('Missing ticketId in AssertionArtifact');
+            }
         }
 
-        $assertionArtifactNode = $samlRequestAttributes->item(0)->getElementsByTagName('AssertionArtifact');
-        if (
-            $assertionArtifactNode->count() === 0
-            || empty($assertionArtifactNode->item(0)->nodeValue)
-        ) {
-            throw new \RuntimeException('Missing ticketId in AssertionArtifact');
-        }
-
-        $ticketId = $assertionArtifactNode->item(0)->nodeValue;
+        $ticketId = $assertionArtifactNode?->nodeValue ?? '';
         Logger::debug('samlvalidate: Checking ticket ' . $ticketId);
 
         try {
