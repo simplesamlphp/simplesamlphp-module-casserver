@@ -11,6 +11,7 @@ use SimpleSAML\Module\casserver\Cas\Protocol\SamlValidateResponder;
 use SimpleSAML\Module\casserver\Cas\TicketValidator;
 use SimpleSAML\Module\casserver\Controller\Traits\UrlTrait;
 use SimpleSAML\Module\casserver\Http\XmlResponse;
+use SimpleSAML\SAML11\XML\samlp\Request as SamlRequest;
 use SimpleSAML\SOAP\XML\env_200106\Envelope;
 use SimpleSAML\XML\DOMDocumentFactory;
 use Symfony\Component\HttpFoundation\Request;
@@ -94,26 +95,17 @@ class Cas30Controller
         $documentBody = DOMDocumentFactory::fromString($postBody);
         $envelope = Envelope::fromXML($documentBody->documentElement);
         foreach ($envelope->getBody()->getElements() as $element) {
-            $samlpRequestXMLElement = $element->getXML();
-            // Check for the required saml attributes
-            if ($samlpRequestXMLElement->nodeName !== 'samlp:Request') {
-                throw new \RuntimeException('Missing samlp:Request node.');
-            } elseif (!$samlpRequestXMLElement->hasAttribute('RequestID')) {
-                throw new \RuntimeException('Missing RequestID samlp:Request attribute.');
-            } elseif (!$samlpRequestXMLElement->hasAttribute('IssueInstant')) {
-                throw new \RuntimeException('Missing IssueInstant samlp:Request attribute.');
-            }
+            // Request Element
+            $samlpRequestParsed = SamlRequest::fromXML($element->getXML());
+
             // Assertion Artifact Element
-            $assertionArtifactNode = $samlpRequestXMLElement->firstElementChild;
-            if (
-                $assertionArtifactNode->nodeName !== 'samlp:AssertionArtifact'
-                || empty($assertionArtifactNode->nodeValue)
-            ) {
+            $assertionArtifactParsed = $samlpRequestParsed->getRequest()[0];
+            if (empty($assertionArtifactParsed->getContent())) {
                 throw new \RuntimeException('Missing ticketId in AssertionArtifact');
             }
         }
 
-        $ticketId = $assertionArtifactNode?->nodeValue ?? '';
+        $ticketId = $assertionArtifactParsed?->getContent() ?? '';
         Logger::debug('samlvalidate: Checking ticket ' . $ticketId);
 
         try {

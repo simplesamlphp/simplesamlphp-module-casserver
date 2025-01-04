@@ -11,6 +11,7 @@ use SimpleSAML\Module\casserver\Cas\Ticket\FileSystemTicketStore;
 use SimpleSAML\Module\casserver\Cas\TicketValidator;
 use SimpleSAML\Module\casserver\Controller\Cas30Controller;
 use SimpleSAML\Session;
+use SimpleSAML\XML\Exception\MissingAttributeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -146,8 +147,8 @@ SOAP;
         );
 
         // Exception expected
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Missing RequestID samlp:Request attribute.');
+        $this->expectException(MissingAttributeException::class);
+        $this->expectExceptionMessage("Missing 'RequestID' attribute on samlp:Request.");
 
         $cas30Controller->samlValidate($this->samlValidateRequest, $target);
     }
@@ -189,8 +190,8 @@ SOAP;
         );
 
         // Exception expected
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Missing IssueInstant samlp:Request attribute.');
+        $this->expectException(MissingAttributeException::class);
+        $this->expectExceptionMessage("Missing 'IssueInstant' attribute on samlp:Request.");
 
         $cas30Controller->samlValidate($this->samlValidateRequest, $target);
     }
