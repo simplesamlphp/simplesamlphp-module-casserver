@@ -11,6 +11,7 @@ use SimpleSAML\Module\casserver\Cas\Protocol\SamlValidateResponder;
 use SimpleSAML\Module\casserver\Cas\TicketValidator;
 use SimpleSAML\Module\casserver\Controller\Traits\UrlTrait;
 use SimpleSAML\Module\casserver\Http\XmlResponse;
+use SimpleSAML\SAML11\Exception\ProtocolViolationException;
 use SimpleSAML\SAML11\XML\samlp\Request as SamlRequest;
 use SimpleSAML\SOAP\XML\env_200106\Envelope;
 use SimpleSAML\XML\DOMDocumentFactory;
@@ -71,7 +72,9 @@ class Cas30Controller
      * @param   Request  $request
      * @param   string   $TARGET  URL encoded service identifier of the back-end service.
      *
-     * @throws \RuntimeException
+     * @throw SimpleSAML\SAML11\Exception\ProtocolViolationException
+     * @throw SimpleSAML\XML\Exception\MissingAttributeException
+     * @throw \RuntimeException
      * @return XmlResponse
      * @link https://apereo.github.io/cas/7.1.x/protocol/CAS-Protocol-Specification.html#42-samlvalidate-cas-30
      */
@@ -94,18 +97,19 @@ class Cas30Controller
 
         $documentBody = DOMDocumentFactory::fromString($postBody);
         $envelope = Envelope::fromXML($documentBody->documentElement);
-        foreach ($envelope->getBody()->getElements() as $element) {
-            // Request Element
-            $samlpRequestParsed = SamlRequest::fromXML($element->getXML());
 
-            // Assertion Artifact Element
-            $assertionArtifactParsed = $samlpRequestParsed->getRequest()[0];
-            if (empty($assertionArtifactParsed->getContent())) {
-                throw new \RuntimeException('Missing ticketId in AssertionArtifact');
-            }
+        // The SOAP Envelope must have only one ticket
+        $elements = $envelope->getBody()->getElements();
+        if (count($elements) > 1 || count($elements) < 1) {
+            throw new ProtocolViolationException('samlValidate expects a soap body with only one ticket.');
         }
 
-        $ticketId = $assertionArtifactParsed?->getContent() ?? '';
+        // Request Element
+        $samlpRequestParsed = SamlRequest::fromXML($elements[0]->getXML());
+        // Assertion Artifact Element
+        $assertionArtifactParsed = $samlpRequestParsed->getRequest()[0];
+
+        $ticketId = $assertionArtifactParsed->getContent();
         Logger::debug('samlvalidate: Checking ticket ' . $ticketId);
 
         try {

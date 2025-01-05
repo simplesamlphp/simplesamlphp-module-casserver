@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\casserver\Tests\Controller;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Configuration;
 use SimpleSAML\Module;
@@ -11,7 +12,6 @@ use SimpleSAML\Module\casserver\Cas\Ticket\FileSystemTicketStore;
 use SimpleSAML\Module\casserver\Cas\TicketValidator;
 use SimpleSAML\Module\casserver\Controller\Cas30Controller;
 use SimpleSAML\Session;
-use SimpleSAML\XML\Exception\MissingAttributeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -110,14 +110,11 @@ class Cas30ControllerTest extends TestCase
         $cas30Controller->samlValidate($this->samlValidateRequest, $target);
     }
 
-    /**
-     * @return void
-     * @throws \Exception
-     */
-    public function testSoapBodyMissingRequestIdAttribute(): void
+    public static function soapEnvelopes(): array
     {
-        $casconfig = Configuration::loadFromArray($this->moduleConfig);
-        $samlRequest = <<<SOAP
+        return [
+            'Body Missing RequestID Attribute' => [
+                <<<SOAP
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
     <SOAP-ENV:Header/>
     <SOAP-ENV:Body>
@@ -129,38 +126,12 @@ class Cas30ControllerTest extends TestCase
         </samlp:Request>
     </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
-SOAP;
-
-        $target = 'https://comanage-ioi-dev.workbench.incommon.org/ssp/module.php/cas/linkback.php?'
-            . 'stateId=_bd6b7a3d207ed26ea893f49e555515b5f839547b59%3A'
-            . 'https%3A%2F%2Fcomanage-ioi-dev.workbench.incommon.org%2Fssp%2Fmodule.php%2Fadmin%2Ftest%2Fcasserver';
-        $this->samlValidateRequest = Request::create(
-            uri:        Module::getModuleURL('casserver/samlValidate'),
-            method:     'POST',
-            parameters: ['TARGET' => $target],
-            content:    $samlRequest,
-        );
-
-        $cas30Controller = new Cas30Controller(
-            $this->sspConfig,
-            $casconfig,
-        );
-
-        // Exception expected
-        $this->expectException(MissingAttributeException::class);
-        $this->expectExceptionMessage("Missing 'RequestID' attribute on samlp:Request.");
-
-        $cas30Controller->samlValidate($this->samlValidateRequest, $target);
-    }
-
-    /**
-     * @return void
-     * @throws \Exception
-     */
-    public function testSoapBodyMissingIssueInstantAttribute(): void
-    {
-        $casconfig = Configuration::loadFromArray($this->moduleConfig);
-        $samlRequest = <<<SOAP
+SOAP,
+                "Missing 'RequestID' attribute on samlp:Request.",
+                'SimpleSAML\XML\Exception\MissingAttributeException',
+            ],
+            'Body Missing IssueInstant Attribute' => [
+                <<<SOAP
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
     <SOAP-ENV:Header/>
     <SOAP-ENV:Body>
@@ -172,38 +143,12 @@ SOAP;
         </samlp:Request>
     </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
-SOAP;
-
-        $target = 'https://comanage-ioi-dev.workbench.incommon.org/ssp/module.php/cas/linkback.php?'
-            . 'stateId=_bd6b7a3d207ed26ea893f49e555515b5f839547b59%3A'
-            . 'https%3A%2F%2Fcomanage-ioi-dev.workbench.incommon.org%2Fssp%2Fmodule.php%2Fadmin%2Ftest%2Fcasserver';
-        $this->samlValidateRequest = Request::create(
-            uri:        Module::getModuleURL('casserver/samlValidate'),
-            method:     'POST',
-            parameters: ['TARGET' => $target],
-            content:    $samlRequest,
-        );
-
-        $cas30Controller = new Cas30Controller(
-            $this->sspConfig,
-            $casconfig,
-        );
-
-        // Exception expected
-        $this->expectException(MissingAttributeException::class);
-        $this->expectExceptionMessage("Missing 'IssueInstant' attribute on samlp:Request.");
-
-        $cas30Controller->samlValidate($this->samlValidateRequest, $target);
-    }
-
-    /**
-     * @return void
-     * @throws \Exception
-     */
-    public function testSoapBodyMissingTicketId(): void
-    {
-        $casconfig = Configuration::loadFromArray($this->moduleConfig);
-        $samlRequest = <<<SOAP
+SOAP,
+                "Missing 'IssueInstant' attribute on samlp:Request.",
+                'SimpleSAML\XML\Exception\MissingAttributeException',
+            ],
+            'Body Missing Ticket Id' => [
+                <<<SOAP
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
     <SOAP-ENV:Header/>
     <SOAP-ENV:Body>
@@ -216,7 +161,21 @@ SOAP;
         </samlp:Request>
     </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
-SOAP;
+SOAP,
+                'Expected a non-whitespace string. Got: ""',
+                'SimpleSAML\SAML11\Exception\ProtocolViolationException',
+            ],
+        ];
+    }
+
+    #[DataProvider('soapEnvelopes')]
+    public function testSoapMessageIsInvalid(
+        string $soapMessage,
+        string $exceptionMessage,
+        string $exceptionClassName,
+    ): void {
+        $casconfig = Configuration::loadFromArray($this->moduleConfig);
+        $samlRequest = $soapMessage;
 
         $target = 'https://comanage-ioi-dev.workbench.incommon.org/ssp/module.php/cas/linkback.php?'
             . 'stateId=_bd6b7a3d207ed26ea893f49e555515b5f839547b59%3A'
@@ -234,8 +193,8 @@ SOAP;
         );
 
         // Exception expected
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Missing ticketId in AssertionArtifact');
+        $this->expectException($exceptionClassName);
+        $this->expectExceptionMessage($exceptionMessage);
 
         $cas30Controller->samlValidate($this->samlValidateRequest, $target);
     }
