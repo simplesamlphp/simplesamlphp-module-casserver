@@ -11,6 +11,7 @@ use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Cas\Factories\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Protocol\Cas20;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
+use SimpleSAML\Module\casserver\Controller\Traits\TicketValidatorTrait;
 use SimpleSAML\Module\casserver\Controller\Traits\UrlTrait;
 use SimpleSAML\Module\casserver\Http\XmlResponse;
 use SimpleSAML\Utils;
@@ -23,6 +24,7 @@ use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 class Cas20Controller
 {
     use UrlTrait;
+    use TicketValidatorTrait;
 
     /** @var Logger */
     protected Logger $logger;

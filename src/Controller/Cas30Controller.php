@@ -82,7 +82,6 @@ class Cas30Controller
         Request $request,
         #[MapQueryParameter] string $TARGET,
     ): XmlResponse {
-        // From SAML2\SOAP::receive()
         $postBody = $request->getContent();
         if (empty($postBody)) {
             throw new \RuntimeException('samlValidate expects a soap body.');

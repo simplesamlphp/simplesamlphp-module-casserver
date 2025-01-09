@@ -433,7 +433,7 @@ class Cas20ControllerTest extends TestCase
         $xml->registerXPathNamespace('cas', 'serviceResponse');
         $this->assertEquals('serviceResponse', $xml->getName());
         $this->assertEquals(
-            C::ERR_INVALID_SERVICE,
+            C::ERR_INTERNAL_ERROR,
             $xml->xpath('//cas:authenticationFailure')[0]->attributes()['code'],
         );
     }
