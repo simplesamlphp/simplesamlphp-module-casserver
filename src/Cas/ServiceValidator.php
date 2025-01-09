@@ -6,6 +6,7 @@ namespace SimpleSAML\Module\casserver\Cas;
 
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
+use SimpleSAML\Module\casserver\Codebooks\OverrideConfigPropertiesEnum;
 
 /**
  * Validates if a CAS service can use server
@@ -93,7 +94,15 @@ class ServiceValidator
             'matchingUrl' => $legalUrl,
             'serviceUrl'  => $service,
         ];
-        if ($configOverride) {
+        if ($configOverride !== null) {
+            // We need to remove all the unsupported configuration keys
+            $supportedProperties = array_column(OverrideConfigPropertiesEnum::cases(), 'value');
+            $configOverride = array_filter(
+                $configOverride,
+                static fn($property) => \in_array($property, $supportedProperties, true),
+                ARRAY_FILTER_USE_KEY,
+            );
+            // Merge the configurations
             $serviceConfig = array_merge($serviceConfig, $configOverride);
         }
         return Configuration::loadFromArray($serviceConfig);

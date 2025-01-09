@@ -91,7 +91,7 @@ class LoginController
             ? Configuration::getConfig('module_casserver.php') : $casConfig;
         // Saml Validate Responsder
         $this->samlValidateResponder = new SamlValidateResponder();
-        // Service Validator needs the generic casserver configuration. We do not need
+        // Service Validator needs the generic casserver configuration.
         $this->serviceValidator = new ServiceValidator($this->casConfig);
         $this->authSource = $source ?? new Simple($this->casConfig->getValue('authsource'));
         $this->httpUtils = $httpUtils ?? new Utils\HTTP();
