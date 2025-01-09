@@ -45,7 +45,7 @@
         "simplesamlphp/xml-soap": "^1.5",
         "symfony/http-foundation": "^6.4",
         "symfony/http-kernel": "^6.4",
-        "simplesamlphp/saml11": "^1.2"
+        "simplesamlphp/saml11": "~1.2.4"
     },
     "require-dev": {
         "simplesamlphp/simplesamlphp-test-framework": "^1.7",
