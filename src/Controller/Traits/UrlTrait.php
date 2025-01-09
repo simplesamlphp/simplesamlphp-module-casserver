@@ -12,11 +12,12 @@ use Symfony\Component\HttpFoundation\Request;
 trait UrlTrait
 {
     /**
-     * @deprecated
-     * @see ServiceValidator
-     * @param string $service
-     * @param array $legal_service_urls
+     * @param   string  $service
+     * @param   array   $legal_service_urls
+     *
      * @return bool
+     * @throws \ErrorException
+     * @see ServiceValidator
      */
     public function checkServiceURL(string $service, array $legal_service_urls): bool
     {

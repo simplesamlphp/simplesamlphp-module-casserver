@@ -49,7 +49,7 @@ trait TicketValidatorTrait
 
         try {
             // Get the service ticket
-            // `getTicket` uses the unserializable method and Objects may throw Throwables in their
+            // `getTicket` uses the unserializable method and Objects may throw "Throwables" in their
             // un-serialization handlers.
             $serviceTicket = $this->ticketStore->getTicket($ticket);
         } catch (\Exception $e) {
@@ -58,7 +58,7 @@ trait TicketValidatorTrait
                 $messagePostfix = ': ' . var_export($e->getMessage(), true);
             }
             $message = 'casserver:serviceValidate: internal server error' . $messagePostfix;
-            Logger::error($message);
+            Logger::error(__METHOD__ . '::' . $message);
 
             return new XmlResponse(
                 (string)$this->cas20Protocol->getValidateFailureResponse(C::ERR_INTERNAL_ERROR, $message),
@@ -86,7 +86,7 @@ trait TicketValidatorTrait
 
         if ($failed) {
             $finalMessage = 'casserver:validate: ' . $message;
-            Logger::error($finalMessage);
+            Logger::error(__METHOD__ . '::' . $finalMessage);
 
             return new XmlResponse(
                 (string)$this->cas20Protocol->getValidateFailureResponse(C::ERR_INVALID_SERVICE, $message),
@@ -119,7 +119,7 @@ trait TicketValidatorTrait
 
         if ($failed) {
             $finalMessage = 'casserver:validate: ' . $message;
-            Logger::error($finalMessage);
+            Logger::error(__METHOD__ . '::' . $finalMessage);
 
             return new XmlResponse(
                 (string)$this->cas20Protocol->getValidateFailureResponse(C::ERR_INVALID_SERVICE, $message),

@@ -112,17 +112,19 @@ class Cas20Controller
      * acquired proxy-granting tickets and will be proxying authentication to back-end services.
      *
      * @param   Request      $request
-     * @param   string|null  $targetService [REQUIRED] - the service identifier of the back-end service.
-     * @param   string|null  $pgt  [REQUIRED] - the proxy-granting ticket acquired by the service
-     *                             during service ticket or proxy ticket validation.
+     * @param   string|null  $targetService  [REQUIRED] - the service identifier of the back-end service.
+     * @param   string|null  $pgt            [REQUIRED] - the proxy-granting ticket acquired by the service
+     *                                       during service ticket or proxy ticket validation.
      *
      * @return XmlResponse
+     * @throws \ErrorException
      */
     public function proxy(
         Request $request,
         #[MapQueryParameter] ?string $targetService = null,
         #[MapQueryParameter] ?string $pgt = null,
     ): XmlResponse {
+        // NOTE: Here we do not override the configuration
         $legal_target_service_urls = $this->casConfig->getOptionalValue('legal_target_service_urls', []);
         // Fail if
         $message = match (true) {
