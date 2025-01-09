@@ -64,7 +64,7 @@
         "validate": [
             "vendor/bin/phpunit --no-coverage --testdox",
             "vendor/bin/phpcs -p",
-            "vendor/bin/composer-require-checker check composer.json",
+            "vendor/bin/composer-require-checker check --config-file=tools/composer-require-checker.json composer.json",
             "vendor/bin/psalm -c psalm-dev.xml",
             "vendor/bin/composer-unused"
         ],
