@@ -34,7 +34,6 @@
         "ext-filter": "*",
         "ext-libxml": "*",
         "ext-SimpleXML": "*",
-        "ext-pdo": "*",
         "ext-session": "*",
 
         "simplesamlphp/assert": "^1.1",
