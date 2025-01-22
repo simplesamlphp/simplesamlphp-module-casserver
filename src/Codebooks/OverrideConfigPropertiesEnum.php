@@ -6,6 +6,7 @@ namespace SimpleSAML\Module\casserver\Codebooks;
 
 enum OverrideConfigPropertiesEnum: string
 {
+    case Attributes = 'attributes';
     case Attrname = 'attrname';
     case AttributesToTransfer = 'attributes_to_transfer';
     case Authproc = 'authproc';
