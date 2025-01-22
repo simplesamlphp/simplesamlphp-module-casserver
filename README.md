@@ -88,6 +88,9 @@ To explore the module using docker run the below command. This will run an SSP i
 of the `casserver` module mounted in the container, along with some configuration files. Any code changes you make to your git checkout are
 "live" in the container, allowing you to test and iterate different things.
 
+Sometimes when working with a dev version of the module you will need a newer version of a dependency than what SSP is
+locked to. In that case you can add an additional dependency to the `COMPOSER_REQUIRE` line (e.g ="simplesamlphp/assert:1.8 ")
+
 ```bash
 docker run --name ssp-casserver-dev \
    --mount type=bind,source="$(pwd)",target=/var/simplesamlphp/staging-modules/casserver,readonly \
