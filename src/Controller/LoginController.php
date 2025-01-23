@@ -19,9 +19,9 @@ use SimpleSAML\Module\casserver\Cas\ServiceValidator;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
 use SimpleSAML\Module\casserver\Controller\Traits\TicketValidatorTrait;
 use SimpleSAML\Module\casserver\Controller\Traits\UrlTrait;
-use SimpleSAML\Module\casserver\Http\XmlResponse;
 use SimpleSAML\Session;
 use SimpleSAML\Utils;
+use SimpleSAML\XHTML\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -112,7 +112,9 @@ class LoginController
      * @param   string|null  $debugMode
      * @param   string|null  $method
      *
-     * @return RunnableResponse
+     * @return RunnableResponse|Template
+     * @throws ConfigurationError
+     * @throws NoState
      */
     public function login(
         Request $request,
@@ -125,7 +127,7 @@ class LoginController
         #[MapQueryParameter] ?string $entityId = null,
         #[MapQueryParameter] ?string $debugMode = null,
         #[MapQueryParameter] ?string $method = null,
-    ): RunnableResponse {
+    ): RunnableResponse|Template {
         $forceAuthn = $renew;
         $serviceUrl = $service ?? $TARGET ?? null;
         $redirect = !(isset($method) && $method === 'POST');
@@ -225,7 +227,19 @@ class LoginController
 
         // Check if we are in debug mode.
         if ($debugMode !== null && $this->casConfig->getOptionalBoolean('debugMode', false)) {
-            return $this->handleDebugMode($request, $debugMode, $serviceTicket);
+            [$templateName, $statusCode, $DebugModeXmlString] = $this->handleDebugMode(
+                $request,
+                $debugMode,
+                $serviceTicket,
+            );
+            $t = new Template($this->sspConfig, (string)$templateName);
+            $t->data['debugMode'] = $debugMode === 'true' ? 'Default' : $debugMode;
+            if (!str_contains('error', (string)$templateName)) {
+                $t->data['DebugModeXml'] = preg_replace('/\s\s+/', '', $DebugModeXmlString);
+            }
+            $t->data['statusCode'] = $statusCode;
+            // Return an HTML View that renders the result
+            return $t;
         }
 
         $ticketName = $this->calculateTicketName($service);
@@ -250,24 +264,21 @@ class LoginController
      * @param   string|null  $debugMode
      * @param   array        $serviceTicket
      *
-     * @return XmlResponse
+     * @return array []
      */
     public function handleDebugMode(
         Request $request,
         ?string $debugMode,
         array $serviceTicket,
-    ): XmlResponse {
+    ): array {
         // Check if the debugMode is supported
         if (!\in_array($debugMode, self::DEBUG_MODES, true)) {
-            return new XmlResponse(
-                'invalid debug mode',
-                Response::HTTP_BAD_REQUEST,
-            );
+            return ['casserver:error.twig', Response::HTTP_BAD_REQUEST, 'Invalid/Unsupported Debug Mode'];
         }
 
         if ($debugMode === 'true') {
             // Service validate CAS20
-            return $this->validate(
+            $xmlResponse = $this->validate(
                 request: $request,
                 method:  'serviceValidate',
                 renew:   $request->get('renew', false),
@@ -276,14 +287,16 @@ class LoginController
                 service: $request->get('service'),
                 pgtUrl:  $request->get('pgtUrl'),
             );
+            return ['casserver:validate.twig', $xmlResponse->getStatusCode(), $xmlResponse->getContent()];
         }
 
         // samlValidate Mode
         $samlResponse = $this->samlValidateResponder->convertToSaml($serviceTicket);
-        return new XmlResponse(
-            (string)$this->samlValidateResponder->wrapInSoap($samlResponse),
+        return [
+            'casserver:validate.twig',
             Response::HTTP_OK,
-        );
+            (string)$this->samlValidateResponder->wrapInSoap($samlResponse),
+            ];
     }
 
     /**

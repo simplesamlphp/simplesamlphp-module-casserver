@@ -30,3 +30,15 @@ msgstr "Logged in"
 msgid "You are logged in."
 msgstr "You are logged in."
 
+msgid "{copy}"
+msgstr "Copy"
+
+msgid "{copied}"
+msgstr "Copied!"
+
+msgid "{continue}"
+msgstr "Continue"
+
+msgid "{copyToClipboard}"
+msgstr "Copy to clipboard"
+

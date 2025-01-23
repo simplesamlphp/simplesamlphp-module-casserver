@@ -1,0 +1,37 @@
+{% set pagetitle = 'Debug Mode'|trans %}
+{% set copied = '{copied}'|trans %}
+{% set copy = '{copy}'|trans %}
+{% set copyToClipboard = '{copyToClipboard}'|trans %}
+
+{% extends "base.twig" %}
+
+{% block preload %}
+    <link rel="stylesheet" href="{{ asset('bootstrap/bootstrap-5.3.3.min.css', 'casserver') }}">
+    <link rel="stylesheet" href="{{ asset('highlight/styles/default.css', 'casserver') }}">
+    <link rel="icon" href="{{ asset('icons/favicon.ico') }}">
+    <link rel="stylesheet" href="{{ asset('css/casserver.css', 'casserver') }}">
+{% endblock %}
+
+{% block content -%}
+    <h2>{{ pagetitle }} - {{ debugMode|trans }}</h2>
+    {%- if statusCode == 200 -%}
+        <div class="message-box success">Validation Successful</div>
+    {%- else -%}
+        <div class="message-box warning">Validation Failed</div>
+    {%- endif -%}
+    <pre>
+<code readonly
+      class="language-xml saml-response"
+      id="debug-mode-xml-id"
+      value="{{ DebugModeXml }}">
+</code>
+    </pre>
+{%- endblock %}
+
+{% block postload %}
+    <script type="text/javascript" src="{{ asset('jquery/jquery-3.6.4.min.js', 'casserver') }}"></script>
+    <script type="text/javascript" src="{{ asset('bootstrap/bootstrap-bundle-5.3.3.min.js', 'casserver') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/vkbeautify.js', 'casserver') }}"></script>
+    <script type="text/javascript" src="{{ asset('highlight/highlight.js', 'casserver') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/casserver-converter.js', 'casserver') }}"></script>
+{% endblock postload %}
