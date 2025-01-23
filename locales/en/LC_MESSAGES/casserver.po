@@ -42,3 +42,8 @@ msgstr "Continue"
 msgid "{copyToClipboard}"
 msgstr "Copy to clipboard"
 
+msgid "{success}"
+msgstr "Validation Successful"
+
+msgid "{failure}"
+msgstr "Validation Failed"

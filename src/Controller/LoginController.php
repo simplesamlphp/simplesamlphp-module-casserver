@@ -235,7 +235,7 @@ class LoginController
             $t = new Template($this->sspConfig, (string)$templateName);
             $t->data['debugMode'] = $debugMode === 'true' ? 'Default' : $debugMode;
             if (!str_contains('error', (string)$templateName)) {
-                $t->data['DebugModeXml'] = preg_replace('/\s\s+/', '', $DebugModeXmlString);
+                $t->data['DebugModeXml'] = $DebugModeXmlString;
             }
             $t->data['statusCode'] = $statusCode;
             // Return an HTML View that renders the result
