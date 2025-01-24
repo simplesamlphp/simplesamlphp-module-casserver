@@ -19,6 +19,12 @@
         <div class="message-box warning">{{ failure }}</div>
     {%- endif -%}
     <dd class="saml-response code-box hljs">
+        <div class="pure-button-group top-right-corner" role="group">
+            <button class="pure-button copy hljs"
+                    data-clipboard-target="#xml-metadata-box">
+                <span class="fa fa-copy"></span>{% trans %}Copy{% endtrans %}
+            </button>
+        </div>
         <div id="xml-metadata-box" class="code-box-content xml">{{ DebugModeXml }}</div>
     </dd>
 {%- endblock %}
