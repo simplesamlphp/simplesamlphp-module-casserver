@@ -1,0 +1,8 @@
+{% set pagetitle = 'Debug Mode'|trans %}
+
+{% extends "base.twig" %}
+
+{% block content -%}
+<h2>{{ pagetitle }} - {{ debugMode|trans }}</h2>
+<div class="message-box error">Debug Method NOT Supported</div>
+{% endblock %}

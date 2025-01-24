@@ -26,12 +26,14 @@ jobs:
         with:
           files: .
           ignore_path: .markdownlintignore
+          ignore_files: public/**
 
       - name: Perform spell check
         uses: codespell-project/actions-codespell@v2
         with:
           path: '**/*.md'
           check_filenames: true
+          skip: public/**
           ignore_words_list: tekst
 
   build:

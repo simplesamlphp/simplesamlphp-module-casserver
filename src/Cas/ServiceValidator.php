@@ -6,6 +6,7 @@ namespace SimpleSAML\Module\casserver\Cas;
 
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
+use SimpleSAML\Module\casserver\Codebooks\OverrideConfigPropertiesEnum;
 
 /**
  * Validates if a CAS service can use server
@@ -29,53 +30,81 @@ class ServiceValidator
 
     /**
      * Check that the $service is allowed, and if so return the configuration to use.
-     * @param string $service The service url. Assume to already be url decoded
+     *
+     * @param   string  $service  The service url. Assume to already be url decoded
+     *
      * @return Configuration|null Return the configuration to use for this service, or null if service is not allowed
+     * @throws \ErrorException
      */
     public function checkServiceURL(string $service): ?Configuration
     {
         $isValidService = false;
         $legalUrl = 'undefined';
         $configOverride = null;
-        foreach ($this->mainConfig->getOptionalArray('legal_service_urls', []) as $index => $value) {
+        $legalServiceUrlsConfig = $this->mainConfig->getOptionalArray('legal_service_urls', []);
+
+        foreach ($legalServiceUrlsConfig as $index => $value) {
             // Support two styles:  0 => 'https://example' and 'https://example' => [ extra config ]
-            if (is_int($index)) {
-                $legalUrl = $value;
-                $configOverride = null;
-            } else {
-                $legalUrl = $index;
-                $configOverride = $value;
-            }
+            $legalUrl = \is_int($index) ? $value : $index;
             if (empty($legalUrl)) {
                 Logger::warning("Ignoring empty CAS legal service url '$legalUrl'.");
                 continue;
             }
-            if (!ctype_alnum($legalUrl[0])) {
-                // Probably a regex. Suppress errors incase the format is invalid
-                $result = @preg_match($legalUrl, $service);
-                if ($result === 1) {
-                    $isValidService = true;
-                    break;
-                } elseif ($result === false) {
-                    Logger::warning("Invalid CAS legal service url '$legalUrl'. Error " . preg_last_error());
-                }
-            } elseif (strpos($service, $legalUrl) === 0) {
+
+            $configOverride = \is_int($index) ? null : $value;
+
+            // URL String
+            if (str_starts_with($service, $legalUrl)) {
                 $isValidService = true;
                 break;
             }
-        }
-        if ($isValidService) {
-            $serviceConfig = $this->mainConfig->toArray();
-            // Return contextual information about which url rule triggered the validation
-            $serviceConfig['casService'] = [
-                'matchingUrl' => $legalUrl,
-                'serviceUrl'  => $service,
-            ];
-            if ($configOverride) {
-                $serviceConfig = array_merge($serviceConfig, $configOverride);
+
+            // Regex
+            // Since "If the regex pattern passed does not compile to a valid regex, an E_WARNING is emitted. "
+            // we will throw an exception if the warning is emitted and use try-catch to handle it
+            set_error_handler(static function ($severity, $message, $file, $line) {
+                throw new \ErrorException($message, $severity, $severity, $file, $line);
+            }, E_WARNING);
+
+            try {
+                $result = preg_match($legalUrl, $service);
+                if ($result !== 1) {
+                    throw new \RuntimeException('Service URL does not match legal service URL.');
+                }
+                $isValidService = true;
+                break;
+            } catch (\RuntimeException $e) {
+                // do nothing
+                Logger::warning($e->getMessage());
+            } catch (\Exception $e) {
+                // do nothing
+                Logger::warning("Invalid CAS legal service url '$legalUrl'. Error " . preg_last_error());
+            } finally {
+                restore_error_handler();
             }
-            return Configuration::loadFromArray($serviceConfig);
         }
-        return null;
+
+        if (!$isValidService) {
+            return null;
+        }
+
+        $serviceConfig = $this->mainConfig->toArray();
+        // Return contextual information about which url rule triggered the validation
+        $serviceConfig['casService'] = [
+            'matchingUrl' => $legalUrl,
+            'serviceUrl'  => $service,
+        ];
+        if ($configOverride !== null) {
+            // We need to remove all the unsupported configuration keys
+            $supportedProperties = array_column(OverrideConfigPropertiesEnum::cases(), 'value');
+            $configOverride = array_filter(
+                $configOverride,
+                static fn($property) => \in_array($property, $supportedProperties, true),
+                ARRAY_FILTER_USE_KEY,
+            );
+            // Merge the configurations
+            $serviceConfig = array_merge($serviceConfig, $configOverride);
+        }
+        return Configuration::loadFromArray($serviceConfig);
     }
 }

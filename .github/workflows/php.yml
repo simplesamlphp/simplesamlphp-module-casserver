@@ -37,6 +37,7 @@ jobs:
           VALIDATE_YAML: true
           VALIDATE_XML: true
           VALIDATE_GITHUB_ACTIONS: true
+          FILTER_REGEX_EXCLUDE: 'public/**'
 
   quality:
     name: Quality control

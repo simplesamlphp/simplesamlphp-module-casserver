@@ -4,10 +4,15 @@
     useDocblockTypes="true"
     errorLevel="2"
     reportMixedIssues="false"
+    resolveFromConfigFile="true"
+    autoloader="vendor/autoload.php"
+    findUnusedCode="false"
+    findUnusedBaselineEntry="true"
+    hideExternalErrors="true"
+    allowStringToStandInForClass="true"
 >
     <projectFiles>
         <directory name="config" />
-        <directory name="public" />
         <directory name="src" />
     </projectFiles>
 

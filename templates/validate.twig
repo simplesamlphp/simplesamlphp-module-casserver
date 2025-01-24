@@ -1,0 +1,30 @@
+{% set pagetitle = 'Debug Mode'|trans %}
+{% set copied = '{copied}'|trans %}
+{% set copy = '{copy}'|trans %}
+{% set success = '{success}'|trans %}
+{% set failure = '{failure}'|trans %}
+{% set copyToClipboard = '{copyToClipboard}'|trans %}
+
+{% extends "base.twig" %}
+
+{% block preload %}
+    <link rel="stylesheet" href="{{ asset('css/casserver.css', 'casserver') }}">
+{% endblock %}
+
+{% block content -%}
+    <h2>{{ pagetitle }} - {{ debugMode|trans }}</h2>
+    {%- if statusCode == 200 -%}
+        <div class="message-box success">{{ success }}</div>
+    {%- else -%}
+        <div class="message-box warning">{{ failure }}</div>
+    {%- endif -%}
+    <dd class="saml-response code-box hljs">
+        <div class="pure-button-group top-right-corner" role="group">
+            <button class="pure-button copy hljs"
+                    data-clipboard-target="#xml-metadata-box">
+                <span class="fa fa-copy"></span>{{ copy }}
+            </button>
+        </div>
+        <div id="xml-metadata-box" class="code-box-content xml">{{ DebugModeXml }}</div>
+    </dd>
+{%- endblock %}
