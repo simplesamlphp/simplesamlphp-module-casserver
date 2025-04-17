@@ -1,38 +1,39 @@
 ---
 
 services:
-    # default configuration for services in *this* file
-    _defaults:
-        public: false
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+  # default configuration for services in *this* file
+  _defaults:
+    public: false
+    # Automatically injects dependencies in your services.
+    autowire: true
+    # Automatically registers your services as commands, event subscribers, etc.
+    autoconfigure: true
 
-    SimpleSAML\Module\casserver\Controller\:
-       resource: '../../src/Controller/*'
-       exclude:
-       - '../../src/Controller/Traits/*'
-       public: true
-       tags: [ 'controller.service_arguments' ]
+  SimpleSAML\Module\casserver\Controller\:
+    resource: '../../src/Controller/*'
+    exclude:
+      - '../../src/Controller/Traits/*'
+    public: true
+    tags: ['controller.service_arguments']
 
+  # Explicit service definitions for CasServer Controllers
+  SimpleSAML\Module\casserver\Controller\Cas10Controller:
+    public: true
 
-    # Explicit service definitions for CasServer Controllers
-    SimpleSAML\Module\casserver\Controller\Cas10Controller:
-        public: true
+  SimpleSAML\Module\casserver\Controller\Cas20Controller:
+    public: true
 
-    SimpleSAML\Module\casserver\Controller\Cas20Controller:
-        public: true
+  SimpleSAML\Module\casserver\Controller\Cas30Controller:
+    public: true
 
-    SimpleSAML\Module\casserver\Controller\Cas30Controller:
-        public: true
+  SimpleSAML\Module\casserver\Controller\LogoutController:
+    public: true
 
-    SimpleSAML\Module\casserver\Controller\LogoutController:
-        public: true
+  SimpleSAML\Module\casserver\Controller\LoggedOutController:
+    public: true
 
-    SimpleSAML\Module\casserver\Controller\LoggedOutController:
-        public: true
+  SimpleSAML\Module\casserver\Controller\LoggedInController:
+    public: true
 
-    SimpleSAML\Module\casserver\Controller\LoggedInController:
-        public: true
-
-    SimpleSAML\Module\casserver\Controller\LoginController:
-        public: true
+  SimpleSAML\Module\casserver\Controller\LoginController:
+    public: true
