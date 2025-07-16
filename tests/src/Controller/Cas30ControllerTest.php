@@ -232,7 +232,6 @@ SOAP;
             content:    $samlRequest,
         );
 
-        /** @psalm-suppress UndefinedMethod */
         $this->ticketValidatorMock
             ->expects($this->once())
             ->method('validateAndDeleteTicket')
@@ -285,7 +284,6 @@ SOAP;
             content:    $samlRequest,
         );
 
-        /** @psalm-suppress UndefinedMethod */
         $this->ticketValidatorMock
             ->expects($this->once())
             ->method('validateAndDeleteTicket')

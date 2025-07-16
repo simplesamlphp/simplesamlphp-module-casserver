@@ -422,7 +422,6 @@ class Cas20ControllerTest extends TestCase
             }
         };
 
-        /** @psalm-suppress InvalidArgument */
         $cas20Controller = new Cas20Controller($this->sspConfig, $config, $ticketStore);
         $response = $cas20Controller->serviceValidate($request, ...$params);
 

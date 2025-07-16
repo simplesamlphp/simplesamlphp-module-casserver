@@ -13,7 +13,6 @@ $ticketCacheDirAlt = $projectRootDirectory . '/tests/ticketcacheAlt';
 if (!file_exists($ticketCacheDirAlt)) {
     mkdir($ticketCacheDirAlt);
 }
-/** @psalm-suppress UnresolvableInclude */
 require_once($projectRootDirectory . '/vendor/autoload.php');
 
 // Symlink module into ssp vendor lib so that templates and urls can resolve correctly

@@ -311,7 +311,6 @@ class LoginControllerTest extends TestCase
             parameters: $queryParameters,
         );
 
-        /** @psalm-suppress InvalidArgument */
         $response = $controllerMock->login($loginRequest, ...$queryParameters);
         $this->assertInstanceOf(RunnableResponse::class, $response);
         $arguments = $response->getArguments();

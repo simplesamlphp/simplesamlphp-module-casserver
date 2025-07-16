@@ -1,0 +1,36 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Property SimpleSAML\\\\Module\\\\casserver\\\\Tests\\\\Controller\\\\Cas10ControllerTest\\:\\:\\$sessionMock is never read, only written\\.$#"
+			count: 1
+			path: tests/src/Controller/Cas10ControllerTest.php
+
+		-
+			message: "#^Property SimpleSAML\\\\Module\\\\casserver\\\\Tests\\\\Controller\\\\Cas20ControllerTest\\:\\:\\$sessionMock is never read, only written\\.$#"
+			count: 1
+			path: tests/src/Controller/Cas20ControllerTest.php
+
+		-
+			message: "#^Property SimpleSAML\\\\Module\\\\casserver\\\\Tests\\\\Controller\\\\Cas20ControllerTest\\:\\:\\$ticketValidatorMock is never read, only written\\.$#"
+			count: 1
+			path: tests/src/Controller/Cas20ControllerTest.php
+
+		-
+			message: "#^Call to an undefined method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\TicketValidator\\:\\:expects\\(\\)\\.$#"
+			count: 2
+			path: tests/src/Controller/Cas30ControllerTest.php
+
+		-
+			message: "#^Property SimpleSAML\\\\Module\\\\casserver\\\\Tests\\\\Controller\\\\Cas30ControllerTest\\:\\:\\$sessionMock is never read, only written\\.$#"
+			count: 1
+			path: tests/src/Controller/Cas30ControllerTest.php
+
+		-
+			message: "#^Parameter \\#2 \\$renew of method SimpleSAML\\\\Module\\\\casserver\\\\Controller\\\\LoginController\\:\\:login\\(\\) expects bool, string given\\.$#"
+			count: 1
+			path: tests/src/Controller/LoginControllerTest.php
+
+		-
+			message: "#^Property SimpleSAML\\\\Module\\\\casserver\\\\Tests\\\\Controller\\\\LoginControllerTest\\:\\:\\$sspContainer is never read, only written\\.$#"
+			count: 1
+			path: tests/src/Controller/LoginControllerTest.php

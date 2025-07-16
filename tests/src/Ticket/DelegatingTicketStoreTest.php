@@ -18,7 +18,7 @@ class DelegatingTicketStoreTest extends TestCase
     protected Configuration $config;
 
     /**
-     * @var array The configuration of the ticket store
+     * @var array<mixed> The configuration of the ticket store
      */
     private array $ticketstoreConfig = [];
 

@@ -106,8 +106,7 @@ class AttributeExtractor
      * @param   array  $state
      *
      * @return void
-     * @throws Exception
-     * @throws Error\UnserializableException
+     * @throws \SimpleSAML\Error\UnserializableException
      * @throws \Exception
      */
     protected function runAuthProcs(array &$state): void

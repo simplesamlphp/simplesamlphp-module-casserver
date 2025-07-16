@@ -135,7 +135,6 @@ class Cas10ControllerTest extends TestCase
             }
         };
 
-        /** @psalm-suppress InvalidArgument */
         $cas10Controller = new Cas10Controller($this->sspConfig, $config, $ticketStore);
         $response = $cas10Controller->validate($request, ...$params);
 

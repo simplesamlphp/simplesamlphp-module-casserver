@@ -138,7 +138,7 @@ class TicketValidatorTest extends TestCase
 
     /**
      * Urls to test
-     * @return array
+     * @return array<mixed>
      */
     public static function urlSanitizationProvider(): array
     {
@@ -164,7 +164,7 @@ class TicketValidatorTest extends TestCase
      *
      * @param string $serviceUrl The service url for this ticket
      * @param int $expiration seconds from now that ticket should expire
-     * @return array the ticket contents
+     * @return array<mixed> the ticket contents
      */
     private function createTicket(string $serviceUrl, int $expiration = 0): array
     {

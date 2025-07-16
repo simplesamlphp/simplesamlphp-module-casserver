@@ -185,7 +185,7 @@ class AuthnResponse
      *                        then the query will be relative to the root of the response.
      * @return \DOMNodeList
      */
-    private function doXPathQuery(string $query, DOMNode $node = null): DOMNodeList
+    private function doXPathQuery(string $query, ?DOMNode $node = null): DOMNodeList
     {
         Assert::isInstanceOf($node, DOMNode::class);
 
@@ -490,7 +490,7 @@ class AuthnResponse
      * @see \SAML2\Utils::xsDateTimeToTimestamp.
      *
      */
-    protected static function checkDateConditions(string $start = null, string $end = null): bool
+    protected static function checkDateConditions(?string $start = null, ?string $end = null): bool
     {
         $currentTime = time();
 
