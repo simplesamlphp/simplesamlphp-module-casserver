@@ -9,15 +9,18 @@ use SimpleSAML\Module\casserver\Cas\ServiceValidator;
 use SimpleSAML\Module\casserver\Cas\TicketValidator;
 use Symfony\Component\HttpFoundation\Request;
 
+use function array_merge;
+use function is_string;
+
 trait UrlTrait
 {
     /**
-     * @param   string  $service
-     * @param   array   $legal_service_urls
+     * @param string $service
+     * @param string[] $legal_service_urls
      *
      * @return bool
      * @throws \ErrorException
-     * @see ServiceValidator
+     * @see \SimpleSAML\Module\casserver\Cas\ServiceValidator
      */
     public function checkServiceURL(string $service, array $legal_service_urls): bool
     {
@@ -39,10 +42,10 @@ trait UrlTrait
     /**
      * Parse the query Parameters from $_GET global and return them in an array.
      *
-     * @param   Request     $request
-     * @param   array|null  $sessionTicket
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param string[]|null $sessionTicket
      *
-     * @return array
+     * @return string[]
      */
     public function parseQueryParameters(Request $request, ?array $sessionTicket): array
     {
@@ -66,8 +69,8 @@ trait UrlTrait
     }
 
     /**
-     * @param   Request  $request
-     * @param   string   $paramName
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param string $paramName
      *
      * @return mixed
      */

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\casserver\Controller;
 
+use Exception;
+use RuntimeException;
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
 use SimpleSAML\Module\casserver\Cas\Protocol\Cas20;
@@ -20,37 +22,39 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 
+use function is_array;
+
 #[AsController]
 class Cas30Controller
 {
     use UrlTrait;
 
-    /** @var Logger */
+    /** @var \SimpleSAML\Logger */
     protected Logger $logger;
 
-    /** @var Configuration */
+    /** @var \SimpleSAML\Configuration */
     protected Configuration $casConfig;
 
-    /** @var Cas20 */
+    /** @var \SimpleSAML\Module\casserver\Cas\Protocol\Cas20 */
     protected Cas20 $cas20Protocol;
 
-    /** @var TicketValidator */
+    /** @var \SimpleSAML\Module\casserver\Cas\TicketValidator */
     protected TicketValidator $ticketValidator;
 
-    /** @var SamlValidateResponder */
+    /** @var \SimpleSAML\Module\casserver\Cas\Protocol\SamlValidateResponder */
     protected SamlValidateResponder $validateResponder;
 
     /**
-     * @param   Configuration         $sspConfig
-     * @param   Configuration|null    $casConfig
-     * @param   TicketValidator|null  $ticketValidator
+     * @param \SimpleSAML\Configuration $sspConfig
+     * @param \SimpleSAML\Configuration|null $casConfig
+     * @param \SimpleSAML\Module\casserver\Cas\TicketValidator|null $ticketValidator
      *
      * @throws \Exception
      */
     public function __construct(
         private readonly Configuration $sspConfig,
-        Configuration $casConfig = null,
-        TicketValidator $ticketValidator = null,
+        ?Configuration $casConfig = null,
+        ?TicketValidator $ticketValidator = null,
     ) {
         // We are using this work around in order to bypass Symfony's autowiring for cas configuration. Since
         // the configuration class is the same, it loads the ssp configuration twice. Still, we need the constructor
@@ -69,13 +73,13 @@ class Cas30Controller
      * Content-Length: 491
      * Content-Type: text/xml
      *
-     * @param   Request  $request
-     * @param   string   $TARGET  URL encoded service identifier of the back-end service.
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param string $TARGET  URL encoded service identifier of the back-end service.
      *
      * @throw SimpleSAML\SAML11\Exception\ProtocolViolationException
      * @throw SimpleSAML\XML\Exception\MissingAttributeException
      * @throw \RuntimeException
-     * @return XmlResponse
+     * @return \SimpleSAML\Module\casserver\Http\XmlResponse
      * @link https://apereo.github.io/cas/7.1.x/protocol/CAS-Protocol-Specification.html#42-samlvalidate-cas-30
      */
     public function samlValidate(
@@ -84,7 +88,7 @@ class Cas30Controller
     ): XmlResponse {
         $postBody = $request->getContent();
         if (empty($postBody)) {
-            throw new \RuntimeException('samlValidate expects a soap body.');
+            throw new RuntimeException('samlValidate expects a soap body.');
         }
 
         // SAML request values
@@ -115,15 +119,16 @@ class Cas30Controller
             // validateAndDeleteTicket might throw a CasException. In order to avoid third party modules
             // dependencies, we will catch and rethrow the Exception.
             $ticket = $this->ticketValidator->validateAndDeleteTicket($ticketId, $TARGET);
-        } catch (\Exception $e) {
-            throw new \RuntimeException($e->getMessage());
+        } catch (Exception $e) {
+            throw new RuntimeException($e->getMessage());
         }
-        if (!\is_array($ticket)) {
-            throw new \RuntimeException('Error loading ticket');
+
+        if (!is_array($ticket)) {
+            throw new RuntimeException('Error loading ticket');
         }
 
         $response = $this->validateResponder->convertToSaml($ticket);
-        $soap     = $this->validateResponder->wrapInSoap($response);
+        $soap = $this->validateResponder->wrapInSoap($response);
 
         return new XmlResponse(
             (string)$soap,

@@ -47,8 +47,7 @@ class DelegatingTicketStore extends TicketStore
             $ticketStoreClass = Module::resolveClass($class, 'Cas\Ticket');
             try {
                 /**
-                 * @var TicketStore $ticketStore
-                 * @psalm-suppress InvalidStringClass
+                 * @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore $ticketStore
                  */
                 $ticketStore = new $ticketStoreClass($storeConfig);
                 $this->ticketStores[$name] = $ticketStore;

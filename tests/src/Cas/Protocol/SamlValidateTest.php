@@ -31,7 +31,6 @@ class SamlValidateTest extends TestCase
         xml_parse_into_struct($p, \strval($xmlString), $vals, $index);
         xml_parser_free($p);
 
-        /** @psalm-suppress PossiblyNullPropertyFetch */
         $this->assertEquals(
             $serviceUrl,
             $vals[$index['RESPONSE'][0]]['attributes']['RECIPIENT'],

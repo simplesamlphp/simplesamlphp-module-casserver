@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\casserver\Controller;
 
+use RuntimeException;
 use SimpleSAML\Auth\Simple;
 use SimpleSAML\Configuration;
 use SimpleSAML\HTTP\RunnableResponse;
@@ -23,39 +24,39 @@ class LogoutController
 {
     use UrlTrait;
 
-    /** @var Logger */
+    /** @var \SimpleSAML\Logger */
     protected Logger $logger;
 
-    /** @var Configuration */
+    /** @var \SimpleSAML\Configuration */
     protected Configuration $casConfig;
 
-    /** @var TicketFactory */
+    /** @var \SimpleSAML\Module\casserver\Cas\Factories\TicketFactory */
     protected TicketFactory $ticketFactory;
 
-    /** @var Simple  */
+    /** @var \SimpleSAML\Auth\Simple */
     protected Simple $authSource;
 
-    /** @var Utils\HTTP */
+    /** @var \SimpleSAML\Utils\HTTP */
     protected Utils\HTTP $httpUtils;
 
-    /** @var TicketStore */
+    /** @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore */
     protected TicketStore $ticketStore;
 
 
     /**
-     * @param   Configuration       $sspConfig
-     * @param   Configuration|null  $casConfig
-     * @param   Simple|null         $source
-     * @param   Utils\HTTP|null     $httpUtils
+     * @param \SimpleSAML\Configuration $sspConfig
+     * @param \SimpleSAML\Configuration|null $casConfig
+     * @param \SimpleSAML\Auth\Simple|null $source
+     * @param \SimpleSAML\Utils\HTTP|null $httpUtils
      *
      * @throws \Exception
      */
     public function __construct(
         private readonly Configuration $sspConfig,
         // Facilitate testing
-        Configuration $casConfig = null,
-        Simple $source = null,
-        Utils\HTTP $httpUtils = null,
+        ?Configuration $casConfig = null,
+        ?Simple $source = null,
+        ?Utils\HTTP $httpUtils = null,
     ) {
         // We are using this work around in order to bypass Symfony's autowiring for cas configuration. Since
         // the configuration class is the same, it loads the ssp configuration twice. Still, we need the constructor
@@ -67,6 +68,7 @@ class LogoutController
 
         /* Instantiate ticket factory */
         $this->ticketFactory = new TicketFactory($this->casConfig);
+
         /* Instantiate ticket store */
         $ticketStoreConfig = $this->casConfig->getOptionalValue(
             'ticketstore',
@@ -77,11 +79,10 @@ class LogoutController
     }
 
     /**
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param string|null $url
      *
-     * @param   Request      $request
-     * @param   string|null  $url
-     *
-     * @return RunnableResponse
+     * @return \SimpleSAML\HTTP\RunnableResponse
      */
     public function logout(
         Request $request,
@@ -127,7 +128,7 @@ class LogoutController
     }
 
     /**
-     * @return TicketStore
+     * @return \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore
      */
     public function getTicketStore(): TicketStore
     {
@@ -135,20 +136,20 @@ class LogoutController
     }
 
     /**
-     * @param   string  $message
+     * @param string $message
      *
      * @return void
      */
     protected function handleExceptionThrown(string $message): void
     {
         Logger::debug('casserver:' . $message);
-        throw new \RuntimeException($message);
+        throw new RuntimeException($message);
     }
 
     /**
      * Get the Session
      *
-     * @return Session|null
+     * @return \SimpleSAML\Session|null
      */
     protected function getSession(): ?Session
     {

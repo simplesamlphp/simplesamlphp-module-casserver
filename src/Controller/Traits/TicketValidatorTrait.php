@@ -4,24 +4,28 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\casserver\Controller\Traits;
 
+use Exception;
 use SimpleSAML\CAS\Constants as C;
 use SimpleSAML\Logger;
 use SimpleSAML\Module\casserver\Http\XmlResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use function array_merge;
+use function var_export;
+
 trait TicketValidatorTrait
 {
     /**
-     * @param   Request      $request
-     * @param   string       $method
-     * @param   bool         $renew
-     * @param   string|null  $target
-     * @param   string|null  $ticket
-     * @param   string|null  $service
-     * @param   string|null  $pgtUrl
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param string $method
+     * @param bool $renew
+     * @param string|null $target
+     * @param string|null $ticket
+     * @param string|null $service
+     * @param string|null $pgtUrl
      *
-     * @return XmlResponse
+     * @return \SimpleSAML\Module\casserver\Http\XmlResponse
      */
     public function validate(
         Request $request,
@@ -38,7 +42,7 @@ trait TicketValidatorTrait
         // Check if any of the required query parameters are missing
         if ($serviceUrl === null || $ticket === null) {
             $messagePostfix = $serviceUrl === null ? 'service' : 'ticket';
-            $message        = "casserver: Missing {$messagePostfix} parameter: [{$messagePostfix}]";
+            $message = "casserver: Missing {$messagePostfix} parameter: [{$messagePostfix}]";
             Logger::debug($message);
 
             return new XmlResponse(
@@ -52,7 +56,7 @@ trait TicketValidatorTrait
             // `getTicket` uses the unserializable method and Objects may throw "Throwables" in their
             // un-serialization handlers.
             $serviceTicket = $this->ticketStore->getTicket($ticket);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $messagePostfix = '';
             if (!empty($e->getMessage())) {
                 $messagePostfix = ': ' . var_export($e->getMessage(), true);
@@ -164,7 +168,7 @@ trait TicketValidatorTrait
                     Logger::debug(__METHOD__ . '::data: ' . var_export($data, true));
                     $this->cas20Protocol->setProxyGrantingTicketIOU($proxyGrantingTicket['iou']);
                     $this->ticketStore->addTicket($proxyGrantingTicket);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     return new XmlResponse(
                         (string)$this->cas20Protocol->getValidateFailureResponse(
                             C::ERR_INVALID_SERVICE,

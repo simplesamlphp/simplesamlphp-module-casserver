@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
+use function session_cache_limiter;
+
 #[AsController]
 class LoggedInController
 {
@@ -21,11 +23,11 @@ class LoggedInController
      *
      * It initializes the global configuration for the controllers implemented here and injects the session service.
      *
-     * @param   Configuration|null  $config
+     * @param \SimpleSAML\Configuration|null $config
      *
      * @throws \Exception
      */
-    public function __construct(Configuration $config = null)
+    public function __construct(?Configuration $config = null)
     {
         $this->config = $config ?? Configuration::getInstance();
     }
@@ -33,8 +35,8 @@ class LoggedInController
     /**
      * Show Log out view.
      *
-     * @param   Request  $request
-     * @return Response
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
     public function main(Request $request): Response

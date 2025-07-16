@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\casserver\Controller;
 
+use Exception;
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
 use SimpleSAML\Module;
@@ -16,37 +17,39 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 
+use function var_export;
+
 #[AsController]
 class Cas10Controller
 {
     use UrlTrait;
 
-    /** @var Logger */
+    /** @var \SimpleSAML\Logger */
     protected Logger $logger;
 
-    /** @var Configuration */
+    /** @var \SimpleSAML\Configuration */
     protected Configuration $casConfig;
 
-    /** @var Cas10 */
+    /** @var \SimpleSAML\Module\casserver\Cas\Protocol\Cas10 */
     protected Cas10 $cas10Protocol;
 
-    /** @var TicketFactory */
+    /** @var \SimpleSAML\Module\casserver\Cas\Factories\TicketFactory */
     protected TicketFactory $ticketFactory;
 
-    /** @var TicketStore */
+    /** @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore */
     protected TicketStore $ticketStore;
 
     /**
-     * @param   Configuration       $sspConfig
-     * @param   Configuration|null  $casConfig
-     * @param   TicketStore|null    $ticketStore
+     * @param \SimpleSAML\Configuration $sspConfig
+     * @param \SimpleSAML\Configuration|null $casConfig
+     * @param \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore|null $ticketStore
      *
      * @throws \Exception
      */
     public function __construct(
         private readonly Configuration $sspConfig,
-        Configuration $casConfig = null,
-        TicketStore $ticketStore = null,
+        ?Configuration $casConfig = null,
+        ?TicketStore $ticketStore = null,
     ) {
         // We are using this work around in order to bypass Symfony's autowiring for cas configuration. Since
         // the configuration class is the same, it loads the ssp configuration twice. Still, we need the constructor
@@ -66,12 +69,12 @@ class Cas10Controller
     }
 
     /**
-     * @param   Request      $request
-     * @param   bool  $renew  [OPTIONAL] - if this parameter is set, ticket validation will only succeed
-     *                        if the service ticket was issued from the presentation of the user’s primary credentials.
-     *                        It will fail if the ticket was issued from a single sign-on session.
-     * @param   string|null  $ticket  [REQUIRED] - the service ticket issued by /login.
-     * @param   string|null  $service [REQUIRED] - the identifier of the service for which the ticket was issued
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param bool $renew          [OPTIONAL] - if this parameter is set, ticket validation will only succeed if the
+     *                             service ticket was issued from the presentation of the user’s primary credentials.
+     *                             It will fail if the ticket was issued from a single sign-on session.
+     * @param string|null $ticket  [REQUIRED] - the service ticket issued by /login.
+     * @param string|null $service [REQUIRED] - the identifier of the service for which the ticket was issued
      *
      * @return Response
      */
@@ -102,7 +105,7 @@ class Cas10Controller
             $serviceTicket = $this->ticketStore->getTicket($ticket);
             // Delete the ticket
             $this->ticketStore->deleteTicket($ticket);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Logger::error('casserver:validate: internal server error. ' . var_export($e->getMessage(), true));
             return new Response(
                 $this->cas10Protocol->getValidateFailureResponse(),
@@ -162,7 +165,7 @@ class Cas10Controller
     /**
      * Used by the unit tests
      *
-     * @return TicketStore
+     * @return \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore
      */
     public function getTicketStore(): TicketStore
     {

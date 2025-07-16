@@ -37,16 +37,12 @@ class TicketValidator
             ['class' => 'casserver:FileSystemTicketStore'],
         );
         $ticketStoreClass = Module::resolveClass($ticketStoreConfig['class'], 'Cas\Ticket');
-        /**
-         * @psalm-suppress InvalidStringClass
-         * @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore
-         */
+
+        /** @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore $this->ticketStore */
         $this->ticketStore = new $ticketStoreClass($casconfig);
         $ticketFactoryClass = Module::resolveClass('casserver:TicketFactory', 'Cas\Factories');
-        /**
-         * @psalm-suppress InvalidStringClass
-         * @var \SimpleSAML\Module\casserver\Cas\Factories\TicketFactory
-         */
+
+        /** @var \SimpleSAML\Module\casserver\Cas\Factories\TicketFactory $this->ticketStore */
         $this->ticketFactory = new $ticketFactoryClass($casconfig);
     }
 

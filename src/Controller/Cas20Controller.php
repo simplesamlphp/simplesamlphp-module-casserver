@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\casserver\Controller;
 
+use Exception;
 use SimpleSAML\CAS\Constants as C;
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
@@ -26,37 +27,37 @@ class Cas20Controller
     use UrlTrait;
     use TicketValidatorTrait;
 
-    /** @var Logger */
+    /** @var \SimpleSAML\Logger */
     protected Logger $logger;
 
-    /** @var Utils\HTTP */
+    /** @var \SimpleSAML\Utils\HTTP */
     protected Utils\HTTP $httpUtils;
 
-    /** @var Configuration */
+    /** @var \SimpleSAML\Configuration */
     protected Configuration $casConfig;
 
-    /** @var Cas20 */
+    /** @var \SimpleSAML\Module\casserver\Cas\Protocol\Cas20 */
     protected Cas20 $cas20Protocol;
 
-    /** @var TicketFactory */
+    /** @var \SimpleSAML\Module\casserver\Cas\Factories\TicketFactory */
     protected TicketFactory $ticketFactory;
 
-    /** @var TicketStore */
+    /** @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore */
     protected TicketStore $ticketStore;
 
     /**
-     * @param   Configuration       $sspConfig
-     * @param   Configuration|null  $casConfig
-     * @param   TicketStore|null    $ticketStore
-     * @param   Utils\HTTP|null           $httpUtils
+     * @param \SimpleSAML\Configuration $sspConfig
+     * @param \SimpleSAML\Configuration|null $casConfig
+     * @param \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore|null $ticketStore
+     * @param \SimpleSAML\Utils\HTTP|null $httpUtils
      *
      * @throws \Exception
      */
     public function __construct(
         private readonly Configuration $sspConfig,
-        Configuration $casConfig = null,
-        TicketStore $ticketStore = null,
-        Utils\HTTP $httpUtils = null,
+        ?Configuration $casConfig = null,
+        ?TicketStore $ticketStore = null,
+        ?Utils\HTTP $httpUtils = null,
     ) {
         // We are using this work around in order to bypass Symfony's autowiring for cas configuration. Since
         // the configuration class is the same, it loads the ssp configuration twice. Still, we need the constructor
@@ -64,8 +65,10 @@ class Cas20Controller
         $this->casConfig = ($casConfig === null || $casConfig === $sspConfig)
             ? Configuration::getConfig('module_casserver.php') : $casConfig;
         $this->cas20Protocol = new Cas20($this->casConfig);
+
         /* Instantiate ticket factory */
         $this->ticketFactory = new TicketFactory($this->casConfig);
+
         /* Instantiate ticket store */
         $ticketStoreConfig = $this->casConfig->getOptionalValue(
             'ticketstore',
@@ -77,16 +80,16 @@ class Cas20Controller
     }
 
     /**
-     * @param   Request      $request
-     * @param   string|null  $TARGET   Query parameter name for "service" used by older CAS clients'
-     * @param   bool         $renew    [OPTIONAL] - if this parameter is set, ticket validation will only succeed
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param string|null $TARGET   Query parameter name for "service" used by older CAS clients'
+     * @param bool $renew           [OPTIONAL] - if this parameter is set, ticket validation will only succeed
      *                                 if the service ticket was issued from the presentation of the user’s primary
      *                                 credentials. It will fail if the ticket was issued from a single sign-on session.
-     * @param   string|null  $ticket   [REQUIRED] - the service ticket issued by /login
-     * @param   string|null  $service  [REQUIRED] - the identifier of the service for which the ticket was issued
-     * @param   string|null  $pgtUrl   [OPTIONAL] - the URL of the proxy callback
+     * @param string|null $ticket   [REQUIRED] - the service ticket issued by /login
+     * @param string|null $service  [REQUIRED] - the identifier of the service for which the ticket was issued
+     * @param string|null $pgtUrl   [OPTIONAL] - the URL of the proxy callback
      *
-     * @return XmlResponse
+     * @return \SimpleSAML\Module\casserver\Http\XmlResponse
      */
     public function serviceValidate(
         Request $request,
@@ -111,12 +114,12 @@ class Cas20Controller
      * /proxy provides proxy tickets to services that have
      * acquired proxy-granting tickets and will be proxying authentication to back-end services.
      *
-     * @param   Request      $request
-     * @param   string|null  $targetService  [REQUIRED] - the service identifier of the back-end service.
-     * @param   string|null  $pgt            [REQUIRED] - the proxy-granting ticket acquired by the service
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param string|null $targetService  [REQUIRED] - the service identifier of the back-end service.
+     * @param string|null $pgt            [REQUIRED] - the proxy-granting ticket acquired by the service
      *                                       during service ticket or proxy ticket validation.
      *
-     * @return XmlResponse
+     * @return \SimpleSAML\Module\casserver\Http\XmlResponse
      * @throws \ErrorException
      */
     public function proxy(
@@ -186,7 +189,7 @@ class Cas20Controller
                 'attributes' => $proxyGrantingTicket['attributes'],
                 'proxies' => $proxyGrantingTicket['proxies'],
                 'sessionId' => $proxyGrantingTicket['sessionId'],
-                ],
+            ],
         );
 
         $this->ticketStore->addTicket($proxyTicket);
@@ -198,16 +201,16 @@ class Cas20Controller
     }
 
     /**
-     * @param   Request      $request
-     * @param   string|null  $TARGET   Query parameter name for "service" used by older CAS clients'
-     * @param   bool         $renew    [OPTIONAL] - if this parameter is set, ticket validation will only succeed
+     * @param \Symfony\Component\HttpFoundation\Request      $request
+     * @param string|null $TARGET   Query parameter name for "service" used by older CAS clients'
+     * @param bool $renew           [OPTIONAL] - if this parameter is set, ticket validation will only succeed
      *                                 if the service ticket was issued from the presentation of the user’s primary
      *                                 credentials. It will fail if the ticket was issued from a single sign-on session.
-     * @param   string|null  $ticket   [REQUIRED] - the service ticket issued by /login
-     * @param   string|null  $service  [REQUIRED] - the identifier of the service for which the ticket was issued
-     * @param   string|null  $pgtUrl   [OPTIONAL] - the URL of the proxy callback
+     * @param string|null $ticket   [REQUIRED] - the service ticket issued by /login
+     * @param string|null $service  [REQUIRED] - the identifier of the service for which the ticket was issued
+     * @param string|null $pgtUrl   [OPTIONAL] - the URL of the proxy callback
      *
-     * @return XmlResponse
+     * @return \SimpleSAML\Module\casserver\Http\XmlResponse
      */
     public function proxyValidate(
         Request $request,
@@ -231,7 +234,7 @@ class Cas20Controller
     /**
      * Used by the unit tests
      *
-     * @return TicketStore
+     * @return \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore
      */
     public function getTicketStore(): TicketStore
     {

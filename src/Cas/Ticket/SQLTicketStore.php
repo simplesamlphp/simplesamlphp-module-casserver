@@ -327,7 +327,7 @@ class SQLTicketStore extends TicketStore
      *
      * @throws Exception
      */
-    private function set(string $key, array $value, int $expire = null): void
+    private function set(string $key, array $value, ?int $expire = null): void
     {
         Assert::string($key);
         Assert::nullOrInteger($expire);
