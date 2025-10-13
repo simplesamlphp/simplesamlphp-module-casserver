@@ -164,6 +164,20 @@ class LoginController
         // This will be used to come back from the AuthSource login or from the Processing Chain
         $returnToUrl = $this->getReturnUrl($request, $sessionTicket);
 
+        /*
+         * CAS gateway behavior:
+         * If gateway=true, service is valid, and the user is not authenticated,
+         * redirect immediately to the service URL with NO query parameters or fragment.
+         */
+        if ($gateway === true && $serviceUrl !== null && !$this->authSource->isAuthenticated()) {
+            $cleanServiceUrl = $this->stripQueryParameters($serviceUrl);
+            return new RunnableResponse(
+                [$this->httpUtils, 'redirectTrustedURL'],
+                [$cleanServiceUrl]
+            );
+        }
+
+
         // Authenticate
         if (
             $requestForceAuthenticate || !$this->authSource->isAuthenticated()
@@ -464,4 +478,32 @@ class LoginController
         // Attribute Extractor
         $this->attributeExtractor = new AttributeExtractor($this->casConfig, $processingChainFactory);
     }
+
+    /**
+     * Remove query string from a URL while preserving scheme, userinfo, host, port, path and fragment.
+     *
+     * @param string $url
+     * @return string
+     */
+    private function stripQueryParameters(string $url): string
+    {
+        $parts = parse_url($url);
+
+        $scheme   = $parts['scheme'] ?? '';
+        $host     = $parts['host'] ?? '';
+        $port     = isset($parts['port']) ? ':' . $parts['port'] : '';
+        $user     = $parts['user'] ?? null;
+        $pass     = $parts['pass'] ?? null;
+        $userInfo = $user ? $user . ($pass ? ':' . $pass : '') . '@' : '';
+        $path     = $parts['path'] ?? '';
+        $fragment = isset($parts['fragment']) ? '#' . $parts['fragment'] : '';
+
+        // Ensure root path is preserved if it was "/"
+        if ($path === '' && (($parts['path'] ?? '') === '/')) {
+            $path = '/';
+        }
+
+        return sprintf('%s://%s%s%s%s%s', $scheme, $userInfo, $host, $port, $path, $fragment);
+    }
+
 }
