@@ -164,34 +164,34 @@ class LoginController
         // This will be used to come back from the AuthSource login or from the Processing Chain
         $returnToUrl = $this->getReturnUrl($request, $sessionTicket);
 
-        // Authenticate
+        // Use case 4: renew=true and gateway=true are incompatible → prefer interactive login (disable passive)
+        if ($gateway && $forceAuthn) {
+            $gateway = false;
+        }
+
+        // Handle passive authentication
+        if ($gateway && !$this->authSource->isAuthenticated() && !$requestForceAuthenticate) {
+            $gwResult = $this->handleUnauthenticatedGateway(
+                $request,
+                $serviceUrl,
+                $entityId,
+                $returnToUrl,
+            );
+            $gateway = $gwResult['gateway'];
+            if ($gwResult['response'] !== null) {
+                return $gwResult['response'];
+            }
+        }
+
+        // Handle interactive authentication
         if (
             $requestForceAuthenticate || !$this->authSource->isAuthenticated()
         ) {
-            $params = [
-                'ForceAuthn' => $forceAuthn,
-                'isPassive' => $gateway,
-                'ReturnTo' => $returnToUrl,
-            ];
-
-            if (isset($entityId)) {
-                $params['saml:idp'] = $entityId;
-            }
-
-            if (isset($this->idpList)) {
-                if (count($this->idpList) > 1) {
-                    $params['saml:IDPList'] = $this->idpList;
-                } else {
-                    $params['saml:idp'] = $this->idpList[0];
-                }
-            }
-
-            /*
-             *  REDIRECT TO AUTHSOURCE LOGIN
-             * */
-            return new RunnableResponse(
-                [$this->authSource, 'login'],
-                [$params],
+            return $this->handleInteractiveAuthenticate(
+                forceAuthn: $forceAuthn,
+                gateway: $gateway,
+                returnToUrl: $returnToUrl,
+                entityId: $entityId,
             );
         }
 
@@ -204,9 +204,8 @@ class LoginController
             $this->ticketStore->addTicket($sessionTicket);
         }
 
-        /*
-         *  We are done. REDIRECT TO LOGGEDIN
-         * */
+        /* We are done. REDIRECT TO LOGGEDIN */
+
         if (!isset($serviceUrl) && $this->authProcId === null) {
             $loggedInUrl = Module::getModuleURL('casserver/loggedIn');
             return new RunnableResponse(
@@ -251,6 +250,7 @@ class LoginController
             return $t;
         }
 
+        // Use case 1: user has SSO or non-interactive auth succeeded → redirect/POST to service WITH a ticket
         $ticketName = $this->calculateTicketName($service);
         $this->postAuthUrlParameters[$ticketName] = $serviceTicket['id'];
 
@@ -463,5 +463,127 @@ class LoginController
 
         // Attribute Extractor
         $this->attributeExtractor = new AttributeExtractor($this->casConfig, $processingChainFactory);
+    }
+
+    /**
+     * Trigger interactive authentication via the AuthSource.
+     *
+     * @param bool        $forceAuthn
+     * @param bool        $gateway
+     * @param string      $returnToUrl
+     * @param string|null $entityId
+     *
+     * @return RunnableResponse
+     */
+    private function handleInteractiveAuthenticate(
+        bool $forceAuthn,
+        bool $gateway,
+        string $returnToUrl,
+        ?string $entityId,
+    ): RunnableResponse {
+        $params = [
+            'ForceAuthn' => $forceAuthn,
+            'isPassive' => $gateway,
+            'ReturnTo' => $returnToUrl,
+        ];
+
+        if (isset($entityId)) {
+            $params['saml:idp'] = $entityId;
+        }
+
+        if (isset($this->idpList)) {
+            if (sizeof($this->idpList) > 1) {
+                $params['saml:IDPList'] = $this->idpList;
+            } else {
+                $params['saml:idp'] = $this->idpList[0];
+            }
+        }
+
+        return new RunnableResponse(
+            [$this->authSource, 'login'],
+            [$params],
+        );
+    }
+
+
+    /**
+     * Handle the gateway flow when the user is NOT authenticated.
+     * Passive mode is only attempted if 'enable_passive_mode' is enabled in configuration.
+     *
+     * Returns:
+     * - ['response' => RunnableResponse|null, 'gateway' => bool] where 'gateway' may be toggled off for scenario 3.
+     */
+    private function handleUnauthenticatedGateway(
+        Request $request,
+        ?string $serviceUrl,
+        ?string $entityId,
+        string $returnToUrl,
+    ): array {
+        $passiveAllowed = $this->casConfig->getOptionalBoolean('enable_passive_mode', false);
+
+        // If passive is not enabled by configuration, follow scenario 2/3 directly.
+        if (!$passiveAllowed) {
+            if ($serviceUrl !== null) {
+                // Scenario 2: redirect to service WITHOUT any CAS parameters (always via GET redirect)
+                return [
+                    'response' => new RunnableResponse(
+                        [$this->httpUtils, 'redirectTrustedURL'],
+                        [$serviceUrl, []],
+                    ),
+                    'gateway' => true,
+                ];
+            }
+            // Scenario 3: no service → disable gateway and proceed with interactive login
+            return ['response' => null, 'gateway' => false];
+        }
+
+        // Passive mode enabled: try a passive (non-interactive) authentication once
+        $gatewayTried = $this->getRequestParam($request, 'gatewayTried');
+        if ($gatewayTried !== '1') {
+            $rt = str_contains($returnToUrl, 'gatewayTried=')
+                ? $returnToUrl
+                : $returnToUrl . (str_contains($returnToUrl, '?') ? '&' : '?') . 'gatewayTried=1';
+
+            $passiveParams = [
+                'ForceAuthn' => false,
+                'isPassive' => true,
+                'ReturnTo' => $rt,
+            ];
+
+            if (isset($entityId)) {
+                $passiveParams['saml:idp'] = $entityId;
+            }
+
+            if (isset($this->idpList)) {
+                if (sizeof($this->idpList) > 1) {
+                    $passiveParams['saml:IDPList'] = $this->idpList;
+                } else {
+                    $passiveParams['saml:idp'] = $this->idpList[0];
+                }
+            }
+
+            return [
+                'response' => new RunnableResponse(
+                    [$this->authSource, 'login'],
+                    [$passiveParams],
+                ),
+                'gateway' => true,
+            ];
+        }
+
+        // Passive attempt already performed and still not authenticated.
+        if ($serviceUrl !== null) {
+            // Scenario 2: redirect to service WITHOUT any CAS parameters (always via GET redirect)
+            return [
+                'response' => new RunnableResponse(
+                    [$this->httpUtils, 'redirectTrustedURL'],
+                    [$serviceUrl, []],
+                ),
+                'gateway' => true,
+            ];
+        }
+
+        // Scenario 3: no service provided → disable gateway and proceed with interactive login
+        return ['response' => null, 'gateway' => false];
     }
 }

@@ -215,8 +215,15 @@ class LoginControllerTest extends TestCase
 
         $response = $controllerMock->login($loginRequest, ...$requestParameters);
         $this->assertInstanceOf(RunnableResponse::class, $response);
+
+        // Assert we call into authSource->login
         $callable = (array)$response->getCallable();
         $this->assertEquals('login', $callable[1] ?? '');
+
+        // Assert the interactive authenticate parameters (entityId/idpList logic)
+        $arguments = $response->getArguments();
+        $actualLoginParams = $arguments[0] ?? [];
+        $this->assertEquals($loginParameters, $actualLoginParams);
     }
 
     /**
@@ -318,5 +325,314 @@ class LoginControllerTest extends TestCase
         $this->assertStringStartsWith('ST-', array_values($arguments[1])[0] ?? []);
         $callable = (array)$response->getCallable();
         $this->assertEquals('redirectTrustedURL', $callable[1] ?? '');
+    }
+
+    public function testGatewayPassiveDisabledRedirectsWithoutParams(): void
+    {
+        // enable_passive_mode disabled
+        $moduleConfig = $this->moduleConfig;
+        $moduleConfig['enable_passive_mode'] = false;
+        $casconfig = Configuration::loadFromArray($moduleConfig);
+
+        $params = [
+            'service' => 'https://example.com/ssp/module.php/cas/linkback.php',
+            'gateway' => true,
+        ];
+        $loginRequest = Request::create(
+            uri:        Module::getModuleURL('casserver/login'),
+            parameters: $params,
+        );
+
+        $controllerMock = $this->getMockBuilder(LoginController::class)
+            ->setConstructorArgs([$this->sspConfig, $casconfig, $this->authSimpleMock, $this->httpUtils])
+            ->onlyMethods(['getSession'])
+            ->getMock();
+
+        // Unauthenticated so gateway path is exercised
+        $this->authSimpleMock->expects($this->atLeastOnce())->method('isAuthenticated')->willReturn(false);
+
+        // Session used to build ReturnTo
+        $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
+        $this->sessionMock->expects($this->once())->method('getSessionId')->willReturn(session_create_id());
+
+        $response = $controllerMock->login($loginRequest, ...$params);
+
+        $this->assertInstanceOf(RunnableResponse::class, $response);
+        $callable = (array)$response->getCallable();
+        $this->assertEquals('redirectTrustedURL', $callable[1] ?? '');
+
+        // Service URL unchanged and NO CAS params appended
+        $arguments = $response->getArguments();
+        $this->assertEquals('https://example.com/ssp/module.php/cas/linkback.php', $arguments[0]);
+        $this->assertSame([], $arguments[1] ?? []);
+    }
+
+    public function testGatewayPassiveEnabledPerformsPassiveAttempt(): void
+    {
+        // enable_passive_mode enabled
+        $moduleConfig = $this->moduleConfig;
+        $moduleConfig['enable_passive_mode'] = true;
+        $casconfig = Configuration::loadFromArray($moduleConfig);
+
+        $params = [
+            'service' => 'https://example.com/ssp/module.php/cas/linkback.php',
+            'gateway' => true,
+        ];
+        $loginRequest = Request::create(
+            uri:        Module::getModuleURL('casserver/login'),
+            parameters: $params,
+        );
+
+        $controllerMock = $this->getMockBuilder(LoginController::class)
+            ->setConstructorArgs([$this->sspConfig, $casconfig, $this->authSimpleMock, $this->httpUtils])
+            ->onlyMethods(['getSession'])
+            ->getMock();
+
+        // Unauthenticated so gateway path is exercised, first passive attempt
+        $this->authSimpleMock->expects($this->atLeastOnce())->method('isAuthenticated')->willReturn(false);
+
+        // Session used to build ReturnTo
+        $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
+        $this->sessionMock->expects($this->once())->method('getSessionId')->willReturn(session_create_id());
+
+        $response = $controllerMock->login($loginRequest, ...$params);
+
+        $this->assertInstanceOf(RunnableResponse::class, $response);
+
+        // Should attempt passive auth via authSource->login
+        $callable = (array)$response->getCallable();
+        $this->assertEquals('login', $callable[1] ?? '');
+
+        // Verify isPassive=true, ForceAuthn=false, ReturnTo contains gatewayTried=1
+        $arguments = $response->getArguments();
+        $actualLoginParams = $arguments[0] ?? [];
+        $this->assertArrayHasKey('ForceAuthn', $actualLoginParams);
+        $this->assertFalse($actualLoginParams['ForceAuthn']);
+        $this->assertArrayHasKey('isPassive', $actualLoginParams);
+        $this->assertTrue($actualLoginParams['isPassive']);
+        $this->assertArrayHasKey('ReturnTo', $actualLoginParams);
+        $this->assertIsString($actualLoginParams['ReturnTo']);
+        $this->assertStringContainsString('gatewayTried=1', $actualLoginParams['ReturnTo']);
+    }
+
+    public function testGatewayPassiveEnabledSecondPassRedirectsWithoutParams(): void
+    {
+        // enable_passive_mode enabled
+        $moduleConfig = $this->moduleConfig;
+        $moduleConfig['enable_passive_mode'] = true;
+        $casconfig = Configuration::loadFromArray($moduleConfig);
+
+        // Include gatewayTried in the Request only
+        $requestParams = [
+            'service' => 'https://example.com/ssp/module.php/cas/linkback.php',
+            'gateway' => true,
+            'gatewayTried' => '1', // simulate second pass after passive attempt
+        ];
+        $loginRequest = Request::create(
+            uri:        Module::getModuleURL('casserver/login'),
+            parameters: $requestParams,
+        );
+
+        $controllerMock = $this->getMockBuilder(LoginController::class)
+            ->setConstructorArgs([$this->sspConfig, $casconfig, $this->authSimpleMock, $this->httpUtils])
+            ->onlyMethods(['getSession'])
+            ->getMock();
+
+        $this->authSimpleMock->expects($this->atLeastOnce())->method('isAuthenticated')->willReturn(false);
+
+        $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
+        $this->sessionMock->expects($this->once())->method('getSessionId')->willReturn(session_create_id());
+
+        // Do not pass 'gatewayTried' as named argument
+        $callParams = $requestParams;
+        unset($callParams['gatewayTried']);
+
+        $response = $controllerMock->login($loginRequest, ...$callParams);
+
+        $this->assertInstanceOf(RunnableResponse::class, $response);
+        $callable = (array)$response->getCallable();
+        $this->assertEquals('redirectTrustedURL', $callable[1] ?? '');
+
+        $arguments = $response->getArguments();
+        $this->assertEquals('https://example.com/ssp/module.php/cas/linkback.php', $arguments[0]);
+        $this->assertSame([], $arguments[1] ?? []);
+    }
+
+    public function testGatewayNoServicePassiveDisabledFallsBackToInteractive(): void
+    {
+        // enable_passive_mode disabled
+        $moduleConfig = $this->moduleConfig;
+        $moduleConfig['enable_passive_mode'] = false;
+        $casconfig = Configuration::loadFromArray($moduleConfig);
+
+        $params = [
+            'gateway' => true, // no 'service' provided
+        ];
+        $loginRequest = Request::create(
+            uri:        Module::getModuleURL('casserver/login'),
+            parameters: $params,
+        );
+
+        $controllerMock = $this->getMockBuilder(LoginController::class)
+            ->setConstructorArgs([$this->sspConfig, $casconfig, $this->authSimpleMock, $this->httpUtils])
+            ->onlyMethods(['getSession'])
+            ->getMock();
+
+        $this->authSimpleMock->expects($this->atLeastOnce())->method('isAuthenticated')->willReturn(false);
+
+        $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
+        $this->sessionMock->expects($this->once())->method('getSessionId')->willReturn(session_create_id());
+
+        $response = $controllerMock->login($loginRequest, ...$params);
+
+        $this->assertInstanceOf(RunnableResponse::class, $response);
+        $callable = (array)$response->getCallable();
+        $this->assertEquals('login', $callable[1] ?? '');
+
+        // isPassive should be false because gateway is disabled when no service in this scenario
+        $arguments = $response->getArguments();
+        $loginArgs = $arguments[0] ?? [];
+        $this->assertArrayHasKey('isPassive', $loginArgs);
+        $this->assertFalse($loginArgs['isPassive']);
+    }
+
+    public function testRenewAndGatewayConflictDisablesPassive(): void
+    {
+        // enable_passive_mode enabled (doesn't matter because renew must disable passive)
+        $moduleConfig = $this->moduleConfig;
+        $moduleConfig['enable_passive_mode'] = true;
+        $casconfig = Configuration::loadFromArray($moduleConfig);
+
+        $params = [
+            'service' => 'https://example.com/ssp/module.php/cas/linkback.php',
+            'gateway' => true,
+            'renew' => true,
+        ];
+        $loginRequest = Request::create(
+            uri:        Module::getModuleURL('casserver/login'),
+            parameters: $params,
+        );
+
+        $controllerMock = $this->getMockBuilder(LoginController::class)
+            ->setConstructorArgs([$this->sspConfig, $casconfig, $this->authSimpleMock, $this->httpUtils])
+            ->onlyMethods(['getSession'])
+            ->getMock();
+
+        $this->authSimpleMock->expects($this->atLeastOnce())->method('isAuthenticated')->willReturn(false);
+
+        $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
+        $this->sessionMock->expects($this->once())->method('getSessionId')->willReturn(session_create_id());
+
+        $response = $controllerMock->login($loginRequest, ...$params);
+
+        $this->assertInstanceOf(RunnableResponse::class, $response);
+        $callable = (array)$response->getCallable();
+        $this->assertEquals('login', $callable[1] ?? '');
+
+        // isPassive must be false when renew=true (gateway disabled)
+        $arguments = $response->getArguments();
+        $loginArgs = $arguments[0] ?? [];
+        $this->assertArrayHasKey('isPassive', $loginArgs);
+        $this->assertFalse($loginArgs['isPassive']);
+        $this->assertArrayHasKey('ForceAuthn', $loginArgs);
+        $this->assertTrue($loginArgs['ForceAuthn']);
+    }
+
+    public function testAuthenticatedPostSubmitsViaPostWithTicket(): void
+    {
+        $moduleConfig = $this->moduleConfig;
+        $casconfig = Configuration::loadFromArray($moduleConfig);
+
+        $requestParams = [
+            'service' => 'https://example.com/ssp/module.php/cas/linkback.php',
+            'method' => 'POST',
+        ];
+        $loginRequest = Request::create(
+            uri:        Module::getModuleURL('casserver/login'),
+            parameters: $requestParams,
+        );
+
+        // Prepare controller with mocks
+        $controllerMock = $this->getMockBuilder(LoginController::class)
+            ->setConstructorArgs([$this->sspConfig, $casconfig, $this->authSimpleMock, $this->httpUtils])
+            ->onlyMethods(['getSession'])
+            ->getMock();
+
+        $sessionId = session_create_id();
+        $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
+        $this->sessionMock->expects($this->exactly(2))->method('getSessionId')->willReturn($sessionId);
+
+        // Simulate authenticated state and required auth data
+        $this->authSimpleMock->expects($this->any())->method('isAuthenticated')->willReturn(true);
+        $this->authSimpleMock->expects($this->once())->method('getAuthData')->with('Expire')->willReturn(9999999999);
+        $this->authSimpleMock->expects($this->once())->method('getAuthDataArray')->willReturn([
+            'Attributes' => [
+                'eduPersonPrincipalName' => ['testuser@example.com'],
+                'Expire' => 9999999999,
+            ],
+        ]);
+
+        $response = $controllerMock->login($loginRequest, ...$requestParams);
+
+        $this->assertInstanceOf(RunnableResponse::class, $response);
+        $callable = (array)$response->getCallable();
+        $this->assertEquals('submitPOSTData', $callable[1] ?? '');
+
+        $arguments = $response->getArguments();
+        $this->assertEquals('https://example.com/ssp/module.php/cas/linkback.php', $arguments[0]);
+        $params = $arguments[1] ?? [];
+        // default ticket name for CAS is 'ticket'
+        $this->assertArrayHasKey('ticket', $params);
+        $this->assertStringStartsWith('ST-', $params['ticket']);
+    }
+
+    public function testGatewayRedirectPreservesServiceQueryWithoutTicket(): void
+    {
+        // Passive disabled to trigger direct redirect with no ticket
+        $moduleConfig = $this->moduleConfig;
+        $moduleConfig['enable_passive_mode'] = false;
+
+        // Service URL with existing query parameters
+        $serviceWithQuery = 'https://example.com/ssp/module.php/cas/linkback.php?foo=1&bar=2';
+        // Ensure the exact service URL (including its query string) is allowed
+        $moduleConfig['legal_service_urls'] = [$serviceWithQuery];
+
+        $casconfig = Configuration::loadFromArray($moduleConfig);
+
+        $params = [
+            'service' => $serviceWithQuery,
+            'gateway' => true,
+        ];
+
+        $loginRequest = Request::create(
+            uri:        Module::getModuleURL('casserver/login'),
+            parameters: $params,
+        );
+
+        $controllerMock = $this->getMockBuilder(LoginController::class)
+            ->setConstructorArgs([$this->sspConfig, $casconfig, $this->authSimpleMock, $this->httpUtils])
+            ->onlyMethods(['getSession'])
+            ->getMock();
+
+        // Unauthenticated so gateway path is exercised
+        $this->authSimpleMock->expects($this->atLeastOnce())->method('isAuthenticated')->willReturn(false);
+
+        // Session used to build ReturnTo
+        $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
+        $this->sessionMock->expects($this->once())->method('getSessionId')->willReturn(session_create_id());
+
+        // Execute
+        $response = $controllerMock->login($loginRequest, ...$params);
+
+        // Validate redirect with original query intact and no CAS parameters appended
+        $this->assertInstanceOf(RunnableResponse::class, $response);
+        $callable = (array)$response->getCallable();
+        $this->assertEquals('redirectTrustedURL', $callable[1] ?? '');
+
+        $arguments = $response->getArguments();
+        // URL should be exactly the original service URL including its query string
+        $this->assertEquals($serviceWithQuery, $arguments[0]);
+        // No additional parameters (e.g., no ticket) should be appended by CAS
+        $this->assertSame([], $arguments[1] ?? []);
     }
 }
