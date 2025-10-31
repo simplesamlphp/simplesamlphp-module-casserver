@@ -164,32 +164,36 @@ class LoginController
         // This will be used to come back from the AuthSource login or from the Processing Chain
         $returnToUrl = $this->getReturnUrl($request, $sessionTicket);
 
-        // Use case 4: renew=true and gateway=true are incompatible → prefer interactive login (disable passive)
+        // renew=true and gateway=true are incompatible → prefer interactive login (disable passive)
+        // Protocol: gateway and renew are incompatible; behavior is undefined if both are set.
+        // OPTIONAL (implementation policy): Prefer renew (interactive, non-passive) by disabling gateway.
+        // OPTIONAL alternative: Reject with 400 to signal incompatible parameters.
         if ($gateway && $forceAuthn) {
             $gateway = false;
         }
 
         // Handle passive authentication
+        // Protocol (gateway set): CAS MUST NOT prompt for credentials during this branch.
         if ($gateway && !$this->authSource->isAuthenticated() && !$requestForceAuthenticate) {
-            $gwResult = $this->handleUnauthenticatedGateway(
+            $response = $this->handleUnauthenticatedGateway(
                 $request,
                 $serviceUrl,
                 $entityId,
                 $returnToUrl,
             );
-            $gateway = $gwResult['gateway'];
-            if ($gwResult['response'] !== null) {
-                return $gwResult['response'];
+            if ($response !== null) {
+                return $response;
             }
         }
 
         // Handle interactive authentication
+        // Protocol: Normal interactive authentication flow (applies when gateway is not in effect).
+        // Renew semantics: when renew=true, server MUST enforce re-authentication (no SSO reuse).
         if (
             $requestForceAuthenticate || !$this->authSource->isAuthenticated()
         ) {
             return $this->handleInteractiveAuthenticate(
                 forceAuthn: $forceAuthn,
-                gateway: $gateway,
                 returnToUrl: $returnToUrl,
                 entityId: $entityId,
             );
@@ -250,7 +254,10 @@ class LoginController
             return $t;
         }
 
-        // Use case 1: user has SSO or non-interactive auth succeeded → redirect/POST to service WITH a ticket
+        // User has SSO or non-interactive auth succeeded → redirect/POST to service WITH a ticket
+        // Protocol: With gateway and a successful non-interactive auth (or existing SSO), CAS MAY redirect to the
+        //           service and append a ticket.
+        // Protocol: CAS MAY interpose an advisory page indicating that authentication took place.
         $ticketName = $this->calculateTicketName($service);
         $this->postAuthUrlParameters[$ticketName] = $serviceTicket['id'];
 
@@ -469,13 +476,81 @@ class LoginController
      * Trigger interactive authentication via the AuthSource.
      *
      * @param bool        $forceAuthn
-     * @param bool        $gateway
      * @param string      $returnToUrl
      * @param string|null $entityId
      *
      * @return RunnableResponse
      */
     private function handleInteractiveAuthenticate(
+        bool $forceAuthn,
+        string $returnToUrl,
+        ?string $entityId,
+    ): RunnableResponse {
+        return $this->handleAuthenticate(
+            forceAuthn: $forceAuthn,
+            gateway: false,
+            returnToUrl: $returnToUrl,
+            entityId: $entityId,
+        );
+    }
+
+    /**
+     * Handle the gateway flow when the user is NOT authenticated.
+     * Passive mode is only attempted if 'enable_passive_mode' is enabled in configuration.
+     *
+     * Returns: RunnableResponse|null
+     *  - RunnableResponse for either a passive attempt or a redirect to service without ticket.
+     *  - null to indicate: proceed with interactive login (non-passive).
+     */
+    private function handleUnauthenticatedGateway(
+        Request $request,
+        ?string $serviceUrl,
+        ?string $entityId,
+        string $returnToUrl,
+    ): ?RunnableResponse {
+        $passiveAllowed = $this->casConfig->getOptionalBoolean('enable_passive_mode', false);
+
+        // Passive mode is not enabled by configuration.
+        // Protocol: If non-interactive auth cannot be established:
+        //  - If service is present, CAS MUST redirect to the service URL WITHOUT a ticket parameter.
+        //  - If service is absent, behavior is undefined; it is RECOMMENDED
+        //    to request credentials as if neither parameter was specified.
+        if (!$passiveAllowed) {
+            // Passive attempt already performed and still not authenticated.
+            return $this->gatewayFallback($serviceUrl);
+        }
+
+        // Passive mode enabled: try a passive (non-interactive) authentication once
+        // OPTIONAL (implementation): Attempt passive exactly once while avoiding loops.
+        $gatewayTried = $this->getRequestParam($request, 'gatewayTried');
+        if ($gatewayTried !== '1') {
+            $rt = str_contains($returnToUrl, 'gatewayTried=')
+                ? $returnToUrl
+                : $returnToUrl . (str_contains($returnToUrl, '?') ? '&' : '?') . 'gatewayTried=1';
+
+            return $this->handleAuthenticate(
+                forceAuthn: false,
+                gateway: true,
+                returnToUrl: $rt,
+                entityId: $entityId,
+            );
+        }
+
+        // Passive attempt already performed and still not authenticated.
+        return $this->gatewayFallback($serviceUrl);
+    }
+
+    /**
+     * Handle authentication request by configuring parameters and triggering login via auth source.
+     *
+     * @param bool $forceAuthn Whether to force authentication regardless of existing session
+     * @param bool $gateway Whether authentication should be passive/non-interactive
+     * @param string $returnToUrl URL to return to after authentication
+     * @param string|null $entityId Optional specific IdP entity ID to use
+     *
+     * @return RunnableResponse Response containing the login redirect
+     */
+    private function handleAuthenticate(
         bool $forceAuthn,
         bool $gateway,
         string $returnToUrl,
@@ -505,85 +580,25 @@ class LoginController
         );
     }
 
-
     /**
-     * Handle the gateway flow when the user is NOT authenticated.
-     * Passive mode is only attempted if 'enable_passive_mode' is enabled in configuration.
-     *
-     * Returns:
-     * - ['response' => RunnableResponse|null, 'gateway' => bool] where 'gateway' may be toggled off for scenario 3.
+     * Gateway fallback per CAS gateway semantics:
+     * - Protocol (MUST): If a service is provided and non-interactive auth cannot be established,
+     *   redirect to the service WITHOUT any CAS parameters (no "ticket").
+     * - Protocol (Undefined, RECOMMENDED): If no service is provided, proceed with interactive login
+     *     (request credentials).
+     * @param string|null $serviceUrl
+     * @return RunnableResponse|null
      */
-    private function handleUnauthenticatedGateway(
-        Request $request,
-        ?string $serviceUrl,
-        ?string $entityId,
-        string $returnToUrl,
-    ): array {
-        $passiveAllowed = $this->casConfig->getOptionalBoolean('enable_passive_mode', false);
-
-        // If passive is not enabled by configuration, follow scenario 2/3 directly.
-        if (!$passiveAllowed) {
-            if ($serviceUrl !== null) {
-                // Scenario 2: redirect to service WITHOUT any CAS parameters (always via GET redirect)
-                return [
-                    'response' => new RunnableResponse(
-                        [$this->httpUtils, 'redirectTrustedURL'],
-                        [$serviceUrl, []],
-                    ),
-                    'gateway' => true,
-                ];
-            }
-            // Scenario 3: no service → disable gateway and proceed with interactive login
-            return ['response' => null, 'gateway' => false];
-        }
-
-        // Passive mode enabled: try a passive (non-interactive) authentication once
-        $gatewayTried = $this->getRequestParam($request, 'gatewayTried');
-        if ($gatewayTried !== '1') {
-            $rt = str_contains($returnToUrl, 'gatewayTried=')
-                ? $returnToUrl
-                : $returnToUrl . (str_contains($returnToUrl, '?') ? '&' : '?') . 'gatewayTried=1';
-
-            $passiveParams = [
-                'ForceAuthn' => false,
-                'isPassive' => true,
-                'ReturnTo' => $rt,
-            ];
-
-            if (isset($entityId)) {
-                $passiveParams['saml:idp'] = $entityId;
-            }
-
-            if (isset($this->idpList)) {
-                if (sizeof($this->idpList) > 1) {
-                    $passiveParams['saml:IDPList'] = $this->idpList;
-                } else {
-                    $passiveParams['saml:idp'] = $this->idpList[0];
-                }
-            }
-
-            return [
-                'response' => new RunnableResponse(
-                    [$this->authSource, 'login'],
-                    [$passiveParams],
-                ),
-                'gateway' => true,
-            ];
-        }
-
-        // Passive attempt already performed and still not authenticated.
+    private function gatewayFallback(?string $serviceUrl): ?RunnableResponse
+    {
         if ($serviceUrl !== null) {
-            // Scenario 2: redirect to service WITHOUT any CAS parameters (always via GET redirect)
-            return [
-                'response' => new RunnableResponse(
-                    [$this->httpUtils, 'redirectTrustedURL'],
-                    [$serviceUrl, []],
-                ),
-                'gateway' => true,
-            ];
+            // MUST: Redirect to service WITHOUT a "ticket" parameter (and without other CAS params).
+            return new RunnableResponse(
+                [$this->httpUtils, 'redirectTrustedURL'],
+                [$serviceUrl, []],
+            );
         }
-
-        // Scenario 3: no service provided → disable gateway and proceed with interactive login
-        return ['response' => null, 'gateway' => false];
+        // RECOMMENDED: No service specified; proceed with interactive login as if neither parameter was specified.
+        return null;
     }
 }
