@@ -318,6 +318,7 @@ class LoginControllerTest extends TestCase
             parameters: $queryParameters,
         );
 
+        /** @psalm-suppress InvalidArgument */
         $response = $controllerMock->login($loginRequest, ...$queryParameters);
         $this->assertInstanceOf(RunnableResponse::class, $response);
         $arguments = $response->getArguments();
@@ -327,15 +328,35 @@ class LoginControllerTest extends TestCase
         $this->assertEquals('redirectTrustedURL', $callable[1] ?? '');
     }
 
-    public function testGatewayPassiveDisabledRedirectsWithoutParams(): void
+    /**
+     * @return array<array{0:string}>
+     */
+    public function serviceUrlsProvider(): array
+    {
+        return [
+            ['https://example.com/ssp/module.php/cas/linkback.php'],
+            ['https://example.com/ssp/module.php/cas/linkback.php?foo=1&bar=2'],
+        ];
+    }
+
+    /**
+     * When passive is disabled and a service is provided, CAS must redirect to the service without appending CAS params
+     *
+     * @dataProvider serviceUrlsProvider
+     */
+    public function testGatewayPassiveDisabledRedirectsWithoutParams(string $serviceUrl): void
     {
         // enable_passive_mode disabled
         $moduleConfig = $this->moduleConfig;
         $moduleConfig['enable_passive_mode'] = false;
+
+        // Ensure the exact service URL (including its query string, if any) is allowed
+        $moduleConfig['legal_service_urls'] = [$serviceUrl];
+
         $casconfig = Configuration::loadFromArray($moduleConfig);
 
         $params = [
-            'service' => 'https://example.com/ssp/module.php/cas/linkback.php',
+            'service' => $serviceUrl,
             'gateway' => true,
         ];
         $loginRequest = Request::create(
@@ -355,15 +376,16 @@ class LoginControllerTest extends TestCase
         $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
         $this->sessionMock->expects($this->once())->method('getSessionId')->willReturn(session_create_id());
 
+        // Execute
         $response = $controllerMock->login($loginRequest, ...$params);
 
+        // Validate redirect with original service URL and no CAS parameters appended
         $this->assertInstanceOf(RunnableResponse::class, $response);
         $callable = (array)$response->getCallable();
         $this->assertEquals('redirectTrustedURL', $callable[1] ?? '');
 
-        // Service URL unchanged and NO CAS params appended
         $arguments = $response->getArguments();
-        $this->assertEquals('https://example.com/ssp/module.php/cas/linkback.php', $arguments[0]);
+        $this->assertEquals($serviceUrl, $arguments[0]);
         $this->assertSame([], $arguments[1] ?? []);
     }
 
@@ -403,7 +425,7 @@ class LoginControllerTest extends TestCase
         $callable = (array)$response->getCallable();
         $this->assertEquals('login', $callable[1] ?? '');
 
-        // Verify isPassive=true, ForceAuthn=false, ReturnTo contains gatewayTried=1
+        // Verify isPassive=true, ForceAuthn=false
         $arguments = $response->getArguments();
         $actualLoginParams = $arguments[0] ?? [];
         $this->assertArrayHasKey('ForceAuthn', $actualLoginParams);
@@ -412,50 +434,6 @@ class LoginControllerTest extends TestCase
         $this->assertTrue($actualLoginParams['isPassive']);
         $this->assertArrayHasKey('ReturnTo', $actualLoginParams);
         $this->assertIsString($actualLoginParams['ReturnTo']);
-        $this->assertStringContainsString('gatewayTried=1', $actualLoginParams['ReturnTo']);
-    }
-
-    public function testGatewayPassiveEnabledSecondPassRedirectsWithoutParams(): void
-    {
-        // enable_passive_mode enabled
-        $moduleConfig = $this->moduleConfig;
-        $moduleConfig['enable_passive_mode'] = true;
-        $casconfig = Configuration::loadFromArray($moduleConfig);
-
-        // Include gatewayTried in the Request only
-        $requestParams = [
-            'service' => 'https://example.com/ssp/module.php/cas/linkback.php',
-            'gateway' => true,
-            'gatewayTried' => '1', // simulate second pass after passive attempt
-        ];
-        $loginRequest = Request::create(
-            uri:        Module::getModuleURL('casserver/login'),
-            parameters: $requestParams,
-        );
-
-        $controllerMock = $this->getMockBuilder(LoginController::class)
-            ->setConstructorArgs([$this->sspConfig, $casconfig, $this->authSimpleMock, $this->httpUtils])
-            ->onlyMethods(['getSession'])
-            ->getMock();
-
-        $this->authSimpleMock->expects($this->atLeastOnce())->method('isAuthenticated')->willReturn(false);
-
-        $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
-        $this->sessionMock->expects($this->once())->method('getSessionId')->willReturn(session_create_id());
-
-        // Do not pass 'gatewayTried' as named argument
-        $callParams = $requestParams;
-        unset($callParams['gatewayTried']);
-
-        $response = $controllerMock->login($loginRequest, ...$callParams);
-
-        $this->assertInstanceOf(RunnableResponse::class, $response);
-        $callable = (array)$response->getCallable();
-        $this->assertEquals('redirectTrustedURL', $callable[1] ?? '');
-
-        $arguments = $response->getArguments();
-        $this->assertEquals('https://example.com/ssp/module.php/cas/linkback.php', $arguments[0]);
-        $this->assertSame([], $arguments[1] ?? []);
     }
 
     public function testGatewayNoServicePassiveDisabledFallsBackToInteractive(): void
@@ -572,6 +550,7 @@ class LoginControllerTest extends TestCase
             ],
         ]);
 
+        /** @psalm-suppress InvalidArgument */
         $response = $controllerMock->login($loginRequest, ...$requestParams);
 
         $this->assertInstanceOf(RunnableResponse::class, $response);
@@ -584,55 +563,5 @@ class LoginControllerTest extends TestCase
         // default ticket name for CAS is 'ticket'
         $this->assertArrayHasKey('ticket', $params);
         $this->assertStringStartsWith('ST-', $params['ticket']);
-    }
-
-    public function testGatewayRedirectPreservesServiceQueryWithoutTicket(): void
-    {
-        // Passive disabled to trigger direct redirect with no ticket
-        $moduleConfig = $this->moduleConfig;
-        $moduleConfig['enable_passive_mode'] = false;
-
-        // Service URL with existing query parameters
-        $serviceWithQuery = 'https://example.com/ssp/module.php/cas/linkback.php?foo=1&bar=2';
-        // Ensure the exact service URL (including its query string) is allowed
-        $moduleConfig['legal_service_urls'] = [$serviceWithQuery];
-
-        $casconfig = Configuration::loadFromArray($moduleConfig);
-
-        $params = [
-            'service' => $serviceWithQuery,
-            'gateway' => true,
-        ];
-
-        $loginRequest = Request::create(
-            uri:        Module::getModuleURL('casserver/login'),
-            parameters: $params,
-        );
-
-        $controllerMock = $this->getMockBuilder(LoginController::class)
-            ->setConstructorArgs([$this->sspConfig, $casconfig, $this->authSimpleMock, $this->httpUtils])
-            ->onlyMethods(['getSession'])
-            ->getMock();
-
-        // Unauthenticated so gateway path is exercised
-        $this->authSimpleMock->expects($this->atLeastOnce())->method('isAuthenticated')->willReturn(false);
-
-        // Session used to build ReturnTo
-        $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
-        $this->sessionMock->expects($this->once())->method('getSessionId')->willReturn(session_create_id());
-
-        // Execute
-        $response = $controllerMock->login($loginRequest, ...$params);
-
-        // Validate redirect with original query intact and no CAS parameters appended
-        $this->assertInstanceOf(RunnableResponse::class, $response);
-        $callable = (array)$response->getCallable();
-        $this->assertEquals('redirectTrustedURL', $callable[1] ?? '');
-
-        $arguments = $response->getArguments();
-        // URL should be exactly the original service URL including its query string
-        $this->assertEquals($serviceWithQuery, $arguments[0]);
-        // No additional parameters (e.g., no ticket) should be appended by CAS
-        $this->assertSame([], $arguments[1] ?? []);
     }
 }

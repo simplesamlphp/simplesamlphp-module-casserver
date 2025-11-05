@@ -176,7 +176,6 @@ class LoginController
         // Protocol (gateway set): CAS MUST NOT prompt for credentials during this branch.
         if ($gateway && !$this->authSource->isAuthenticated() && !$requestForceAuthenticate) {
             $response = $this->handleUnauthenticatedGateway(
-                $request,
                 $serviceUrl,
                 $entityId,
                 $returnToUrl,
@@ -503,7 +502,6 @@ class LoginController
      *  - null to indicate: proceed with interactive login (non-passive).
      */
     private function handleUnauthenticatedGateway(
-        Request $request,
         ?string $serviceUrl,
         ?string $entityId,
         string $returnToUrl,
@@ -520,24 +518,13 @@ class LoginController
             return $this->gatewayFallback($serviceUrl);
         }
 
-        // Passive mode enabled: try a passive (non-interactive) authentication once
-        // OPTIONAL (implementation): Attempt passive exactly once while avoiding loops.
-        $gatewayTried = $this->getRequestParam($request, 'gatewayTried');
-        if ($gatewayTried !== '1') {
-            $rt = str_contains($returnToUrl, 'gatewayTried=')
-                ? $returnToUrl
-                : $returnToUrl . (str_contains($returnToUrl, '?') ? '&' : '?') . 'gatewayTried=1';
-
-            return $this->handleAuthenticate(
-                forceAuthn: false,
-                gateway: true,
-                returnToUrl: $rt,
-                entityId: $entityId,
-            );
-        }
-
-        // Passive attempt already performed and still not authenticated.
-        return $this->gatewayFallback($serviceUrl);
+        // Passive mode enabled: attempt a passive (non-interactive) authentication.
+        return $this->handleAuthenticate(
+            forceAuthn: false,
+            gateway: true,
+            returnToUrl: $returnToUrl,
+            entityId: $entityId,
+        );
     }
 
     /**
