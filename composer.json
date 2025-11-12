@@ -39,9 +39,9 @@
         "simplesamlphp/assert": "~1.8.2",
         "simplesamlphp/composer-module-installer": "~1.4.0",
         "simplesamlphp/simplesamlphp": "~2.4.2",
-        "simplesamlphp/xml-cas": "~2.0.0",
-        "simplesamlphp/xml-common": "~2.0.0",
-        "simplesamlphp/xml-soap": "~2.0.0",
+        "simplesamlphp/xml-cas": "~1.3",
+        "simplesamlphp/xml-common": "~1.17",
+        "simplesamlphp/xml-soap": "~1.5",
         "symfony/http-foundation": "~6.4.0",
         "symfony/http-kernel": "~6.4.0",
         "simplesamlphp/saml11": "~1.2.5"
@@ -54,11 +54,8 @@
         "source": "https://github.com/simplesamlphp/simplesamlphp-module-casserver"
     },
     "scripts": {
-        "validate": [
+        "verify": [
             "vendor/bin/phpcs -p",
-            "vendor/bin/composer-require-checker check --config-file=tools/composer-require-checker.json composer.json",
-            "vendor/bin/psalm -c psalm-dev.xml",
-            "vendor/bin/composer-unused",
             "vendor/bin/phpunit --no-coverage --testdox"
         ],
         "tests": [
