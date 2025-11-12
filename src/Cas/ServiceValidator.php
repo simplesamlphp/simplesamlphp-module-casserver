@@ -53,34 +53,8 @@ class ServiceValidator
 
             $configOverride = \is_int($index) ? null : $value;
 
-            // URL String
-            if (str_starts_with($service, $legalUrl)) {
-                $isValidService = true;
+            if ($isValidService = $this->validateServiceIsLegal($legalUrl, $service)) {
                 break;
-            }
-
-            // Regex
-            // Since "If the regex pattern passed does not compile to a valid regex, an E_WARNING is emitted. "
-            // we will throw an exception if the warning is emitted and use try-catch to handle it
-            set_error_handler(static function ($severity, $message, $file, $line) {
-                throw new \ErrorException($message, $severity, $severity, $file, $line);
-            }, E_WARNING);
-
-            try {
-                $result = preg_match($legalUrl, $service);
-                if ($result !== 1) {
-                    throw new \RuntimeException('Service URL does not match legal service URL.');
-                }
-                $isValidService = true;
-                break;
-            } catch (\RuntimeException $e) {
-                // do nothing
-                Logger::warning($e->getMessage());
-            } catch (\Exception $e) {
-                // do nothing
-                Logger::warning("Invalid CAS legal service url '$legalUrl'. Error " . preg_last_error());
-            } finally {
-                restore_error_handler();
             }
         }
 
@@ -106,5 +80,39 @@ class ServiceValidator
             $serviceConfig = array_merge($serviceConfig, $configOverride);
         }
         return Configuration::loadFromArray($serviceConfig);
+    }
+
+    /**
+     * @param string $legalUrl The string or regex to use for comparison
+     * @param string $service  The service to compare
+     *
+     * @return bool Whether the service is legal
+     * @throws \ErrorException
+     */
+    protected function validateServiceIsLegal(string $legalUrl, string $service): bool
+    {
+        $isValid = false;
+        if (!ctype_alnum($legalUrl[0])) {
+            // Since "If the regex pattern passed does not compile to a valid regex, an E_WARNING is emitted. "
+            // we will throw an exception if the warning is emitted and use try-catch to handle it
+            set_error_handler(static function ($severity, $message, $file, $line) {
+                throw new \ErrorException($message, $severity, $severity, $file, $line);
+            }, E_WARNING);
+
+            try {
+                if (preg_match($legalUrl, $service) === 1) {
+                    $isValid = true;
+                }
+            } catch (\ErrorException $e) {
+                // do nothing
+                Logger::warning("Invalid CAS legal service url '$legalUrl'. Error " . preg_last_error_msg());
+            } finally {
+                restore_error_handler();
+            }
+        } elseif (str_starts_with($service, $legalUrl)) {
+            $isValid = true;
+        }
+
+        return $isValid;
     }
 }
