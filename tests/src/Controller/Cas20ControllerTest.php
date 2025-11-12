@@ -565,14 +565,6 @@ class Cas20ControllerTest extends TestCase
                 "Ticket 'PT-{$sessionId}' has expired",
                 'PT-' . $sessionId,
             ],
-            'Returns Bad Request on Ticket is A Service Ticket' => [
-                [
-                    'ticket' => 'ST-' . $sessionId,
-                    'service' => 'https://myservice.com/abcd',
-                ],
-                "Ticket 'ST-{$sessionId}' is not a proxy ticket.",
-                'ST-' . $sessionId,
-            ],
             'Returns Bad Request on Ticket Issued By Single SignOn Session' => [
                 [
                     'ticket' => 'PT-' . $sessionId,
@@ -583,13 +575,22 @@ class Cas20ControllerTest extends TestCase
                 'PT-' . $sessionId,
                 9999999999,
             ],
-            'Returns Success' => [
+            'Returns Success with Proxy Ticket' => [
                 [
                     'ticket' => 'PT-' . $sessionId,
                     'service' => 'https://myservice.com/abcd',
                 ],
                 'username@google.com',
                 'PT-' . $sessionId,
+                9999999999,
+            ],
+            'Returns Success with Service Ticket' => [
+                [
+                    'ticket' => 'ST-' . $sessionId,
+                    'service' => 'https://myservice.com/abcd',
+                ],
+                'username@google.com',
+                'ST-' . $sessionId,
                 9999999999,
             ],
         ];
