@@ -331,7 +331,7 @@ class LoginControllerTest extends TestCase
     /**
      * @return array<array{0:string}>
      */
-    public function serviceUrlsProvider(): array
+    public static function serviceUrlsProvider(): array
     {
         return [
             ['https://example.com/ssp/module.php/cas/linkback.php'],

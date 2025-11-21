@@ -165,24 +165,18 @@ class LoginController
         $returnToUrl = $this->getReturnUrl($request, $sessionTicket);
 
         // renew=true and gateway=true are incompatible → prefer interactive login (disable passive)
-        // Protocol: gateway and renew are incompatible; behavior is undefined if both are set.
-        // OPTIONAL (implementation policy): Prefer renew (interactive, non-passive) by disabling gateway.
-        // OPTIONAL alternative: Reject with 400 to signal incompatible parameters.
         if ($gateway && $forceAuthn) {
             $gateway = false;
         }
 
-        // Handle passive authentication
+        // Handle passive authentication if service url defined
         // Protocol (gateway set): CAS MUST NOT prompt for credentials during this branch.
-        if ($gateway && !$this->authSource->isAuthenticated() && !$requestForceAuthenticate) {
-            $response = $this->handleUnauthenticatedGateway(
+        if ($serviceUrl && $gateway && !$this->authSource->isAuthenticated() && !$requestForceAuthenticate) {
+            return $this->handleUnauthenticatedGateway(
                 $serviceUrl,
                 $entityId,
                 $returnToUrl,
             );
-            if ($response !== null) {
-                return $response;
-            }
         }
 
         // Handle interactive authentication
@@ -254,9 +248,6 @@ class LoginController
         }
 
         // User has SSO or non-interactive auth succeeded → redirect/POST to service WITH a ticket
-        // Protocol: With gateway and a successful non-interactive auth (or existing SSO), CAS MAY redirect to the
-        //           service and append a ticket.
-        // Protocol: CAS MAY interpose an advisory page indicating that authentication took place.
         $ticketName = $this->calculateTicketName($service);
         $this->postAuthUrlParameters[$ticketName] = $serviceTicket['id'];
 
@@ -502,20 +493,19 @@ class LoginController
      *  - null to indicate: proceed with interactive login (non-passive).
      */
     private function handleUnauthenticatedGateway(
-        ?string $serviceUrl,
+        string $serviceUrl,
         ?string $entityId,
         string $returnToUrl,
-    ): ?RunnableResponse {
+    ): RunnableResponse {
         $passiveAllowed = $this->casConfig->getOptionalBoolean('enable_passive_mode', false);
 
-        // Passive mode is not enabled by configuration.
-        // Protocol: If non-interactive auth cannot be established:
-        //  - If service is present, CAS MUST redirect to the service URL WITHOUT a ticket parameter.
-        //  - If service is absent, behavior is undefined; it is RECOMMENDED
-        //    to request credentials as if neither parameter was specified.
+        // Passive mode is not enabled by configuration
+        // CAS MUST redirect to the service URL WITHOUT a ticket parameter.
         if (!$passiveAllowed) {
-            // Passive attempt already performed and still not authenticated.
-            return $this->gatewayFallback($serviceUrl);
+            return new RunnableResponse(
+                [$this->httpUtils, 'redirectTrustedURL'],
+                [$serviceUrl, []],
+            );
         }
 
         // Passive mode enabled: attempt a passive (non-interactive) authentication.
@@ -565,27 +555,5 @@ class LoginController
             [$this->authSource, 'login'],
             [$params],
         );
-    }
-
-    /**
-     * Gateway fallback per CAS gateway semantics:
-     * - Protocol (MUST): If a service is provided and non-interactive auth cannot be established,
-     *   redirect to the service WITHOUT any CAS parameters (no "ticket").
-     * - Protocol (Undefined, RECOMMENDED): If no service is provided, proceed with interactive login
-     *     (request credentials).
-     * @param string|null $serviceUrl
-     * @return RunnableResponse|null
-     */
-    private function gatewayFallback(?string $serviceUrl): ?RunnableResponse
-    {
-        if ($serviceUrl !== null) {
-            // MUST: Redirect to service WITHOUT a "ticket" parameter (and without other CAS params).
-            return new RunnableResponse(
-                [$this->httpUtils, 'redirectTrustedURL'],
-                [$serviceUrl, []],
-            );
-        }
-        // RECOMMENDED: No service specified; proceed with interactive login as if neither parameter was specified.
-        return null;
     }
 }

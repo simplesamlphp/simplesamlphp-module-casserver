@@ -117,7 +117,8 @@ $config = [
     'proxy_granting_ticket_expire_time' => 600,
     // how many seconds proxy tickets are valid for, defaults to 5
     'proxy_ticket_expire_time' => 5,
-    // OPTIONAL, enable CAS passive mode, defaults to false
+    // OPTIONAL, if `gateway=true` is requested and user has no session, invoke the authsource with `isPassive=true`.
+    // defaults to false
     //'enable_passive_mode' => true,
 
     // If query param debugMode=true is sent to the login endpoint then print cas ticket xml. Default false
