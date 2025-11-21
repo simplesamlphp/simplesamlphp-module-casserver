@@ -57,7 +57,8 @@
     "scripts": {
         "verify": [
             "vendor/bin/phpcs -p",
-            "vendor/bin/phpunit --no-coverage --testdox"
+            "vendor/bin/phpunit --no-coverage --testdox",
+            "vendor/bin/phpstan --memory-limit=256M analyze -c phpstan.neon"
         ],
         "tests": [
             "vendor/bin/phpunit --no-coverage"

@@ -74,21 +74,7 @@ trait TicketValidatorTrait
         $message = '';
         // Below, we do not have a ticket or the ticket does not meet the very basic criteria that allow
         // any further handling
-        if (empty($serviceTicket)) {
-            // No ticket
-            $message = 'Ticket ' . var_export($ticket, true) . ' not recognized';
-            $failed  = true;
-        } elseif ($method === 'proxyValidate' && !$this->ticketFactory->isProxyTicket($serviceTicket)) {
-            // proxyValidate but not a proxy ticket
-            $message = 'Ticket ' . var_export($ticket, true) . ' is not a proxy ticket.';
-            $failed  = true;
-        } elseif ($method === 'serviceValidate' && !$this->ticketFactory->isServiceTicket($serviceTicket)) {
-            // serviceValidate but not a service ticket
-            $message = 'Ticket ' . var_export($ticket, true) . ' is not a service ticket.';
-            $failed  = true;
-        }
-
-        if ($failed) {
+        if ($message = $this->validateServiceTicket($serviceTicket, $ticket, $method)) {
             $finalMessage = 'casserver:validate: ' . $message;
             Logger::error(__METHOD__ . '::' . $finalMessage);
 
@@ -184,5 +170,28 @@ trait TicketValidatorTrait
             (string)$this->cas20Protocol->getValidateSuccessResponse($serviceTicket['userName']),
             Response::HTTP_OK,
         );
+    }
+
+    /**
+     * @param array{'id': string}|null $serviceTicket
+     *
+     * @return ?string Message on failure, null on success
+     */
+    private function validateServiceTicket(?array $serviceTicket, string $ticket, string $method): ?string
+    {
+        if (empty($serviceTicket)) {
+            return 'Ticket ' . var_export($ticket, true) . ' not recognized';
+        }
+
+        $isServiceTicket = $this->ticketFactory->isServiceTicket($serviceTicket);
+        if ($method === 'serviceValidate' && !$isServiceTicket) {
+            return 'Ticket ' . var_export($ticket, true) . ' is not a service ticket.';
+        }
+
+        if ($method === 'proxyValidate' && !$isServiceTicket && !$this->ticketFactory->isProxyTicket($serviceTicket)) {
+            return 'Ticket ' . var_export($ticket, true) . ' is not a proxy ticket.';
+        }
+
+        return null;
     }
 }
