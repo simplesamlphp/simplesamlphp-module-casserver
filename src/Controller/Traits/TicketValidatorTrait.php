@@ -173,7 +173,7 @@ trait TicketValidatorTrait
     }
 
     /**
-     * @param array|null $serviceTicket
+     * @param array{'id': string}|null $serviceTicket
      *
      * @return ?string Message on failure, null on success
      */
