@@ -14,6 +14,7 @@ $config = array(
         'users' => [
             'student:studentpass' => [
                 'uid' => ['student'],
+                'cn' => ['Firsty Lasty'],
                 'eduPersonAffiliation' => ['member', 'student'],
                 'eduPersonNickname' => 'Sir_Nickname',
                 'displayName' => 'Some User',

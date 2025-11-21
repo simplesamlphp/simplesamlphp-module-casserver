@@ -115,7 +115,7 @@ $config = [
                                   url query parameter to CAS logout mandatory for obvious reasons.*/
 
     // how many seconds service tickets are valid for, defaults to 5
-    'service_ticket_expire_time' => 5,
+    'service_ticket_expire_time' => 60,
     // how many seconds proxy granting tickets are valid for at most, defaults to 3600
     'proxy_granting_ticket_expire_time' => 600,
     //how many seconds proxy tickets are valid for, defaults to 5
