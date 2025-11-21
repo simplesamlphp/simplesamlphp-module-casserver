@@ -101,7 +101,7 @@ docker run --name ssp-casserver-dev \
   --mount type=bind,source="$(pwd)/docker/ssp/authsources.php",target=/var/simplesamlphp/config/authsources.php,readonly \
   --mount type=bind,source="$(pwd)/docker/ssp/config-override.php",target=/var/simplesamlphp/config/config-override.php,readonly \
   --mount type=bind,source="$(pwd)/docker/apache-override.cf",target=/etc/apache2/sites-enabled/ssp-override.cf,readonly \
-   -p 443:443 cirrusid/simplesamlphp:v2.3.5
+   -p 443:443 cirrusid/simplesamlphp:v2.4.2
 ```
 
 Visit [https://localhost/simplesaml/](https://localhost/simplesaml/) and confirm you get the default page.

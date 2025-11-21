@@ -28,9 +28,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 
-use in_array;
-use http_build_query;
-use var_export;
+use function http_build_query;
+use function in_array;
+use function var_export;
 
 #[AsController]
 class LoginController
