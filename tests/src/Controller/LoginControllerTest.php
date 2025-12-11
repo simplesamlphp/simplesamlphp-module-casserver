@@ -341,9 +341,8 @@ class LoginControllerTest extends TestCase
 
     /**
      * When passive is disabled and a service is provided, CAS must redirect to the service without appending CAS params
-     *
-     * @dataProvider serviceUrlsProvider
      */
+    #[DataProvider('serviceUrlsProvider')]
     public function testGatewayPassiveDisabledRedirectsWithoutParams(string $serviceUrl): void
     {
         // enable_passive_mode disabled
