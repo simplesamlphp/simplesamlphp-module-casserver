@@ -64,8 +64,7 @@ class SamlValidateTest extends TestCase
 
         $asSoap = $samlValidate->wrapInSoap($xmlString);
 
-        $this->assertInstanceOf(Envelope::class, $asSoap);
         $this->assertNull($asSoap->getHeader());
-        $this->assertNotEmpty($asSoap->getBody());
+        $this->assertFalse($asSoap->getBody()->isEmptyElement());
     }
 }

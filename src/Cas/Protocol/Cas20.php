@@ -123,7 +123,7 @@ class Cas20
 
     /**
      * @param string $username
-     * @return \SimpleSAML\CAS\XML\cas\ServiceResponse
+     * @return \SimpleSAML\CAS\XML\ServiceResponse
      */
     public function getValidateSuccessResponse(string $username): ServiceResponse
     {
@@ -175,7 +175,7 @@ class Cas20
     /**
      * @param string $errorCode
      * @param string $explanation
-     * @return \SimpleSAML\CAS\XML\cas\ServiceResponse
+     * @return \SimpleSAML\CAS\XML\ServiceResponse
      */
     public function getValidateFailureResponse(string $errorCode, string $explanation): ServiceResponse
     {
@@ -191,7 +191,7 @@ class Cas20
 
     /**
      * @param string $proxyTicketId
-     * @return \SimpleSAML\CAS\XML\cas\ServiceResponse
+     * @return \SimpleSAML\CAS\XML\ServiceResponse
      */
     public function getProxySuccessResponse(string $proxyTicketId): ServiceResponse
     {
@@ -206,7 +206,7 @@ class Cas20
     /**
      * @param string $errorCode
      * @param string $explanation
-     * @return \SimpleSAML\CAS\XML\cas\ServiceResponse
+     * @return \SimpleSAML\CAS\XML\ServiceResponse
      */
     public function getProxyFailureResponse(string $errorCode, string $explanation): ServiceResponse
     {

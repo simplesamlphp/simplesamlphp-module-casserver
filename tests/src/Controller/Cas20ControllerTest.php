@@ -144,23 +144,14 @@ class Cas20ControllerTest extends TestCase
             parameters: $requestParameters,
         );
 
-        $expectedArguments = [
-            'request' => $request,
-            'method' => $method,
-            'renew' => false,
-            'target' => null,
-            'ticket' => $prefix . $this->sessionId,
-            'service' => 'https://myservice.com/abcd',
-            'pgtUrl' => null,
-        ];
-
         $controllerMock = $this->getMockBuilder(Cas20Controller::class)
             ->setConstructorArgs([$this->sspConfig, $casconfig])
             ->onlyMethods(['validate'])
             ->getMock();
 
-        $controllerMock->expects($this->once())->method('validate')
-            ->with(...$expectedArguments);
+        $controllerMock->expects($this->once())
+            ->method('validate')
+            ->with($request, $method, false, null, $prefix . $this->sessionId, 'https://myservice.com/abcd', null);
         $controllerMock->$method($request, ...$requestParameters);
     }
 

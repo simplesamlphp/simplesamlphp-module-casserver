@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SimpleSAML\Module\casserver\Shib13;
 
 use DOMDocument;
+use DOMElement;
 use DOMNode;
 use DOMNodeList;
 use DOMXPath;
@@ -215,6 +216,8 @@ class AuthnResponse
         $nodelist = $this->doXPathQuery($query);
 
         if ($node = $nodelist->item(0)) {
+            Assert::isInstanceOf($node, DOMElement::class);
+            /** @var \DOMElement $node */
             return $node->getAttribute('SessionIndex');
         }
 
@@ -241,12 +244,14 @@ class AuthnResponse
         $assertions = $this->doXPathQuery('/shibp:Response/shib:Assertion');
 
         foreach ($assertions as $assertion) {
+            /** @var \DOMElement $assertion */
             if (!$this->isNodeValidated($assertion)) {
                 throw new Exception('Shib13 AuthnResponse contained an unsigned assertion.');
             }
 
             $conditions = $this->doXPathQuery('shib:Conditions', $assertion);
             if ($conditions->length > 0) {
+                /** @var \DOMElement $condition */
                 $condition = $conditions->item(0);
 
                 $start = $condition->getAttribute('NotBefore');
@@ -312,6 +317,7 @@ class AuthnResponse
         $nodelist = $this->doXPathQuery($query);
 
         if ($attr = $nodelist->item(0)) {
+            /** @var \DOMAttr $attr */
             return $attr->value;
         } else {
             throw new Exception('Could not find Issuer field in Authentication response');
@@ -330,6 +336,7 @@ class AuthnResponse
         $nodelist = $this->doXPathQuery($query);
 
         if ($node = $nodelist->item(0)) {
+            /** @var \DOMElement $node */
             $nameID["Value"] = $node->nodeValue;
             $nameID["Format"] = $node->getAttribute('Format');
         }
