@@ -227,7 +227,6 @@ class LogoutControllerTest extends TestCase
 
         $response = $controller->logout($logoutRequest, ...$queryParameters);
 
-        $this->assertInstanceOf(RunnableResponse::class, $response);
         $callable = (array)$response->getCallable();
         $this->assertEquals('logout', $callable[1] ?? '');
     }

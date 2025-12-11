@@ -38,11 +38,9 @@ class TicketValidator
         );
         $ticketStoreClass = Module::resolveClass($ticketStoreConfig['class'], 'Cas\Ticket');
 
-        /** @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore $this->ticketStore */
         $this->ticketStore = new $ticketStoreClass($casconfig);
         $ticketFactoryClass = Module::resolveClass('casserver:TicketFactory', 'Cas\Factories');
 
-        /** @var \SimpleSAML\Module\casserver\Cas\Factories\TicketFactory $this->ticketStore */
         $this->ticketFactory = new $ticketFactoryClass($casconfig);
     }
 

@@ -1,366 +1,391 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\AttributeExtractor\\:\\:extractUserAndAttributes\\(\\) has parameter \\$state with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\AttributeExtractor\:\:extractUserAndAttributes\(\) has parameter \$state with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/AttributeExtractor.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\AttributeExtractor\\:\\:extractUserAndAttributes\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\AttributeExtractor\:\:extractUserAndAttributes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/AttributeExtractor.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\AttributeExtractor\\:\\:loadState\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\AttributeExtractor\:\:loadState\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/AttributeExtractor.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\AttributeExtractor\\:\\:manageState\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\AttributeExtractor\:\:manageState\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/AttributeExtractor.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\AttributeExtractor\\:\\:runAuthProcs\\(\\) has parameter \\$state with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\AttributeExtractor\:\:runAuthProcs\(\) has parameter \$state with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/AttributeExtractor.php
 
 		-
-			message: "#^Property SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\AttributeExtractor\\:\\:\\$authSourceId is never read, only written\\.$#"
+			message: '#^Property SimpleSAML\\Module\\casserver\\Cas\\AttributeExtractor\:\:\$authSourceId is never read, only written\.$#'
+			identifier: property.onlyWritten
 			count: 1
 			path: src/Cas/AttributeExtractor.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Factories\\\\ProcessingChainFactory\\:\\:build\\(\\) has parameter \\$state with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Factories\\ProcessingChainFactory\:\:build\(\) has parameter \$state with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Factories/ProcessingChainFactory.php
 
 		-
-			message: "#^Property SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Factories\\\\ProcessingChainFactory\\:\\:\\$casconfig is never read, only written\\.$#"
-			count: 1
-			path: src/Cas/Factories/ProcessingChainFactory.php
-
-		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Factories\\\\TicketFactory\\:\\:createProxyGrantingTicket\\(\\) has parameter \\$content with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Factories\\TicketFactory\:\:createProxyGrantingTicket\(\) has parameter \$content with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Factories/TicketFactory.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Factories\\\\TicketFactory\\:\\:createProxyGrantingTicket\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Factories\\TicketFactory\:\:createProxyGrantingTicket\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Factories/TicketFactory.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Factories\\\\TicketFactory\\:\\:createProxyTicket\\(\\) has parameter \\$content with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Factories\\TicketFactory\:\:createProxyTicket\(\) has parameter \$content with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Factories/TicketFactory.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Factories\\\\TicketFactory\\:\\:createProxyTicket\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Factories\\TicketFactory\:\:createProxyTicket\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Factories/TicketFactory.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Factories\\\\TicketFactory\\:\\:createServiceTicket\\(\\) has parameter \\$content with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Factories\\TicketFactory\:\:createServiceTicket\(\) has parameter \$content with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Factories/TicketFactory.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Factories\\\\TicketFactory\\:\\:createServiceTicket\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Factories\\TicketFactory\:\:createServiceTicket\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Factories/TicketFactory.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Factories\\\\TicketFactory\\:\\:createSessionTicket\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Factories\\TicketFactory\:\:createSessionTicket\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Factories/TicketFactory.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Factories\\\\TicketFactory\\:\\:isExpired\\(\\) has parameter \\$ticket with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Factories\\TicketFactory\:\:isExpired\(\) has parameter \$ticket with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Factories/TicketFactory.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Factories\\\\TicketFactory\\:\\:isProxyGrantingTicket\\(\\) has parameter \\$ticket with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Factories\\TicketFactory\:\:isProxyGrantingTicket\(\) has parameter \$ticket with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Factories/TicketFactory.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Factories\\\\TicketFactory\\:\\:isProxyTicket\\(\\) has parameter \\$ticket with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Factories\\TicketFactory\:\:isProxyTicket\(\) has parameter \$ticket with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Factories/TicketFactory.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Factories\\\\TicketFactory\\:\\:isServiceTicket\\(\\) has parameter \\$ticket with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Factories\\TicketFactory\:\:isServiceTicket\(\) has parameter \$ticket with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Factories/TicketFactory.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Factories\\\\TicketFactory\\:\\:isSessionTicket\\(\\) has parameter \\$ticket with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Factories\\TicketFactory\:\:isSessionTicket\(\) has parameter \$ticket with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Factories/TicketFactory.php
 
 		-
-			message: "#^Constructor of class SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Protocol\\\\Cas10 has an unused parameter \\$config\\.$#"
+			message: '#^Constructor of class SimpleSAML\\Module\\casserver\\Cas\\Protocol\\Cas10 has an unused parameter \$config\.$#'
+			identifier: constructor.unusedParameter
 			count: 1
 			path: src/Cas/Protocol/Cas10.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Protocol\\\\Cas20\\:\\:getAttributes\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Protocol\\Cas20\:\:getAttributes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Protocol/Cas20.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Protocol\\\\Cas20\\:\\:setAttributes\\(\\) has parameter \\$attributes with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Protocol\\Cas20\:\:setAttributes\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Protocol/Cas20.php
 
 		-
-			message: "#^Property SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Protocol\\\\Cas20\\:\\:\\$attributes type has no value type specified in iterable type array\\.$#"
+			message: '#^Property SimpleSAML\\Module\\casserver\\Cas\\Protocol\\Cas20\:\:\$attributes type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Protocol/Cas20.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Protocol\\\\SamlValidateResponder\\:\\:convertToSaml\\(\\) has parameter \\$ticket with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Protocol\\SamlValidateResponder\:\:convertToSaml\(\) has parameter \$ticket with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Protocol/SamlValidateResponder.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\DelegatingTicketStore\\:\\:addTicket\\(\\) has parameter \\$ticket with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Ticket\\DelegatingTicketStore\:\:addTicket\(\) has parameter \$ticket with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Ticket/DelegatingTicketStore.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\DelegatingTicketStore\\:\\:getTicket\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Ticket\\DelegatingTicketStore\:\:getTicket\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Ticket/DelegatingTicketStore.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\FileSystemTicketStore\\:\\:addTicket\\(\\) has parameter \\$ticket with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Ticket\\FileSystemTicketStore\:\:addTicket\(\) has parameter \$ticket with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Ticket/FileSystemTicketStore.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\FileSystemTicketStore\\:\\:getTicket\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Ticket\\FileSystemTicketStore\:\:getTicket\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Ticket/FileSystemTicketStore.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\MemCacheTicketStore\\:\\:addTicket\\(\\) has parameter \\$ticket with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Ticket\\MemCacheTicketStore\:\:addTicket\(\) has parameter \$ticket with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Ticket/MemCacheTicketStore.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\MemCacheTicketStore\\:\\:getTicket\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Ticket\\MemCacheTicketStore\:\:getTicket\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Ticket/MemCacheTicketStore.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\RedisTicketStore\\:\\:addTicket\\(\\) has parameter \\$ticket with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Ticket\\RedisTicketStore\:\:addTicket\(\) has parameter \$ticket with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Ticket/RedisTicketStore.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\RedisTicketStore\\:\\:getTicket\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Ticket\\RedisTicketStore\:\:getTicket\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Ticket/RedisTicketStore.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\SQLTicketStore\\:\\:addTicket\\(\\) has parameter \\$ticket with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Ticket\\SQLTicketStore\:\:addTicket\(\) has parameter \$ticket with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Ticket/SQLTicketStore.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\SQLTicketStore\\:\\:get\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Ticket\\SQLTicketStore\:\:get\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Ticket/SQLTicketStore.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\SQLTicketStore\\:\\:getTicket\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Ticket\\SQLTicketStore\:\:getTicket\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Ticket/SQLTicketStore.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\SQLTicketStore\\:\\:insertOrUpdate\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Ticket\\SQLTicketStore\:\:insertOrUpdate\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Ticket/SQLTicketStore.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\SQLTicketStore\\:\\:insertOrUpdate\\(\\) has parameter \\$keys with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Ticket\\SQLTicketStore\:\:insertOrUpdate\(\) has parameter \$keys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Ticket/SQLTicketStore.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\SQLTicketStore\\:\\:insertOrUpdateFallback\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Ticket\\SQLTicketStore\:\:insertOrUpdateFallback\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Ticket/SQLTicketStore.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\SQLTicketStore\\:\\:insertOrUpdateFallback\\(\\) has parameter \\$keys with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Ticket\\SQLTicketStore\:\:insertOrUpdateFallback\(\) has parameter \$keys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Ticket/SQLTicketStore.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\SQLTicketStore\\:\\:set\\(\\) has parameter \\$value with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Ticket\\SQLTicketStore\:\:set\(\) has parameter \$value with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Ticket/SQLTicketStore.php
 
 		-
-			message: "#^Property SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\SQLTicketStore\\:\\:\\$tableVersions type has no value type specified in iterable type array\\.$#"
+			message: '#^Property SimpleSAML\\Module\\casserver\\Cas\\Ticket\\SQLTicketStore\:\:\$tableVersions type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Ticket/SQLTicketStore.php
 
 		-
-			message: "#^Constructor of class SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\TicketStore has an unused parameter \\$config\\.$#"
+			message: '#^Constructor of class SimpleSAML\\Module\\casserver\\Cas\\Ticket\\TicketStore has an unused parameter \$config\.$#'
+			identifier: constructor.unusedParameter
 			count: 1
 			path: src/Cas/Ticket/TicketStore.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\TicketStore\\:\\:addTicket\\(\\) has parameter \\$ticket with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Ticket\\TicketStore\:\:addTicket\(\) has parameter \$ticket with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Ticket/TicketStore.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\TicketStore\\:\\:getTicket\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\Ticket\\TicketStore\:\:getTicket\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/Ticket/TicketStore.php
 
 		-
-			message: "#^Access to an undefined property SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Factories\\\\TicketFactory\\:\\:\\$ticketFactory\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Cas\\TicketValidator\:\:validateAndDeleteTicket\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Cas/TicketValidator.php
 
 		-
-			message: "#^Access to an undefined property SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\Ticket\\\\TicketStore\\:\\:\\$ticketStore\\.$#"
+			message: '#^Property SimpleSAML\\Module\\casserver\\Cas\\TicketValidator\:\:\$casconfig is never read, only written\.$#'
+			identifier: property.onlyWritten
 			count: 1
 			path: src/Cas/TicketValidator.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\TicketValidator\\:\\:validateAndDeleteTicket\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/Cas/TicketValidator.php
-
-		-
-			message: "#^Property SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\TicketValidator\\:\\:\\$casconfig is never read, only written\\.$#"
-			count: 1
-			path: src/Cas/TicketValidator.php
-
-		-
-			message: "#^Property SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\TicketValidator\\:\\:\\$ticketFactory is never written, only read\\.$#"
-			count: 1
-			path: src/Cas/TicketValidator.php
-
-		-
-			message: "#^Property SimpleSAML\\\\Module\\\\casserver\\\\Cas\\\\TicketValidator\\:\\:\\$ticketStore is never written, only read\\.$#"
-			count: 1
-			path: src/Cas/TicketValidator.php
-
-		-
-			message: "#^Property SimpleSAML\\\\Module\\\\casserver\\\\Controller\\\\Cas10Controller\\:\\:\\$sspConfig is never read, only written\\.$#"
+			message: '#^Property SimpleSAML\\Module\\casserver\\Controller\\Cas10Controller\:\:\$sspConfig is never read, only written\.$#'
+			identifier: property.onlyWritten
 			count: 1
 			path: src/Controller/Cas10Controller.php
 
 		-
-			message: "#^Property SimpleSAML\\\\Module\\\\casserver\\\\Controller\\\\Cas20Controller\\:\\:\\$sspConfig is never read, only written\\.$#"
+			message: '#^Property SimpleSAML\\Module\\casserver\\Controller\\Cas20Controller\:\:\$sspConfig is never read, only written\.$#'
+			identifier: property.onlyWritten
 			count: 1
 			path: src/Controller/Cas20Controller.php
 
 		-
-			message: "#^Call to an undefined method SimpleSAML\\\\XML\\\\SerializableElementInterface\\:\\:getXML\\(\\)\\.$#"
+			message: '#^Call to an undefined method SimpleSAML\\XML\\SerializableElementInterface\:\:getXML\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: src/Controller/Cas30Controller.php
 
 		-
-			message: "#^Property SimpleSAML\\\\Module\\\\casserver\\\\Controller\\\\Cas30Controller\\:\\:\\$sspConfig is never read, only written\\.$#"
+			message: '#^Property SimpleSAML\\Module\\casserver\\Controller\\Cas30Controller\:\:\$sspConfig is never read, only written\.$#'
+			identifier: property.onlyWritten
 			count: 1
 			path: src/Controller/Cas30Controller.php
 
 		-
-			message: "#^Cannot cast array to string\\.$#"
+			message: '#^Cannot cast array to string\.$#'
+			identifier: cast.string
 			count: 2
 			path: src/Controller/LoginController.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Controller\\\\LoginController\\:\\:getReturnUrl\\(\\) has parameter \\$sessionTicket with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Controller\\LoginController\:\:getReturnUrl\(\) has parameter \$sessionTicket with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Controller/LoginController.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Controller\\\\LoginController\\:\\:getState\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Controller\\LoginController\:\:getState\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Controller/LoginController.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Controller\\\\LoginController\\:\\:handleDebugMode\\(\\) has parameter \\$serviceTicket with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Controller\\LoginController\:\:handleDebugMode\(\) has parameter \$serviceTicket with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Controller/LoginController.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Controller\\\\LoginController\\:\\:handleDebugMode\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Controller\\LoginController\:\:handleDebugMode\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Controller/LoginController.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Controller\\\\LoginController\\:\\:handleDebugMode\\(\\) should return array\\<array\\> but returns array\\<int, int\\|string\\>\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Controller\\LoginController\:\:handleDebugMode\(\) should return array\<array\> but returns array\<int, int\|string\>\.$#'
+			identifier: return.type
 			count: 2
 			path: src/Controller/LoginController.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Controller\\\\LoginController\\:\\:handleDebugMode\\(\\) should return array\\<array\\> but returns array\\<int, int\\|string\\|false\\>\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Controller\\LoginController\:\:handleDebugMode\(\) should return array\<array\> but returns array\<int, int\|string\|false\>\.$#'
+			identifier: return.type
 			count: 1
 			path: src/Controller/LoginController.php
 
 		-
-			message: "#^Access to an undefined property DOMNode\\:\\:\\$value\\.$#"
+			message: '#^Call to an undefined method SimpleSAML\\XML\\Validator\:\:validateCA\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: src/Shib13/AuthnResponse.php
 
 		-
-			message: "#^Call to an undefined method DOMNode\\:\\:getAttribute\\(\\)\\.$#"
-			count: 4
-			path: src/Shib13/AuthnResponse.php
-
-		-
-			message: "#^Call to an undefined method SimpleSAML\\\\XML\\\\Validator\\:\\:validateCA\\(\\)\\.$#"
-			count: 1
-			path: src/Shib13/AuthnResponse.php
-
-		-
-			message: "#^Call to an undefined method SimpleSAML\\\\XML\\\\Validator\\:\\:validateFingerprint\\(\\)\\.$#"
+			message: '#^Call to an undefined method SimpleSAML\\XML\\Validator\:\:validateFingerprint\(\)\.$#'
+			identifier: method.notFound
 			count: 2
 			path: src/Shib13/AuthnResponse.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Shib13\\\\AuthnResponse\\:\\:doXPathQuery\\(\\) return type with generic class DOMNodeList does not specify its types\\: TNode$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Shib13\\AuthnResponse\:\:doXPathQuery\(\) return type with generic class DOMNodeList does not specify its types\: TNode$#'
+			identifier: missingType.generics
 			count: 1
 			path: src/Shib13/AuthnResponse.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Shib13\\\\AuthnResponse\\:\\:encAttribute\\(\\) has parameter \\$scopedAttributes with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Shib13\\AuthnResponse\:\:encAttribute\(\) has parameter \$scopedAttributes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Shib13/AuthnResponse.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Shib13\\\\AuthnResponse\\:\\:encAttribute\\(\\) has parameter \\$values with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Shib13\\AuthnResponse\:\:encAttribute\(\) has parameter \$values with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Shib13/AuthnResponse.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Shib13\\\\AuthnResponse\\:\\:generate\\(\\) has parameter \\$attributes with no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Shib13\\AuthnResponse\:\:generate\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Shib13/AuthnResponse.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Shib13\\\\AuthnResponse\\:\\:getAttributes\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Shib13\\AuthnResponse\:\:getAttributes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Shib13/AuthnResponse.php
 
 		-
-			message: "#^Method SimpleSAML\\\\Module\\\\casserver\\\\Shib13\\\\AuthnResponse\\:\\:getNameID\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/Shib13/AuthnResponse.php
-
-		-
-			message: "#^Parameter \\#1 \\$node of method SimpleSAML\\\\Module\\\\casserver\\\\Shib13\\\\AuthnResponse\\:\\:isNodeValidated\\(\\) expects DOMElement\\|SimpleXMLElement, DOMNode given\\.$#"
+			message: '#^Method SimpleSAML\\Module\\casserver\\Shib13\\AuthnResponse\:\:getNameID\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Shib13/AuthnResponse.php
