@@ -15,7 +15,7 @@ use SimpleSAML\Module\casserver\Controller\Traits\UrlTrait;
 use SimpleSAML\Module\casserver\Http\XmlResponse;
 use SimpleSAML\SAML11\Exception\ProtocolViolationException;
 use SimpleSAML\SAML11\XML\samlp\Request as SamlRequest;
-use SimpleSAML\SOAP\XML\env_200106\Envelope;
+use SimpleSAML\SOAP11\XML\Envelope;
 use SimpleSAML\XML\DOMDocumentFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -77,7 +77,7 @@ class Cas30Controller
      * @param string $TARGET  URL encoded service identifier of the back-end service.
      *
      * @throw SimpleSAML\SAML11\Exception\ProtocolViolationException
-     * @throw SimpleSAML\XML\Exception\MissingAttributeException
+     * @throw SimpleSAML\XMLSchema\Exception\MissingAttributeException
      * @throw \RuntimeException
      * @return \SimpleSAML\Module\casserver\Http\XmlResponse
      * @link https://apereo.github.io/cas/7.1.x/protocol/CAS-Protocol-Specification.html#42-samlvalidate-cas-30
@@ -112,7 +112,7 @@ class Cas30Controller
         // Assertion Artifact Element
         $assertionArtifactParsed = $samlpRequestParsed->getRequest()[0];
 
-        $ticketId = $assertionArtifactParsed->getContent();
+        $ticketId = $assertionArtifactParsed->getContent()->getValue();
         Logger::debug('samlvalidate: Checking ticket ' . $ticketId);
 
         try {
