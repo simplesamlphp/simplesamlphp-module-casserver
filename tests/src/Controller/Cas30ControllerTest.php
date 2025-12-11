@@ -128,7 +128,7 @@ class Cas30ControllerTest extends TestCase
 </SOAP-ENV:Envelope>
 SOAP,
                 "Missing 'RequestID' attribute on samlp:Request.",
-                'SimpleSAML\XML\Exception\MissingAttributeException',
+                'SimpleSAML\XMLSchema\Exception\MissingAttributeException',
             ],
             'Body Missing IssueInstant Attribute' => [
                 <<<SOAP
@@ -145,7 +145,7 @@ SOAP,
 </SOAP-ENV:Envelope>
 SOAP,
                 "Missing 'IssueInstant' attribute on samlp:Request.",
-                'SimpleSAML\XML\Exception\MissingAttributeException',
+                'SimpleSAML\XMLSchema\Exception\MissingAttributeException',
             ],
             'Body Missing Ticket Id' => [
                 <<<SOAP
@@ -162,7 +162,7 @@ SOAP,
     </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 SOAP,
-                'Expected a non-whitespace string. Got: ""',
+                '"" is not a SAML1.1-compliant string',
                 'SimpleSAML\SAML11\Exception\ProtocolViolationException',
             ],
         ];

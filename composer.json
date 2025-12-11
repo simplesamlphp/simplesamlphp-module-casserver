@@ -37,6 +37,7 @@
         "ext-SimpleXML": "*",
         "ext-session": "*",
 
+        "beste/clock": "~3.0",
         "simplesamlphp/assert": "~1.9",
         "simplesamlphp/composer-module-installer": "~1.6",
         "simplesamlphp/simplesamlphp": "~2.5@dev",
