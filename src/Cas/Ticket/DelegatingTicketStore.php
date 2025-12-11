@@ -69,6 +69,7 @@ class DelegatingTicketStore extends TicketStore
         }
     }
 
+
     /**
      * Get the ticket, searching one or all of the delegates
      * @param string $ticketId The ticket to find
@@ -102,6 +103,7 @@ class DelegatingTicketStore extends TicketStore
             return $this->primaryDelegate->getTicket($ticketId);
         }
     }
+
 
     /**
      * @param array $ticket Ticket to add

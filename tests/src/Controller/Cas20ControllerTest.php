@@ -38,7 +38,9 @@ class Cas20ControllerTest extends TestCase
     private Utils\HTTP|MockObject $utilsHttpMock;
 
     private array $ticket;
+
     private array $proxyTicket;
+
 
     /**
      * @throws \Exception
@@ -111,6 +113,7 @@ class Cas20ControllerTest extends TestCase
         ];
     }
 
+
     public static function validateMethods(): array
     {
         return [
@@ -124,6 +127,7 @@ class Cas20ControllerTest extends TestCase
             ],
         ];
     }
+
 
     #[DataProvider('validateMethods')]
     public function testProxyValidatePassesTheCorrectMethodToValidate(string $prefix, string $method): void
@@ -140,25 +144,17 @@ class Cas20ControllerTest extends TestCase
             parameters: $requestParameters,
         );
 
-        $expectedArguments = [
-            'request' => $request,
-            'method' => $method,
-            'renew' => false,
-            'target' => null,
-            'ticket' => $prefix . $this->sessionId,
-            'service' => 'https://myservice.com/abcd',
-            'pgtUrl' => null,
-        ];
-
         $controllerMock = $this->getMockBuilder(Cas20Controller::class)
             ->setConstructorArgs([$this->sspConfig, $casconfig])
             ->onlyMethods(['validate'])
             ->getMock();
 
-        $controllerMock->expects($this->once())->method('validate')
-            ->with(...$expectedArguments);
+        $controllerMock->expects($this->once())
+            ->method('validate')
+            ->with($request, $method, false, null, $prefix . $this->sessionId, 'https://myservice.com/abcd', null);
         $controllerMock->$method($request, ...$requestParameters);
     }
+
 
     public static function queryParameterValues(): array
     {
@@ -181,6 +177,7 @@ class Cas20ControllerTest extends TestCase
             ],
         ];
     }
+
 
     #[DataProvider('queryParameterValues')]
     public function testProxyRequestFails(array $params, string $message): void
@@ -208,6 +205,7 @@ class Cas20ControllerTest extends TestCase
             $xml->xpath('//cas:authenticationFailure')[0]->attributes()['code'],
         );
     }
+
 
     public function testProxyRequestFailsWhenPgtNotRecognized(): void
     {
@@ -237,6 +235,7 @@ class Cas20ControllerTest extends TestCase
             $xml->xpath('//cas:authenticationFailure')[0],
         );
     }
+
 
     public function testProxyRequestFailsWhenPgtNotValid(): void
     {
@@ -268,6 +267,7 @@ class Cas20ControllerTest extends TestCase
             $xml->xpath('//cas:authenticationFailure')[0],
         );
     }
+
 
     public function testProxyRequestFailsWhenPgtExpired(): void
     {
@@ -304,6 +304,7 @@ class Cas20ControllerTest extends TestCase
             $xml->xpath('//cas:authenticationFailure')[0],
         );
     }
+
 
     public function testProxyReturnsProxyTicket(): void
     {
@@ -359,6 +360,7 @@ class Cas20ControllerTest extends TestCase
         $this->assertTrue(filter_var($ticketFactory->isProxyTicket($proxyTicket), FILTER_VALIDATE_BOOLEAN));
     }
 
+
     public static function validateFailsForEmptyServiceTicket(): array
     {
         return [
@@ -376,6 +378,7 @@ class Cas20ControllerTest extends TestCase
             ],
         ];
     }
+
 
     #[DataProvider('validateFailsForEmptyServiceTicket')]
     public function testServiceValidateFailing(array $requestParams, string $message): void
@@ -401,6 +404,7 @@ class Cas20ControllerTest extends TestCase
             $xml->xpath('//cas:authenticationFailure')[0]->attributes()['code'],
         );
     }
+
 
     public function testReturn500OnDeleteTicketThatThrows(): void
     {
@@ -436,6 +440,7 @@ class Cas20ControllerTest extends TestCase
             $xml->xpath('//cas:authenticationFailure')[0]->attributes()['code'],
         );
     }
+
 
     public static function validateOnDifferentQueryParameterCombinations(): array
     {
@@ -494,6 +499,7 @@ class Cas20ControllerTest extends TestCase
             ],
         ];
     }
+
 
     #[DataProvider('validateOnDifferentQueryParameterCombinations')]
     public function testServiceValidate(
@@ -596,6 +602,7 @@ class Cas20ControllerTest extends TestCase
         ];
     }
 
+
     #[DataProvider('validateOnDifferentQueryParameterCombinationsProxyValidate')]
     public function testProxyValidate(
         array $requestParams,
@@ -645,6 +652,7 @@ class Cas20ControllerTest extends TestCase
         }
     }
 
+
     public function testReturnBadRequestOnTicketServiceQueryAndTicketMismatch(): void
     {
         $config = Configuration::loadFromArray($this->moduleConfig);
@@ -677,6 +685,7 @@ class Cas20ControllerTest extends TestCase
             $xml->xpath('//cas:authenticationFailure')[0]->attributes()['code'],
         );
     }
+
 
     public function testThrowOnProxyServiceIdentityFail(): void
     {

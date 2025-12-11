@@ -24,6 +24,7 @@ class Cas10Controller
 {
     use UrlTrait;
 
+
     /** @var \SimpleSAML\Logger */
     protected Logger $logger;
 
@@ -38,6 +39,7 @@ class Cas10Controller
 
     /** @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore */
     protected TicketStore $ticketStore;
+
 
     /**
      * @param \SimpleSAML\Configuration $sspConfig
@@ -68,6 +70,7 @@ class Cas10Controller
         $this->ticketStore = $ticketStore ?? new $ticketStoreClass($this->casConfig);
     }
 
+
     /**
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @param bool $renew          [OPTIONAL] - if this parameter is set, ticket validation will only succeed if the
@@ -76,7 +79,7 @@ class Cas10Controller
      * @param string|null $ticket  [REQUIRED] - the service ticket issued by /login.
      * @param string|null $service [REQUIRED] - the identifier of the service for which the ticket was issued
      *
-     * @return Response
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function validate(
         Request $request,
@@ -161,6 +164,7 @@ class Cas10Controller
             Response::HTTP_OK,
         );
     }
+
 
     /**
      * Used by the unit tests

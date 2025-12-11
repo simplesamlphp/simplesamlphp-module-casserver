@@ -16,6 +16,7 @@ class LoggedOutController
     /** @var \SimpleSAML\Configuration */
     protected Configuration $config;
 
+
     /**
      * Controller constructor.
      *
@@ -29,6 +30,7 @@ class LoggedOutController
     {
         $this->config = $config ?? Configuration::getInstance();
     }
+
 
     /**
      * Show Log out view.

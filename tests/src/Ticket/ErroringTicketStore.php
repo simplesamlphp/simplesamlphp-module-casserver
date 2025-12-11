@@ -22,6 +22,7 @@ class ErroringTicketStore extends TicketStore
         throw new Exception("Sample get error");
     }
 
+
     /**
      * @param array<mixed> $ticket The ticket to store
      * @throws \Exception for all invocations.
@@ -30,6 +31,7 @@ class ErroringTicketStore extends TicketStore
     {
         throw new Exception("Sample add error");
     }
+
 
     /**
      * @param string $ticketId The ticket id
