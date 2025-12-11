@@ -126,6 +126,7 @@ class TicketValidatorTest extends TestCase
         $this->assertNull($this->ticketStore->getTicket($id), "ticket deleted after loading");
     }
 
+
     /**
      * @param string $serviceUrl The service url that will get sanitized
      * @param string $expectedSanitzedUrl The expected result
@@ -135,6 +136,7 @@ class TicketValidatorTest extends TestCase
     {
         $this->assertEquals($expectedSanitzedUrl, TicketValidator::sanitize($serviceUrl));
     }
+
 
     /**
      * Urls to test

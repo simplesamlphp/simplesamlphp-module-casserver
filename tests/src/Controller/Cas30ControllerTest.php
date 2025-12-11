@@ -33,6 +33,7 @@ class Cas30ControllerTest extends TestCase
 
     private array $ticket;
 
+
     /**
      * @throws \Exception
      */
@@ -80,6 +81,7 @@ class Cas30ControllerTest extends TestCase
         ];
     }
 
+
     /**
      * @return void
      * @throws \Exception
@@ -109,6 +111,7 @@ class Cas30ControllerTest extends TestCase
 
         $cas30Controller->samlValidate($this->samlValidateRequest, $target);
     }
+
 
     public static function soapEnvelopes(): array
     {
@@ -167,6 +170,7 @@ SOAP,
             ],
         ];
     }
+
 
     #[DataProvider('soapEnvelopes')]
     public function testSoapMessageIsInvalid(
@@ -250,6 +254,7 @@ SOAP;
         $cas30Controller->samlValidate($this->samlValidateRequest, $target);
     }
 
+
     /**
      * @return void
      * @throws \Exception
@@ -301,6 +306,7 @@ SOAP;
 
         $cas30Controller->samlValidate($this->samlValidateRequest, $target);
     }
+
 
     /**
      * @return void

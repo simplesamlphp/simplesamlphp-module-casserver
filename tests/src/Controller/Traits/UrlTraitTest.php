@@ -13,6 +13,7 @@ class UrlTraitTest extends TestCase
 {
     use UrlTrait;
 
+
     /**
      * @return array
      */
@@ -54,6 +55,7 @@ class UrlTraitTest extends TestCase
         ];
     }
 
+
     /**
      * @param string $service the service url to check
      * @param bool $allowed is the service url allowed?
@@ -86,6 +88,7 @@ class UrlTraitTest extends TestCase
         );
     }
 
+
     public static function requestParameters(): array
     {
         return [
@@ -116,6 +119,7 @@ class UrlTraitTest extends TestCase
             ],
         ];
     }
+
 
     #[DataProvider('requestParameters')]
     public function testParseQueryParameters(array $requestParams, array $query, array $sessionTicket): void

@@ -27,6 +27,13 @@ use SimpleXMLElement;
  */
 class AuthnResponse
 {
+    /** @var string */
+    public const SHIB_PROTOCOL_NS = 'urn:oasis:names:tc:SAML:1.0:protocol';
+
+    /** @var string */
+    public const SHIB_ASSERT_NS = 'urn:oasis:names:tc:SAML:1.0:assertion';
+
+
     /**
      * @var \SimpleSAML\XML\Validator|null This variable contains an XML validator for this message.
      */
@@ -36,12 +43,6 @@ class AuthnResponse
      * @var bool Whether this response was validated by some external means (e.g. SSL).
      */
     private bool $messageValidated = false;
-
-    /** @var string */
-    public const SHIB_PROTOCOL_NS = 'urn:oasis:names:tc:SAML:1.0:protocol';
-
-    /** @var string */
-    public const SHIB_ASSERT_NS = 'urn:oasis:names:tc:SAML:1.0:assertion';
 
     /**
      * @var \DOMDocument|null The DOMDocument which represents this message.
@@ -474,6 +475,7 @@ class AuthnResponse
 
         return $attr;
     }
+
 
     /**
      * Check if we are currently between the given date & time conditions.

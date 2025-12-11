@@ -26,6 +26,7 @@ class Cas20Controller
     use UrlTrait;
     use TicketValidatorTrait;
 
+
     /** @var \SimpleSAML\Logger */
     protected Logger $logger;
 
@@ -43,6 +44,7 @@ class Cas20Controller
 
     /** @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore */
     protected TicketStore $ticketStore;
+
 
     /**
      * @param \SimpleSAML\Configuration $sspConfig
@@ -78,6 +80,7 @@ class Cas20Controller
         $this->httpUtils = $httpUtils ?? new Utils\HTTP();
     }
 
+
     /**
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @param string|null $TARGET   Query parameter name for "service" used by older CAS clients'
@@ -108,6 +111,7 @@ class Cas20Controller
             pgtUrl:  $pgtUrl,
         );
     }
+
 
     /**
      * /proxy provides proxy tickets to services that have
@@ -199,6 +203,7 @@ class Cas20Controller
         );
     }
 
+
     /**
      * @param \Symfony\Component\HttpFoundation\Request      $request
      * @param string|null $TARGET   Query parameter name for "service" used by older CAS clients'
@@ -229,6 +234,7 @@ class Cas20Controller
             pgtUrl:  $pgtUrl,
         );
     }
+
 
     /**
      * Used by the unit tests
