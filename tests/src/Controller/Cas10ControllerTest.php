@@ -25,6 +25,7 @@ class Cas10ControllerTest extends TestCase
 
     private Configuration $sspConfig;
 
+
     protected function setUp(): void
     {
         $this->sspConfig = Configuration::getConfig('config.php');
@@ -62,6 +63,7 @@ class Cas10ControllerTest extends TestCase
         ];
     }
 
+
     public static function setUpBeforeClass(): void
     {
         // Some of the constructs in this test cause a Configuration to be created prior to us
@@ -72,6 +74,7 @@ class Cas10ControllerTest extends TestCase
         global $_SERVER;
         $_SERVER['REQUEST_URI'] = '/';
     }
+
 
     public static function queryParameterValues(): array
     {
@@ -88,11 +91,12 @@ class Cas10ControllerTest extends TestCase
         ];
     }
 
+
     /**
      * @param   array  $params
      *
      * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     #[DataProvider('queryParameterValues')]
     public function testReturnBadRequestOnEmptyServiceOrTicket(array $params): void
@@ -111,9 +115,10 @@ class Cas10ControllerTest extends TestCase
         $this->assertEquals("no\n\n", $response->getContent());
     }
 
+
     /**
      * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     public function testReturn500OnDeleteTicketThatThrows(): void
     {
@@ -142,9 +147,10 @@ class Cas10ControllerTest extends TestCase
         $this->assertEquals("no\n\n", $response->getContent());
     }
 
+
     /**
      * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     public function testReturnBadRequestOnTicketNotExist(): void
     {
@@ -166,9 +172,10 @@ class Cas10ControllerTest extends TestCase
         $this->assertEquals("no\n\n", $response->getContent());
     }
 
+
     /**
      * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     public function testReturnBadRequestOnTicketExpired(): void
     {
@@ -192,9 +199,10 @@ class Cas10ControllerTest extends TestCase
         $this->assertEquals("no\n\n", $response->getContent());
     }
 
+
     /**
      * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     public function testReturnBadRequestOnTicketNotService(): void
     {
@@ -220,9 +228,10 @@ class Cas10ControllerTest extends TestCase
         $this->assertEquals("no\n\n", $response->getContent());
     }
 
+
     /**
      * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     public function testReturnBadRequestOnTicketMissingUsernameField(): void
     {
@@ -248,9 +257,10 @@ class Cas10ControllerTest extends TestCase
         $this->assertEquals("no\n\n", $response->getContent());
     }
 
+
     /**
      * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     public function testReturnBadRequestOnTicketServiceQueryAndTicketMismatch(): void
     {
@@ -276,9 +286,10 @@ class Cas10ControllerTest extends TestCase
         $this->assertEquals("no\n\n", $response->getContent());
     }
 
+
     /**
      * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     public function testReturnBadRequestOnTicketIssuedBySingleSignOnSession(): void
     {
@@ -304,9 +315,10 @@ class Cas10ControllerTest extends TestCase
         $this->assertEquals("no\n\n", $response->getContent());
     }
 
+
     /**
      * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     public function testSuccessfullValidation(): void
     {

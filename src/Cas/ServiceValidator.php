@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\casserver\Cas;
 
+use ErrorException;
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
 use SimpleSAML\Module\casserver\Codebooks\OverrideConfigPropertiesEnum;
@@ -15,25 +16,22 @@ use SimpleSAML\Module\casserver\Codebooks\OverrideConfigPropertiesEnum;
 class ServiceValidator
 {
     /**
-     * @var \SimpleSAML\Configuration
-     */
-    private Configuration $mainConfig;
-
-    /**
      * ServiceValidator constructor.
-     * @param Configuration $mainConfig
+     * @param \SimpleSAML\Configuration $mainConfig
      */
-    public function __construct(Configuration $mainConfig)
-    {
-        $this->mainConfig = $mainConfig;
+    public function __construct(
+        protected Configuration $mainConfig,
+    ) {
     }
+
 
     /**
      * Check that the $service is allowed, and if so return the configuration to use.
      *
      * @param   string  $service  The service url. Assume to already be url decoded
      *
-     * @return Configuration|null Return the configuration to use for this service, or null if service is not allowed
+     * @return \SimpleSAML\Configuration|null Return the configuration to use for this service,
+     *   or null if service is not allowed
      * @throws \ErrorException
      */
     public function checkServiceURL(string $service): ?Configuration
@@ -82,6 +80,7 @@ class ServiceValidator
         return Configuration::loadFromArray($serviceConfig);
     }
 
+
     /**
      * @param string $legalUrl The string or regex to use for comparison
      * @param string $service  The service to compare
@@ -96,14 +95,14 @@ class ServiceValidator
             // Since "If the regex pattern passed does not compile to a valid regex, an E_WARNING is emitted. "
             // we will throw an exception if the warning is emitted and use try-catch to handle it
             set_error_handler(static function ($severity, $message, $file, $line) {
-                throw new \ErrorException($message, $severity, $severity, $file, $line);
+                throw new ErrorException($message, $severity, $severity, $file, $line);
             }, E_WARNING);
 
             try {
                 if (preg_match($legalUrl, $service) === 1) {
                     $isValid = true;
                 }
-            } catch (\ErrorException $e) {
+            } catch (ErrorException $e) {
                 // do nothing
                 Logger::warning("Invalid CAS legal service url '$legalUrl'. Error " . preg_last_error_msg());
             } finally {

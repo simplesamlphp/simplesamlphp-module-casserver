@@ -172,6 +172,7 @@ trait TicketValidatorTrait
         );
     }
 
+
     /**
      * @param array{'id': string}|null $serviceTicket
      *

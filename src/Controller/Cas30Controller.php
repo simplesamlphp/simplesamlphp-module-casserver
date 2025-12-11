@@ -29,6 +29,7 @@ class Cas30Controller
 {
     use UrlTrait;
 
+
     /** @var \SimpleSAML\Logger */
     protected Logger $logger;
 
@@ -43,6 +44,7 @@ class Cas30Controller
 
     /** @var \SimpleSAML\Module\casserver\Cas\Protocol\SamlValidateResponder */
     protected SamlValidateResponder $validateResponder;
+
 
     /**
      * @param \SimpleSAML\Configuration $sspConfig

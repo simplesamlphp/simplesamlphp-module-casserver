@@ -52,7 +52,6 @@ use SimpleSAML\XMLSchema\Type\StringValue;
 
 use function base64_encode;
 use function count;
-use function filter_var;
 use function is_null;
 use function is_string;
 use function str_replace;
