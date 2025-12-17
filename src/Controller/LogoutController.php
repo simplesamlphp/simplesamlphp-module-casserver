@@ -24,6 +24,7 @@ class LogoutController
 {
     use UrlTrait;
 
+
     /** @var \SimpleSAML\Logger */
     protected Logger $logger;
 
@@ -78,6 +79,7 @@ class LogoutController
         $this->ticketStore = new $ticketStoreClass($this->casConfig);
     }
 
+
     /**
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @param string|null $url
@@ -127,6 +129,7 @@ class LogoutController
         );
     }
 
+
     /**
      * @return \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore
      */
@@ -134,6 +137,7 @@ class LogoutController
     {
         return $this->ticketStore;
     }
+
 
     /**
      * @param string $message
@@ -145,6 +149,7 @@ class LogoutController
         Logger::debug('casserver:' . $message);
         throw new RuntimeException($message);
     }
+
 
     /**
      * Get the Session

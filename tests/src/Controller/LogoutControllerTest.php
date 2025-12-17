@@ -6,9 +6,9 @@ namespace SimpleSAML\Module\casserver\Tests\Controller;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use SimpleSAML\Auth\Simple;
 use SimpleSAML\Configuration;
-use SimpleSAML\HTTP\RunnableResponse;
 use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Controller\LogoutController;
 use SimpleSAML\Session;
@@ -24,6 +24,7 @@ class LogoutControllerTest extends TestCase
     private Utils\HTTP $httpUtils;
 
     private Configuration $sspConfig;
+
 
     protected function setUp(): void
     {
@@ -43,6 +44,7 @@ class LogoutControllerTest extends TestCase
         $this->sspConfig = Configuration::getConfig('config.php');
     }
 
+
     public static function setUpBeforeClass(): void
     {
         // Some of the constructs in this test cause a Configuration to be created prior to us
@@ -54,17 +56,19 @@ class LogoutControllerTest extends TestCase
         $_SERVER['REQUEST_URI'] = '/';
     }
 
+
     public function testLogoutNotAllowed(): void
     {
         $this->moduleConfig['enable_logout'] = false;
         $config = Configuration::loadFromArray($this->moduleConfig);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Logout not allowed');
 
         $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock);
         $controller->logout(Request::create('/'));
     }
+
 
     public function testLogoutNoRedirectUrlOnSkipLogout(): void
     {
@@ -72,12 +76,13 @@ class LogoutControllerTest extends TestCase
         $this->moduleConfig['skip_logout_page'] = true;
         $config = Configuration::loadFromArray($this->moduleConfig);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Required URL query parameter [url] not provided. (CAS Server)');
 
         $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock);
         $controller->logout(Request::create('/'));
     }
+
 
     public function testLogoutWithRedirectUrlOnSkipLogout(): void
     {
@@ -107,6 +112,7 @@ class LogoutControllerTest extends TestCase
         $this->assertEquals($urlParam, $arguments[0]);
     }
 
+
     public function testLogoutNoRedirectUrlOnNoSkipLogoutUnAuthenticated(): void
     {
         $this->moduleConfig['enable_logout'] = true;
@@ -126,6 +132,7 @@ class LogoutControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('http://localhost/module.php/casserver/loggedOut', $arguments[0]);
     }
+
 
     public function testLogoutWithRedirectUrlOnNoSkipLogoutUnAuthenticated(): void
     {
@@ -153,6 +160,7 @@ class LogoutControllerTest extends TestCase
         $this->assertEquals('http://localhost/module.php/casserver/loggedOut', $arguments[0]);
     }
 
+
     public function testLogoutNoRedirectUrlOnNoSkipLogoutAuthenticated(): void
     {
         $this->moduleConfig['enable_logout'] = true;
@@ -171,10 +179,10 @@ class LogoutControllerTest extends TestCase
 
         $response = $controller->logout($logoutRequest, ...$queryParameters);
 
-        $this->assertInstanceOf(RunnableResponse::class, $response);
         $callable = (array)$response->getCallable();
         $this->assertEquals('logout', $callable[1] ?? '');
     }
+
 
     public function testTicketIdGetsDeletedOnLogout(): void
     {

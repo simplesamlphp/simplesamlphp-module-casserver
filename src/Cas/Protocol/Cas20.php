@@ -25,27 +25,33 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\casserver\Cas\Protocol;
 
-use DateTimeImmutable;
-use SimpleSAML\CAS\XML\cas\Attributes;
-use SimpleSAML\CAS\XML\cas\AuthenticationDate;
-use SimpleSAML\CAS\XML\cas\AuthenticationFailure;
-use SimpleSAML\CAS\XML\cas\AuthenticationSuccess;
-use SimpleSAML\CAS\XML\cas\IsFromNewLogin;
-use SimpleSAML\CAS\XML\cas\LongTermAuthenticationRequestTokenUsed;
-use SimpleSAML\CAS\XML\cas\ProxyFailure;
-use SimpleSAML\CAS\XML\cas\ProxyGrantingTicket;
-use SimpleSAML\CAS\XML\cas\ProxySuccess;
-use SimpleSAML\CAS\XML\cas\ProxyTicket;
-use SimpleSAML\CAS\XML\cas\ServiceResponse;
-use SimpleSAML\CAS\XML\cas\User;
+use Beste\Clock\LocalizedClock;
+use DateTimeZone;
+use SimpleSAML\Assert\AssertionFailedException;
+use SimpleSAML\CAS\Type\CodeValue;
+use SimpleSAML\CAS\XML\Attributes;
+use SimpleSAML\CAS\XML\AuthenticationDate;
+use SimpleSAML\CAS\XML\AuthenticationFailure;
+use SimpleSAML\CAS\XML\AuthenticationSuccess;
+use SimpleSAML\CAS\XML\IsFromNewLogin;
+use SimpleSAML\CAS\XML\LongTermAuthenticationRequestTokenUsed;
+use SimpleSAML\CAS\XML\ProxyFailure;
+use SimpleSAML\CAS\XML\ProxyGrantingTicket;
+use SimpleSAML\CAS\XML\ProxySuccess;
+use SimpleSAML\CAS\XML\ProxyTicket;
+use SimpleSAML\CAS\XML\ServiceResponse;
+use SimpleSAML\CAS\XML\User;
 use SimpleSAML\Configuration;
 use SimpleSAML\Logger;
+use SimpleSAML\XML\Assert\Assert;
 use SimpleSAML\XML\Chunk;
 use SimpleSAML\XML\DOMDocumentFactory;
+use SimpleSAML\XMLSchema\Type\BooleanValue;
+use SimpleSAML\XMLSchema\Type\DateTimeValue;
+use SimpleSAML\XMLSchema\Type\StringValue;
 
 use function base64_encode;
 use function count;
-use function filter_var;
 use function is_null;
 use function is_string;
 use function str_replace;
@@ -117,15 +123,15 @@ class Cas20
 
     /**
      * @param string $username
-     * @return \SimpleSAML\CAS\XML\cas\ServiceResponse
+     * @return \SimpleSAML\CAS\XML\ServiceResponse
      */
     public function getValidateSuccessResponse(string $username): ServiceResponse
     {
-        $user = new User($username);
+        $user = new User(StringValue::fromString($username));
 
         $proxyGrantingTicket = null;
         if (is_string($this->proxyGrantingTicketIOU)) {
-            $proxyGrantingTicket = new ProxyGrantingTicket($this->proxyGrantingTicketIOU);
+            $proxyGrantingTicket = new ProxyGrantingTicket(StringValue::fromString($this->proxyGrantingTicketIOU));
         }
 
         $attr = [];
@@ -133,11 +139,12 @@ class Cas20
             foreach ($this->attributes as $name => $values) {
                 // Fix the most common cause of invalid XML elements
                 $_name = str_replace(':', '_', $name);
-                if ($this->isValidXmlName($_name) === true) {
+                try {
+                    Assert::validNCName($_name);
                     foreach ($values as $value) {
                         $attr[] = $this->generateCas20Attribute($_name, $value);
                     }
-                } else {
+                } catch (AssertionFailedException) {
                     Logger::warning("DOMException creating attribute '$_name'. Continuing without attribute'");
                 }
             }
@@ -150,10 +157,11 @@ class Cas20
             }
         }
 
+        $systemClock = LocalizedClock::in(new DateTimeZone('Z'));
         $attributes = new Attributes(
-            new AuthenticationDate(new DateTimeImmutable('now')),
-            new LongTermAuthenticationRequestTokenUsed('true'),
-            new IsFromNewLogin('true'),
+            new AuthenticationDate(DateTimeValue::now($systemClock)),
+            new LongTermAuthenticationRequestTokenUsed(BooleanValue::fromBoolean(true)),
+            new IsFromNewLogin(BooleanValue::fromBoolean(true)),
             $attr,
         );
 
@@ -167,11 +175,14 @@ class Cas20
     /**
      * @param string $errorCode
      * @param string $explanation
-     * @return \SimpleSAML\CAS\XML\cas\ServiceResponse
+     * @return \SimpleSAML\CAS\XML\ServiceResponse
      */
     public function getValidateFailureResponse(string $errorCode, string $explanation): ServiceResponse
     {
-        $authenticationFailure = new AuthenticationFailure($explanation, $errorCode);
+        $authenticationFailure = new AuthenticationFailure(
+            StringValue::fromString($explanation),
+            CodeValue::fromString($errorCode),
+        );
         $serviceResponse = new ServiceResponse($authenticationFailure);
 
         return $serviceResponse;
@@ -180,11 +191,11 @@ class Cas20
 
     /**
      * @param string $proxyTicketId
-     * @return \SimpleSAML\CAS\XML\cas\ServiceResponse
+     * @return \SimpleSAML\CAS\XML\ServiceResponse
      */
     public function getProxySuccessResponse(string $proxyTicketId): ServiceResponse
     {
-        $proxyTicket = new ProxyTicket($proxyTicketId);
+        $proxyTicket = new ProxyTicket(StringValue::fromString($proxyTicketId));
         $proxySuccess = new ProxySuccess($proxyTicket);
         $serviceResponse = new ServiceResponse($proxySuccess);
 
@@ -195,11 +206,14 @@ class Cas20
     /**
      * @param string $errorCode
      * @param string $explanation
-     * @return \SimpleSAML\CAS\XML\cas\ServiceResponse
+     * @return \SimpleSAML\CAS\XML\ServiceResponse
      */
     public function getProxyFailureResponse(string $errorCode, string $explanation): ServiceResponse
     {
-        $proxyFailure = new ProxyFailure($explanation, $errorCode);
+        $proxyFailure = new ProxyFailure(
+            StringValue::fromString($explanation),
+            CodeValue::fromString($errorCode),
+        );
         $serviceResponse = new ServiceResponse($proxyFailure);
 
         return $serviceResponse;
@@ -221,27 +235,5 @@ class Cas20
         $attributeElement = $xmlDocument->createElementNS(Attributes::NS, 'cas:' . $attributeName, $attributeValue);
 
         return new Chunk($attributeElement);
-    }
-
-
-    /**
-     * XML element names have a lot of rules and not every SAML attribute name can be converted.
-     * Ref: https://www.w3.org/TR/REC-xml/#NT-NameChar
-     * https://stackoverflow.com/q/2519845/54396
-     * must only start with letter or underscore
-     * cannot start with 'xml' (or maybe it can - stackoverflow commenters don't agree)
-     * cannot contain a ':' since those are for namespaces
-     * cannot contains space
-     * can only  contain letters, digits, hyphens, underscores, and periods
-     * @param string $name The attribute name to be used as an element
-     * @return bool true if $name would make a valid xml element.
-     */
-    private function isValidXmlName(string $name): bool
-    {
-        return filter_var(
-            $name,
-            FILTER_VALIDATE_REGEXP,
-            ['options' => ['regexp' => '/^[a-zA-Z_][\w.-]*$/']],
-        ) !== false;
     }
 }

@@ -6,8 +6,9 @@ namespace SimpleSAML\Module\casserver\Cas\Protocol;
 
 use SimpleSAML\Configuration;
 use SimpleSAML\Module\casserver\Shib13\AuthnResponse;
-use SimpleSAML\SOAP\XML\env_200106\Body;
-use SimpleSAML\SOAP\XML\env_200106\Envelope;
+use SimpleSAML\SAML11\Constants as C;
+use SimpleSAML\SOAP11\XML\Body;
+use SimpleSAML\SOAP11\XML\Envelope;
 use SimpleSAML\XML\Chunk;
 use SimpleSAML\XML\DOMDocumentFactory;
 use SimpleSAML\XML\SerializableElementInterface;
@@ -48,8 +49,8 @@ class SamlValidateResponder
             '<NameIdentifier$1>' . htmlspecialchars($user) . '</NameIdentifier>',
             $authnResponseXML,
         );
-        // CAS seems to prefer this type of assertiond
-        $ret = str_replace('urn:oasis:names:tc:SAML:1.0:cm:bearer', 'urn:oasis:names:tc:SAML:1.0:cm:artifact', $ret);
+        // CAS seems to prefer this type of assertion
+        $ret = str_replace(C::CM_BEARER, C::CM_ARTIFACT, $ret);
         // CAS uses a different namespace for attributes
         $ret = str_replace(
             'urn:mace:shibboleth:1.0:attributeNamespace:uri',
@@ -64,7 +65,7 @@ class SamlValidateResponder
 
     /**
      * @param \SimpleSAML\XML\SerializableElementInterface $samlResponse
-     * @return \SimpleSAML\SOAP\XML\env_200106\Envelope
+     * @return \SimpleSAML\SOAP11\XML\Envelope
      */
     public function wrapInSoap(SerializableElementInterface $samlResponse): Envelope
     {

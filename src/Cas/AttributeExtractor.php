@@ -16,13 +16,7 @@ use SimpleSAML\Module\casserver\Cas\Factories\ProcessingChainFactory;
  */
 class AttributeExtractor
 {
-    /** @var Configuration */
-    private Configuration $casconfig;
-
-    /** @var ProcessingChainFactory  */
-    private ProcessingChainFactory $processingChainFactory;
-
-    /** @var State */
+    /** @var \SimpleSAML\Auth\State */
     private State $authState;
 
     /**
@@ -30,14 +24,14 @@ class AttributeExtractor
      */
     private ?string $authSourceId = null;
 
+
     public function __construct(
-        Configuration $casconfig,
-        ProcessingChainFactory $processingChainFactory,
+        protected Configuration $casconfig,
+        protected ProcessingChainFactory $processingChainFactory,
     ) {
-        $this->casconfig = $casconfig;
-        $this->processingChainFactory = $processingChainFactory;
         $this->authState = new State();
     }
+
 
     /**
      * Determine the user and any CAS attributes based on the attributes from the
@@ -97,6 +91,7 @@ class AttributeExtractor
         ];
     }
 
+
     /**
      * Run authproc filters with the processing chain
      * Creating the ProcessingChain require metadata.
@@ -129,6 +124,7 @@ class AttributeExtractor
         $this->processingChainFactory->build($state)->processState($state);
     }
 
+
     /**
      * This is a wrapper around Auth/State::loadState that facilitates testing by
      * hiding the static method
@@ -136,7 +132,7 @@ class AttributeExtractor
      * @param   string  $stateId
      *
      * @return array|null
-     * @throws NoState
+     * @throws \SimpleSAML\Error\NoState
      */
     public function manageState(string $stateId): ?array
     {
@@ -153,6 +149,7 @@ class AttributeExtractor
 
         return $state;
     }
+
 
     /**
      * @param   string  $id

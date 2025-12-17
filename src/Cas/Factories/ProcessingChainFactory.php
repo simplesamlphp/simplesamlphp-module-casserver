@@ -16,14 +16,11 @@ use SimpleSAML\Configuration;
 
 class ProcessingChainFactory
 {
-    /** @var Configuration */
-    private Configuration $casconfig;
-
     public function __construct(
-        Configuration $casconfig,
+        protected Configuration $casconfig,
     ) {
-        $this->casconfig = $casconfig;
     }
+
 
     /**
      * @codeCoverageIgnore

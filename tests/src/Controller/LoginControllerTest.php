@@ -31,6 +31,7 @@ class LoginControllerTest extends TestCase
 
     private Session|MockObject $sessionMock;
 
+
     protected function setUp(): void
     {
         $this->authSimpleMock = $this->getMockBuilder(Simple::class)
@@ -68,6 +69,7 @@ class LoginControllerTest extends TestCase
         $this->sspConfig = Configuration::getConfig('config.php');
     }
 
+
     public static function setUpBeforeClass(): void
     {
         // Some of the constructs in this test cause a Configuration to be created prior to us
@@ -78,6 +80,7 @@ class LoginControllerTest extends TestCase
         global $_SERVER;
         $_SERVER['REQUEST_URI'] = '/';
     }
+
 
     public static function loginParameters(): array
     {
@@ -97,6 +100,7 @@ class LoginControllerTest extends TestCase
             ],
         ];
     }
+
 
     /**
      * Test incorrect service url
@@ -122,6 +126,7 @@ class LoginControllerTest extends TestCase
 
         $loginController->login($loginRequest, ...$params);
     }
+
 
     public static function loginOnAuthenticateParameters(): array
     {
@@ -193,6 +198,7 @@ class LoginControllerTest extends TestCase
         ];
     }
 
+
     #[DataProvider('loginOnAuthenticateParameters')]
     public function testAuthSourceLogin(array $requestParameters, array $loginParameters, array $scopes): void
     {
@@ -226,6 +232,7 @@ class LoginControllerTest extends TestCase
         $this->assertEquals($loginParameters, $actualLoginParams);
     }
 
+
     /**
      * Check authenticated with debugMode false
      */
@@ -255,6 +262,7 @@ class LoginControllerTest extends TestCase
         $this->assertEquals('redirectTrustedURL', $callable[1] ?? '');
     }
 
+
     public static function validServiceUrlProvider(): array
     {
         return [
@@ -275,6 +283,7 @@ class LoginControllerTest extends TestCase
             ],
         ];
     }
+
 
     /**
      * Test a valid service URL
@@ -328,6 +337,7 @@ class LoginControllerTest extends TestCase
         $this->assertEquals('redirectTrustedURL', $callable[1] ?? '');
     }
 
+
     /**
      * @return array<array{0:string}>
      */
@@ -339,11 +349,11 @@ class LoginControllerTest extends TestCase
         ];
     }
 
+
     /**
      * When passive is disabled and a service is provided, CAS must redirect to the service without appending CAS params
-     *
-     * @dataProvider serviceUrlsProvider
      */
+    #[DataProvider('serviceUrlsProvider')]
     public function testGatewayPassiveDisabledRedirectsWithoutParams(string $serviceUrl): void
     {
         // enable_passive_mode disabled
@@ -388,6 +398,7 @@ class LoginControllerTest extends TestCase
         $this->assertEquals($serviceUrl, $arguments[0]);
         $this->assertSame([], $arguments[1] ?? []);
     }
+
 
     public function testGatewayPassiveEnabledPerformsPassiveAttempt(): void
     {
@@ -436,6 +447,7 @@ class LoginControllerTest extends TestCase
         $this->assertIsString($actualLoginParams['ReturnTo']);
     }
 
+
     public function testGatewayNoServicePassiveDisabledFallsBackToInteractive(): void
     {
         // enable_passive_mode disabled
@@ -473,6 +485,7 @@ class LoginControllerTest extends TestCase
         $this->assertArrayHasKey('isPassive', $loginArgs);
         $this->assertFalse($loginArgs['isPassive']);
     }
+
 
     public function testRenewAndGatewayConflictDisablesPassive(): void
     {
@@ -515,6 +528,7 @@ class LoginControllerTest extends TestCase
         $this->assertArrayHasKey('ForceAuthn', $loginArgs);
         $this->assertTrue($loginArgs['ForceAuthn']);
     }
+
 
     public function testAuthenticatedPostSubmitsViaPostWithTicket(): void
     {
