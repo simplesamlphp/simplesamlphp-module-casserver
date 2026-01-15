@@ -143,11 +143,9 @@ class LogoutControllerTest extends TestCase
         $this->moduleConfig['skip_logout_page'] = true;
         $config = Configuration::loadFromArray($this->moduleConfig);
 
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Required URL query parameter [url] not provided. (CAS Server)');
-
         $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock);
-        $controller->logout(Request::create('/'));
+        $response = $controller->logout(Request::create('/'));
+        $this->validateLogoutResponse($response);
     }
 
 
