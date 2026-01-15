@@ -38,6 +38,11 @@ class LoginController
     use UrlTrait;
     use TicketValidatorTrait;
 
+
+    /** @var string[] */
+    private const DEBUG_MODES = ['true', 'samlValidate'];
+
+
     /** @var \SimpleSAML\Logger */
     protected Logger $logger;
 
@@ -71,14 +76,12 @@ class LoginController
     /** @var string[] */
     protected array $postAuthUrlParameters = [];
 
-    /** @var string[] */
-    private const DEBUG_MODES = ['true', 'samlValidate'];
-
     /** @var \SimpleSAML\Module\casserver\Cas\AttributeExtractor */
     protected AttributeExtractor $attributeExtractor;
 
     /** @var \SimpleSAML\Module\casserver\Cas\Protocol\SamlValidateResponder */
     private SamlValidateResponder $samlValidateResponder;
+
 
     /**
      * @param \SimpleSAML\Configuration $sspConfig
@@ -104,6 +107,7 @@ class LoginController
         $this->authSource = $source ?? new Simple($this->casConfig->getValue('authsource'));
         $this->httpUtils = $httpUtils ?? new Utils\HTTP();
     }
+
 
     /**
      *
@@ -266,6 +270,7 @@ class LoginController
         );
     }
 
+
     /**
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @param string|null $debugMode
@@ -306,6 +311,7 @@ class LoginController
         ];
     }
 
+
     /**
      * @return array|null
      * @throws \SimpleSAML\Error\NoState
@@ -320,6 +326,7 @@ class LoginController
             $this->authSource->getAuthDataArray();
     }
 
+
     /**
      * Construct the ticket name
      *
@@ -332,6 +339,7 @@ class LoginController
         $defaultTicketName = $service !== null ? 'ticket' : 'SAMLart';
         return $this->casConfig->getOptionalValue('ticketName', $defaultTicketName);
     }
+
 
     /**
      * @param \Symfony\Component\HttpFoundation\Request $request
@@ -346,6 +354,7 @@ class LoginController
         // Construct the ReturnTo URL
         return $this->httpUtils->getSelfURLNoQuery() . '?' . http_build_query($query);
     }
+
 
     /**
      * @param string|null $serviceUrl
@@ -371,6 +380,7 @@ class LoginController
         $this->casConfig = $serviceCasConfig;
     }
 
+
     /**
      * @param string|null $language
      *
@@ -385,6 +395,7 @@ class LoginController
 
         $this->postAuthUrlParameters['language'] = $language;
     }
+
 
     /**
      * @param string|null $scope
@@ -415,6 +426,7 @@ class LoginController
         $this->idpList = $scopes[$scope];
     }
 
+
     /**
      * Get the Session
      *
@@ -426,6 +438,7 @@ class LoginController
         return Session::getSessionFromRequest();
     }
 
+
     /**
      * @return \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore
      */
@@ -433,6 +446,7 @@ class LoginController
     {
         return $this->ticketStore;
     }
+
 
     /**
      * @return void
@@ -462,6 +476,7 @@ class LoginController
         $this->attributeExtractor = new AttributeExtractor($this->casConfig, $processingChainFactory);
     }
 
+
     /**
      * Trigger interactive authentication via the AuthSource.
      *
@@ -469,7 +484,7 @@ class LoginController
      * @param string      $returnToUrl
      * @param string|null $entityId
      *
-     * @return RunnableResponse
+     * @return \SimpleSAML\HTTP\RunnableResponse
      */
     private function handleInteractiveAuthenticate(
         bool $forceAuthn,
@@ -484,11 +499,12 @@ class LoginController
         );
     }
 
+
     /**
      * Handle the gateway flow when the user is NOT authenticated.
      * Passive mode is only attempted if 'enable_passive_mode' is enabled in configuration.
      *
-     * Returns: RunnableResponse|null
+     * Returns: \SimpleSAML\HTTP\RunnableResponse|null
      *  - RunnableResponse for either a passive attempt or a redirect to service without ticket.
      *  - null to indicate: proceed with interactive login (non-passive).
      */
@@ -517,6 +533,7 @@ class LoginController
         );
     }
 
+
     /**
      * Handle authentication request by configuring parameters and triggering login via auth source.
      *
@@ -525,7 +542,7 @@ class LoginController
      * @param string $returnToUrl URL to return to after authentication
      * @param string|null $entityId Optional specific IdP entity ID to use
      *
-     * @return RunnableResponse Response containing the login redirect
+     * @return \SimpleSAML\HTTP\RunnableResponse Response containing the login redirect
      */
     private function handleAuthenticate(
         bool $forceAuthn,

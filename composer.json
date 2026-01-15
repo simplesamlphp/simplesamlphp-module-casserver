@@ -37,18 +37,19 @@
         "ext-SimpleXML": "*",
         "ext-session": "*",
 
-        "simplesamlphp/assert": "^1.8",
-        "simplesamlphp/composer-module-installer": "~1.5",
-        "simplesamlphp/simplesamlphp": "~2.5@RC",
-        "simplesamlphp/xml-cas": "~1.3",
-        "simplesamlphp/xml-common": "~1.17",
-        "simplesamlphp/xml-soap": "~1.5",
-        "symfony/http-foundation": "^7.4",
-        "symfony/http-kernel": "^7.4",
-        "simplesamlphp/saml11": "~1.3"
+        "beste/clock": "~3.0",
+        "simplesamlphp/assert": "~1.9",
+        "simplesamlphp/composer-module-installer": "~1.6",
+        "simplesamlphp/simplesamlphp": "~2.5@dev",
+        "simplesamlphp/xml-cas": "~2.0",
+        "simplesamlphp/xml-common": "~2.0",
+        "simplesamlphp/xml-soap": "~2.0",
+        "symfony/http-foundation": "~7.4",
+        "symfony/http-kernel": "~7.4",
+        "simplesamlphp/saml11": "~2.0"
     },
     "require-dev": {
-        "simplesamlphp/simplesamlphp-test-framework": "^1.11"
+        "simplesamlphp/simplesamlphp-test-framework": "~1.11"
     },
     "support": {
         "issues": "https://github.com/simplesamlphp/simplesamlphp-module-casserver/issues",

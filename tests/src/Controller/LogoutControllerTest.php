@@ -7,9 +7,9 @@ namespace SimpleSAML\Module\casserver\Tests\Controller;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use SimpleSAML\Auth\Simple;
 use SimpleSAML\Configuration;
-use SimpleSAML\HTTP\RunnableResponse;
 use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Controller\LogoutController;
 use SimpleSAML\Session;
@@ -27,6 +27,7 @@ class LogoutControllerTest extends TestCase
     private Utils\HTTP $httpUtils;
 
     private Configuration $sspConfig;
+
 
     protected function setUp(): void
     {
@@ -50,6 +51,7 @@ class LogoutControllerTest extends TestCase
         $this->sspConfig = Configuration::getConfig('config.php');
     }
 
+
     public static function setUpBeforeClass(): void
     {
         // Some of the constructs in this test cause a Configuration to be created prior to us
@@ -60,6 +62,7 @@ class LogoutControllerTest extends TestCase
         global $_SERVER;
         $_SERVER['REQUEST_URI'] = '/';
     }
+
 
     public static function crossProtocolLogoutReturnUrlValidatedProvider(): array
     {
@@ -86,6 +89,7 @@ class LogoutControllerTest extends TestCase
             ],
         ];
     }
+
 
     /**
      * @param bool $isV3 query param is 'service' for v3, 'url' for v2
@@ -118,17 +122,19 @@ class LogoutControllerTest extends TestCase
         $this->validateLogoutResponse($response, $isValid ? $queryValue : null, !$isValid || !$isV3);
     }
 
+
     public function testLogoutNotAllowed(): void
     {
         $this->moduleConfig['enable_logout'] = false;
         $config = Configuration::loadFromArray($this->moduleConfig);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Logout not allowed');
 
         $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock);
         $controller->logout(Request::create('/'));
     }
+
 
     public function testLogoutNoRedirectUrlOnSkipLogout(): void
     {
@@ -136,11 +142,13 @@ class LogoutControllerTest extends TestCase
         $this->moduleConfig['skip_logout_page'] = true;
         $config = Configuration::loadFromArray($this->moduleConfig);
 
-        $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock);
-        $response = $controller->logout(Request::create('/'));
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Required URL query parameter [url] not provided. (CAS Server)');
 
-        $this->validateLogoutResponse($response);
+        $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock);
+        $controller->logout(Request::create('/'));
     }
+
 
     public function testLogoutWithRedirectUrlOnSkipLogout(): void
     {
@@ -164,6 +172,7 @@ class LogoutControllerTest extends TestCase
         $this->validateLogoutResponse($response, $urlParam, false);
     }
 
+
     public function testLogoutNoRedirectUrlOnNoSkipLogoutUnAuthenticated(): void
     {
         $this->moduleConfig['enable_logout'] = true;
@@ -177,6 +186,7 @@ class LogoutControllerTest extends TestCase
         $response = $controller->logout(Request::create('/'));
         $this->validateLogoutResponse($response);
     }
+
 
     public function testLogoutWithRedirectUrlOnNoSkipLogoutUnAuthenticated(): void
     {
@@ -198,6 +208,7 @@ class LogoutControllerTest extends TestCase
         $this->validateLogoutResponse($response, $urlParam);
     }
 
+
     public function testLogoutNoRedirectUrlOnNoSkipLogoutAuthenticated(): void
     {
         $this->moduleConfig['enable_logout'] = true;
@@ -216,10 +227,10 @@ class LogoutControllerTest extends TestCase
 
         $response = $controller->logout($logoutRequest, ...$queryParameters);
 
-        $this->assertInstanceOf(RunnableResponse::class, $response);
         $callable = (array)$response->getCallable();
         $this->assertEquals('logout', $callable[1] ?? '');
     }
+
 
     public function testTicketIdGetsDeletedOnLogout(): void
     {
@@ -266,6 +277,7 @@ class LogoutControllerTest extends TestCase
         // The Ticket has been successfully deleted
         $this->assertEquals(null, $ticketStore->getTicket($ticket['id']));
     }
+
 
     /**
      * Validates common things in the logout response

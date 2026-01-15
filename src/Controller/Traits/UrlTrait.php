@@ -30,6 +30,7 @@ trait UrlTrait
         return $serviceValidator->checkServiceURL($service) !== null;
     }
 
+
     /**
      * @param string $parameter
      * @return string
@@ -38,6 +39,7 @@ trait UrlTrait
     {
         return TicketValidator::sanitize($parameter);
     }
+
 
     /**
      * Parse the query Parameters from $_GET global and return them in an array.
@@ -67,6 +69,7 @@ trait UrlTrait
 
         return $query;
     }
+
 
     /**
      * @param \Symfony\Component\HttpFoundation\Request $request

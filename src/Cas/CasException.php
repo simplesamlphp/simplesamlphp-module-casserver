@@ -12,19 +12,19 @@ use Exception;
  */
 class CasException extends Exception
 {
-    /** @var string */
-    private string $casCode;
-
     /**
      * CasException constructor.
+     *
      * @param string $casCode
      * @param string $message
      */
-    public function __construct(string $casCode, string $message)
-    {
+    public function __construct(
+        protected string $casCode,
+        string $message,
+    ) {
         parent::__construct($message);
-        $this->casCode = $casCode;
     }
+
 
     /**
      * @return string
