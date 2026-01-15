@@ -21,14 +21,11 @@
  *
  */
 
-session_cache_limiter('nocache');
+// This file is only to preserve this older path
 
-$globalConfig = \SimpleSAML\Configuration::getInstance();
-
-$t = new \SimpleSAML\XHTML\Template($globalConfig, 'casserver:loggedOut.php');
-
-if (array_key_exists('url', $_GET)) {
-    $t->data['url'] = $_GET['url'];
-}
-
-$t->show();
+\SimpleSAML\Utils\HTTP::redirectTrustedURL(
+    \SimpleSAML\Utils\HTTP::addURLParameters(
+        \SimpleSAML\Module::getModuleURL('casserver/logout.php'),
+        $_GET['url'] ? ['url' => $_GET['url']] : []
+    )
+);
