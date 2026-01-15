@@ -311,11 +311,6 @@ parameters:
 			path: src/Controller/LoginController.php
 
 		-
-			message: "#^Property SimpleSAML\\\\Module\\\\casserver\\\\Controller\\\\LogoutController\\:\\:\\$sspConfig is never read, only written\\.$#"
-			count: 1
-			path: src/Controller/LogoutController.php
-
-		-
 			message: "#^Access to an undefined property DOMNode\\:\\:\\$value\\.$#"
 			count: 1
 			path: src/Shib13/AuthnResponse.php

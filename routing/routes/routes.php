@@ -37,8 +37,9 @@ return static function (RoutingConfigurator $routes): void
         ->methods(['POST']);
     $routes->add(RoutesEnum::Logout->name, RoutesEnum::Logout->value)
         ->controller([LogoutController::class, 'logout']);
+    // This path was combined into the main logout
     $routes->add(RoutesEnum::LoggedOut->name, RoutesEnum::LoggedOut->value)
-        ->controller([LoggedOutController::class, 'main']);
+        ->controller([LogoutController::class, 'logout']);
     $routes->add(RoutesEnum::Login->name, RoutesEnum::Login->value)
         ->controller([LoginController::class, 'login']);
     $routes->add(RoutesEnum::LoggedIn->name, RoutesEnum::LoggedIn->value)
@@ -61,8 +62,9 @@ return static function (RoutingConfigurator $routes): void
         ->methods(['POST']);
     $routes->add(LegacyRoutesEnum::LegacyLogout->name, LegacyRoutesEnum::LegacyLogout->value)
         ->controller([LogoutController::class, 'logout']);
+    // This path was combined into the main logout
     $routes->add(LegacyRoutesEnum::LegacyLoggedOut->name, LegacyRoutesEnum::LegacyLoggedOut->value)
-        ->controller([LoggedOutController::class, 'main']);
+        ->controller([LogoutController::class, 'logout']);
     $routes->add(LegacyRoutesEnum::LegacyLogin->name, LegacyRoutesEnum::LegacyLogin->value)
         ->controller([LoginController::class, 'login']);
     $routes->add(LegacyRoutesEnum::LegacyLoggedIn->name, LegacyRoutesEnum::LegacyLoggedIn->value)

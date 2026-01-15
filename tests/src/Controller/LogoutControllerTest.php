@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Module\casserver\Tests\Controller;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Auth\Simple;
@@ -13,7 +14,9 @@ use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Controller\LogoutController;
 use SimpleSAML\Session;
 use SimpleSAML\Utils;
+use SimpleSAML\XHTML\Template;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class LogoutControllerTest extends TestCase
 {
@@ -37,6 +40,10 @@ class LogoutControllerTest extends TestCase
                 'class' => 'casserver:FileSystemTicketStore', //Not intended for production
                 'directory' => __DIR__ . '../../../../tests/ticketcache',
             ],
+            'legal_service_urls' => [
+                'https://example.com/',
+                'https://valid.edu',
+            ],
         ];
 
         $this->httpUtils = new Utils\HTTP();
@@ -52,6 +59,63 @@ class LogoutControllerTest extends TestCase
         // To make lib/SimpleSAML/Utils/HTTP::getSelfURL() work...
         global $_SERVER;
         $_SERVER['REQUEST_URI'] = '/';
+    }
+
+    public static function crossProtocolLogoutReturnUrlValidatedProvider(): array
+    {
+        return [
+          'validV3' => [
+              true,
+              'https://valid.edu/v3',
+              true,
+          ],
+            'validV2' => [
+                false,
+                'https://valid.edu/v2',
+                true,
+            ],
+            'invalidV3' => [
+                true,
+                'https://invalid.edu/v3',
+                false,
+            ],
+            'invalidV2' => [
+                false,
+                'https://invalid.edu/v2',
+                false,
+            ],
+        ];
+    }
+
+    /**
+     * @param bool $isV3 query param is 'service' for v3, 'url' for v2
+     * @param string $queryValue the value for the query param
+     * @param bool $isValid
+     * @return void
+     * @throws \Exception
+     */
+    #[DataProvider('crossProtocolLogoutReturnUrlValidatedProvider')]
+    public function testCrossProtocolLogoutReturnUrlValidated(bool $isV3, string $queryValue, bool $isValid): void
+    {
+        $this->moduleConfig['enable_logout'] = true;
+        // CAS v3 treats this as always enabled
+        $this->moduleConfig['skip_logout_page'] = false;
+        $config = Configuration::loadFromArray($this->moduleConfig);
+
+        // Unauthenticated
+        $this->authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(false);
+
+        $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock, $this->httpUtils);
+
+        $logoutUrl = Module::getModuleURL('casserver/logout.php');
+
+        $request = Request::create(
+            uri: $logoutUrl,
+            parameters: [ $isV3 ? 'service' : 'url' => $queryValue],
+        );
+        $response = $controller->logout($request, $isV3 ? null : $queryValue, $isV3 ? $queryValue : null);
+
+        $this->validateLogoutResponse($response, $isValid ? $queryValue : null, !$isValid || !$isV3);
     }
 
     public function testLogoutNotAllowed(): void
@@ -72,11 +136,10 @@ class LogoutControllerTest extends TestCase
         $this->moduleConfig['skip_logout_page'] = true;
         $config = Configuration::loadFromArray($this->moduleConfig);
 
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Required URL query parameter [url] not provided. (CAS Server)');
-
         $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock);
-        $controller->logout(Request::create('/'));
+        $response = $controller->logout(Request::create('/'));
+
+        $this->validateLogoutResponse($response);
     }
 
     public function testLogoutWithRedirectUrlOnSkipLogout(): void
@@ -98,13 +161,7 @@ class LogoutControllerTest extends TestCase
             parameters: ['url' => $urlParam],
         );
         $response = $controller->logout($request, $urlParam);
-
-        $callable = $response->getCallable();
-        $method = is_array($callable) ? $callable[1] : 'unknown';
-        $arguments = $response->getArguments();
-        $this->assertEquals('redirectTrustedURL', $method);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals($urlParam, $arguments[0]);
+        $this->validateLogoutResponse($response, $urlParam, false);
     }
 
     public function testLogoutNoRedirectUrlOnNoSkipLogoutUnAuthenticated(): void
@@ -118,13 +175,7 @@ class LogoutControllerTest extends TestCase
 
         $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock, $this->httpUtils);
         $response = $controller->logout(Request::create('/'));
-
-        $callable = $response->getCallable();
-        $method = is_array($callable) ? $callable[1] : 'unknown';
-        $arguments = $response->getArguments();
-        $this->assertEquals('redirectTrustedURL', $method);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('http://localhost/module.php/casserver/loggedOut', $arguments[0]);
+        $this->validateLogoutResponse($response);
     }
 
     public function testLogoutWithRedirectUrlOnNoSkipLogoutUnAuthenticated(): void
@@ -144,13 +195,7 @@ class LogoutControllerTest extends TestCase
             parameters: ['url' => $urlParam],
         );
         $response = $controller->logout($request, $urlParam);
-
-        $callable = $response->getCallable();
-        $method = is_array($callable) ? $callable[1] : 'unknown';
-        $arguments = $response->getArguments();
-        $this->assertEquals('redirectTrustedURL', $method);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('http://localhost/module.php/casserver/loggedOut', $arguments[0]);
+        $this->validateLogoutResponse($response, $urlParam);
     }
 
     public function testLogoutNoRedirectUrlOnNoSkipLogoutAuthenticated(): void
@@ -220,5 +265,37 @@ class LogoutControllerTest extends TestCase
         $controllerMock->logout(Request::create('/'));
         // The Ticket has been successfully deleted
         $this->assertEquals(null, $ticketStore->getTicket($ticket['id']));
+    }
+
+    /**
+     * Validates common things in the logout response
+     * @param Response $response The response from logout
+     * @param string|null $redirectUrl The intended redirect url
+     * @param bool $isShowPage If a logout page should be shown with a link to the url
+     * @return void
+     */
+    public function validateLogoutResponse(
+        Response $response,
+        ?string $redirectUrl = null,
+        bool $isShowPage = true,
+    ): void {
+
+
+        if ($isShowPage) {
+            $this->assertInstanceOf(Template::class, $response);
+            if (is_null($redirectUrl)) {
+                $this->assertArrayNotHasKey('url', $response->data);
+            } else {
+                $this->assertEquals($redirectUrl, $response->data['url']);
+            }
+        } else {
+            $this->assertInstanceOf(RunnableResponse::class, $response);
+            $callable = $response->getCallable();
+            $method = is_array($callable) ? $callable[1] : 'unknown';
+            $arguments = $response->getArguments();
+            $this->assertEquals('redirectTrustedURL', $method);
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals($redirectUrl, $arguments[0]);
+        }
     }
 }
