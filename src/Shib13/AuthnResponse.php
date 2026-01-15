@@ -28,11 +28,9 @@ use SimpleXMLElement;
  */
 class AuthnResponse
 {
-    /** @var string */
-    public const SHIB_PROTOCOL_NS = 'urn:oasis:names:tc:SAML:1.0:protocol';
+    public const string SHIB_PROTOCOL_NS = 'urn:oasis:names:tc:SAML:1.0:protocol';
 
-    /** @var string */
-    public const SHIB_ASSERT_NS = 'urn:oasis:names:tc:SAML:1.0:assertion';
+    public const string SHIB_ASSERT_NS = 'urn:oasis:names:tc:SAML:1.0:assertion';
 
 
     /**

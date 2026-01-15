@@ -40,7 +40,7 @@ class LoginController
 
 
     /** @var string[] */
-    private const DEBUG_MODES = ['true', 'samlValidate'];
+    private const array DEBUG_MODES = ['true', 'samlValidate'];
 
 
     /** @var \SimpleSAML\Logger */

@@ -44,6 +44,7 @@ class LogoutController
 
     /** @var \SimpleSAML\Module\casserver\Cas\Ticket\TicketStore */
     protected TicketStore $ticketStore;
+
     private ServiceValidator $serviceValidator;
 
 

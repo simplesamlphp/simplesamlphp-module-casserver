@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use SimpleSAML\Auth\Simple;
 use SimpleSAML\Configuration;
+use SimpleSAML\HTTP\RunnableResponse;
 use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Controller\LogoutController;
 use SimpleSAML\Session;
@@ -281,9 +282,11 @@ class LogoutControllerTest extends TestCase
 
     /**
      * Validates common things in the logout response
-     * @param Response $response The response from logout
+     *
+     * @param \Symfony\Component\HttpFoundation\Response $response The response from logout
      * @param string|null $redirectUrl The intended redirect url
      * @param bool $isShowPage If a logout page should be shown with a link to the url
+     *
      * @return void
      */
     public function validateLogoutResponse(
