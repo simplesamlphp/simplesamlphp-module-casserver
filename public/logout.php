@@ -26,6 +26,10 @@
 declare(strict_types=1);
 
 /* Load simpleSAMLphp, configuration and metadata */
+
+use SimpleSAML\Module\casserver\Cas\ServiceValidator;
+use SimpleSAML\Module\casserver\Cas\TicketValidator;
+
 $casconfig = \SimpleSAML\Configuration::getConfig('module_casserver.php');
 
 if (!$casconfig->getOptionalValue('enable_logout', false)) {
@@ -36,17 +40,27 @@ if (!$casconfig->getOptionalValue('enable_logout', false)) {
     throw new \Exception($message);
 }
 
-$skipLogoutPage = $casconfig->getOptionalValue('skip_logout_page', false);
+$isCasV3 = array_key_exists('service', $_GET);
+$url = $_GET['service'] ?? $_GET['url'] ?? null;
+// Skip logout is enabled for valid casv3 service logouts, or if enabled for casv2
+$skipLogoutPage = $isCasV3 || $casconfig->getOptionalBoolean('skip_logout_page', false);
 
-if ($skipLogoutPage && !array_key_exists('url', $_GET)) {
-    $message = 'Required URL query parameter [url] not provided. (CAS Server)';
-
+if ($skipLogoutPage && !$url) {
+    $message = 'Required URL query parameter ["service" or "url"] not provided. (CAS Server)';
     \SimpleSAML\Logger::debug('casserver:' . $message);
-
     throw new \Exception($message);
 }
-/* Load simpleSAMLphp metadata */
 
+$serviceValidator = new ServiceValidator($casconfig);
+if (isset($url)) {
+    $serviceCasConfig = $serviceValidator->checkServiceURL(TicketValidator::sanitize($url));
+    if (!isset($serviceCasConfig)) {
+        // If invalid logout url sent, act like no url sent and show logout page
+        \SimpleSAML\Logger::info("Invalid logout url '$url'. Ignoring");
+        $url = null;
+        $skipLogoutPage = false;
+    }
+}
 $as = new \SimpleSAML\Auth\Simple($casconfig->getValue('authsource'));
 
 $session = \SimpleSAML\Session::getSession();
@@ -64,28 +78,20 @@ $httpUtils = new \SimpleSAML\Utils\HTTP();
 
 if ($as->isAuthenticated()) {
     \SimpleSAML\Logger::debug('casserver: performing a real logout');
-
-    if ($casconfig->getOptionalValue('skip_logout_page', false)) {
-        $as->logout($_GET['url']);
-    } else {
-        $as->logout(
-            $httpUtils->addURLParameters(
-                \SimpleSAML\Module::getModuleURL('casserver/loggedOut.php'),
-                array_key_exists('url', $_GET) ? ['url' => $_GET['url']] : [],
-            ),
-        );
-    }
+    // Browser will be returned to this url and we will handle any $url checking
+    $as->logout($httpUtils->getSelfURL());
 } else {
     \SimpleSAML\Logger::debug('casserver: no session to log out of, performing redirect');
 
-    if ($casconfig->getOptionalValue('skip_logout_page', false)) {
-        $httpUtils->redirectTrustedURL($httpUtils->addURLParameters($_GET['url'], []));
+    if ($skipLogoutPage) {
+        $httpUtils->redirectTrustedURL($url);
     } else {
-        $httpUtils->redirectTrustedURL(
-            $httpUtils->addURLParameters(
-                \SimpleSAML\Module::getModuleURL('casserver/loggedOut.php'),
-                array_key_exists('url', $_GET) ? ['url' => $_GET['url']] : [],
-            ),
-        );
+        session_cache_limiter('nocache');
+        $globalConfig = \SimpleSAML\Configuration::getInstance();
+        $t = new \SimpleSAML\XHTML\Template($globalConfig, 'casserver:loggedOut.twig');
+        if (!empty($url)) {
+            $t->data['url'] = $_GET['url'];
+        }
+        $t->send();
     }
 }

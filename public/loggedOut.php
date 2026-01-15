@@ -21,16 +21,11 @@
  *
  */
 
-declare(strict_types=1);
-
-session_cache_limiter('nocache');
-
-$globalConfig = \SimpleSAML\Configuration::getInstance();
-
-$t = new \SimpleSAML\XHTML\Template($globalConfig, 'casserver:loggedOut.twig');
-
-if (array_key_exists('url', $_GET)) {
-    $t->data['url'] = $_GET['url'];
-}
-
-$t->send();
+// This file is only to preserve this older path
+$http = new \SimpleSAML\Utils\HTTP();
+$http->redirectTrustedURL(
+    $http->addURLParameters(
+        \SimpleSAML\Module::getModuleURL('casserver/logout.php'),
+        $_GET['url'] ? ['url' => $_GET['url']] : []
+    )
+);
