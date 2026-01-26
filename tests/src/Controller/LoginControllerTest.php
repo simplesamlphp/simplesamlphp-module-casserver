@@ -137,7 +137,7 @@ class LoginControllerTest extends TestCase
                     'ForceAuthn' => false,
                     'isPassive' => false,
                     // phpcs:ignore Generic.Files.LineLength.TooLong
-                    'ReturnTo' => 'http://localhost/?service=https%3A%2F%2Fexample.com%2Fssp%2Fmodule.php%2Fcas%2Flinkback.php',
+                    'ReturnTo' => 'http://localhost/module.php/casserver/login?service=https%3A%2F%2Fexample.com%2Fssp%2Fmodule.php%2Fcas%2Flinkback.php',
                 ],
                 [],
             ],
@@ -151,7 +151,7 @@ class LoginControllerTest extends TestCase
                     'ForceAuthn' => false,
                     'isPassive' => false,
                     // phpcs:ignore Generic.Files.LineLength.TooLong
-                    'ReturnTo' => 'http://localhost/?service=https%3A%2F%2Fexample.com%2Fssp%2Fmodule.php%2Fcas%2Flinkback.php&entityId=http%3A%2F%2Flocalhost%2FentityId%2Fsso',
+                    'ReturnTo' => 'http://localhost/module.php/casserver/login?service=https%3A%2F%2Fexample.com%2Fssp%2Fmodule.php%2Fcas%2Flinkback.php&entityId=http%3A%2F%2Flocalhost%2FentityId%2Fsso',
                 ],
                 [],
             ],
@@ -164,7 +164,7 @@ class LoginControllerTest extends TestCase
                     'ForceAuthn' => false,
                     'isPassive' => false,
                     // phpcs:ignore Generic.Files.LineLength.TooLong
-                    'ReturnTo' => 'http://localhost/?service=https%3A%2F%2Fexample.com%2Fssp%2Fmodule.php%2Fcas%2Flinkback.php&scope=desktop',
+                    'ReturnTo' => 'http://localhost/module.php/casserver/login?service=https%3A%2F%2Fexample.com%2Fssp%2Fmodule.php%2Fcas%2Flinkback.php&scope=desktop',
                     'saml:IDPList' => [
                         'http://localhost/entityId/sso/scope/A',
                         'http://localhost/entityId/sso/scope/B',
@@ -187,7 +187,7 @@ class LoginControllerTest extends TestCase
                     'ForceAuthn' => false,
                     'isPassive' => false,
                     // phpcs:ignore Generic.Files.LineLength.TooLong
-                    'ReturnTo' => 'http://localhost/?service=https%3A%2F%2Fexample.com%2Fssp%2Fmodule.php%2Fcas%2Flinkback.php&scope=desktop',
+                    'ReturnTo' => 'http://localhost/module.php/casserver/login?service=https%3A%2F%2Fexample.com%2Fssp%2Fmodule.php%2Fcas%2Flinkback.php&scope=desktop',
                     'saml:idp' => 'http://localhost/entityId/sso/scope/A',
                 ],
                 [

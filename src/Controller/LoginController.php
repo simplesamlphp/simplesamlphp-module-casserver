@@ -352,7 +352,8 @@ class LoginController
         // Parse the query parameters and return them in an array
         $query = $this->parseQueryParameters($request, $sessionTicket);
         // Construct the ReturnTo URL
-        return $this->httpUtils->getSelfURLNoQuery() . '?' . http_build_query($query);
+        $returnToBase = Module::getModuleURL('casserver/login');
+        return $returnToBase . '?' . http_build_query($query);
     }
 
 
