@@ -38,15 +38,15 @@
         "ext-session": "*",
 
         "beste/clock": "~3.0",
-        "simplesamlphp/assert": "~1.9",
-        "simplesamlphp/composer-module-installer": "~1.6",
+        "simplesamlphp/assert": "~2.0",
+        "simplesamlphp/composer-module-installer": "~1.7",
         "simplesamlphp/simplesamlphp": "~2.5@dev",
-        "simplesamlphp/xml-cas": "~2.0",
-        "simplesamlphp/xml-common": "~2.0",
-        "simplesamlphp/xml-soap": "~2.0",
+        "simplesamlphp/xml-cas": "~2.5",
+        "simplesamlphp/xml-common": "~2.7",
+        "simplesamlphp/xml-soap": "~2.3",
         "symfony/http-foundation": "~7.4",
         "symfony/http-kernel": "~7.4",
-        "simplesamlphp/saml11": "~2.1"
+        "simplesamlphp/saml11": "~2.3"
     },
     "require-dev": {
         "simplesamlphp/simplesamlphp-test-framework": "~1.11"
