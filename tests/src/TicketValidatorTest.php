@@ -12,7 +12,7 @@ use SimpleSAML\Module\casserver\Cas\CasException;
 use SimpleSAML\Module\casserver\Cas\Ticket\FileSystemTicketStore;
 use SimpleSAML\Module\casserver\Cas\Ticket\TicketStore;
 use SimpleSAML\Module\casserver\Cas\TicketValidator;
-use SimpleSAML\XML\Utils\Random;
+use SimpleSAML\Utils\Random;
 
 class TicketValidatorTest extends TestCase
 {

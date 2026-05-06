@@ -26,7 +26,7 @@ declare(strict_types=1);
 namespace SimpleSAML\Module\casserver\Cas\Factories;
 
 use SimpleSAML\Configuration;
-use SimpleSAML\XML\Utils\Random;
+use SimpleSAML\Utils\Random;
 
 class TicketFactory
 {

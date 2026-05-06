@@ -15,9 +15,9 @@ use SimpleSAML\Configuration;
 use SimpleSAML\Error;
 use SimpleSAML\Metadata\MetaDataStorageHandler;
 use SimpleSAML\Utils;
+use SimpleSAML\Utils\Random;
 use SimpleSAML\XML\DOMDocumentFactory;
 use SimpleSAML\XML\Utils as XMLUtils;
-use SimpleSAML\XML\Utils\Random;
 use SimpleSAML\XML\Validator;
 use SimpleXMLElement;
 
