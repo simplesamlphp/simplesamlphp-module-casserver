@@ -364,14 +364,14 @@ class AuthnResponse
 
         $timeUtils = new Utils\Time();
 
-        $id = (string) IDValue::generateID();
+        $id = IDValue::generateID()->getValue();
         $issueInstant = $timeUtils->generateTimestamp();
 
         // 30 seconds timeskew back in time to allow differing clocks
         $notBefore = $timeUtils->generateTimestamp(time() - 30);
 
         $assertionExpire = $timeUtils->generateTimestamp(time() + 300); // 5 minutes
-        $assertionid = (string) IDValue::generateID();
+        $assertionid = IDValue::generateID()->getValue();
 
         $spEntityId = $sp->getString('entityid');
 

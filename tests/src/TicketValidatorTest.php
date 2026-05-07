@@ -170,7 +170,7 @@ class TicketValidatorTest extends TestCase
      */
     private function createTicket(string $serviceUrl, int $expiration = 0): array
     {
-        $id = (string) IDValue::generateID();
+        $id = IDValue::generateID()->getValue();
         $serviceTicket = [
             'id' => $id,
             'validBefore' => time() + $expiration,

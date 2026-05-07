@@ -61,7 +61,7 @@ class TicketFactory
         return [
             'id' => $sessionId,
             'validBefore' => $expiresAt,
-            'renewId' => (string) IDValue::generateID(),
+            'renewId' => IDValue::generateID()->getValue(),
         ];
     }
 
@@ -72,7 +72,7 @@ class TicketFactory
      */
     public function createServiceTicket(array $content): array
     {
-        $id = str_replace('_', 'ST-', (string) IDValue::generateID());
+        $id = IDValue::generateID('ST-')->getValue();
         $expiresAt = time() + $this->serviceTicketExpireTime;
 
         return array_merge(['id' => $id, 'validBefore' => $expiresAt], $content);
@@ -85,8 +85,8 @@ class TicketFactory
      */
     public function createProxyGrantingTicket(array $content): array
     {
-        $id = str_replace('_', 'PGT-', (string) IDValue::generateID());
-        $iou = str_replace('_', 'PGTIOU-', (string) IDValue::generateID());
+        $id = IDValue::generateID('PGT-')->getValue();
+        $iou = IDValue::generateID('PGTIOU-')->getValue();
 
         $expireAt = time() + $this->proxyGrantingTicketExpireTime;
 
@@ -100,7 +100,7 @@ class TicketFactory
      */
     public function createProxyTicket(array $content): array
     {
-        $id = str_replace('_', 'PT-', (string) IDValue::generateID());
+        $id = IDValue::generateID('PT-')->getValue();
         $expiresAt = time() + $this->proxyTicketExpireTime;
 
         return array_merge(['id' => $id, 'validBefore' => $expiresAt], $content);
