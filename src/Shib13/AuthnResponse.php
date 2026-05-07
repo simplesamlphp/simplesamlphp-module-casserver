@@ -17,8 +17,8 @@ use SimpleSAML\Metadata\MetaDataStorageHandler;
 use SimpleSAML\Utils;
 use SimpleSAML\XML\DOMDocumentFactory;
 use SimpleSAML\XML\Utils as XMLUtils;
-use SimpleSAML\XML\Utils\Random;
 use SimpleSAML\XML\Validator;
+use SimpleSAML\XMLSchema\Type\IDValue;
 use SimpleXMLElement;
 
 /**
@@ -362,17 +362,16 @@ class AuthnResponse
             $scopedAttributes = [];
         }
 
-        $randomUtils = new Random();
         $timeUtils = new Utils\Time();
 
-        $id = $randomUtils->generateID();
+        $id = IDValue::generateID()->getValue();
         $issueInstant = $timeUtils->generateTimestamp();
 
         // 30 seconds timeskew back in time to allow differing clocks
         $notBefore = $timeUtils->generateTimestamp(time() - 30);
 
         $assertionExpire = $timeUtils->generateTimestamp(time() + 300); // 5 minutes
-        $assertionid = $randomUtils->generateID();
+        $assertionid = IDValue::generateID()->getValue();
 
         $spEntityId = $sp->getString('entityid');
 
@@ -380,7 +379,7 @@ class AuthnResponse
         $base64 = $sp->getOptionalBoolean('base64attributes', false);
 
         $namequalifier = $sp->getOptionalString('NameQualifier', $spEntityId);
-        $nameid = $randomUtils->generateID();
+        $nameid = (string)IDValue::generateID();
         $subjectNode =
             '<Subject>' .
             '<NameIdentifier' .
