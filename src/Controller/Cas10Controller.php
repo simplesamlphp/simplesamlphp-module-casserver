@@ -101,6 +101,14 @@ class Cas10Controller
             );
         }
 
+        if ($ticket === '' || str_contains($ticket, "\0")) {
+            Logger::debug('casserver: Illegal value for ticket parameter.');
+            return new Response(
+                $this->cas10Protocol->getValidateFailureResponse(),
+                Response::HTTP_BAD_REQUEST,
+            );
+        }
+
         try {
             // Get the service ticket
             // `getTicket` uses the unserializable method and Objects may throw Throwables in their

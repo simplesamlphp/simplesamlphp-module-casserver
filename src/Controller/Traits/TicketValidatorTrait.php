@@ -51,6 +51,16 @@ trait TicketValidatorTrait
             );
         }
 
+        if ($ticket === '' || str_contains($ticket, "\0")) {
+            $message = 'Illegal value for ticket parameter.';
+            Logger::debug($message);
+
+            return new XmlResponse(
+                (string) $this->cas20Protocol->getValidateFailureResponse(C::ERR_INVALID_REQUEST, $message),
+                Response::HTTP_BAD_REQUEST,
+            );
+        }
+
         try {
             // Get the service ticket
             // `getTicket` uses the unserializable method and Objects may throw "Throwables" in their

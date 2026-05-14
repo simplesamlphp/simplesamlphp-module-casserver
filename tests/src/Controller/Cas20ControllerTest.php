@@ -406,6 +406,50 @@ class Cas20ControllerTest extends TestCase
     }
 
 
+    public static function validateFailsForIllegalTicketValue(): array
+    {
+        return [
+            'Ticket is empty string' => [
+                ['service' => 'http://localhost', 'ticket' => ''],
+                'Illegal value for ticket parameter.',
+            ],
+            'Ticket contains NUL byte' => [
+                ['service' => 'http://localhost', 'ticket' => "ST-\0-123"],
+                'Illegal value for ticket parameter.',
+            ],
+        ];
+    }
+
+
+    #[DataProvider('validateFailsForIllegalTicketValue')]
+    public function testServiceValidateFailsForIllegalTicketValue(array $requestParams, string $message): void
+    {
+        $casconfig = Configuration::loadFromArray($this->moduleConfig);
+        $request = Request::create(
+            uri:        '/',
+            parameters: $requestParams,
+        );
+
+        $cas20Controller = new Cas20Controller(
+            $this->sspConfig,
+            $casconfig,
+        );
+
+        $response = $cas20Controller->serviceValidate($request, ...$requestParams);
+
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        $this->assertStringContainsString($message, (string) $response->getContent());
+
+        $xml = simplexml_load_string((string) $response->getContent());
+        $xml->registerXPathNamespace('cas', 'serviceResponse');
+        $this->assertEquals('serviceResponse', $xml->getName());
+        $this->assertEquals(
+            C::ERR_INVALID_REQUEST,
+            $xml->xpath('//cas:authenticationFailure')[0]->attributes()['code'],
+        );
+    }
+
+
     public function testReturn500OnDeleteTicketThatThrows(): void
     {
         $config = Configuration::loadFromArray($this->moduleConfig);
