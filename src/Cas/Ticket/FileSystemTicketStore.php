@@ -27,6 +27,7 @@ namespace SimpleSAML\Module\casserver\Cas\Ticket;
 
 use Exception;
 use SimpleSAML\Configuration;
+use SimpleSAML\XML\Assert\Assert;
 
 class FileSystemTicketStore extends TicketStore
 {
@@ -66,12 +67,15 @@ class FileSystemTicketStore extends TicketStore
      */
     public function getTicket(string $ticketId): ?array
     {
-        $filename = $this->pathToTicketDirectory . '/' . $ticketId;
+        $filename = $this->validateTicketPath($ticketId);
 
         if (file_exists($filename)) {
             $content = file_get_contents($filename);
 
-            return unserialize($content);
+            $result = unserialize($content, ['allowed_classes' => false]);
+            Assert::isArray($result, "Failed to unserialize ticket.");
+
+            return $result;
         } else {
             return null;
         }
@@ -83,7 +87,7 @@ class FileSystemTicketStore extends TicketStore
      */
     public function addTicket(array $ticket): void
     {
-        $filename = $this->pathToTicketDirectory . '/' . $ticket['id'];
+        $filename = $this->validateTicketPath($ticket['id']);
         file_put_contents($filename, serialize($ticket));
     }
 
@@ -93,10 +97,42 @@ class FileSystemTicketStore extends TicketStore
      */
     public function deleteTicket(string $ticketId): void
     {
-        $filename = $this->pathToTicketDirectory . '/' . $ticketId;
+        $filename = $this->validateTicketPath($ticketId);
 
         if (file_exists($filename)) {
             unlink($filename);
         }
+    }
+
+
+    /**
+     * @param string $ticketId
+     * @return string
+     * @throws \Exception
+     */
+    private function validateTicketPath(string $ticketId): string
+    {
+        if ($ticketId === '') {
+            throw new Exception('Invalid ticketId provided.');
+        }
+
+        // Prevent directory traversal and path separators.
+        // CAS tickets are typically like: ST-..., PT-..., PGT-..., etc. Hyphens are ok.
+        if (
+            str_contains($ticketId, '/')
+            || str_contains($ticketId, '\\')
+            || str_contains($ticketId, '..')
+        ) {
+            throw new Exception('Invalid ticketId provided.');
+        }
+
+        $baseDir = realpath($this->pathToTicketDirectory);
+        if ($baseDir === false) {
+            throw new Exception('Ticket storage directory is not accessible.');
+        }
+
+        // Store tickets as hashed filenames inside the ticket directory.
+        // (Avoids issues with special chars / very long filenames.)
+        return $baseDir . '/' . sha1($ticketId);
     }
 }

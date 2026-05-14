@@ -116,6 +116,43 @@ class Cas10ControllerTest extends TestCase
     }
 
 
+    public static function illegalTicketValues(): array
+    {
+        return [
+            'Ticket is empty string' => [
+                ['service' => 'https://myservice.com/abcd', 'ticket' => ''],
+            ],
+            'Ticket contains NUL byte' => [
+                ['service' => 'https://myservice.com/abcd', 'ticket' => "ST-\0-123"],
+            ],
+        ];
+    }
+
+
+    /**
+     * @param array $params
+     *
+     * @return void
+     * @throws \Exception
+     */
+    #[DataProvider('illegalTicketValues')]
+    public function testReturnBadRequestOnIllegalTicketValue(array $params): void
+    {
+        $config = Configuration::loadFromArray($this->moduleConfig);
+
+        $request = Request::create(
+            uri: 'http://localhost',
+            parameters: $params,
+        );
+
+        $cas10Controller = new Cas10Controller($this->sspConfig, $config);
+        $response = $cas10Controller->validate($request, ...$params);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals("no\n\n", $response->getContent());
+    }
+
+
     /**
      * @return void
      * @throws \Exception
