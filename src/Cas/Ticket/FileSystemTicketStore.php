@@ -133,6 +133,6 @@ class FileSystemTicketStore extends TicketStore
 
         // Store tickets as hashed filenames inside the ticket directory.
         // (Avoids issues with special chars / very long filenames.)
-        return $baseDir . '/' . sha1($ticketId);
+        return $baseDir . DIRECTORY_SEPARATOR . sha1($ticketId);
     }
 }

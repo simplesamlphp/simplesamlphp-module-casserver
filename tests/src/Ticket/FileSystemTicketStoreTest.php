@@ -47,7 +47,7 @@ final class FileSystemTicketStoreTest extends TestCase
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Invalid ticketId provided.');
-        $store->getTicket('../' . basename($outsideFile));
+        $store->getTicket('..' . DIRECTORY_SEPARATOR . basename($outsideFile));
     }
 
 
