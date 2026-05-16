@@ -8,7 +8,6 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Auth\Simple;
-use SimpleSAML\Compat\SspContainer;
 use SimpleSAML\Configuration;
 use SimpleSAML\HTTP\RunnableResponse;
 use SimpleSAML\Module;
@@ -23,11 +22,9 @@ class LoginControllerTest extends TestCase
 
     private Simple|MockObject $authSimpleMock;
 
-    private SspContainer|MockObject $sspContainer;
-
     private Configuration $sspConfig;
 
-    private Utils\HTTP|MockObject $httpUtils;
+    private Utils\HTTP $httpUtils;
 
     private Session|MockObject $sessionMock;
 
@@ -39,15 +36,11 @@ class LoginControllerTest extends TestCase
             ->onlyMethods(['getAuthData', 'isAuthenticated', 'login', 'getAuthDataArray'])
             ->getMock();
 
-        $this->sspContainer = $this->getMockBuilder(SspContainer::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['redirect'])
-            ->getMock();
-
-        $this->httpUtils = $this->getMockBuilder(Utils\HTTP::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['redirectTrustedURL'])
-            ->getMock();
+        // Use a real HTTP utils instance:
+        // - LoginController builds ReturnTo using getSelfURLNoQuery()
+        // - Tests only inspect RunnableResponse callables; they never execute them
+        // - Avoid PHPUnit "mock without expectations" warnings
+        $this->httpUtils = new Utils\HTTP();
 
         $this->sessionMock = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()
@@ -109,6 +102,11 @@ class LoginControllerTest extends TestCase
     #[DataProvider('loginParameters')]
     public function testLoginFails(array $params, string $message): void
     {
+        // These tests throw during configuration validation, before any auth/session interaction.
+        // Configure explicit "never" expectations to avoid PHPUnit warnings about mocks without expectations.
+        $this->authSimpleMock->expects($this->never())->method('isAuthenticated');
+        $this->sessionMock->expects($this->never())->method('getSessionId');
+
         $casconfig = Configuration::loadFromArray($this->moduleConfig);
 
         $loginRequest = Request::create(

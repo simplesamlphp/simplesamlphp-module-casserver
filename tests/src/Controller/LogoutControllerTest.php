@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SimpleSAML\Module\casserver\Tests\Controller;
 
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use SimpleSAML\Auth\Simple;
@@ -23,7 +22,7 @@ class LogoutControllerTest extends TestCase
 {
     private array $moduleConfig;
 
-    private Simple|MockObject $authSimpleMock;
+    private Simple $authSimple;
 
     private Utils\HTTP $httpUtils;
 
@@ -32,10 +31,7 @@ class LogoutControllerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->authSimpleMock = $this->getMockBuilder(Simple::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['logout', 'isAuthenticated'])
-            ->getMock();
+        $this->authSimple = $this->createStub(Simple::class);
 
         $this->moduleConfig = [
             'ticketstore' => [
@@ -68,11 +64,11 @@ class LogoutControllerTest extends TestCase
     public static function crossProtocolLogoutReturnUrlValidatedProvider(): array
     {
         return [
-          'validV3' => [
-              true,
-              'https://valid.edu/v3',
-              true,
-          ],
+            'validV3' => [
+                true,
+                'https://valid.edu/v3',
+                true,
+            ],
             'validV2' => [
                 false,
                 'https://valid.edu/v2',
@@ -107,16 +103,22 @@ class LogoutControllerTest extends TestCase
         $this->moduleConfig['skip_logout_page'] = false;
         $config = Configuration::loadFromArray($this->moduleConfig);
 
-        // Unauthenticated
-        $this->authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(false);
+        /** @var \SimpleSAML\Auth\Simple&\SimpleSAML\Module\casserver\Tests\Controller\MockObject $authSimpleMock */
+        $authSimpleMock = $this->getMockBuilder(Simple::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['logout', 'isAuthenticated'])
+            ->getMock();
 
-        $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock, $this->httpUtils);
+        // Unauthenticated
+        $authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(false);
+
+        $controller = new LogoutController($this->sspConfig, $config, $authSimpleMock, $this->httpUtils);
 
         $logoutUrl = Module::getModuleURL('casserver/logout.php');
 
         $request = Request::create(
             uri: $logoutUrl,
-            parameters: [ $isV3 ? 'service' : 'url' => $queryValue],
+            parameters: [$isV3 ? 'service' : 'url' => $queryValue],
         );
         $response = $controller->logout($request, $isV3 ? null : $queryValue, $isV3 ? $queryValue : null);
 
@@ -132,7 +134,7 @@ class LogoutControllerTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Logout not allowed');
 
-        $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock);
+        $controller = new LogoutController($this->sspConfig, $config, $this->authSimple);
         $controller->logout(Request::create('/'));
     }
 
@@ -143,7 +145,7 @@ class LogoutControllerTest extends TestCase
         $this->moduleConfig['skip_logout_page'] = true;
         $config = Configuration::loadFromArray($this->moduleConfig);
 
-        $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock);
+        $controller = new LogoutController($this->sspConfig, $config, $this->authSimple);
         $response = $controller->logout(Request::create('/'));
         $this->validateLogoutResponse($response);
     }
@@ -156,10 +158,16 @@ class LogoutControllerTest extends TestCase
         $config = Configuration::loadFromArray($this->moduleConfig);
         $urlParam = 'https://example.com/test';
 
-        // Unauthenticated
-        $this->authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(false);
+        /** @var \SimpleSAML\Auth\Simple&\SimpleSAML\Module\casserver\Tests\Controller\MockObject $authSimpleMock */
+        $authSimpleMock = $this->getMockBuilder(Simple::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['logout', 'isAuthenticated'])
+            ->getMock();
 
-        $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock, $this->httpUtils);
+        // Unauthenticated
+        $authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(false);
+
+        $controller = new LogoutController($this->sspConfig, $config, $authSimpleMock, $this->httpUtils);
 
         $logoutUrl = Module::getModuleURL('casserver/logout.php');
 
@@ -178,10 +186,16 @@ class LogoutControllerTest extends TestCase
         $this->moduleConfig['skip_logout_page'] = false;
         $config = Configuration::loadFromArray($this->moduleConfig);
 
-        // Unauthenticated
-        $this->authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(false);
+        /** @var \SimpleSAML\Auth\Simple&\SimpleSAML\Module\casserver\Tests\Controller\MockObject $authSimpleMock */
+        $authSimpleMock = $this->getMockBuilder(Simple::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['logout', 'isAuthenticated'])
+            ->getMock();
 
-        $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock, $this->httpUtils);
+        // Unauthenticated
+        $authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(false);
+
+        $controller = new LogoutController($this->sspConfig, $config, $authSimpleMock, $this->httpUtils);
         $response = $controller->logout(Request::create('/'));
         $this->validateLogoutResponse($response);
     }
@@ -195,10 +209,16 @@ class LogoutControllerTest extends TestCase
         $urlParam = 'https://example.com/test';
         $logoutUrl = Module::getModuleURL('casserver/loggedOut');
 
-        // Unauthenticated
-        $this->authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(false);
+        /** @var \SimpleSAML\Auth\Simple&\SimpleSAML\Module\casserver\Tests\Controller\MockObject $authSimpleMock */
+        $authSimpleMock = $this->getMockBuilder(Simple::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['logout', 'isAuthenticated'])
+            ->getMock();
 
-        $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock, $this->httpUtils);
+        // Unauthenticated
+        $authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(false);
+
+        $controller = new LogoutController($this->sspConfig, $config, $authSimpleMock, $this->httpUtils);
         $request = Request::create(
             uri: $logoutUrl,
             parameters: ['url' => $urlParam],
@@ -214,19 +234,25 @@ class LogoutControllerTest extends TestCase
         $this->moduleConfig['skip_logout_page'] = false;
         $config = Configuration::loadFromArray($this->moduleConfig);
 
-        // Unauthenticated
-        $this->authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(true);
+        /** @var \SimpleSAML\Auth\Simple&\SimpleSAML\Module\casserver\Tests\Controller\MockObject $authSimpleMock */
+        $authSimpleMock = $this->getMockBuilder(Simple::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['logout', 'isAuthenticated'])
+            ->getMock();
 
-        $controller = new LogoutController($this->sspConfig, $config, $this->authSimpleMock, $this->httpUtils);
+        // Authenticated
+        $authSimpleMock->expects($this->once())->method('isAuthenticated')->willReturn(true);
+
+        $controller = new LogoutController($this->sspConfig, $config, $authSimpleMock, $this->httpUtils);
         $queryParameters = ['url' => 'http://localhost/module.php/casserver/loggedOut'];
         $logoutRequest = Request::create(
-            uri:        Module::getModuleURL('casserver/loggedOut'),
+            uri: Module::getModuleURL('casserver/loggedOut'),
             parameters: $queryParameters,
         );
 
         $response = $controller->logout($logoutRequest, ...$queryParameters);
 
-        $callable = (array)$response->getCallable();
+        $callable = (array) $response->getCallable();
         $this->assertEquals('logout', $callable[1] ?? '');
     }
 
@@ -238,7 +264,7 @@ class LogoutControllerTest extends TestCase
         $config = Configuration::loadFromArray($this->moduleConfig);
 
         $controllerMock = $this->getMockBuilder(LogoutController::class)
-            ->setConstructorArgs([$this->sspConfig, $config, $this->authSimpleMock, $this->httpUtils])
+            ->setConstructorArgs([$this->sspConfig, $config, $this->authSimple, $this->httpUtils])
             ->onlyMethods(['getSession'])
             ->getMock();
 
@@ -292,8 +318,6 @@ class LogoutControllerTest extends TestCase
         ?string $redirectUrl = null,
         bool $isShowPage = true,
     ): void {
-
-
         if ($isShowPage) {
             $this->assertInstanceOf(Template::class, $response);
             if (is_null($redirectUrl)) {

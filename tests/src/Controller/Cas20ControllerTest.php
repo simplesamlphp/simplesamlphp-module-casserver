@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SimpleSAML\Module\casserver\Tests\Controller;
 
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\CAS\Constants as C;
 use SimpleSAML\Configuration;
@@ -23,7 +22,7 @@ class Cas20ControllerTest extends TestCase
 {
     private array $moduleConfig;
 
-    private Session $sessionMock;
+    private Session $sessionStub;
 
     private Request $samlValidateRequest;
 
@@ -33,9 +32,9 @@ class Cas20ControllerTest extends TestCase
 
     private FileSystemTicketStore $ticketStore;
 
-    private TicketValidator $ticketValidatorMock;
+    private TicketValidator $ticketValidatorStub;
 
-    private Utils\HTTP|MockObject $utilsHttpMock;
+    private Utils\HTTP $utilsHttpStub;
 
     private array $ticket;
 
@@ -59,20 +58,9 @@ class Cas20ControllerTest extends TestCase
         // Hard code the ticket store
         $this->ticketStore = new FileSystemTicketStore(Configuration::loadFromArray($this->moduleConfig));
 
-        $this->ticketValidatorMock = $this->getMockBuilder(TicketValidator::class)
-            ->setConstructorArgs([Configuration::loadFromArray($this->moduleConfig)])
-            ->onlyMethods(['validateAndDeleteTicket'])
-            ->getMock();
-
-        $this->sessionMock = $this->getMockBuilder(Session::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getSessionId'])
-            ->getMock();
-
-        $this->utilsHttpMock = $this->getMockBuilder(Utils\HTTP::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['fetch'])
-            ->getMock();
+        $this->ticketValidatorStub = $this->createStub(TicketValidator::class);
+        $this->sessionStub = $this->createStub(Session::class);
+        $this->utilsHttpStub = $this->createStub(Utils\HTTP::class);
 
         $this->ticket = [
             'id'          => 'ST-' . $this->sessionId,
@@ -748,14 +736,19 @@ class Cas20ControllerTest extends TestCase
             parameters: $params,
         );
 
-        $this->utilsHttpMock->expects($this->once())
+        $httpUtilsMock = $this->getMockBuilder(Utils\HTTP::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['fetch'])
+            ->getMock();
+
+        $httpUtilsMock->expects($this->once())
             ->method('fetch')
             ->willThrowException(new \Exception());
 
         $cas20Controller = new Cas20Controller(
             sspConfig: $this->sspConfig,
             casConfig: $config,
-            httpUtils: $this->utilsHttpMock,
+            httpUtils: $httpUtilsMock,
         );
         $ticketStore = $cas20Controller->getTicketStore();
         $ticketStore->addTicket($this->ticket);
