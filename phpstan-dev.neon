@@ -3,5 +3,3 @@ parameters:
   paths:
     - tests
 
-includes:
-  - phpstan-dev-baseline.neon

@@ -103,7 +103,7 @@ class LogoutControllerTest extends TestCase
         $this->moduleConfig['skip_logout_page'] = false;
         $config = Configuration::loadFromArray($this->moduleConfig);
 
-        /** @var \SimpleSAML\Auth\Simple&\SimpleSAML\Module\casserver\Tests\Controller\MockObject $authSimpleMock */
+        /** @var \PHPUnit\Framework\MockObject\MockObject&\SimpleSAML\Auth\Simple $authSimpleMock */
         $authSimpleMock = $this->getMockBuilder(Simple::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['logout', 'isAuthenticated'])
@@ -158,7 +158,7 @@ class LogoutControllerTest extends TestCase
         $config = Configuration::loadFromArray($this->moduleConfig);
         $urlParam = 'https://example.com/test';
 
-        /** @var \SimpleSAML\Auth\Simple&\SimpleSAML\Module\casserver\Tests\Controller\MockObject $authSimpleMock */
+        /** @var \PHPUnit\Framework\MockObject\MockObject&\SimpleSAML\Auth\Simple $authSimpleMock */
         $authSimpleMock = $this->getMockBuilder(Simple::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['logout', 'isAuthenticated'])
@@ -186,7 +186,7 @@ class LogoutControllerTest extends TestCase
         $this->moduleConfig['skip_logout_page'] = false;
         $config = Configuration::loadFromArray($this->moduleConfig);
 
-        /** @var \SimpleSAML\Auth\Simple&\SimpleSAML\Module\casserver\Tests\Controller\MockObject $authSimpleMock */
+        /** @var \PHPUnit\Framework\MockObject\MockObject&\SimpleSAML\Auth\Simple $authSimpleMock */
         $authSimpleMock = $this->getMockBuilder(Simple::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['logout', 'isAuthenticated'])
@@ -209,7 +209,7 @@ class LogoutControllerTest extends TestCase
         $urlParam = 'https://example.com/test';
         $logoutUrl = Module::getModuleURL('casserver/loggedOut');
 
-        /** @var \SimpleSAML\Auth\Simple&\SimpleSAML\Module\casserver\Tests\Controller\MockObject $authSimpleMock */
+        /** @var \PHPUnit\Framework\MockObject\MockObject&\SimpleSAML\Auth\Simple $authSimpleMock */
         $authSimpleMock = $this->getMockBuilder(Simple::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['logout', 'isAuthenticated'])
@@ -234,7 +234,7 @@ class LogoutControllerTest extends TestCase
         $this->moduleConfig['skip_logout_page'] = false;
         $config = Configuration::loadFromArray($this->moduleConfig);
 
-        /** @var \SimpleSAML\Auth\Simple&\SimpleSAML\Module\casserver\Tests\Controller\MockObject $authSimpleMock */
+        /** @var \PHPUnit\Framework\MockObject\MockObject&\SimpleSAML\Auth\Simple $authSimpleMock */
         $authSimpleMock = $this->getMockBuilder(Simple::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['logout', 'isAuthenticated'])

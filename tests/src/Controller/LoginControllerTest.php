@@ -75,6 +75,29 @@ class LoginControllerTest extends TestCase
     }
 
 
+    /**
+     * Call LoginController::login() with correctly typed arguments derived from query parameters.
+     * (In production Symfony would populate these via #[MapQueryParameter], but tests call the method directly.)
+     *
+     * @param array<string, mixed> $params
+     */
+    private function callLogin(LoginController $controller, Request $request, array $params): mixed
+    {
+        return $controller->login(
+            $request,
+            renew: (bool)($params['renew'] ?? false),
+            gateway: (bool)($params['gateway'] ?? false),
+            service: isset($params['service']) ? (string)$params['service'] : null,
+            TARGET: isset($params['TARGET']) ? (string)$params['TARGET'] : null,
+            scope: isset($params['scope']) ? (string)$params['scope'] : null,
+            language: isset($params['language']) ? (string)$params['language'] : null,
+            entityId: isset($params['entityId']) ? (string)$params['entityId'] : null,
+            debugMode: isset($params['debugMode']) ? (string)$params['debugMode'] : null,
+            method: isset($params['method']) ? (string)$params['method'] : null,
+        );
+    }
+
+
     public static function loginParameters(): array
     {
         return [
@@ -122,7 +145,7 @@ class LoginControllerTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage($message);
 
-        $loginController->login($loginRequest, ...$params);
+        $this->callLogin($loginController, $loginRequest, $params);
     }
 
 
@@ -217,7 +240,7 @@ class LoginControllerTest extends TestCase
         $sessionId = session_create_id();
         $this->sessionMock->expects($this->once())->method('getSessionId')->willReturn($sessionId);
 
-        $response = $controllerMock->login($loginRequest, ...$requestParameters);
+        $response = $this->callLogin($controllerMock, $loginRequest, $requestParameters);
         $this->assertInstanceOf(RunnableResponse::class, $response);
 
         // Assert we call into authSource->login
@@ -326,7 +349,7 @@ class LoginControllerTest extends TestCase
         );
 
         /** @psalm-suppress InvalidArgument */
-        $response = $controllerMock->login($loginRequest, ...$queryParameters);
+        $response = $this->callLogin($controllerMock, $loginRequest, $queryParameters);
         $this->assertInstanceOf(RunnableResponse::class, $response);
         $arguments = $response->getArguments();
         $this->assertEquals('https://example.com/ssp/module.php/cas/linkback.php', $arguments[0]);
@@ -385,7 +408,7 @@ class LoginControllerTest extends TestCase
         $this->sessionMock->expects($this->once())->method('getSessionId')->willReturn(session_create_id());
 
         // Execute
-        $response = $controllerMock->login($loginRequest, ...$params);
+        $response = $this->callLogin($controllerMock, $loginRequest, $params);
 
         // Validate redirect with original service URL and no CAS parameters appended
         $this->assertInstanceOf(RunnableResponse::class, $response);
@@ -426,7 +449,7 @@ class LoginControllerTest extends TestCase
         $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
         $this->sessionMock->expects($this->once())->method('getSessionId')->willReturn(session_create_id());
 
-        $response = $controllerMock->login($loginRequest, ...$params);
+        $response = $this->callLogin($controllerMock, $loginRequest, $params);
 
         $this->assertInstanceOf(RunnableResponse::class, $response);
 
@@ -471,7 +494,7 @@ class LoginControllerTest extends TestCase
         $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
         $this->sessionMock->expects($this->once())->method('getSessionId')->willReturn(session_create_id());
 
-        $response = $controllerMock->login($loginRequest, ...$params);
+        $response = $this->callLogin($controllerMock, $loginRequest, $params);
 
         $this->assertInstanceOf(RunnableResponse::class, $response);
         $callable = (array)$response->getCallable();
@@ -512,7 +535,7 @@ class LoginControllerTest extends TestCase
         $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
         $this->sessionMock->expects($this->once())->method('getSessionId')->willReturn(session_create_id());
 
-        $response = $controllerMock->login($loginRequest, ...$params);
+        $response = $this->callLogin($controllerMock, $loginRequest, $params);
 
         $this->assertInstanceOf(RunnableResponse::class, $response);
         $callable = (array)$response->getCallable();
@@ -563,7 +586,7 @@ class LoginControllerTest extends TestCase
         ]);
 
         /** @psalm-suppress InvalidArgument */
-        $response = $controllerMock->login($loginRequest, ...$requestParams);
+        $response = $this->callLogin($controllerMock, $loginRequest, $requestParams);
 
         $this->assertInstanceOf(RunnableResponse::class, $response);
         $callable = (array)$response->getCallable();
