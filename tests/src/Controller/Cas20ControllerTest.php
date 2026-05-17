@@ -5,16 +5,13 @@ declare(strict_types=1);
 namespace SimpleSAML\Module\casserver\Tests\Controller;
 
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\CAS\Constants as C;
 use SimpleSAML\Configuration;
 use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Cas\Factories\TicketFactory;
 use SimpleSAML\Module\casserver\Cas\Ticket\FileSystemTicketStore;
-use SimpleSAML\Module\casserver\Cas\TicketValidator;
 use SimpleSAML\Module\casserver\Controller\Cas20Controller;
-use SimpleSAML\Session;
 use SimpleSAML\Utils;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,8 +20,6 @@ class Cas20ControllerTest extends TestCase
 {
     private array $moduleConfig;
 
-    private Session $sessionMock;
-
     private Request $samlValidateRequest;
 
     private string $sessionId;
@@ -32,10 +27,6 @@ class Cas20ControllerTest extends TestCase
     private Configuration $sspConfig;
 
     private FileSystemTicketStore $ticketStore;
-
-    private TicketValidator $ticketValidatorMock;
-
-    private Utils\HTTP|MockObject $utilsHttpMock;
 
     private array $ticket;
 
@@ -58,21 +49,6 @@ class Cas20ControllerTest extends TestCase
 
         // Hard code the ticket store
         $this->ticketStore = new FileSystemTicketStore(Configuration::loadFromArray($this->moduleConfig));
-
-        $this->ticketValidatorMock = $this->getMockBuilder(TicketValidator::class)
-            ->setConstructorArgs([Configuration::loadFromArray($this->moduleConfig)])
-            ->onlyMethods(['validateAndDeleteTicket'])
-            ->getMock();
-
-        $this->sessionMock = $this->getMockBuilder(Session::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getSessionId'])
-            ->getMock();
-
-        $this->utilsHttpMock = $this->getMockBuilder(Utils\HTTP::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['fetch'])
-            ->getMock();
 
         $this->ticket = [
             'id'          => 'ST-' . $this->sessionId,
@@ -152,6 +128,7 @@ class Cas20ControllerTest extends TestCase
         $controllerMock->expects($this->once())
             ->method('validate')
             ->with($request, $method, false, null, $prefix . $this->sessionId, 'https://myservice.com/abcd', null);
+
         $controllerMock->$method($request, ...$requestParameters);
     }
 
@@ -355,7 +332,7 @@ class Cas20ControllerTest extends TestCase
         $xml->registerXPathNamespace('cas', 'serviceResponse');
         $this->assertEquals('serviceResponse', $xml->getName());
         $this->assertNotNull($xml->xpath('//cas:proxySuccess'));
-        $ticketId = (string)$xml->xpath('//cas:proxyTicket')[0];
+        $ticketId = (string) $xml->xpath('//cas:proxyTicket')[0];
         $proxyTicket = $this->ticketStore->getTicket($ticketId);
         $this->assertTrue(filter_var($ticketFactory->isProxyTicket($proxyTicket), FILTER_VALIDATE_BOOLEAN));
     }
@@ -748,14 +725,19 @@ class Cas20ControllerTest extends TestCase
             parameters: $params,
         );
 
-        $this->utilsHttpMock->expects($this->once())
+        $httpUtilsMock = $this->getMockBuilder(Utils\HTTP::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['fetch'])
+            ->getMock();
+
+        $httpUtilsMock->expects($this->once())
             ->method('fetch')
             ->willThrowException(new \Exception());
 
         $cas20Controller = new Cas20Controller(
             sspConfig: $this->sspConfig,
             casConfig: $config,
-            httpUtils: $this->utilsHttpMock,
+            httpUtils: $httpUtilsMock,
         );
         $ticketStore = $cas20Controller->getTicketStore();
         $ticketStore->addTicket($this->ticket);

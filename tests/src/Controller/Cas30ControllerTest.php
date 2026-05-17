@@ -11,15 +11,12 @@ use SimpleSAML\Module;
 use SimpleSAML\Module\casserver\Cas\Ticket\FileSystemTicketStore;
 use SimpleSAML\Module\casserver\Cas\TicketValidator;
 use SimpleSAML\Module\casserver\Controller\Cas30Controller;
-use SimpleSAML\Session;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class Cas30ControllerTest extends TestCase
 {
     private array $moduleConfig;
-
-    private Session $sessionMock;
 
     private Request $samlValidateRequest;
 
@@ -28,8 +25,6 @@ class Cas30ControllerTest extends TestCase
     private Configuration $sspConfig;
 
     private FileSystemTicketStore $ticketStore;
-
-    private TicketValidator $ticketValidatorMock;
 
     private array $ticket;
 
@@ -50,16 +45,6 @@ class Cas30ControllerTest extends TestCase
 
         // Hard code the ticket store
         $this->ticketStore = new FileSystemTicketStore(Configuration::loadFromArray($this->moduleConfig));
-
-        $this->ticketValidatorMock = $this->getMockBuilder(TicketValidator::class)
-            ->setConstructorArgs([Configuration::loadFromArray($this->moduleConfig)])
-            ->onlyMethods(['validateAndDeleteTicket'])
-            ->getMock();
-
-        $this->sessionMock = $this->getMockBuilder(Session::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getSessionId'])
-            ->getMock();
 
         $this->ticket = [
             'id' => 'ST-' . $this->sessionId,
@@ -236,7 +221,12 @@ SOAP;
             content:    $samlRequest,
         );
 
-        $this->ticketValidatorMock
+        $ticketValidatorMock = $this->getMockBuilder(TicketValidator::class)
+            ->setConstructorArgs([Configuration::loadFromArray($this->moduleConfig)])
+            ->onlyMethods(['validateAndDeleteTicket'])
+            ->getMock();
+
+        $ticketValidatorMock
             ->expects($this->once())
             ->method('validateAndDeleteTicket')
             ->willThrowException(new \RuntimeException('Cas validateAndDeleteTicket failed'));
@@ -244,7 +234,7 @@ SOAP;
         $cas30Controller = new Cas30Controller(
             $this->sspConfig,
             $casconfig,
-            $this->ticketValidatorMock,
+            $ticketValidatorMock,
         );
 
         // Exception expected
@@ -289,7 +279,12 @@ SOAP;
             content:    $samlRequest,
         );
 
-        $this->ticketValidatorMock
+        $ticketValidatorMock = $this->getMockBuilder(TicketValidator::class)
+            ->setConstructorArgs([Configuration::loadFromArray($this->moduleConfig)])
+            ->onlyMethods(['validateAndDeleteTicket'])
+            ->getMock();
+
+        $ticketValidatorMock
             ->expects($this->once())
             ->method('validateAndDeleteTicket')
             ->willReturn('i am a string');
@@ -297,7 +292,7 @@ SOAP;
         $cas30Controller = new Cas30Controller(
             $this->sspConfig,
             $casconfig,
-            $this->ticketValidatorMock,
+            $ticketValidatorMock,
         );
 
         // Exception expected

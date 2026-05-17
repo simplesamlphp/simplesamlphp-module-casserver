@@ -59,7 +59,8 @@
         "verify": [
             "vendor/bin/phpcs -p",
             "vendor/bin/phpunit --no-coverage --testdox",
-            "vendor/bin/phpstan --memory-limit=256M analyze -c phpstan.neon"
+            "vendor/bin/phpstan --memory-limit=256M analyze -c phpstan.neon",
+            "vendor/bin/phpstan --memory-limit=256M analyze -c  phpstan-dev.neon"
         ],
         "tests": [
             "vendor/bin/phpunit --no-coverage"

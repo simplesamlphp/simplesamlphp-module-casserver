@@ -10,14 +10,11 @@ use PHPUnit\Framework\TestCase;
 use SimpleSAML\Configuration;
 use SimpleSAML\Module\casserver\Cas\Ticket\FileSystemTicketStore;
 use SimpleSAML\Module\casserver\Controller\Cas10Controller;
-use SimpleSAML\Session;
 use Symfony\Component\HttpFoundation\Request;
 
 class Cas10ControllerTest extends TestCase
 {
     private array $moduleConfig;
-
-    private Session $sessionMock;
 
     private array $ticket;
 
@@ -36,11 +33,6 @@ class Cas10ControllerTest extends TestCase
                 'directory' => __DIR__ . '../../../../tests/ticketcache',
             ],
         ];
-
-        $this->sessionMock = $this->getMockBuilder(Session::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getSessionId'])
-            ->getMock();
 
         $this->ticket = [
             'id' => 'ST-' . $this->sessionId,
