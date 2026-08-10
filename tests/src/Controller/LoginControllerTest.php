@@ -7,6 +7,7 @@ namespace SimpleSAML\Module\casserver\Tests\Controller;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use SimpleSAML\Auth\ProcessingChain;
 use SimpleSAML\Auth\Simple;
 use SimpleSAML\Configuration;
 use SimpleSAML\HTTP\RunnableResponse;
@@ -356,6 +357,164 @@ class LoginControllerTest extends TestCase
         $this->assertStringStartsWith('ST-', array_values($arguments[1])[0] ?? []);
         $callable = (array)$response->getCallable();
         $this->assertEquals('redirectTrustedURL', $callable[1] ?? '');
+    }
+
+
+    /**
+     * The authproc filters must observe the requesting CAS service as the SP entity ID and the
+     * configured idp_entity_id as the IdP entity ID. Both were previously always empty strings.
+     *
+     * @throws \Exception
+     */
+    public function testAuthprocReceivesServiceAndIdpEntityIds(): void
+    {
+        $serviceUrl = 'https://example.com/ssp/module.php/cas/linkback.php';
+        $idpEntityId = 'https://login.example.org/idp/metadata.php';
+
+        $state['Attributes'] = [
+            'eduPersonPrincipalName' => ['testuser@example.com'],
+            'Expire' => 9999999999,
+        ];
+
+        $moduleConfig = $this->moduleConfig;
+        $moduleConfig['idp_entity_id'] = $idpEntityId;
+        // Record what the processing chain was built with, so we can assert on it via the ticket.
+        $moduleConfig['authproc'] = [
+            [
+                'class' => 'core:PHP',
+                'code' => '$attributes["observedIdpEntityId"] = [$state["Source"]["entityid"] ?? "MISSING"];'
+                    . '$attributes["observedSpEntityId"] = [$state["Destination"]["entityid"] ?? "MISSING"];',
+            ],
+        ];
+        $casconfig = Configuration::loadFromArray($moduleConfig);
+
+        $controllerMock = $this->getMockBuilder(LoginController::class)
+            ->setConstructorArgs([$this->sspConfig, $casconfig, $this->authSimpleMock, $this->httpUtils])
+            ->onlyMethods(['getSession'])
+            ->getMock();
+
+        $sessionId = session_create_id();
+        $this->sessionMock->expects($this->exactly(2))->method('getSessionId')->willReturn($sessionId);
+        $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
+        $this->authSimpleMock->expects($this->any())->method('isAuthenticated')->willReturn(true);
+        $this->authSimpleMock->expects($this->once())->method('getAuthData')->with('Expire')->willReturn(9999999999);
+        $this->authSimpleMock->expects($this->once())->method('getAuthDataArray')->willReturn($state);
+
+        $queryParameters = ['service' => $serviceUrl];
+        $loginRequest = Request::create(
+            uri:        Module::getModuleURL('casserver/login'),
+            parameters: $queryParameters,
+        );
+
+        $response = $this->callLogin($controllerMock, $loginRequest, $queryParameters);
+        $this->assertInstanceOf(RunnableResponse::class, $response);
+
+        $arguments = $response->getArguments();
+        $ticketId = array_values($arguments[1])[0] ?? null;
+        $this->assertIsString($ticketId);
+
+        $ticket = $controllerMock->getTicketStore()->getTicket($ticketId);
+        $this->assertIsArray($ticket);
+
+        $this->assertEquals([$serviceUrl], $ticket['attributes']['observedSpEntityId'] ?? null);
+        $this->assertEquals([$idpEntityId], $ticket['attributes']['observedIdpEntityId'] ?? null);
+    }
+
+
+    /**
+     * A state resumed from an authproc filter is bound to the service those filters ran for. The
+     * filters are not run again on this path, so a different service must be rejected rather than
+     * silently inheriting the previous service's authproc decisions.
+     *
+     * @throws \Exception
+     */
+    public function testResumedAuthprocStateRejectsDifferentService(): void
+    {
+        $filteredServiceUrl = 'https://example.com/ssp/module.php/cas/linkback.php';
+        $requestedServiceUrl = 'https://example.org/ssp/module.php/cas/linkback.php';
+
+        $moduleConfig = $this->moduleConfig;
+        $moduleConfig['legal_service_urls'] = [$filteredServiceUrl, $requestedServiceUrl];
+        $casconfig = Configuration::loadFromArray($moduleConfig);
+
+        $controllerMock = $this->getMockBuilder(LoginController::class)
+            ->setConstructorArgs([$this->sspConfig, $casconfig, $this->authSimpleMock, $this->httpUtils])
+            ->onlyMethods(['getSession', 'getState'])
+            ->getMock();
+
+        // The state the processing chain saved during the first pass, for $filteredServiceUrl.
+        $controllerMock->method('getState')->willReturn([
+            'Attributes' => ['eduPersonPrincipalName' => ['testuser@example.com']],
+            'Destination' => ['entityid' => $filteredServiceUrl],
+        ]);
+
+        $sessionId = session_create_id();
+        $this->sessionMock->expects($this->exactly(2))->method('getSessionId')->willReturn($sessionId);
+        $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
+        $this->authSimpleMock->expects($this->any())->method('isAuthenticated')->willReturn(true);
+        $this->authSimpleMock->expects($this->once())->method('getAuthData')->with('Expire')->willReturn(9999999999);
+
+        // The user comes back from the authproc filter having swapped in a different legal service.
+        $queryParameters = [
+            'service' => $requestedServiceUrl,
+            ProcessingChain::AUTHPARAM => 'someAuthProcId',
+        ];
+        $loginRequest = Request::create(
+            uri:        Module::getModuleURL('casserver/login'),
+            parameters: $queryParameters,
+        );
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage(
+            'Service parameter provided to CAS server does not match the service the authentication '
+            . "processing filters ran for: [service] = '" . $requestedServiceUrl . "'",
+        );
+
+        $this->callLogin($controllerMock, $loginRequest, $queryParameters);
+    }
+
+
+    /**
+     * Resuming an authproc state with the service it was created for still issues a ticket.
+     *
+     * @throws \Exception
+     */
+    public function testResumedAuthprocStateAcceptsMatchingService(): void
+    {
+        $serviceUrl = 'https://example.com/ssp/module.php/cas/linkback.php';
+        $casconfig = Configuration::loadFromArray($this->moduleConfig);
+
+        $controllerMock = $this->getMockBuilder(LoginController::class)
+            ->setConstructorArgs([$this->sspConfig, $casconfig, $this->authSimpleMock, $this->httpUtils])
+            ->onlyMethods(['getSession', 'getState'])
+            ->getMock();
+
+        $controllerMock->method('getState')->willReturn([
+            'Attributes' => ['eduPersonPrincipalName' => ['testuser@example.com']],
+            'Destination' => ['entityid' => $serviceUrl],
+        ]);
+
+        $sessionId = session_create_id();
+        $this->sessionMock->expects($this->exactly(2))->method('getSessionId')->willReturn($sessionId);
+        $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
+        $this->authSimpleMock->expects($this->any())->method('isAuthenticated')->willReturn(true);
+        $this->authSimpleMock->expects($this->once())->method('getAuthData')->with('Expire')->willReturn(9999999999);
+
+        $queryParameters = [
+            'service' => $serviceUrl,
+            ProcessingChain::AUTHPARAM => 'someAuthProcId',
+        ];
+        $loginRequest = Request::create(
+            uri:        Module::getModuleURL('casserver/login'),
+            parameters: $queryParameters,
+        );
+
+        $response = $this->callLogin($controllerMock, $loginRequest, $queryParameters);
+
+        $this->assertInstanceOf(RunnableResponse::class, $response);
+        $arguments = $response->getArguments();
+        $this->assertEquals($serviceUrl, $arguments[0]);
+        $this->assertStringStartsWith('ST-', array_values($arguments[1])[0] ?? '');
     }
 
 

@@ -97,6 +97,19 @@ $config = [
         // Additional authproc filter
     ],
 
+    /**
+     * Optional entity ID identifying this CAS server to the authproc filters above, exposed to them
+     * as $state['Source']['entityid']. Filters that key off the authenticating entity (federation
+     * logging such as F-ticks, per-entity authorization, audit trails) need it. The requesting CAS
+     * service URL is made available to the same filters as $state['Destination']['entityid'].
+     *
+     * NOTE: this is unrelated to the ?entityId= query parameter of the login endpoint, which selects
+     * which upstream SAML IdP the authsource should authenticate against.
+     *
+     * Defaults to the SimpleSAMLphp base URL.
+     */
+    //'idp_entity_id' => 'https://login.example.org/idp/metadata.php',
+
     'base64attributes' => true, // base64 encode transferred attributes, defaults to false
 
     /**
