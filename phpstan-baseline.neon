@@ -276,17 +276,6 @@ parameters:
 			count: 1
 			path: src/Cas/TicketValidator.php
 
-		-
-			message: '#^Property SimpleSAML\\Module\\casserver\\Controller\\Cas10Controller\:\:\$sspConfig is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: src/Controller/Cas10Controller.php
-
-		-
-			message: '#^Property SimpleSAML\\Module\\casserver\\Controller\\Cas20Controller\:\:\$sspConfig is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: src/Controller/Cas20Controller.php
 
 		-
 			message: '#^Call to an undefined method SimpleSAML\\XML\\SerializableElementInterface\:\:getXML\(\)\.$#'
@@ -294,11 +283,6 @@ parameters:
 			count: 1
 			path: src/Controller/Cas30Controller.php
 
-		-
-			message: '#^Property SimpleSAML\\Module\\casserver\\Controller\\Cas30Controller\:\:\$sspConfig is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: src/Controller/Cas30Controller.php
 
 		-
 			message: '#^Cannot cast array to string\.$#'

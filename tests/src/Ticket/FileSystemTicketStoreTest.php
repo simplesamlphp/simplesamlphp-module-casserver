@@ -96,7 +96,6 @@ final class FileSystemTicketStoreTest extends TestCase
         $store = $this->createStore($this->ticketDir);
 
         $rp = new \ReflectionProperty($store, 'pathToTicketDirectory');
-        $rp->setAccessible(true);
         $rp->setValue($store, $this->ticketDir . DIRECTORY_SEPARATOR . 'does-not-exist-' . bin2hex(random_bytes(4)));
 
         $this->expectException(Exception::class);
@@ -135,7 +134,6 @@ final class FileSystemTicketStoreTest extends TestCase
     private function invokeValidateTicketPath(FileSystemTicketStore $store, string $ticketId): string
     {
         $rm = new \ReflectionMethod($store, 'validateTicketPath');
-        $rm->setAccessible(true);
 
         $result = $rm->invoke($store, $ticketId);
         self::assertIsString($result);
