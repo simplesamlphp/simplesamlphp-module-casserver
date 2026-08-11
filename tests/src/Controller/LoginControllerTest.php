@@ -342,7 +342,7 @@ class LoginControllerTest extends TestCase
         $this->authSimpleMock->expects($this->once())->method('getAuthDataArray')->willReturn($state);
 
         $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
-        $this->authSimpleMock->expects($this->any())->method('isAuthenticated')->willReturn(true);
+        $this->authSimpleMock->expects($this->atLeastOnce())->method('isAuthenticated')->willReturn(true);
         $queryParameters = [$serviceParam => 'https://example.com/ssp/module.php/cas/linkback.php'];
         $loginRequest = Request::create(
             uri:        Module::getModuleURL('casserver/login'),
@@ -396,7 +396,7 @@ class LoginControllerTest extends TestCase
         $sessionId = session_create_id();
         $this->sessionMock->expects($this->exactly(2))->method('getSessionId')->willReturn($sessionId);
         $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
-        $this->authSimpleMock->expects($this->any())->method('isAuthenticated')->willReturn(true);
+        $this->authSimpleMock->expects($this->atLeastOnce())->method('isAuthenticated')->willReturn(true);
         $this->authSimpleMock->expects($this->once())->method('getAuthData')->with('Expire')->willReturn(9999999999);
         $this->authSimpleMock->expects($this->once())->method('getAuthDataArray')->willReturn($state);
 
@@ -451,7 +451,7 @@ class LoginControllerTest extends TestCase
         $sessionId = session_create_id();
         $this->sessionMock->expects($this->exactly(2))->method('getSessionId')->willReturn($sessionId);
         $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
-        $this->authSimpleMock->expects($this->any())->method('isAuthenticated')->willReturn(true);
+        $this->authSimpleMock->expects($this->atLeastOnce())->method('isAuthenticated')->willReturn(true);
         $this->authSimpleMock->expects($this->once())->method('getAuthData')->with('Expire')->willReturn(9999999999);
 
         // The user comes back from the authproc filter having swapped in a different legal service.
@@ -497,7 +497,7 @@ class LoginControllerTest extends TestCase
         $sessionId = session_create_id();
         $this->sessionMock->expects($this->exactly(2))->method('getSessionId')->willReturn($sessionId);
         $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
-        $this->authSimpleMock->expects($this->any())->method('isAuthenticated')->willReturn(true);
+        $this->authSimpleMock->expects($this->atLeastOnce())->method('isAuthenticated')->willReturn(true);
         $this->authSimpleMock->expects($this->once())->method('getAuthData')->with('Expire')->willReturn(9999999999);
 
         $queryParameters = [
@@ -735,7 +735,7 @@ class LoginControllerTest extends TestCase
         $this->sessionMock->expects($this->exactly(2))->method('getSessionId')->willReturn($sessionId);
 
         // Simulate authenticated state and required auth data
-        $this->authSimpleMock->expects($this->any())->method('isAuthenticated')->willReturn(true);
+        $this->authSimpleMock->expects($this->atLeastOnce())->method('isAuthenticated')->willReturn(true);
         $this->authSimpleMock->expects($this->once())->method('getAuthData')->with('Expire')->willReturn(9999999999);
         $this->authSimpleMock->expects($this->once())->method('getAuthDataArray')->willReturn([
             'Attributes' => [

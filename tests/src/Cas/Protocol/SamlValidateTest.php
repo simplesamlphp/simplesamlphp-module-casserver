@@ -28,7 +28,6 @@ class SamlValidateTest extends TestCase
 
         $p = xml_parser_create();
         xml_parse_into_struct($p, \strval($xmlString), $vals, $index);
-        xml_parser_free($p);
 
         $this->assertEquals(
             $serviceUrl,
