@@ -292,6 +292,5 @@
 ### Changed
 
 - All files are rewritten based on work by Dubravko Voncina (Per Møldrup-Dalum  <pdj@statsbiblioteket.dk>)
-- See Google Groups discussion in this thread: \`http://groups.google.com/group/simplesamlphp/browse_thread/thread/4c655d169532650a\` (Per Møldrup-Dalum  <pdj@statsbiblioteket.dk>)
+- See Google Groups discussion in this thread: <http://groups.google.com/group/simplesamlphp/browse_thread/thread/4c655d169532650a> (Per Møldrup-Dalum  <pdj@statsbiblioteket.dk>)
 - The files in www has all been changed to use the new "namespace" (Per Møldrup-Dalum  <pdj@statsbiblioteket.dk>)
-
