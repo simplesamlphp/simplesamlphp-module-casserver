@@ -218,6 +218,24 @@ class LoginController
         // Get the state.
         $state = $this->getState();
         $state['ReturnTo'] = $returnToUrl;
+        // The CAS service is the closest analogue to an SP entity ID, so expose it to the authproc
+        // filters the same way a SAML IdP would. It has already been validated against the legal
+        // service URLs by handleServiceConfiguration().
+        $stateServiceUrl = $state['Destination']['entityid'] ?? null;
+        if (!empty($stateServiceUrl) && !empty($serviceUrl) && $stateServiceUrl !== $serviceUrl) {
+            // A state resumed from an authproc filter is bound to the service those filters ran for.
+            // They are not run again on this path, so honouring a different service here would let the
+            // decisions taken for one service be reused for another.
+            $message = 'Service parameter provided to CAS server does not match the service the '
+                . 'authentication processing filters ran for: [service] = ' . var_export($serviceUrl, true);
+            Logger::debug('casserver:' . $message);
+
+            throw new RuntimeException($message);
+        }
+        // Any value already in the state wins, so a resumed state keeps what the first pass established.
+        if (!empty($serviceUrl) && empty($stateServiceUrl)) {
+            $state['Destination']['entityid'] = $serviceUrl;
+        }
         if ($this->authProcId !== null) {
             $state[ProcessingChain::AUTHPARAM] = $this->authProcId;
         }

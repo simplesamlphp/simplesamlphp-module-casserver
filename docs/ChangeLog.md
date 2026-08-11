@@ -8,6 +8,12 @@ Unreleased
 * Minimum supported simplesamlphp version bumped to 1.17
 * debugMode option to display cas ticket xml
 * Allow per service overriding of configuration options for www/login
+* Pass the requesting cas service url to the authproc filters as the sp
+  entity id, which was previously always an empty string
+* Added an 'idp_entity_id' option, passed to the authproc filters as the
+  idp entity id and defaulting to the simplesamlphp base url
+* Reject a resumed authproc state whose service url differs from the one
+  the filters ran for
 
 2018-07-20 Bjorn Rohde Jensen
 
