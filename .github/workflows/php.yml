@@ -46,7 +46,7 @@ jobs:
     strategy:
       fail-fast: false
 
-    uses: simplesamlphp/simplesamlphp-test-framework/.github/workflows/reusable_linter.yml@v1.11.6
+    uses: simplesamlphp/simplesamlphp-test-framework/.github/workflows/reusable_linter.yml@v2.0.1
     secrets: inherit
     with:
       enable_eslinter: true
