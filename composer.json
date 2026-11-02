@@ -49,7 +49,7 @@
         "simplesamlphp/saml11": "~2.3"
     },
     "require-dev": {
-        "simplesamlphp/simplesamlphp-test-framework": "~1.11",
+        "simplesamlphp/simplesamlphp-test-framework": "~2.0",
         "php-parallel-lint/php-parallel-lint": "^1.4"
     },
     "support": {
