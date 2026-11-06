@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Give the authentication source Source and Destination before login, so that it can report a failed login against them (Marko Ivančić)
+
 ## [7.0.5] - 2026-08-11
 
 ### Changed

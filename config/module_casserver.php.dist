@@ -102,6 +102,8 @@ $config = [
      * as $state['Source']['entityid']. Filters that key off the authenticating entity (federation
      * logging such as F-ticks, per-entity authorization, audit trails) need it. The requesting CAS
      * service URL is made available to the same filters as $state['Destination']['entityid'].
+     * The authentication source gets both in the login state before the user logs in, so that it can
+     * report a failed login against them.
      *
      * NOTE: this is unrelated to the ?entityId= query parameter of the login endpoint, which selects
      * which upstream SAML IdP the authsource should authenticate against.

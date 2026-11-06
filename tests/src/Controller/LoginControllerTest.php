@@ -9,6 +9,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use SimpleSAML\Auth\ProcessingChain;
 use SimpleSAML\Auth\Simple;
+use SimpleSAML\Auth\State;
 use SimpleSAML\Configuration;
 use SimpleSAML\HTTP\RunnableResponse;
 use SimpleSAML\Module;
@@ -160,6 +161,8 @@ class LoginControllerTest extends TestCase
                     'isPassive' => false,
                     // phpcs:ignore Generic.Files.LineLength.TooLong
                     'ReturnTo' => 'http://localhost/?service=https%3A%2F%2Fexample.com%2Fssp%2Fmodule.php%2Fcas%2Flinkback.php',
+                    'Source' => ['entityid' => 'http://localhost/'],
+                    'Destination' => ['entityid' => 'https://example.com/ssp/module.php/cas/linkback.php'],
                 ],
                 [],
             ],
@@ -174,6 +177,8 @@ class LoginControllerTest extends TestCase
                     'isPassive' => false,
                     // phpcs:ignore Generic.Files.LineLength.TooLong
                     'ReturnTo' => 'http://localhost/?service=https%3A%2F%2Fexample.com%2Fssp%2Fmodule.php%2Fcas%2Flinkback.php&entityId=http%3A%2F%2Flocalhost%2FentityId%2Fsso',
+                    'Source' => ['entityid' => 'http://localhost/'],
+                    'Destination' => ['entityid' => 'https://example.com/ssp/module.php/cas/linkback.php'],
                 ],
                 [],
             ],
@@ -187,6 +192,8 @@ class LoginControllerTest extends TestCase
                     'isPassive' => false,
                     // phpcs:ignore Generic.Files.LineLength.TooLong
                     'ReturnTo' => 'http://localhost/?service=https%3A%2F%2Fexample.com%2Fssp%2Fmodule.php%2Fcas%2Flinkback.php&scope=desktop',
+                    'Source' => ['entityid' => 'http://localhost/'],
+                    'Destination' => ['entityid' => 'https://example.com/ssp/module.php/cas/linkback.php'],
                     'saml:IDPList' => [
                         'http://localhost/entityId/sso/scope/A',
                         'http://localhost/entityId/sso/scope/B',
@@ -210,6 +217,8 @@ class LoginControllerTest extends TestCase
                     'isPassive' => false,
                     // phpcs:ignore Generic.Files.LineLength.TooLong
                     'ReturnTo' => 'http://localhost/?service=https%3A%2F%2Fexample.com%2Fssp%2Fmodule.php%2Fcas%2Flinkback.php&scope=desktop',
+                    'Source' => ['entityid' => 'http://localhost/'],
+                    'Destination' => ['entityid' => 'https://example.com/ssp/module.php/cas/linkback.php'],
                     'saml:idp' => 'http://localhost/entityId/sso/scope/A',
                 ],
                 [
@@ -252,6 +261,231 @@ class LoginControllerTest extends TestCase
         $arguments = $response->getArguments();
         $actualLoginParams = $arguments[0] ?? [];
         $this->assertEquals($loginParameters, $actualLoginParams);
+    }
+
+
+    public function testLoginParamsTakeSourceFromTheConfiguration(): void
+    {
+        $idpEntityId = 'https://login.example.org/idp/metadata.php';
+        $moduleConfig = $this->moduleConfig;
+        $moduleConfig['idp_entity_id'] = $idpEntityId;
+
+        $loginParams = $this->loginParamsFor(
+            $moduleConfig,
+            ['service' => 'https://example.com/ssp/module.php/cas/linkback.php'],
+        );
+
+        $this->assertEquals(['entityid' => $idpEntityId], $loginParams['Source'] ?? null);
+    }
+
+
+    /**
+     * Older CAS clients name the service with TARGET.
+     */
+    public function testLoginParamsTakeDestinationFromTarget(): void
+    {
+        $serviceUrl = 'https://example.com/ssp/module.php/cas/linkback.php';
+
+        $loginParams = $this->loginParamsFor($this->moduleConfig, ['TARGET' => $serviceUrl]);
+
+        $this->assertEquals(['entityid' => $serviceUrl], $loginParams['Destination'] ?? null);
+    }
+
+
+    /**
+     * A login to casserver itself has no service to name, and such a login does not run authproc filters either.
+     */
+    public function testLoginParamsHaveNoDestinationWithoutAService(): void
+    {
+        $loginParams = $this->loginParamsFor($this->moduleConfig, []);
+
+        $this->assertEquals(['entityid' => 'http://localhost/'], $loginParams['Source'] ?? null);
+        $this->assertArrayNotHasKey('Destination', $loginParams);
+    }
+
+
+    /**
+     * Renew makes a logged-in user log in again, and that login can fail like any other.
+     */
+    public function testLoginParamsOfARenewedLoginNameTheEntities(): void
+    {
+        $serviceUrl = 'https://example.com/ssp/module.php/cas/linkback.php';
+
+        $loginParams = $this->loginParamsFor(
+            $this->moduleConfig,
+            ['service' => $serviceUrl, 'renew' => true, 'renewId' => 'not-the-renew-id-of-this-session'],
+            authenticated: true,
+        );
+
+        $this->assertTrue($loginParams['ForceAuthn'] ?? null);
+        $this->assertEquals(['entityid' => 'http://localhost/'], $loginParams['Source'] ?? null);
+        $this->assertEquals(['entityid' => $serviceUrl], $loginParams['Destination'] ?? null);
+    }
+
+
+    public static function entitiesProvider(): array
+    {
+        $serviceUrl = 'https://example.com/ssp/module.php/cas/linkback.php';
+
+        return [
+            'Configured' => [
+                'https://login.example.org/idp/metadata.php',
+                'https://login.example.org/idp/metadata.php',
+                $serviceUrl,
+            ],
+            'Base URL when not configured' => [null, 'http://localhost/', $serviceUrl],
+            // login() checks the service against the legal URLs without its session ID, and keeps it as it came
+            'Service with a session ID' => [null, 'http://localhost/', $serviceUrl . ';jsessionid=abc123'],
+        ];
+    }
+
+
+    /**
+     * An authentication source reporting a failed login has to name the same entities as an authproc
+     * filter reporting a successful one.
+     *
+     * @throws \Exception
+     */
+    #[DataProvider('entitiesProvider')]
+    public function testLoginParamsNameTheEntitiesTheAuthprocFiltersSee(
+        ?string $configured,
+        string $expected,
+        string $serviceUrl,
+    ): void {
+        $moduleConfig = $this->moduleConfig;
+        if ($configured !== null) {
+            $moduleConfig['idp_entity_id'] = $configured;
+        }
+        $moduleConfig['authproc'] = [
+            [
+                'class' => 'core:PHP',
+                'code' => '$attributes["observedIdpEntityId"] = [$state["Source"]["entityid"] ?? "MISSING"];'
+                    . '$attributes["observedSpEntityId"] = [$state["Destination"]["entityid"] ?? "MISSING"];',
+            ],
+        ];
+
+        $loginParams = $this->loginParamsFor($moduleConfig, ['service' => $serviceUrl]);
+        $ticket = $this->serviceTicketAfterLogin($moduleConfig, $serviceUrl, $loginParams);
+
+        $this->assertEquals(['entityid' => $expected], $loginParams['Source'] ?? null);
+        $this->assertEquals(['entityid' => $serviceUrl], $loginParams['Destination'] ?? null);
+        $this->assertEquals([$expected], $ticket['attributes']['observedIdpEntityId'] ?? null);
+        $this->assertEquals([$serviceUrl], $ticket['attributes']['observedSpEntityId'] ?? null);
+    }
+
+
+    /**
+     * A session opened by a login for one service has to stay usable for another. login() refuses a
+     * service other than the one in the state, so Destination must not reach the session.
+     *
+     * @throws \Exception
+     */
+    public function testLoginParamsDoNotBindTheSessionToTheService(): void
+    {
+        $otherServiceUrl = 'https://other.example.com/cas/linkback.php';
+        $moduleConfig = $this->moduleConfig;
+        $moduleConfig['legal_service_urls'][] = $otherServiceUrl;
+
+        $loginParams = $this->loginParamsFor(
+            $moduleConfig,
+            ['service' => 'https://example.com/ssp/module.php/cas/linkback.php'],
+        );
+        $ticket = $this->serviceTicketAfterLogin($moduleConfig, $otherServiceUrl, $loginParams);
+
+        $this->assertEquals($otherServiceUrl, $ticket['service'] ?? null);
+    }
+
+
+    /**
+     * What the authentication source is asked to log in with.
+     *
+     * @param array<string, mixed> $moduleConfig
+     * @param array<string, mixed> $queryParameters
+     * @return array<string, mixed>
+     */
+    private function loginParamsFor(array $moduleConfig, array $queryParameters, bool $authenticated = false): array
+    {
+        $controllerMock = $this->getMockBuilder(LoginController::class)
+            ->setConstructorArgs([
+                $this->sspConfig,
+                Configuration::loadFromArray($moduleConfig),
+                $this->authSimpleMock,
+                $this->httpUtils,
+            ])
+            ->onlyMethods(['getSession'])
+            ->getMock();
+        $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
+        $this->sessionMock->expects($this->once())->method('getSessionId')->willReturn(session_create_id());
+        $this->authSimpleMock->expects($this->atMost(1))->method('isAuthenticated')->willReturn($authenticated);
+
+        $loginRequest = Request::create(
+            uri:        Module::getModuleURL('casserver/login'),
+            parameters: $queryParameters,
+        );
+        $response = $this->callLogin($controllerMock, $loginRequest, $queryParameters);
+
+        $this->assertInstanceOf(RunnableResponse::class, $response);
+        $this->assertEquals('login', ((array)$response->getCallable())[1] ?? '');
+
+        return $response->getArguments()[0] ?? [];
+    }
+
+
+    /**
+     * The service ticket issued once the user is back from a login which those parameters started.
+     * The session holds what SSP keeps of the completed login state, not the state itself.
+     *
+     * @param array<string, mixed> $moduleConfig
+     * @param array<string, mixed> $loginParams
+     * @return array<string, mixed>
+     * @throws \Exception
+     */
+    private function serviceTicketAfterLogin(array $moduleConfig, string $serviceUrl, array $loginParams): array
+    {
+        $authData = State::getPersistentAuthData(array_merge($loginParams, [
+            'Attributes' => ['eduPersonPrincipalName' => ['testuser@example.com']],
+            'Expire' => 9999999999,
+        ]));
+
+        $authSimpleMock = $this->getMockBuilder(Simple::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getAuthData', 'isAuthenticated', 'getAuthDataArray'])
+            ->getMock();
+        $authSimpleMock->expects($this->atLeastOnce())->method('isAuthenticated')->willReturn(true);
+        $authSimpleMock->expects($this->once())->method('getAuthData')->with('Expire')->willReturn(9999999999);
+        $authSimpleMock->expects($this->once())->method('getAuthDataArray')->willReturn($authData);
+
+        $sessionMock = $this->getMockBuilder(Session::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getSessionId'])
+            ->getMock();
+        $sessionMock->expects($this->exactly(2))->method('getSessionId')->willReturn(session_create_id());
+
+        $controllerMock = $this->getMockBuilder(LoginController::class)
+            ->setConstructorArgs([
+                $this->sspConfig,
+                Configuration::loadFromArray($moduleConfig),
+                $authSimpleMock,
+                $this->httpUtils,
+            ])
+            ->onlyMethods(['getSession'])
+            ->getMock();
+        $controllerMock->expects($this->once())->method('getSession')->willReturn($sessionMock);
+
+        $queryParameters = ['service' => $serviceUrl];
+        $loginRequest = Request::create(
+            uri:        Module::getModuleURL('casserver/login'),
+            parameters: $queryParameters,
+        );
+        $response = $this->callLogin($controllerMock, $loginRequest, $queryParameters);
+
+        $this->assertInstanceOf(RunnableResponse::class, $response);
+        $ticketId = array_values($response->getArguments()[1])[0] ?? null;
+        $this->assertIsString($ticketId);
+        $ticket = $controllerMock->getTicketStore()->getTicket($ticketId);
+        $this->assertIsArray($ticket);
+
+        return $ticket;
     }
 
 
@@ -625,6 +859,10 @@ class LoginControllerTest extends TestCase
         $this->assertTrue($actualLoginParams['isPassive']);
         $this->assertArrayHasKey('ReturnTo', $actualLoginParams);
         $this->assertIsString($actualLoginParams['ReturnTo']);
+
+        // A passive attempt names the same entities as an interactive login
+        $this->assertEquals(['entityid' => 'http://localhost/'], $actualLoginParams['Source'] ?? null);
+        $this->assertEquals(['entityid' => $params['service']], $actualLoginParams['Destination'] ?? null);
     }
 
 
