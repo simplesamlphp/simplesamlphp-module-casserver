@@ -385,7 +385,8 @@ class LoginController
         if ($serviceUrl === null) {
             return;
         }
-        $serviceCasConfig = $this->serviceValidator->checkServiceURL($this->sanitize($serviceUrl));
+        // Tickets are issued for, and the user is sent to, $serviceUrl as received, so check it as received.
+        $serviceCasConfig = $this->serviceValidator->checkRequestedServiceURL($serviceUrl);
         if (!isset($serviceCasConfig)) {
             $message = 'Service parameter provided to CAS server is not listed as a legal service: [service] = ' .
                 var_export($serviceUrl, true);

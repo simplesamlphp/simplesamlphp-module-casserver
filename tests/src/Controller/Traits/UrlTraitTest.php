@@ -14,6 +14,25 @@ class UrlTraitTest extends TestCase
     use UrlTrait;
 
 
+    private const array LEGAL_SERVICES = [
+        // Regular prefix match
+        'https://myservice.com',
+        'https://anotherservice.com/',
+        'https://anotherservice.com:8080/',
+        'http://sub.domain.com/path/a/b/c',
+        'https://query.param/secure?apple=red',
+        'https://encode.com/space test/',
+
+        // Regex match
+        '|^https://.*\.subdomain.com/|',
+        '#^https://.*-someprefix.com/#',
+
+        // Invalid settings don't blow up
+        '|invalid-regex',
+        '',
+    ];
+
+
     /**
      * @return array
      */
@@ -63,29 +82,36 @@ class UrlTraitTest extends TestCase
     #[DataProvider('checkServiceURLProvider')]
     public function testCheckServiceURL(string $service, bool $allowed): void
     {
-        $legalServices = [
-            // Regular prefix match
-            'https://myservice.com',
-            'https://anotherservice.com/',
-            'https://anotherservice.com:8080/',
-            'http://sub.domain.com/path/a/b/c',
-            'https://query.param/secure?apple=red',
-            'https://encode.com/space test/',
-
-            // Regex match
-            '|^https://.*\.subdomain.com/|',
-            '#^https://.*-someprefix.com/#',
-
-            // Invalid settings don't blow up
-            '|invalid-regex',
-            '',
-        ];
-
         $this->assertEquals(
             $allowed,
-            $this->checkServiceURL($this->sanitize($service), $legalServices),
+            $this->checkServiceURL($this->sanitize($service), self::LEGAL_SERVICES),
             "$service validated wrong",
         );
+    }
+
+
+    /**
+     * @param string $service the service url to check, as received
+     * @param bool $allowed is the service url allowed?
+     */
+    #[DataProvider('checkServiceURLProvider')]
+    public function testCheckRequestedServiceURL(string $service, bool $allowed): void
+    {
+        $this->assertEquals(
+            $allowed,
+            $this->checkRequestedServiceURL($service, self::LEGAL_SERVICES),
+            "$service validated wrong",
+        );
+    }
+
+
+    public function testCheckRequestedServiceURLRejectsEncodedSlashBeforeUserinfo(): void
+    {
+        $service = 'https://anotherservice.com%2Fx@evil.example/';
+
+        // Its decoded form is legal, but the service as received has the host evil.example.
+        $this->assertTrue($this->checkServiceURL($this->sanitize($service), self::LEGAL_SERVICES));
+        $this->assertFalse($this->checkRequestedServiceURL($service, self::LEGAL_SERVICES));
     }
 
 

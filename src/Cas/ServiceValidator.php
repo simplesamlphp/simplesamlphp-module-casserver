@@ -26,7 +26,40 @@ class ServiceValidator
 
 
     /**
+     * Check that a service url, exactly as it was received in the request, is allowed, and if so return the
+     * configuration to use.
+     *
+     * The legal service urls are matched against the sanitized form of the service (url decoded, without
+     * ';jsessionid'), while tickets are issued for, and users are sent to, the service as received. The service is
+     * therefore only accepted when it starts with "scheme://host[:port]" and sanitizing it leaves that part
+     * untouched, so that the host that was checked is the host that is used.
+     *
+     * @param string $service The service url as received in the request, neither url decoded nor sanitized
+     *
+     * @return \SimpleSAML\Configuration|null Return the configuration to use for this service,
+     *   or null if service is not allowed
+     * @throws \ErrorException
+     */
+    public function checkRequestedServiceURL(string $service): ?Configuration
+    {
+        $sanitizedService = TicketValidator::sanitize($service);
+        if (!self::hasStableAuthority($service, $sanitizedService)) {
+            Logger::warning(
+                'casserver: Rejecting service url with a missing or ambiguous authority: '
+                . json_encode($service, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE),
+            );
+            return null;
+        }
+
+        return $this->checkServiceURL($sanitizedService);
+    }
+
+
+    /**
      * Check that the $service is allowed, and if so return the configuration to use.
+     *
+     * Only the given string is checked. For a service url received in a request, which is later used as received,
+     * use checkRequestedServiceURL() instead.
      *
      * @param   string  $service  The service url. Assume to already be url decoded
      *
@@ -113,5 +146,49 @@ class ServiceValidator
         }
 
         return $isValid;
+    }
+
+
+    /**
+     * Whether a service starts with a scheme and authority (RFC 3986, section 3) that its sanitized form shares, and
+     * that authority is a plain host with an optional port.
+     *
+     * A service without a leading "scheme://" is refused: browsers and SimpleSAMLphp still find a host in forms such
+     * as "//host", "https:\\host" or " https://host" (WHATWG parsers strip whitespace and accept backslashes).
+     * Userinfo, percent-encoding, backslashes, whitespace and control characters are refused in the authority: URL
+     * parsers disagree about where such an authority ends, and decoding can move that end, so the host that
+     * receives the ticket could differ from the host that was checked.
+     *
+     * @param string $service The service url as received
+     * @param string $sanitizedService The same service url after sanitizing
+     *
+     * @return bool
+     */
+    private static function hasStableAuthority(string $service, string $sanitizedService): bool
+    {
+        $schemeAndAuthority = self::getSchemeAndAuthority($service);
+        if ($schemeAndAuthority === null) {
+            return false;
+        }
+
+        $authority = substr($schemeAndAuthority, strpos($schemeAndAuthority, '://') + 3);
+        if ($authority === '' || preg_match('/[@%\\\\\x00-\x20\x7F]/', $authority) === 1) {
+            return false;
+        }
+
+        return self::getSchemeAndAuthority($sanitizedService) === $schemeAndAuthority;
+    }
+
+
+    /**
+     * The leading "scheme://authority" of a url, where the authority ends at the first "/", "?" or "#".
+     *
+     * @param string $url
+     *
+     * @return string|null The scheme and authority, or null if the url does not start with "scheme://"
+     */
+    private static function getSchemeAndAuthority(string $url): ?string
+    {
+        return preg_match('~^[A-Za-z][A-Za-z0-9+.\-]*://[^/?#]*~', $url, $matches) === 1 ? $matches[0] : null;
     }
 }

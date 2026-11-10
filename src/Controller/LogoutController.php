@@ -108,7 +108,8 @@ class LogoutController
 
         // Validate the return $url is valid
         if (!is_null($url)) {
-            $isValidReturnUrl = !is_null($this->serviceValidator->checkServiceURL($this->sanitize($url)));
+            // The user is sent to $url as received, so check it as received.
+            $isValidReturnUrl = !is_null($this->serviceValidator->checkRequestedServiceURL($url));
             if (!$isValidReturnUrl) {
                 try {
                     $url = $this->httpUtils->checkURLAllowed($url);
