@@ -1,5 +1,28 @@
 # Changelog
 
+## [7.0.6] - 2026-11-10
+
+### Security
+
+- Validate the service (login), return url (logout) and target service (proxy) exactly as received.
+  A service must start with scheme://host[:port], its scheme and authority must not change when sanitized,
+  and the authority must not contain userinfo, percent-encoding, backslashes, whitespace or control
+  characters (GHSA-9g9q-j468-7fp4) (Marko Ivančić)
+
+### Changed
+
+- Recommend prefixes that end after the host, and anchored regular expressions, in the example configuration (Marko Ivančić)
+- Allow beste/clock ~3.0 || ~4.0 (#84)
+- Allow simplesamlphp/simplesamlphp-test-framework ~2.0 (#85)
+
+### Upgrade notes
+
+- Services, logout urls and proxy target services whose host part contains `user@`, `%`-encoding,
+  backslashes, whitespace or control characters, or that do not start with `scheme://`, are now refused.
+- Check `legal_service_urls` and `legal_target_service_urls`: each prefix should end with `/` after the host
+  (e.g. `https://app.example.com/`) and each regular expression should be anchored with `^`
+  (e.g. `|^https://app\.example\.com/|`). See `config/module_casserver.php.dist`.
+
 ## [7.0.5] - 2026-08-11
 
 ### Changed

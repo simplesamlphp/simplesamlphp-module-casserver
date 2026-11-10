@@ -31,6 +31,14 @@ search for the `module.enable` key and set `casserver` to true:
 
 See the `config-templates` folder for examples of configuring this module
 
+## Upgrading to 7.0.6
+
+Version 7.0.6 fixes GHSA-9g9q-j468-7fp4. The service, logout url and proxy target service are now validated
+exactly as received, so values whose host part contains userinfo (`user@`), percent-encoding, backslashes or
+whitespace are refused. Make sure every `legal_service_urls` and `legal_target_service_urls` prefix ends with
+`/` after the host (for example `https://app.example.com/`) and every regular expression is anchored with `^`.
+See [docs/ChangeLog.md](docs/ChangeLog.md) for details.
+
 ## Debug
 
 To aid in debugging you can print out the CAS ticket xml rather then returning
@@ -38,7 +46,7 @@ a ticket id. Enable `debugMode` in `module_casserver.php` and then add a query
 parameter `debugMode=true` to the CAS login url.
 
 Logging in to
-`https://cas.example.com/cas/login?debugMode=true&service=http://localhost/`
+`https://cas.example.com/cas/login?debugMode=true&service=https://app.example.com/cas/`
 would now print the xml for that service.
 
 ```xml
