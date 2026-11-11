@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Debug mode (`debugMode=true`) now validates the ticket for a service given as `TARGET`, and no longer fails with a type error when `renew` is set (Marko Ivančić)
+
 ## [7.0.6] - 2026-11-10
 
 ### Security

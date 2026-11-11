@@ -28,6 +28,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 
+use function filter_var;
 use function http_build_query;
 use function in_array;
 use function var_export;
@@ -311,8 +312,10 @@ class LoginController
             $xmlResponse = $this->validate(
                 request: $request,
                 method:  'serviceValidate',
-                renew:   $request->get('renew', false),
-                target:  $request->get('target'),
+                // The query parameter is a string, validate() takes a bool
+                renew:   filter_var($request->get('renew', false), FILTER_VALIDATE_BOOL),
+                // The same parameter login() reads the service from when there is no 'service'
+                target:  $request->get('TARGET'),
                 ticket:  $serviceTicket['id'],
                 service: $request->get('service'),
                 pgtUrl:  $request->get('pgtUrl'),
