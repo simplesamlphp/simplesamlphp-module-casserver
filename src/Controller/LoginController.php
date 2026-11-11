@@ -193,6 +193,7 @@ class LoginController
                 forceAuthn: $forceAuthn,
                 returnToUrl: $returnToUrl,
                 entityId: $entityId,
+                serviceUrl: $serviceUrl,
             );
         }
 
@@ -502,6 +503,7 @@ class LoginController
      * @param bool        $forceAuthn
      * @param string      $returnToUrl
      * @param string|null $entityId
+     * @param string|null $serviceUrl
      *
      * @return \SimpleSAML\HTTP\RunnableResponse
      */
@@ -509,12 +511,14 @@ class LoginController
         bool $forceAuthn,
         string $returnToUrl,
         ?string $entityId,
+        ?string $serviceUrl,
     ): RunnableResponse {
         return $this->handleAuthenticate(
             forceAuthn: $forceAuthn,
             gateway: false,
             returnToUrl: $returnToUrl,
             entityId: $entityId,
+            serviceUrl: $serviceUrl,
         );
     }
 
@@ -549,6 +553,7 @@ class LoginController
             gateway: true,
             returnToUrl: $returnToUrl,
             entityId: $entityId,
+            serviceUrl: $serviceUrl,
         );
     }
 
@@ -560,6 +565,7 @@ class LoginController
      * @param bool $gateway Whether authentication should be passive/non-interactive
      * @param string $returnToUrl URL to return to after authentication
      * @param string|null $entityId Optional specific IdP entity ID to use
+     * @param string|null $serviceUrl The requesting CAS service, if the request names one
      *
      * @return \SimpleSAML\HTTP\RunnableResponse Response containing the login redirect
      */
@@ -568,12 +574,21 @@ class LoginController
         bool $gateway,
         string $returnToUrl,
         ?string $entityId,
+        ?string $serviceUrl,
     ): RunnableResponse {
         $params = [
             'ForceAuthn' => $forceAuthn,
             'isPassive' => $gateway,
             'ReturnTo' => $returnToUrl,
+            // The same entities the authproc filters see after a successful login, so that an authentication
+            // source can report a failed login against them. They end with the login state: a session does not
+            // keep them, so they do not bind it to this service.
+            'Source' => ['entityid' => $this->attributeExtractor->resolveIdpEntityId()],
         ];
+
+        if (!empty($serviceUrl)) {
+            $params['Destination'] = ['entityid' => $serviceUrl];
+        }
 
         if (isset($entityId)) {
             $params['saml:idp'] = $entityId;
