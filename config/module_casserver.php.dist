@@ -21,13 +21,17 @@ $config = [
         ]
     ],
     'legal_service_urls' => [
-         //Any service url string matching any of the following prefixes is accepted
+        // Any service url string matching any of the following prefixes is accepted. Service urls must be absolute
+        // ('scheme://host[:port]...'), and must not carry userinfo or percent-encoding before the path.
+        // End every prefix at least with the '/' after the host (or port): a bare 'https://host.example' prefix
+        // also matches 'https://host.example.other.example/'.
         'http://host1.domain:1234/path1',
         'https://host2.domain:5678/path2/path3',
-        // So is regex
-        '|^https://.*\.domain.com/|',
+        // So is regex. Anchor it with '^' and match the host exactly; '.*' before the domain also matches
+        // other hosts, e.g. 'https://other.example/x.domain.com/'.
+        '|^https://[a-z0-9.-]+\.domain\.com/|i',
         // ONLY the FOLLOWING configuration options can be overridden. See OverrideConfigPropertiesEnum.
-        'https://override.example.com' => [
+        'https://override.example.com/' => [
             'attrname' => 'uid',
             'attributes_to_transfer' => ['cn'],
             //'attributes' => false,
@@ -37,7 +41,8 @@ $config = [
     ],
 
     'legal_target_service_urls' => [
-        //Any target service url string matching any of the following prefixes is accepted
+        // Any target service url string matching any of the following prefixes is accepted.
+        // The advice for legal_service_urls above applies here too.
         'http://host3.domain:4321/path4',
         'https://host4.domain:8765/path5/path6',
     ],

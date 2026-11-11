@@ -138,7 +138,8 @@ class Cas20Controller
             $targetService === null => 'Missing target service parameter [targetService]',
             // pgt parameter is not defined
             $pgt === null => 'Missing proxy granting ticket parameter: [pgt]',
-            !$this->checkServiceURL($this->sanitize($targetService), $legal_target_service_urls) =>
+            // The proxy ticket is issued for $targetService as received, so check it as received.
+            !$this->checkRequestedServiceURL($targetService, $legal_target_service_urls) =>
                 "Target service parameter not listed as a legal service: [targetService] = {$targetService}",
             default => null,
         };

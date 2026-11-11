@@ -13,13 +13,23 @@ use SimpleSAML\Auth\State;
 use SimpleSAML\Configuration;
 use SimpleSAML\HTTP\RunnableResponse;
 use SimpleSAML\Module;
+use SimpleSAML\Module\casserver\Controller\Cas20Controller;
 use SimpleSAML\Module\casserver\Controller\LoginController;
 use SimpleSAML\Session;
 use SimpleSAML\Utils;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class LoginControllerTest extends TestCase
 {
+    /** Decodes to a legal service, while its own host is evil.example (all before the '@' is userinfo). */
+    private const string AMBIGUOUS_SERVICE =
+        'https://example.com%2Fssp%2Fmodule.php%2Fcas%2Flinkback.php@evil.example/';
+
+    private const string NOT_LEGAL_SERVICE_MESSAGE =
+        'Service parameter provided to CAS server is not listed as a legal service: [service] = ';
+
+
     private array $moduleConfig;
 
     private Simple|MockObject $authSimpleMock;
@@ -116,7 +126,87 @@ class LoginControllerTest extends TestCase
                 "Scope parameter provided to CAS server is not listed as legal scope: [scope] = 'illegalscope'",
 
             ],
+            // The decoded form of this service is legal, but its host is evil.example.
+            'Service With Encoded Slashes Before Userinfo' => [
+                ['service' => self::AMBIGUOUS_SERVICE],
+                self::NOT_LEGAL_SERVICE_MESSAGE . var_export(self::AMBIGUOUS_SERVICE, true),
+            ],
+            'TARGET With Encoded Slashes Before Userinfo' => [
+                ['TARGET' => self::AMBIGUOUS_SERVICE],
+                self::NOT_LEGAL_SERVICE_MESSAGE . var_export(self::AMBIGUOUS_SERVICE, true),
+            ],
+            'Gateway Service With Encoded Slashes Before Userinfo' => [
+                ['service' => self::AMBIGUOUS_SERVICE, 'gateway' => true],
+                self::NOT_LEGAL_SERVICE_MESSAGE . var_export(self::AMBIGUOUS_SERVICE, true),
+            ],
+            'POST Service With Encoded Slashes Before Userinfo' => [
+                ['service' => self::AMBIGUOUS_SERVICE, 'method' => 'POST'],
+                self::NOT_LEGAL_SERVICE_MESSAGE . var_export(self::AMBIGUOUS_SERVICE, true),
+            ],
         ];
+    }
+
+
+    /**
+     * A service is redirected to and ticketed as received, on the host it was checked for, and the ticket still
+     * validates against the service without ';jsessionid'.
+     *
+     * @throws \Exception
+     */
+    public function testServiceIsTicketedAsReceivedOnTheCheckedHost(): void
+    {
+        $legalServiceUrl = 'https://example.com/ssp/module.php/cas/linkback.php';
+        $service = $legalServiceUrl . ';jsessionid=99AC064A12?stateId=_bd6b%3Ahttps%3A%2F%2Fexample.com%2Fssp';
+        $casconfig = Configuration::loadFromArray($this->moduleConfig);
+
+        $controllerMock = $this->getMockBuilder(LoginController::class)
+            ->setConstructorArgs([$this->sspConfig, $casconfig, $this->authSimpleMock, $this->httpUtils])
+            ->onlyMethods(['getSession'])
+            ->getMock();
+        $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
+        $this->sessionMock->expects($this->exactly(2))->method('getSessionId')->willReturn(session_create_id());
+        $this->authSimpleMock->expects($this->atLeastOnce())->method('isAuthenticated')->willReturn(true);
+        $this->authSimpleMock->expects($this->once())->method('getAuthData')->with('Expire')->willReturn(9999999999);
+        $this->authSimpleMock->expects($this->once())->method('getAuthDataArray')->willReturn([
+            'Attributes' => ['eduPersonPrincipalName' => ['testuser@example.com']],
+            'Expire' => 9999999999,
+        ]);
+
+        $requestParams = ['service' => $service];
+        $loginRequest = Request::create(
+            uri:        Module::getModuleURL('casserver/login'),
+            parameters: $requestParams,
+        );
+        $response = $this->callLogin($controllerMock, $loginRequest, $requestParams);
+
+        $this->assertInstanceOf(RunnableResponse::class, $response);
+        $this->assertEquals('redirectTrustedURL', ((array)$response->getCallable())[1] ?? '');
+        $arguments = $response->getArguments();
+        // The user is sent to the host that was checked, with the service exactly as received.
+        $this->assertSame(parse_url($legalServiceUrl, PHP_URL_HOST), parse_url((string)$arguments[0], PHP_URL_HOST));
+        $this->assertSame($service, $arguments[0]);
+
+        $ticketId = $arguments[1]['ticket'] ?? null;
+        $this->assertIsString($ticketId);
+        $ticket = $controllerMock->getTicketStore()->getTicket($ticketId);
+        $this->assertIsArray($ticket);
+        $this->assertSame($service, $ticket['service']);
+
+        $cas20Controller = new Cas20Controller($this->sspConfig, $casconfig);
+        $validateParams = [
+            'ticket' => $ticketId,
+            'service' => $legalServiceUrl . '?stateId=_bd6b%3Ahttps%3A%2F%2Fexample.com%2Fssp',
+        ];
+        $validateRequest = Request::create(uri: 'http://localhost', parameters: $validateParams);
+        $validateResponse = $cas20Controller->serviceValidate($validateRequest, ...$validateParams);
+
+        $this->assertSame(Response::HTTP_OK, $validateResponse->getStatusCode());
+        $xml = simplexml_load_string((string)$validateResponse->getContent());
+        $xml->registerXPathNamespace('cas', 'serviceResponse');
+        $this->assertSame(
+            'testuser@example.com',
+            (string)$xml->xpath('//cas:authenticationSuccess/cas:user')[0],
+        );
     }
 
 

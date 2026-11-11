@@ -338,6 +338,53 @@ class Cas20ControllerTest extends TestCase
     }
 
 
+    public function testProxyRejectsTargetServiceWithEncodedSlashesBeforeUserinfo(): void
+    {
+        $this->moduleConfig['legal_target_service_urls'] = ['https://myservice.com/abcd'];
+        $casconfig = Configuration::loadFromArray($this->moduleConfig);
+        // A valid proxy-granting ticket, so that only the target service can make the request fail.
+        $this->ticketStore->addTicket([
+            'id'          => 'PGT-' . $this->sessionId,
+            'validBefore' => 9999999999,
+            'service'     => 'https://myservice.com/abcd',
+            'sessionId'   => $this->sessionId,
+            'forceAuthn'  => false,
+            'attributes'  => ['eduPersonPrincipalName' => ['eduPersonPrincipalName@google.com']],
+            'proxies'     => [],
+        ]);
+        $this->ticketStore->addTicket([
+            'id'          => $this->sessionId,
+            'validBefore' => 9999999999,
+            'service'     => 'https://myservice.com/abcd',
+            'sessionId'   => $this->sessionId,
+        ]);
+
+        // Decodes to a legal target service, while its own host is evil.example.
+        $targetService = 'https://myservice.com%2Fabcd@evil.example/';
+        $params = ['pgt' => 'PGT-' . $this->sessionId, 'targetService' => $targetService];
+        $request = Request::create(
+            uri:        Module::getModuleURL('casserver/proxy'),
+            parameters: $params,
+        );
+
+        $cas20Controller = new Cas20Controller($this->sspConfig, $casconfig);
+        $response = $cas20Controller->proxy($request, ...$params);
+
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        $this->assertStringContainsString(
+            "Target service parameter not listed as a legal service: [targetService] = {$targetService}",
+            $response->getContent(),
+        );
+        $xml = simplexml_load_string($response->getContent());
+        $xml->registerXPathNamespace('cas', 'serviceResponse');
+        $this->assertEmpty($xml->xpath('//cas:proxySuccess'));
+        $this->assertEquals(
+            C::ERR_INVALID_REQUEST,
+            $xml->xpath('//cas:authenticationFailure')[0]->attributes()['code'],
+        );
+    }
+
+
     public static function validateFailsForEmptyServiceTicket(): array
     {
         return [

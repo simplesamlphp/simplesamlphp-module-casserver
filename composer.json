@@ -37,7 +37,7 @@
         "ext-SimpleXML": "*",
         "ext-session": "*",
 
-        "beste/clock": "~4.0",
+        "beste/clock": "~3.0 || ~4.0",
         "simplesamlphp/assert": "~2.0",
         "simplesamlphp/composer-module-installer": "~1.7",
         "simplesamlphp/simplesamlphp": "~2.5",
@@ -49,7 +49,7 @@
         "simplesamlphp/saml11": "~2.3"
     },
     "require-dev": {
-        "simplesamlphp/simplesamlphp-test-framework": "~2.0",
+        "simplesamlphp/simplesamlphp-test-framework": "~1.11.7 || ~2.0",
         "php-parallel-lint/php-parallel-lint": "^1.4"
     },
     "support": {

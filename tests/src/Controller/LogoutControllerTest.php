@@ -84,6 +84,27 @@ class LogoutControllerTest extends TestCase
                 'https://invalid.edu/v2',
                 false,
             ],
+            // The decoded forms of these are legal, but their host is evil.example.
+            'encodedSlashBeforeUserinfoV3' => [
+                true,
+                'https://example.com%2Fv3@evil.example/',
+                false,
+            ],
+            'encodedSlashBeforeUserinfoV2' => [
+                false,
+                'https://example.com%2Fv2@evil.example/',
+                false,
+            ],
+            'userinfoV3' => [
+                true,
+                'https://valid.edu@evil.example/',
+                false,
+            ],
+            'userinfoV2' => [
+                false,
+                'https://valid.edu@evil.example/',
+                false,
+            ],
         ];
     }
 

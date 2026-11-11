@@ -15,6 +15,27 @@ use function is_string;
 trait UrlTrait
 {
     /**
+     * Check a service url, exactly as it was received in the request, against the given legal service urls.
+     *
+     * @param string $service The service url as received, neither url decoded nor sanitized
+     * @param string[] $legal_service_urls
+     *
+     * @return bool
+     * @throws \ErrorException
+     * @see \SimpleSAML\Module\casserver\Cas\ServiceValidator::checkRequestedServiceURL()
+     */
+    public function checkRequestedServiceURL(string $service, array $legal_service_urls): bool
+    {
+        $config = Configuration::loadFromArray(['legal_service_urls' => $legal_service_urls]);
+        $serviceValidator = new ServiceValidator($config);
+        return $serviceValidator->checkRequestedServiceURL($service) !== null;
+    }
+
+
+    /**
+     * Only the given string is checked. For a service url received in a request, which is later used as received,
+     * use checkRequestedServiceURL() instead.
+     *
      * @param string $service
      * @param string[] $legal_service_urls
      *
