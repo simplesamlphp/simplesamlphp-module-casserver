@@ -106,6 +106,7 @@ class LoginControllerTest extends TestCase
             entityId: isset($params['entityId']) ? (string)$params['entityId'] : null,
             debugMode: isset($params['debugMode']) ? (string)$params['debugMode'] : null,
             method: isset($params['method']) ? (string)$params['method'] : null,
+            pgtUrl: isset($params['pgtUrl']) ? (string)$params['pgtUrl'] : null,
         );
     }
 
@@ -877,6 +878,61 @@ class LoginControllerTest extends TestCase
     #[DataProvider('debugModeServiceValidateProvider')]
     public function testDebugModeValidatesTheIssuedTicket(array $requestParams): void
     {
+        $loginRequest = Request::create(
+            uri:        Module::getModuleURL('casserver/login'),
+            parameters: $requestParams,
+        );
+        $response = $this->callLogin($this->createDebugModeController(), $loginRequest, $requestParams);
+
+        $this->assertDebugModeValidated($response);
+    }
+
+
+    /**
+     * @return array<string, array{array<string, string>, array<string, mixed>}>
+     */
+    public static function debugModeRequestBodyProvider(): array
+    {
+        $service = 'https://example.com/ssp/module.php/cas/linkback.php';
+        return [
+            // Would ask for a ticket from a fresh login, which this one, issued from the SSO session, is not
+            'renew' => [['service' => $service, 'debugMode' => 'true'], ['renew' => 'true']],
+            // Would name a service the ticket was not issued for
+            'service' => [['TARGET' => $service, 'debugMode' => 'true'], ['service' => 'https://example.com/other']],
+            // Would not be a string
+            'TARGET array' => [['service' => $service, 'debugMode' => 'true'], ['TARGET' => ['x']]],
+        ];
+    }
+
+
+    /**
+     * Debug mode validates the ticket with the query parameters login() issued it with, so parameters
+     * in the POST body cannot change the result.
+     *
+     * @param array<string, string> $queryParams
+     * @param array<string, mixed> $bodyParams
+     *
+     * @throws \Exception
+     */
+    #[DataProvider('debugModeRequestBodyProvider')]
+    public function testDebugModeIgnoresTheRequestBody(array $queryParams, array $bodyParams): void
+    {
+        $loginRequest = Request::create(
+            uri:        Module::getModuleURL('casserver/login') . '?' . http_build_query($queryParams),
+            method:     'POST',
+            parameters: $bodyParams,
+        );
+        $response = $this->callLogin($this->createDebugModeController(), $loginRequest, $queryParams);
+
+        $this->assertDebugModeValidated($response);
+    }
+
+
+    /**
+     * A controller with debug mode enabled, for a user with an SSO session.
+     */
+    private function createDebugModeController(): LoginController
+    {
         $moduleConfig = $this->moduleConfig;
         $moduleConfig['debugMode'] = true;
         $casconfig = Configuration::loadFromArray($moduleConfig);
@@ -894,12 +950,15 @@ class LoginControllerTest extends TestCase
             'Expire' => 9999999999,
         ]);
 
-        $loginRequest = Request::create(
-            uri:        Module::getModuleURL('casserver/login'),
-            parameters: $requestParams,
-        );
-        $response = $this->callLogin($controllerMock, $loginRequest, $requestParams);
+        return $controllerMock;
+    }
 
+
+    /**
+     * Debug mode rendered a successful serviceValidate response for the test user.
+     */
+    private function assertDebugModeValidated(mixed $response): void
+    {
         $this->assertInstanceOf(Template::class, $response);
         $this->assertSame(Response::HTTP_OK, $response->data['statusCode']);
         $xml = simplexml_load_string((string)$response->data['DebugModeXml']);
