@@ -115,16 +115,18 @@ class LoginController
      * @param bool $renew
      * @param bool $gateway
      * @param string|null $service
-     * @param string|null $TARGET  Query parameter name for "service" used by older CAS clients'
+     * @param string|null $TARGET Query parameter name for "service" used by older CAS clients'
      * @param string|null $scope
      * @param string|null $language
      * @param string|null $entityId
      * @param string|null $debugMode
      * @param string|null $method
+     * @param string|null $pgtUrl Only used by debug mode, which passes it on to the ticket validation
      *
      * @return \SimpleSAML\HTTP\RunnableResponse|\SimpleSAML\XHTML\Template
      * @throws \SimpleSAML\Error\ConfigurationError
      * @throws \SimpleSAML\Error\NoState
+     * @throws \Exception
      */
     public function login(
         Request $request,
@@ -137,6 +139,7 @@ class LoginController
         #[MapQueryParameter] ?string $entityId = null,
         #[MapQueryParameter] ?string $debugMode = null,
         #[MapQueryParameter] ?string $method = null,
+        #[MapQueryParameter] ?string $pgtUrl = null,
     ): RunnableResponse|Template {
         $forceAuthn = $renew;
         $serviceUrl = $service ?? $TARGET ?? null;
@@ -255,14 +258,19 @@ class LoginController
 
         // Check if we are in debug mode.
         if ($debugMode !== null && $this->casConfig->getOptionalBoolean('debugMode', false)) {
+            // Validate with the parameters the ticket was issued with, not with whatever the request holds
             [$templateName, $statusCode, $DebugModeXmlString] = $this->handleDebugMode(
                 $request,
                 $debugMode,
                 $serviceTicket,
+                $renew,
+                $TARGET,
+                $service,
+                $pgtUrl,
             );
             $t = new Template($this->sspConfig, (string)$templateName);
             $t->data['debugMode'] = $debugMode === 'true' ? 'Default' : $debugMode;
-            if (!str_contains('error', (string)$templateName)) {
+            if (!str_contains((string)$templateName, 'error')) {
                 $t->data['DebugModeXml'] = $DebugModeXmlString;
             }
             $t->data['statusCode'] = $statusCode;
@@ -291,9 +299,18 @@ class LoginController
 
 
     /**
+     * Validate the ticket login() has just issued, for debug mode to show the response.
+     *
+     * $renew, $target, $service and $pgtUrl are login()'s query parameters as it mapped them, so the
+     * ticket is validated under the conditions it was issued with.
+     *
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @param string|null $debugMode
      * @param array $serviceTicket
+     * @param bool $renew
+     * @param string|null $target
+     * @param string|null $service
+     * @param string|null $pgtUrl
      *
      * @return array []
      */
@@ -301,6 +318,10 @@ class LoginController
         Request $request,
         ?string $debugMode,
         array $serviceTicket,
+        bool $renew = false,
+        ?string $target = null,
+        ?string $service = null,
+        ?string $pgtUrl = null,
     ): array {
         // Check if the debugMode is supported
         if (!in_array($debugMode, self::DEBUG_MODES, true)) {
@@ -312,11 +333,11 @@ class LoginController
             $xmlResponse = $this->validate(
                 request: $request,
                 method:  'serviceValidate',
-                renew:   $request->get('renew', false),
-                target:  $request->get('target'),
+                renew:   $renew,
+                target:  $target,
                 ticket:  $serviceTicket['id'],
-                service: $request->get('service'),
-                pgtUrl:  $request->get('pgtUrl'),
+                service: $service,
+                pgtUrl:  $pgtUrl,
             );
             return ['casserver:validate.twig', $xmlResponse->getStatusCode(), $xmlResponse->getContent()];
         }
