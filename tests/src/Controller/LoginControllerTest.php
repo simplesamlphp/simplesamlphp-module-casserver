@@ -16,6 +16,7 @@ use SimpleSAML\Module\casserver\Controller\Cas20Controller;
 use SimpleSAML\Module\casserver\Controller\LoginController;
 use SimpleSAML\Session;
 use SimpleSAML\Utils;
+use SimpleSAML\XHTML\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -105,6 +106,7 @@ class LoginControllerTest extends TestCase
             entityId: isset($params['entityId']) ? (string)$params['entityId'] : null,
             debugMode: isset($params['debugMode']) ? (string)$params['debugMode'] : null,
             method: isset($params['method']) ? (string)$params['method'] : null,
+            pgtUrl: isset($params['pgtUrl']) ? (string)$params['pgtUrl'] : null,
         );
     }
 
@@ -847,5 +849,123 @@ class LoginControllerTest extends TestCase
         // default ticket name for CAS is 'ticket'
         $this->assertArrayHasKey('ticket', $params);
         $this->assertStringStartsWith('ST-', $params['ticket']);
+    }
+
+
+    /**
+     * @return array<string, array{array<string, string>}>
+     */
+    public static function debugModeServiceValidateProvider(): array
+    {
+        $service = 'https://example.com/ssp/module.php/cas/linkback.php';
+        return [
+            'service' => [['service' => $service, 'debugMode' => 'true']],
+            'TARGET' => [['TARGET' => $service, 'debugMode' => 'true']],
+            'service with renew' => [['service' => $service, 'debugMode' => 'true', 'renew' => 'true']],
+            'TARGET with renew' => [['TARGET' => $service, 'debugMode' => 'true', 'renew' => 'true']],
+        ];
+    }
+
+
+    /**
+     * Debug mode validates the ticket it has just issued against the service it was issued for, whichever query
+     * parameter named the service, and whether or not renew was requested.
+     *
+     * @param array<string, string> $requestParams
+     *
+     * @throws \Exception
+     */
+    #[DataProvider('debugModeServiceValidateProvider')]
+    public function testDebugModeValidatesTheIssuedTicket(array $requestParams): void
+    {
+        $loginRequest = Request::create(
+            uri:        Module::getModuleURL('casserver/login'),
+            parameters: $requestParams,
+        );
+        $response = $this->callLogin($this->createDebugModeController(), $loginRequest, $requestParams);
+
+        $this->assertDebugModeValidated($response);
+    }
+
+
+    /**
+     * @return array<string, array{array<string, string>, array<string, mixed>}>
+     */
+    public static function debugModeRequestBodyProvider(): array
+    {
+        $service = 'https://example.com/ssp/module.php/cas/linkback.php';
+        return [
+            // Would ask for a ticket from a fresh login, which this one, issued from the SSO session, is not
+            'renew' => [['service' => $service, 'debugMode' => 'true'], ['renew' => 'true']],
+            // Would name a service the ticket was not issued for
+            'service' => [['TARGET' => $service, 'debugMode' => 'true'], ['service' => 'https://example.com/other']],
+            // Would not be a string
+            'TARGET array' => [['service' => $service, 'debugMode' => 'true'], ['TARGET' => ['x']]],
+        ];
+    }
+
+
+    /**
+     * Debug mode validates the ticket with the query parameters login() issued it with, so parameters
+     * in the POST body cannot change the result.
+     *
+     * @param array<string, string> $queryParams
+     * @param array<string, mixed> $bodyParams
+     *
+     * @throws \Exception
+     */
+    #[DataProvider('debugModeRequestBodyProvider')]
+    public function testDebugModeIgnoresTheRequestBody(array $queryParams, array $bodyParams): void
+    {
+        $loginRequest = Request::create(
+            uri:        Module::getModuleURL('casserver/login') . '?' . http_build_query($queryParams),
+            method:     'POST',
+            parameters: $bodyParams,
+        );
+        $response = $this->callLogin($this->createDebugModeController(), $loginRequest, $queryParams);
+
+        $this->assertDebugModeValidated($response);
+    }
+
+
+    /**
+     * A controller with debug mode enabled, for a user with an SSO session.
+     */
+    private function createDebugModeController(): LoginController
+    {
+        $moduleConfig = $this->moduleConfig;
+        $moduleConfig['debugMode'] = true;
+        $casconfig = Configuration::loadFromArray($moduleConfig);
+
+        $controllerMock = $this->getMockBuilder(LoginController::class)
+            ->setConstructorArgs([$this->sspConfig, $casconfig, $this->authSimpleMock, $this->httpUtils])
+            ->onlyMethods(['getSession'])
+            ->getMock();
+        $controllerMock->expects($this->once())->method('getSession')->willReturn($this->sessionMock);
+        $this->sessionMock->expects($this->exactly(2))->method('getSessionId')->willReturn(session_create_id());
+        $this->authSimpleMock->expects($this->atLeastOnce())->method('isAuthenticated')->willReturn(true);
+        $this->authSimpleMock->expects($this->once())->method('getAuthData')->with('Expire')->willReturn(9999999999);
+        $this->authSimpleMock->expects($this->once())->method('getAuthDataArray')->willReturn([
+            'Attributes' => ['eduPersonPrincipalName' => ['testuser@example.com']],
+            'Expire' => 9999999999,
+        ]);
+
+        return $controllerMock;
+    }
+
+
+    /**
+     * Debug mode rendered a successful serviceValidate response for the test user.
+     */
+    private function assertDebugModeValidated(mixed $response): void
+    {
+        $this->assertInstanceOf(Template::class, $response);
+        $this->assertSame(Response::HTTP_OK, $response->data['statusCode']);
+        $xml = simplexml_load_string((string)$response->data['DebugModeXml']);
+        $xml->registerXPathNamespace('cas', 'serviceResponse');
+        $this->assertSame(
+            'testuser@example.com',
+            (string)$xml->xpath('//cas:authenticationSuccess/cas:user')[0],
+        );
     }
 }

@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Debug mode (`debugMode=true`) now validates the ticket with the query parameters login used to issue it,
+  so it works for a service given as `TARGET` and with `renew` set, and ignores parameters in the request body (Marko Ivančić)
+
 ## [7.0.6] - 2026-11-10
 
 ### Security
