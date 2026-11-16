@@ -5,6 +5,7 @@
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/12.5/phpunit.xsd"
          backupGlobals="false"
          displayDetailsOnTestsThatTriggerWarnings="true"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
          cacheDirectory=".phpunit.cache">
   <coverage>
     <report>
@@ -19,7 +20,7 @@
     </testsuite>
   </testsuites>
   <logging/>
-  <source>
+  <source ignoreSuppressionOfDeprecations="true">
     <include>
       <directory suffix=".php">./src</directory>
     </include>

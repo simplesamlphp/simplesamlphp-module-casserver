@@ -929,6 +929,30 @@ class LoginControllerTest extends TestCase
 
 
     /**
+     * An unsupported debug mode renders the error template, without any XML to show.
+     *
+     * @throws \Exception
+     */
+    public function testUnsupportedDebugModeRendersTheErrorWithoutXml(): void
+    {
+        $requestParams = [
+            'service' => 'https://example.com/ssp/module.php/cas/linkback.php',
+            'debugMode' => 'unsupported',
+        ];
+        $loginRequest = Request::create(
+            uri:        Module::getModuleURL('casserver/login'),
+            parameters: $requestParams,
+        );
+        $response = $this->callLogin($this->createDebugModeController(), $loginRequest, $requestParams);
+
+        $this->assertInstanceOf(Template::class, $response);
+        $this->assertSame(Response::HTTP_BAD_REQUEST, $response->data['statusCode']);
+        $this->assertSame('unsupported', $response->data['debugMode']);
+        $this->assertArrayNotHasKey('DebugModeXml', $response->data);
+    }
+
+
+    /**
      * A controller with debug mode enabled, for a user with an SSO session.
      */
     private function createDebugModeController(): LoginController

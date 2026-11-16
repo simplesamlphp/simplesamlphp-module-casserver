@@ -6,6 +6,12 @@
 
 - Debug mode (`debugMode=true`) now validates the ticket with the query parameters login used to issue it,
   so it works for a service given as `TARGET` and with `renew` set, and ignores parameters in the request body (Marko Ivančić)
+- Debug mode no longer passes the validation XML to the error template for an unsupported debug mode
+  (the `str_contains()` check for the error template had its arguments reversed)
+
+### Changed
+
+- The test suite now reports deprecations, including those triggered with `@` such as Symfony's `trigger_deprecation()`
 
 ## [7.0.6] - 2026-11-10
 

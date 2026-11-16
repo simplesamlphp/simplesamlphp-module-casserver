@@ -115,17 +115,18 @@ class LoginController
      * @param bool $renew
      * @param bool $gateway
      * @param string|null $service
-     * @param string|null $TARGET  Query parameter name for "service" used by older CAS clients'
+     * @param string|null $TARGET Query parameter name for "service" used by older CAS clients'
      * @param string|null $scope
      * @param string|null $language
      * @param string|null $entityId
      * @param string|null $debugMode
      * @param string|null $method
-     * @param string|null $pgtUrl  Only used by debug mode, which passes it on to the ticket validation
+     * @param string|null $pgtUrl Only used by debug mode, which passes it on to the ticket validation
      *
      * @return \SimpleSAML\HTTP\RunnableResponse|\SimpleSAML\XHTML\Template
      * @throws \SimpleSAML\Error\ConfigurationError
      * @throws \SimpleSAML\Error\NoState
+     * @throws \Exception
      */
     public function login(
         Request $request,
@@ -268,7 +269,7 @@ class LoginController
             );
             $t = new Template($this->sspConfig, (string)$templateName);
             $t->data['debugMode'] = $debugMode === 'true' ? 'Default' : $debugMode;
-            if (!str_contains('error', (string)$templateName)) {
+            if (!str_contains((string)$templateName, 'error')) {
                 $t->data['DebugModeXml'] = $DebugModeXmlString;
             }
             $t->data['statusCode'] = $statusCode;
