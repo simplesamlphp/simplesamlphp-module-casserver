@@ -140,7 +140,8 @@ class AttributeExtractor
 
 
     /**
-     * Resolve the entity ID that casserver presents to the authproc filters as the authenticating IdP.
+     * Resolve the entity ID that casserver presents as the authenticating IdP, to the authentication
+     * source before login and to the authproc filters after it.
      *
      * casserver has no entity ID of its own, so the value is resolved in the following order:
      * whatever the state already carries, then the 'idp_entity_id' configuration option, and finally
@@ -152,7 +153,7 @@ class AttributeExtractor
      * @return string
      * @throws \Exception
      */
-    private function resolveIdpEntityId(mixed $stateEntityId): string
+    public function resolveIdpEntityId(mixed $stateEntityId = null): string
     {
         if (\is_string($stateEntityId) && $stateEntityId !== '') {
             return $stateEntityId;
